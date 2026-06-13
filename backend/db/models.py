@@ -61,6 +61,10 @@ class Resume(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     file_path: Mapped[str] = mapped_column(String(1024), default="", nullable=False)
+    document_size: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    parse_status: Mapped[str] = mapped_column(
+        String(40), default="pending", server_default="pending", nullable=False, index=True
+    )
     raw_text: Mapped[str] = mapped_column(Text, default="", nullable=False)
     structured_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
@@ -78,6 +82,12 @@ class JobDescription(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     company: Mapped[str] = mapped_column(String(255), default="", nullable=False)
+    filename: Mapped[str] = mapped_column(String(255), default="", server_default="", nullable=False)
+    file_path: Mapped[str] = mapped_column(String(1024), default="", server_default="", nullable=False)
+    document_size: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    parse_status: Mapped[str] = mapped_column(
+        String(40), default="pending", server_default="pending", nullable=False, index=True
+    )
     raw_text: Mapped[str] = mapped_column(Text, nullable=False)
     structured_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
@@ -149,6 +159,7 @@ class MatchResult(Base):
     missing_skills: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     strengths: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     gaps: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    report_json: Mapped[dict] = mapped_column(JSON, default=dict, server_default="{}", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
