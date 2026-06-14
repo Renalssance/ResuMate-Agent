@@ -320,6 +320,124 @@ def test_question_generation_backfills_non_gap_questions_from_report_evidence():
     assert question_set.formal_questions[6].evidence_chunk_ids == ["e4"]
 
 
+def test_question_generation_backfills_non_gap_question_from_any_report_evidence_when_criterion_has_none():
+    job_profile = JobProfile(
+        job_title="AI Builder",
+        summary="Build AI workflows",
+        criteria=[
+            Criterion(
+                criterion_id=f"c{i}",
+                name=f"Criterion {i}",
+                description=f"Criterion {i}",
+                importance="must" if i < 4 else "important",
+                weight=25,
+                evidence_query=f"criterion {i}",
+            )
+            for i in range(1, 5)
+        ],
+    )
+    report = CandidateReport.model_construct(
+        run_id=1,
+        candidate_id=2,
+        candidate_name="Candidate",
+        filename="candidate.pdf",
+        job_profile=job_profile,
+        resume_profile=ResumeProfile(candidate_name="Candidate"),
+        evaluations=[
+            CriterionEvaluation(
+                criterion_id="c1",
+                name="Criterion 1",
+                weight=25,
+                score=2,
+                status="partial_match",
+                reason="Partial evidence.",
+                evidence_chunk_ids=["e1"],
+                missing_evidence=["depth"],
+            ),
+            CriterionEvaluation(
+                criterion_id="c2",
+                name="Criterion 2",
+                weight=25,
+                score=3,
+                status="partial_match",
+                reason="Some evidence.",
+                evidence_chunk_ids=["e2"],
+            ),
+            CriterionEvaluation(
+                criterion_id="c3",
+                name="Criterion 3",
+                weight=25,
+                score=3,
+                status="partial_match",
+                reason="Some evidence.",
+                evidence_chunk_ids=["e3"],
+            ),
+            CriterionEvaluation(
+                criterion_id="c4",
+                name="Criterion 4",
+                weight=25,
+                score=0,
+                status="no_evidence",
+                reason="No evidence.",
+                evidence_chunk_ids=[],
+                missing_evidence=["collaboration"],
+            ),
+        ],
+        total_score=70,
+        recommendation="recommend",
+        top_strengths=[],
+        summary="Candidate matched.",
+        formal_questions=[],
+        ambiguity_followups=[],
+    )
+    specs = [
+        ("resume_experience", "c1", ["e1"]),
+        ("resume_experience", "c2", ["e2"]),
+        ("resume_experience", "c3", ["e3"]),
+        ("jd_core_capability", "c1", []),
+        ("jd_core_capability", "c2", []),
+        ("scenario_design", "c2", []),
+        ("scenario_design", "c3", []),
+        ("gap_validation", "c1", []),
+        ("gap_validation", "c4", []),
+        ("behavior_review", "c4", []),
+    ]
+    blueprint = QuestionBlueprint(
+        formal_questions=[
+            QuestionBlueprintItem(
+                question_id=f"q{index:02d}",
+                question_type=question_type,
+                primary_criterion_id=criterion_id,
+                evidence_chunk_ids=evidence_chunk_ids,
+                objective=f"objective {index}",
+                difficulty="medium",
+            )
+            for index, (question_type, criterion_id, evidence_chunk_ids) in enumerate(specs, start=1)
+        ],
+        ambiguity_sources=[],
+    )
+    questions = [
+        _question(index, question_type, criterion_id, evidence_chunk_ids)
+        for index, (question_type, criterion_id, evidence_chunk_ids) in enumerate(specs, start=1)
+    ]
+    service = object.__new__(AnalysisService)
+
+    question_set = service._build_question_set_from_split(
+        report=report,
+        blueprint=blueprint,
+        batches=[QuestionBatch(formal_questions=questions[:5]), QuestionBatch(formal_questions=questions[5:])],
+        followups=AmbiguityFollowupSet(
+            ambiguity_followups=[
+                _question(11, "gap_validation", "c1", []),
+                _question(12, "gap_validation", "c4", []),
+                _question(13, "gap_validation", "c4", []),
+            ]
+        ),
+    )
+
+    assert question_set.formal_questions[9].evidence_chunk_ids
+
+
 def test_question_generation_rebalances_overused_primary_evidence_from_blueprint():
     job_profile = JobProfile(
         job_title="AI Builder",

@@ -8,7 +8,8 @@ Rules:
 - Copy each blueprint item's question type, difficulty, related criteria, and evidence_chunk_ids.
 - Use only `evidence_chunk_ids`; do not create or rewrite evidence objects.
 - Make questions answerable and scoreable. Avoid compound questions and answer leakage.
-- Keep assessment_points to 2-4 items, scoring_rubric to 3-5 items, and suggested_followups to exactly 1 item.
+- Keep assessment_points to 2-4 items and scoring_rubric to 3-5 items.
+- `suggested_followups` must always be a JSON array with exactly 1 string item. Correct: `"suggested_followups": ["..."]`. Incorrect: `"suggested_followups": "..."`.
 - Avoid duplicating or paraphrasing existing questions listed below.
 
 Candidate report context:

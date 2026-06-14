@@ -176,6 +176,9 @@ class AnalysisService:
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         try:
+            # Split question generation into blueprint -> two batches -> follow-ups.
+            # Smaller schema-constrained calls are more stable than asking the LLM
+            # to produce the full interview pack in one long JSON response.
             blueprint = self.harness.run_schema(
                 task="plan_question_blueprint",
                 prompt_name="plan_question_blueprint",
@@ -297,6 +300,8 @@ class AnalysisService:
             question_set=QuestionSet.model_construct(formal_questions=formal_questions, ambiguity_followups=[]),
             allowed_evidence_chunk_ids=allowed_evidence_ids,
         )
+        # Backfill only from already-cited match evidence, then validate the
+        # final set so unsupported chunk IDs never leak into saved questions.
         formal_questions = self._backfill_non_gap_question_evidence(
             report=report,
             blueprint=blueprint,
@@ -336,6 +341,11 @@ class AnalysisService:
             item.criterion_id: item.evidence_chunk_ids
             for item in report.evaluations
         }
+        report_evidence_ids = [
+            chunk_id
+            for item in report.evaluations
+            for chunk_id in item.evidence_chunk_ids
+        ]
         primary_use_count: Counter[str] = Counter()
         normalized: list[InterviewQuestion] = []
         for index, question in enumerate(formal_questions):
@@ -366,6 +376,8 @@ class AnalysisService:
 
             for criterion_id in criterion_ids:
                 add_unique(evidence_by_criterion.get(criterion_id, []))
+            if question.question_type != "gap_validation" and not candidate_ids:
+                add_unique(report_evidence_ids)
 
             primary = next((chunk_id for chunk_id in candidate_ids if primary_use_count[chunk_id] < primary_evidence_limit), "")
             if primary:

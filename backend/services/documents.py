@@ -204,7 +204,7 @@ def extract_stored_pages(
         elif ext == ".doc":
             return _extract_legacy_doc(document_path, safe_filename)
         else:
-            text = document_path.read_text(encoding="utf-8", errors="ignore").strip()
+            text = _extract_text_file(document_path, safe_filename)
     except UnsupportedDocumentError:
         raise
     except Exception as exc:
@@ -358,6 +358,17 @@ def _extract_docx(path: Path) -> str:
     return "\n".join([*paragraphs, *table_lines]).strip()
 
 
+def _extract_text_file(path: Path, filename: str) -> str:
+    payload = path.read_bytes()
+    decode_errors: list[str] = []
+    for encoding in ("utf-8-sig", "gb18030"):
+        try:
+            return payload.decode(encoding).strip()
+        except UnicodeDecodeError as exc:
+            decode_errors.append(f"{encoding}: {exc}")
+    raise UnsupportedDocumentError(f"Failed to decode text from {filename}: {'; '.join(decode_errors)}")
+
+
 def partition_doc(*, filename: str):
     parser = import_module("unstructured.partition.doc").partition_doc
     return parser(filename=filename)
@@ -486,6 +497,9 @@ def chunk_pages(
         entity_id: str = "",
         prefix_context: dict[str, str] | None = None,
     ) -> None:
+        # Work-experience bullets often lose employer/title/date context after
+        # OCR and chunking. Prefixing recovered context keeps each vector chunk
+        # independently useful for later evidence retrieval.
         nonlocal chunk_index
         if not lines:
             return

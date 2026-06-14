@@ -75,6 +75,8 @@ class CandidateAnalysisGraph:
         builder.add_node("calculate_score", self.calculate_score)
         builder.add_node("persist_report", self.persist_report)
         builder.set_entry_point("load_structured_profiles")
+        # The LLM evaluates criterion-level evidence only; deterministic Python
+        # code applies weighting and recommendation thresholds in later nodes.
         builder.add_edge("load_structured_profiles", "retrieve_evidence")
         builder.add_edge("retrieve_evidence", "evaluate_match")
         builder.add_edge("evaluate_match", "calculate_score")

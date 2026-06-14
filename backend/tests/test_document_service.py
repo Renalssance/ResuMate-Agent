@@ -85,6 +85,17 @@ async def test_store_and_extract_upload_persists_real_upload_bytes(tmp_path: Pat
 
 
 @pytest.mark.asyncio
+async def test_store_and_extract_upload_decodes_gb18030_text_upload(tmp_path: Path) -> None:
+    text = "\u62db\u8058\u5c97\u4f4d\uff1aPython\u5f00\u53d1\u5de5\u7a0b\u5e08\n\u5c97\u4f4d\u804c\u8d23\uff1a\u8d1f\u8d23\u540e\u7aef\u63a5\u53e3\u5f00\u53d1\u548c\u6570\u636e\u5904\u7406\u3002"
+    payload = text.encode("gb18030")
+
+    stored = await store_and_extract_upload(_upload("jd.txt", payload), storage_root=tmp_path)
+
+    assert stored.raw_text == text
+    assert stored.pages == [PageText(page_number=1, text=text)]
+
+
+@pytest.mark.asyncio
 async def test_store_upload_persists_bytes_without_extracting(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(documents, "extract_stored_pages", Mock(side_effect=AssertionError("must not extract")))
     payload = b"Real candidate experience from the uploaded file."

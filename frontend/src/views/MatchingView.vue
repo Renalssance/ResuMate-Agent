@@ -122,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import EvidenceList from '../components/EvidenceList.vue'
 import TaskProgress from '../components/TaskProgress.vue'
@@ -146,6 +146,12 @@ const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.va
 onMounted(() => {
   documentStore.loadDocuments()
   matchStore.loadMatches()
+})
+
+watch(task.status, async (status) => {
+  if (status !== 'success') return
+  await matchStore.loadMatches()
+  selectedResult.value = matchStore.results[0] || null
 })
 
 async function runMatch() {
