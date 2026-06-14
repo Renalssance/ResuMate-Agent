@@ -69,6 +69,12 @@ class UnsupportedDocumentError(ValueError):
     pass
 
 
+MULTI_POSITION_RE = re.compile(
+    r"(职位|岗位|Position|Role)\s*[一二三四五六七八九十\d]+[：:]\s*\S+",
+    re.IGNORECASE,
+)
+
+
 def _extension(filename: str) -> str:
     return Path(filename).suffix.lower()
 
@@ -331,6 +337,43 @@ def _extract_legacy_doc(path: Path, filename: str) -> list[PageText]:
 def _ensure_text(text: str, filename: str) -> None:
     if len(text.strip()) < 20:
         raise UnsupportedDocumentError(f"{filename} has no extractable text")
+    assert_acceptable_text_quality(text, filename=filename)
+
+
+def assert_acceptable_text_quality(text: str, *, filename: str = "document") -> None:
+    stripped = (text or "").strip()
+    if len(stripped) < 20:
+        raise UnsupportedDocumentError(f"TEXT_QUALITY_TOO_LOW: {filename} has too little readable text")
+    printable = sum(1 for char in stripped if char.isprintable() and not char.isspace())
+    non_space = sum(1 for char in stripped if not char.isspace())
+    printable_ratio = printable / max(non_space, 1)
+    replacement_ratio = stripped.count("\ufffd") / max(len(stripped), 1)
+    mojibake_tokens = ("锟", "斤拷", "ï¿½", "Ã", "Â")
+    mojibake_count = sum(stripped.count(token) for token in mojibake_tokens)
+    mojibake_ratio = mojibake_count / max(len(stripped), 1)
+    cjk_count = sum(1 for char in stripped if "\u4e00" <= char <= "\u9fff")
+    ascii_alpha = sum(1 for char in stripped if char.isascii() and char.isalpha())
+    symbol_count = sum(1 for char in stripped if not char.isalnum() and not char.isspace())
+    symbol_ratio = symbol_count / max(len(stripped), 1)
+    long_token = any(len(token) > 120 for token in re.split(r"\s+", stripped))
+    if (
+        printable_ratio < 0.85
+        or replacement_ratio > 0.01
+        or mojibake_ratio > 0.02
+        or symbol_ratio > 0.45
+        or long_token
+        or (len(stripped) > 120 and cjk_count == 0 and ascii_alpha < 20)
+    ):
+        raise UnsupportedDocumentError(f"TEXT_QUALITY_TOO_LOW: {filename} appears unreadable")
+
+
+def detect_multiple_positions(text: str) -> bool:
+    normalized = text or ""
+    if len(MULTI_POSITION_RE.findall(normalized)) >= 2:
+        return True
+    title_markers = re.findall(r"(?im)^\s*(职位|岗位|Position|Role)\s*[:：]", normalized)
+    responsibility_markers = re.findall(r"(?im)^\s*(岗位职责|职责|Responsibilities)\s*[:：]", normalized)
+    return len(title_markers) >= 2 or len(responsibility_markers) >= 2
 
 
 SECTION_RE = re.compile(r"^\s*(#{1,6}\s*)?([\w\u4e00-\u9fff][^:\n：]{0,40})([:：])?\s*$")

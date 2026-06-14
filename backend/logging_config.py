@@ -93,3 +93,12 @@ def log_llm_error(task: str, error: Exception, metadata: dict[str, Any] | None =
         _format_metadata(metadata),
         error,
     )
+
+
+def log_llm_validation_error(task: str, errors: Any, metadata: dict[str, Any] | None = None) -> None:
+    logging.getLogger("backend.llm").warning(
+        "LLM validation error | task=%s | metadata=%s | errors=%s",
+        task,
+        _format_metadata(metadata),
+        json.dumps(errors, ensure_ascii=False, default=str),
+    )

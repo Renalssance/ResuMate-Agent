@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
+FRONTEND_STATIC_DIR = FRONTEND_DIR / "dist" if (FRONTEND_DIR / "dist").exists() else FRONTEND_DIR
 
 # CORS 配置：从环境变量读取允许的源列表
 # 开发环境使用 "*"，生产环境必须指定具体域名
@@ -74,8 +75,8 @@ def create_app() -> FastAPI:
     app.include_router(api_module.router)
 
     # serve frontend static files at root
-    if FRONTEND_DIR.exists():
-        app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="static")
+    if FRONTEND_STATIC_DIR.exists():
+        app.mount("/", StaticFiles(directory=str(FRONTEND_STATIC_DIR), html=True), name="static")
 
     return app
 

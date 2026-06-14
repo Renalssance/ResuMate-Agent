@@ -1,209 +1,228 @@
 # ResuMate Agent
 
-ResuMate Agent 是一个面向招聘场景的简历与 JD 分析工作台。系统基于 FastAPI、Vue 3、LangChain、PostgreSQL 和 Milvus，支持简历解析、岗位描述解析、候选人与岗位匹配分析，以及面试问题辅助生成。
+ResuMate Agent is a recruiting workflow demo for resume and job description analysis. It uses a FastAPI backend, a Vue 3 frontend, PostgreSQL, Redis, and Milvus to upload documents, extract structured data, score candidate fit, and generate interview questions.
 
-## 功能概览
+## Features
 
-- 上传 PDF、Word 简历并提取结构化候选人信息
-- 创建或导入 JD，并提取岗位要求、技能栈和关键条件
-- 将简历与 JD 的关键信息写入 PostgreSQL 和 Milvus
-- 基于简历与 JD 生成匹配度评分、匹配理由和风险缺口
-- 根据岗位与候选人经历辅助生成面试题和追问方向
-- 支持批量分析任务，将多份简历加入同一岗位分析流程
+- Upload PDF or Word resumes and extract structured candidate information.
+- Create or import job descriptions and extract requirements, skills, and evaluation criteria.
+- Store structured records in PostgreSQL and vector search content in Milvus.
+- Score candidate-to-job fit with evidence-backed analysis.
+- Generate formal interview questions and follow-up prompts from candidate experience.
+- Run batch analysis for multiple resumes against one job description.
+- Stream backend progress for parsing, matching, and question generation through SSE.
 
-## 模块进度
+## Storage Responsibilities
 
-- [x] 批量分析任务模块：分析任务、候选人关联、结果表结构与基础 CRUD API
-- [x] 批量上传多份简历：一次任务内上传多份简历并自动解析
-- [ ] 批量匹配与候选人排序：对同一 JD 下所有简历评分、排序、落库
-- [ ] 向量检索匹配模块：基于 JD 向量召回候选简历并进入精评
-- [ ] 正式试题生成模块：至少 10 道题，包含考察点、难度、评分标准、参考要点
-- [ ] 追问模拟模块：针对简历模糊点生成 3-5 个追问
-- [ ] 结果页/报告页：任务流、候选人排行榜、单人详情、题目和追问展示
-- [ ] 结果导出：候选人排名、单人面试题报告、完整分析报告
+PostgreSQL is the source of truth for business state. It stores users, uploaded file metadata and paths, raw extracted text, structured JD and resume profiles, analysis runs, candidate reports, generated questions, statuses, and timestamps. If the UI needs to reload durable workflow state after refresh, it should read PostgreSQL-backed APIs.
 
-## 本地部署
+Milvus stores semantic retrieval data only. It stores vectorized document chunks, document profile artifacts, candidate report artifacts, and the metadata required to filter those vectors by user, document, run, and candidate. Milvus is used for evidence retrieval and semantic search; it is not the authoritative store for final reports, questions, document status, or ownership.
 
-### 1. 环境准备
+## Local Development
 
-- Python 3.12+
-- uv 或 pip
-- Docker / Docker Compose，用于启动 PostgreSQL、Redis、Milvus、MinIO 和 Attu
+### Docker Compose
 
-### 2. 安装依赖
+Copy `.env.example` to `.env`, fill in the model credentials, then start the full stack:
+
+```bash
+docker compose up --build
+```
+
+Docker Compose starts the backend, frontend, PostgreSQL, Redis, Milvus, MinIO, and Attu.
+
+Docker URLs:
+
+- Frontend: `http://localhost:5173`
+- API docs: `http://localhost:8000/docs`
+- Attu: `http://localhost:8080`
+
+### 1. Prerequisites
+
+- Python 3.11+
+- uv, or Python `venv` with pip
+- Node.js 20+
+- Local PostgreSQL, Redis, and Milvus services when running the full analysis workflow
+- Docker and Docker Compose when using the full Docker stack
+
+Default local service endpoints:
+
+- PostgreSQL: `127.0.0.1:5432`
+- Redis: `127.0.0.1:6379`
+- Milvus: `127.0.0.1:19530`
+
+### 2. Configure Environment
+
+Copy `.env.example` to `.env` and fill in the model credentials and local service URLs.
+
+```env
+OPENAI_API_KEY=
+OPENAI_BASE_URL=
+LLM_MODEL=
+EMBEDDING_MODEL=
+
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@127.0.0.1:5432/langchain_app
+REDIS_URL=redis://127.0.0.1:6379/0
+MILVUS_URI=http://localhost:19530
+MILVUS_HOST=127.0.0.1
+MILVUS_PORT=19530
+
+BACKEND_CORS_ORIGINS=http://localhost:5173
+```
+
+### 3. Install Backend Dependencies
+
+Using uv:
 
 ```bash
 uv sync
 ```
 
-或：
+ Or using a local virtual environment:
 
 ```bash
 python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -e .
 ```
 
-### 3. 创建 `.env`
-
-参考 `.env.example` 配置：
-
-```env
-ARK_API_KEY=
-MODEL=
-BASE_URL=
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@127.0.0.1:5432/langchain_app
-REDIS_URL=redis://127.0.0.1:6379/0
-JWT_SECRET_KEY=
-
-VECTOR_STORE_ENABLED=true
-MILVUS_HOST=127.0.0.1
-MILVUS_PORT=19530
-PROFILE_VECTOR_COLLECTION=candidate_profile_vectors
-EMBEDDING_MODEL=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-EMBEDDING_DEVICE=cpu
-
-PDF_OCR_ENABLED=true
-PDF_OCR_MAX_PAGES=8
-PDF_OCR_RENDER_SCALE=2.5
-PDF_TEXT_MIN_CHARS=30
-```
-
-### 4. 启动基础设施
+### 4. Start Backend
 
 ```bash
-docker compose up -d
+uv run uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-默认端口：
-
-- PostgreSQL: `5432`
-- Redis: `6379`
-- Milvus: `19530`
-- Attu: `8080`
-- MinIO: `9000`, `9001`
-
-### 5. 启动应用
+If you activated `.venv` manually:
 
 ```bash
-uv run uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-访问：
+Backend URLs:
 
-- 前端: `http://127.0.0.1:8000/`
-- API 文档: `http://127.0.0.1:8000/docs`
-- Attu: `http://127.0.0.1:8080/`
+- API docs: `http://127.0.0.1:8000/docs`
+- API base: `http://127.0.0.1:8000`
 
-## 项目结构
+### 5. Install Frontend Dependencies
+
+```bash
+cd frontend
+npm install
+```
+
+### 6. Start Frontend
+
+```bash
+npm run dev
+```
+
+Frontend URL:
+
+- App: `http://localhost:5173`
+
+The Vite dev server proxies `/api` and `/auth` requests to `http://127.0.0.1:8000`.
+
+## Demo Flow
+
+```text
+Vue 3 frontend
+  -> /api/runs
+  -> FastAPI backend
+  -> LangGraph candidate workflow
+  -> AgentHarness with OpenAI-compatible LLM and Pydantic schemas
+  -> Milvus document_chunks / analysis_artifacts
+  -> CandidateReport / ranking / questions
+```
+
+LangGraph node order:
+
+```text
+load_documents -> index_documents -> parse_jd -> parse_resume
+-> retrieve_evidence -> evaluate_match -> calculate_score
+-> generate_questions -> persist_report
+```
+
+## Prompts
+
+Prompt files live in `backend/prompts/`:
+
+- `parse_jd.md`: outputs `JobProfile`; job criteria weights must sum to 100.
+- `parse_resume.md`: outputs `ResumeProfile`; important facts must include page, section, source quote, and `chunk_id`.
+- `evaluate_match.md`: scores only from retrieved Milvus evidence; any score above 0 must cite evidence.
+- `generate_questions.md`: outputs 10 formal interview questions and 3-5 follow-up questions.
+
+Total score is calculated in Python, not generated by the LLM:
+
+```python
+total_score = sum(item.weight * item.score / 5 for item in evaluations)
+```
+
+## Tests And Checks
+
+Backend tests:
+
+```bash
+uv run --extra test pytest backend/tests
+```
+
+Frontend build:
+
+```bash
+cd frontend
+npm run build
+```
+
+## Project Structure
 
 ```text
 backend/
-├── app.py              # FastAPI 入口
-├── auth/               # JWT 认证与角色解析
-├── routes/             # API 路由
-│   ├── api.py
-│   ├── analysis.py
-│   ├── chat.py
-│   ├── resume.py
-│   └── jd.py
-├── schemas/            # Pydantic 请求/响应模型
-├── db/                 # SQLAlchemy 模型、数据库连接、Redis 缓存
-├── middleware/         # API 限流
-├── agent/              # 面试 Agent 与简历/JD 工具
-├── vector/             # Embedding 与 Milvus 向量写入
-└── rag/document_loader.py
-                        # PDF/Word/Excel 文本读取与分片
+  app.py                 FastAPI application entry
+  routes/                API routes
+  schemas/               Pydantic request and response models
+  db/                    SQLAlchemy models, database connection, Redis cache
+  middleware/            API middleware
+  agent/                 Interview agent and resume/JD tools
+  graph/                 LangGraph candidate workflow
+  rag/                   Demo retrieval and embedding helpers
+  vector/                Embedding and Milvus vector writes
+  prompts/               LLM prompts
+  tests/                 Backend tests
 
 frontend/
-├── index.html
-├── script.js
-└── style.css
+  index.html
+  package.json
+  vite.config.ts
+  src/                   Vue application source
 ```
 
-## 向量入库策略
+## API Overview
 
-上传简历或创建 JD 后，系统会：
-
-1. 抽取原始文本
-2. 调用 LLM 生成结构化 JSON
-3. 写入 PostgreSQL 的 `resumes` 或 `job_descriptions`
-4. 将关键信息压缩成 profile 文本
-5. 生成 embedding 并写入 Milvus 集合 `candidate_profile_vectors`
-
-Milvus 中保存的字段包括：
-
-- `doc_type`: `resume` 或 `jd`
-- `user_id`
-- `source_id`: 简历 ID 或 JD ID
-- `title`
-- `content`: 用于向量检索的关键 profile 文本
-- `metadata_json`: 结构化元数据
-- `embedding`
-
-## API 速览
-
-| 路由 | 说明 |
+| Route | Description |
 | --- | --- |
-| `POST /auth/register` | 注册 |
-| `POST /auth/login` | 登录，返回 Bearer Token |
-| `GET /auth/me` | 获取当前用户 |
-| `POST /chat/stream` | 面试助手流式对话 |
-| `POST /resume/upload` | 上传、解析简历并写入向量库 |
-| `GET /resume` | 简历列表 |
-| `GET /resume/{id}` | 简历详情 |
-| `DELETE /resume/{id}` | 删除简历并删除向量 |
-| `POST /jd` | 创建、解析 JD 并写入向量库 |
-| `GET /jd` | JD 列表 |
-| `GET /jd/{id}` | JD 详情 |
-| `DELETE /jd/{id}` | 删除 JD 并删除向量 |
-| `POST /analysis/jobs` | 创建分析任务 |
-| `GET /analysis/jobs` | 分析任务列表 |
-| `GET /analysis/jobs/{id}` | 分析任务详情 |
-| `DELETE /analysis/jobs/{id}` | 删除分析任务 |
-| `POST /analysis/jobs/{id}/candidates` | 将简历加入分析任务 |
-| `POST /analysis/jobs/{id}/resumes/upload` | 批量上传简历，解析后自动加入分析任务 |
-| `DELETE /analysis/jobs/{id}/candidates/{candidate_id}` | 从任务移除候选人 |
+| `POST /auth/register` | Register |
+| `POST /auth/login` | Log in and return Bearer token |
+| `GET /auth/me` | Get current user |
+| `POST /chat/stream` | Streaming interview assistant chat |
+| `POST /api/documents` | Upload, persist, parse, and vectorize JD or resume files |
+| `GET /api/documents` | List persisted documents |
+| `POST /api/documents/{id}/parse` | Reparse a persisted document |
+| `DELETE /api/documents/{id}` | Delete a document and related vectors |
+| `POST /api/runs` | Run LangGraph matching from persisted document IDs |
+| `GET /api/runs` | List persisted runs |
+| `GET /api/runs/{id}` | Get a persisted run |
+| `GET /api/runs/{id}/candidates/{candidate_id}` | Get a persisted candidate report |
+| `GET /api/tasks/{task_id}/events` | Stream backend task progress with SSE |
 
-## 测试工具
+## Utility Scripts
 
-启动后端后，可以用内置脚本测试批量分析任务：
+Check OCR output for scanned PDFs:
 
 ```bash
-python scripts/test_analysis_module.py
+uv run python scripts/ocr_pdf.py data/resumes/a.pdf --output data/resumes/a.ocr.txt
 ```
 
-脚本会自动注册或登录测试用户，然后依次创建任务、查询列表、查询详情、更新任务，并默认删除测试任务。
+Useful OCR environment variables:
 
-保留创建出来的任务：
-
-```bash
-python scripts/test_analysis_module.py --keep
-```
-
-使用已有简历 ID 测试候选人加入流程：
-
-```bash
-python scripts/test_analysis_module.py --resume-ids 1,2,3 --keep
-```
-
-测试任务内批量上传简历：
-
-```bash
-python scripts/test_analysis_module.py --resume-files data/resumes/a.pdf,data/resumes/b.docx --keep
-```
-
-单独检查扫描版或图片版 PDF 的 OCR 效果：
-
-```bash
-python scripts/ocr_pdf.py data/resumes/a.pdf --output data/resumes/a.ocr.txt
-```
-
-可选环境变量：
-
-- `TEST_BASE_URL`: 默认 `http://127.0.0.1:8000`
-- `TEST_USERNAME`: 默认 `analysis_tester`
-- `TEST_PASSWORD`: 默认 `analysis_tester_123`
-- `PDF_OCR_ENABLED`: 默认 `true`，PDF 无文字层时自动 OCR
-- `PDF_OCR_MAX_PAGES`: 默认 `8`，单份 PDF 最多 OCR 页数
-- `PDF_OCR_RENDER_SCALE`: 默认 `2.5`，渲染倍率，越高越慢但可能更准
-- `PDF_TEXT_MIN_CHARS`: 默认 `30`，普通解析低于该字符数时判定为扫描版或图片版 PDF
+- `PDF_OCR_ENABLED`: default `true`
+- `PDF_OCR_MAX_PAGES`: default `8`
+- `PDF_OCR_RENDER_SCALE`: default `2.5`
+- `PDF_TEXT_MIN_CHARS`: default `30`

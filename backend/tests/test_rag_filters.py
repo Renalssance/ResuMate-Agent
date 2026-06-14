@@ -1,7 +1,12 @@
 import pytest
 
 from backend.rag import milvus
-from backend.rag.milvus import ARTIFACT_COLLECTION, DOCUMENT_COLLECTION, MilvusRagStore
+from backend.rag.milvus import (
+    ARTIFACT_COLLECTION,
+    DOCUMENT_COLLECTION,
+    PROFILE_COLLECTION,
+    MilvusRagStore,
+)
 from backend.services.documents import DocumentChunk
 
 
@@ -30,6 +35,15 @@ ARTIFACT_FIELDS = {
     "summary",
     "content",
     "created_at",
+}
+PROFILE_FIELDS = {
+    "id",
+    "embedding",
+    "user_id",
+    "document_id",
+    "document_type",
+    "summary",
+    "content",
 }
 INT_FIELDS = {
     "user_id",
@@ -72,6 +86,7 @@ class FakeMilvusClient:
         self.delete_calls = []
         self.upsert_calls = []
         self.create_calls = []
+        self.query_calls = []
 
     def has_collection(self, name):
         return name in self.collections
@@ -112,6 +127,10 @@ class FakeMilvusClient:
             ]
         ]
 
+    def query(self, **kwargs):
+        self.query_calls.append(kwargs)
+        return [{"content": {"candidate_name": "Persisted Candidate"}}]
+
     def delete(self, **kwargs):
         self.delete_calls.append(kwargs)
 
@@ -147,6 +166,7 @@ def _ready_client(dimension=3):
         {
             DOCUMENT_COLLECTION: _collection_description(DOCUMENT_FIELDS, dimension),
             ARTIFACT_COLLECTION: _collection_description(ARTIFACT_FIELDS, dimension),
+            PROFILE_COLLECTION: _collection_description(PROFILE_FIELDS, dimension),
         }
     )
 
@@ -178,6 +198,38 @@ def test_search_resume_evidence_filters_by_user_run_candidate_and_type():
     assert results[0].score == 0.91
 
 
+def test_search_resume_evidence_can_use_persisted_document_scope():
+    client = _ready_client()
+    store = MilvusRagStore(client=client, embedding_client=FakeEmbedding())
+
+    store.search_resume_evidence(user_id=7, document_id=21, query="Milvus RAG")
+
+    assert client.search_calls[0]["filter"] == (
+        'user_id == 7 && document_id == 21 && document_type == "resume"'
+    )
+
+
+def test_document_profile_round_trips_by_user_type_and_document():
+    client = _ready_client()
+    store = MilvusRagStore(client=client, embedding_client=FakeEmbedding())
+
+    store.persist_document_profile(
+        user_id=7,
+        document_type="resume",
+        document_id=21,
+        summary="Persisted Candidate",
+        content={"candidate_name": "Persisted Candidate"},
+    )
+    profile = store.load_document_profile(user_id=7, document_type="resume", document_id=21)
+
+    row = client.upsert_calls[0]["data"][0]
+    assert row["id"] == "7:resume:21"
+    assert client.query_calls[0]["filter"] == (
+        'user_id == 7 && document_id == 21 && document_type == "resume"'
+    )
+    assert profile == {"candidate_name": "Persisted Candidate"}
+
+
 def test_delete_document_filters_by_user_type_and_document():
     client = _ready_client()
     store = MilvusRagStore(client=client, embedding_client=FakeEmbedding())
@@ -188,7 +240,11 @@ def test_delete_document_filters_by_user_type_and_document():
         {
             "collection_name": DOCUMENT_COLLECTION,
             "filter": 'user_id == 7 && document_id == 21 && document_type == "resume"',
-        }
+        },
+        {
+            "collection_name": PROFILE_COLLECTION,
+            "filter": 'user_id == 7 && document_id == 21 && document_type == "resume"',
+        },
     ]
 
 
@@ -241,6 +297,7 @@ def test_index_chunks_uses_first_real_vector_dimension_without_duplicate_embeddi
     assert {call["collection_name"] for call in client.create_calls} == {
         DOCUMENT_COLLECTION,
         ARTIFACT_COLLECTION,
+        PROFILE_COLLECTION,
     }
     for call in client.create_calls:
         embedding_field = next(

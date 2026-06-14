@@ -1,6 +1,7 @@
 import pytest
 
 from backend.schemas.workflow import (
+    CandidateReport,
     Criterion,
     EvidenceChunk,
     JobProfile,
@@ -72,3 +73,50 @@ def test_question_set_requires_formal_distribution():
 
     with pytest.raises(ValueError, match="formal question distribution"):
         QuestionSet(formal_questions=formal, ambiguity_followups=followups)
+
+
+def test_candidate_report_trims_legacy_question_evidence_ids_to_schema_limit():
+    question = {
+        "question": "Tell me about the project.",
+        "question_type": "resume_experience",
+        "difficulty": "medium",
+        "assessment_points": ["depth"],
+        "related_criteria": ["c1"],
+        "evidence_chunk_ids": ["chunk-1", "chunk-2", "chunk-3"],
+        "reference_answer_direction": "Explain role and result.",
+        "scoring_rubric": ["clear context", "specific contribution"],
+        "suggested_followups": ["What was hardest?"],
+    }
+    report = CandidateReport.model_validate(
+        {
+            "run_id": 1,
+            "candidate_id": 2,
+            "candidate_name": "Ada",
+            "filename": "ada.pdf",
+            "job_profile": {
+                "job_title": "Backend Engineer",
+                "summary": "Build APIs",
+                "criteria": [
+                    {
+                        "criterion_id": "c1",
+                        "name": "Python",
+                        "description": "Python service experience",
+                        "importance": "must",
+                        "weight": 100,
+                        "evidence_query": "Python FastAPI projects",
+                    }
+                ],
+            },
+            "resume_profile": {"candidate_name": "Ada"},
+            "evaluations": [],
+            "total_score": 80,
+            "recommendation": "recommend",
+            "top_strengths": [],
+            "summary": "Good match.",
+            "formal_questions": [question],
+            "ambiguity_followups": [{**question, "question_type": "gap_validation"}],
+        }
+    )
+
+    assert report.formal_questions[0].evidence_chunk_ids == ["chunk-1", "chunk-2"]
+    assert report.ambiguity_followups[0].evidence_chunk_ids == ["chunk-1", "chunk-2"]

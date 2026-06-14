@@ -15,11 +15,14 @@ from backend.db.database import (
 from backend.db.models import (
     AnalysisCandidate,
     AnalysisJob,
+    FollowUpQuestionSet,
+    InterviewQuestionSet,
     JobDescription,
     MatchResult,
     Resume,
     User,
 )
+from backend.repositories.runs import SqlAlchemyRunRepository
 
 
 def test_document_metadata_and_workflow_report_commit_and_read(tmp_path):
@@ -122,6 +125,124 @@ def test_document_metadata_and_workflow_report_commit_and_read(tmp_path):
         assert stored_jd.document_size == 456
         assert stored_jd.parse_status == "success"
         assert stored_result.report_json == workflow_report
+
+
+def test_candidate_report_hydrates_questions_from_persisted_question_sets(tmp_path):
+    engine = create_engine(f"sqlite:///{tmp_path / 'question-history.db'}")
+    Base.metadata.create_all(bind=engine)
+
+    formal_question = {
+        "question": "Describe the API design.",
+        "question_type": "resume_experience",
+        "difficulty": "medium",
+        "assessment_points": ["API design depth"],
+        "related_criteria": ["python"],
+        "evidence_chunk_ids": ["chunk-1"],
+        "reference_answer_direction": "Explain the design tradeoffs.",
+        "scoring_rubric": ["Names tradeoffs"],
+        "suggested_followups": ["What would you change?"],
+    }
+    followup_question = {
+        **formal_question,
+        "question": "Clarify the ambiguous API ownership.",
+        "question_type": "gap_validation",
+    }
+    base_report = {
+        "run_id": 1,
+        "candidate_id": 1,
+        "candidate_name": "Real Candidate",
+        "filename": "candidate.pdf",
+        "job_profile": {
+            "job_title": "Backend Engineer",
+            "summary": "Build APIs",
+            "criteria": [
+                {
+                    "criterion_id": "python",
+                    "name": "Python",
+                    "description": "Build APIs",
+                    "importance": "must",
+                    "weight": 100,
+                    "evidence_query": "Python API experience",
+                }
+            ],
+        },
+        "resume_profile": {"candidate_name": "Real Candidate"},
+        "evaluations": [],
+        "total_score": 82,
+        "recommendation": "strong_recommend",
+        "top_strengths": ["API design"],
+        "summary": "Candidate matched Backend Engineer.",
+        "formal_questions": [],
+        "ambiguity_followups": [],
+    }
+
+    with Session(engine) as session:
+        user = User(username="question-history-user", password_hash="hash")
+        session.add(user)
+        session.flush()
+        resume = Resume(
+            user_id=user.id,
+            filename="candidate.pdf",
+            raw_text="Resume text",
+            structured_data={"candidate_name": "Real Candidate"},
+        )
+        jd = JobDescription(
+            user_id=user.id,
+            title="Backend Engineer",
+            raw_text="JD text",
+            structured_data={"job_title": "Backend Engineer"},
+        )
+        session.add_all([resume, jd])
+        session.flush()
+        job = AnalysisJob(user_id=user.id, jd_id=jd.id, title=jd.title, status="completed")
+        session.add(job)
+        session.flush()
+        candidate = AnalysisCandidate(job_id=job.id, resume_id=resume.id, status="completed")
+        session.add(candidate)
+        session.flush()
+        result = MatchResult(
+            job_id=job.id,
+            candidate_id=candidate.id,
+            resume_id=resume.id,
+            jd_id=jd.id,
+            overall_score=82,
+            recommendation="strong_recommend",
+            report_json=base_report,
+        )
+        session.add(result)
+        session.add(
+            InterviewQuestionSet(
+                job_id=job.id,
+                candidate_id=candidate.id,
+                resume_id=resume.id,
+                jd_id=jd.id,
+                questions=[formal_question],
+            )
+        )
+        session.add(
+            FollowUpQuestionSet(
+                job_id=job.id,
+                candidate_id=candidate.id,
+                resume_id=resume.id,
+                jd_id=jd.id,
+                questions=[followup_question],
+            )
+        )
+        session.commit()
+        user_id = user.id
+        run_id = job.id
+        candidate_id = candidate.id
+
+    with Session(engine) as session:
+        report = SqlAlchemyRunRepository(session).get_candidate_report(
+            user_id=user_id,
+            run_id=run_id,
+            candidate_id=candidate_id,
+        )
+
+    assert report is not None
+    assert [item.question for item in report.formal_questions] == ["Describe the API design."]
+    assert [item.question for item in report.ambiguity_followups] == ["Clarify the ambiguous API ownership."]
 
 
 def test_additive_schema_initialization_preserves_existing_rows_and_is_idempotent(tmp_path):

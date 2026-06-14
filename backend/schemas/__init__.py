@@ -9,36 +9,6 @@ from backend.schemas.auth import (
 from backend.schemas.chat import (
     ChatRequest,
 )
-from backend.schemas.resume import (
-    ResumeDeleteResponse,
-    ResumeDetailResponse,
-    ResumeInfo,
-    ResumeListResponse,
-    ResumeUploadResponse,
-)
-from backend.schemas.jd import (
-    JDCreateRequest,
-    JDCreateResponse,
-    JDDeleteResponse,
-    JDDetailResponse,
-    JDInfo,
-    JDListResponse,
-)
-from backend.schemas.analysis import (
-    AnalysisCandidateAddRequest,
-    AnalysisCandidateAddResponse,
-    AnalysisCandidateDeleteResponse,
-    AnalysisCandidateInfo,
-    AnalysisJobCreateRequest,
-    AnalysisJobCreateResponse,
-    AnalysisJobDeleteResponse,
-    AnalysisJobDetailResponse,
-    AnalysisJobInfo,
-    AnalysisJobListResponse,
-    AnalysisJobUpdateRequest,
-    AnalysisResumeBatchUploadResponse,
-    AnalysisResumeUploadResult,
-)
 
 __all__ = [
     # auth
@@ -48,31 +18,4 @@ __all__ = [
     "RegisterRequest",
     # chat
     "ChatRequest",
-    # resume
-    "ResumeDeleteResponse",
-    "ResumeDetailResponse",
-    "ResumeInfo",
-    "ResumeListResponse",
-    "ResumeUploadResponse",
-    # jd
-    "JDCreateRequest",
-    "JDCreateResponse",
-    "JDDeleteResponse",
-    "JDDetailResponse",
-    "JDInfo",
-    "JDListResponse",
-    # analysis
-    "AnalysisCandidateAddRequest",
-    "AnalysisCandidateAddResponse",
-    "AnalysisCandidateDeleteResponse",
-    "AnalysisCandidateInfo",
-    "AnalysisJobCreateRequest",
-    "AnalysisJobCreateResponse",
-    "AnalysisJobDeleteResponse",
-    "AnalysisJobDetailResponse",
-    "AnalysisJobInfo",
-    "AnalysisJobListResponse",
-    "AnalysisJobUpdateRequest",
-    "AnalysisResumeBatchUploadResponse",
-    "AnalysisResumeUploadResult",
 ]

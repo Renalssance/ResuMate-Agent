@@ -1,28 +1,33 @@
 from __future__ import annotations
 
-import json
 from typing import Any, TypedDict
 
 from langgraph.graph import END, StateGraph
 
 from backend.agents.harness import AgentHarness
 from backend.rag.milvus import MilvusRagStore
-from backend.repositories.runs import run_repository
+from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     CandidateReport,
     CriterionEvaluation,
     JobProfile,
     MatchEvaluation,
-    QuestionSet,
     Recommendation,
     ResumeProfile,
 )
 from backend.services.documents import DocumentChunk
+from backend.services.llm_validation import hydrate_match_evaluation
+from backend.services.progress import progress_hub
 
 
 class CandidateState(TypedDict, total=False):
-    run_id: str
-    candidate_id: str
+    user_id: int
+    run_id: int
+    candidate_id: int
+    jd_document_id: int
+    resume_document_id: int
+    job: Any
+    candidate: Any
     filename: str
     jd_chunks: list[DocumentChunk]
     resume_chunks: list[DocumentChunk]
@@ -32,8 +37,8 @@ class CandidateState(TypedDict, total=False):
     evaluation: MatchEvaluation
     total_score: float
     recommendation: Recommendation
-    question_set: QuestionSet
     report: CandidateReport
+    task_id: str
 
 
 def calculate_total_score(evaluations: list[CriterionEvaluation]) -> float:
@@ -52,9 +57,10 @@ def recommendation_for_score(score: float) -> Recommendation:
 
 
 class CandidateAnalysisGraph:
-    def __init__(self, *, harness: AgentHarness, rag_store: MilvusRagStore) -> None:
+    def __init__(self, *, harness: AgentHarness, rag_store: MilvusRagStore, repository: SqlAlchemyRunRepository) -> None:
         self.harness = harness
         self.rag_store = rag_store
+        self.repository = repository
         self.graph = self._build_graph()
 
     def run(self, state: CandidateState) -> CandidateReport:
@@ -63,87 +69,66 @@ class CandidateAnalysisGraph:
 
     def _build_graph(self):
         builder = StateGraph(CandidateState)
-        builder.add_node("load_documents", self.load_documents)
-        builder.add_node("index_documents", self.index_documents)
-        builder.add_node("parse_jd", self.parse_jd)
-        builder.add_node("parse_resume", self.parse_resume)
+        builder.add_node("load_structured_profiles", self.load_structured_profiles)
         builder.add_node("retrieve_evidence", self.retrieve_evidence)
         builder.add_node("evaluate_match", self.evaluate_match)
         builder.add_node("calculate_score", self.calculate_score)
-        builder.add_node("generate_questions", self.generate_questions)
         builder.add_node("persist_report", self.persist_report)
-        builder.set_entry_point("load_documents")
-        builder.add_edge("load_documents", "index_documents")
-        builder.add_edge("index_documents", "parse_jd")
-        builder.add_edge("parse_jd", "parse_resume")
-        builder.add_edge("parse_resume", "retrieve_evidence")
+        builder.set_entry_point("load_structured_profiles")
+        builder.add_edge("load_structured_profiles", "retrieve_evidence")
         builder.add_edge("retrieve_evidence", "evaluate_match")
         builder.add_edge("evaluate_match", "calculate_score")
-        builder.add_edge("calculate_score", "generate_questions")
-        builder.add_edge("generate_questions", "persist_report")
+        builder.add_edge("calculate_score", "persist_report")
         builder.add_edge("persist_report", END)
         return builder.compile()
 
-    def load_documents(self, state: CandidateState) -> CandidateState:
-        if not state.get("jd_chunks") or not state.get("resume_chunks"):
-            raise ValueError("jd_chunks and resume_chunks are required")
-        return state
-
-    def index_documents(self, state: CandidateState) -> CandidateState:
-        self.rag_store.index_chunks(state["jd_chunks"])
-        self.rag_store.index_chunks(state["resume_chunks"])
-        return state
-
-    def parse_jd(self, state: CandidateState) -> CandidateState:
-        if state.get("job_profile"):
-            return state
-        jd_text = "\n\n".join(chunk.text for chunk in state["jd_chunks"])
-        state["job_profile"] = self.harness.run_schema(
-            task="parse_jd",
-            prompt_name="parse_jd",
-            schema=JobProfile,
-            variables={"jd_text": jd_text[:24000]},
+    def load_structured_profiles(self, state: CandidateState) -> CandidateState:
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="load_jd",
+            status="running",
+            progress=10,
+            message="Loading structured JD profile",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        self.rag_store.persist_artifact(
-            run_id=state["run_id"],
-            candidate_id="",
-            artifact_type="job_profile",
-            summary=state["job_profile"].summary,
-            content=state["job_profile"].model_dump(mode="json"),
+        job_profile = self.rag_store.load_document_profile(
+            user_id=state["user_id"],
+            document_type="jd",
+            document_id=state["jd_document_id"],
         )
-        return state
-
-    def parse_resume(self, state: CandidateState) -> CandidateState:
-        chunks_payload = [
-            {
-                "chunk_id": chunk.id,
-                "page_number": chunk.page_number,
-                "section": chunk.section,
-                "text": chunk.text,
-            }
-            for chunk in state["resume_chunks"]
-        ]
-        state["resume_profile"] = self.harness.run_schema(
-            task="parse_resume",
-            prompt_name="parse_resume",
-            schema=ResumeProfile,
-            variables={"filename": state["filename"], "chunks_json": chunks_payload[:80]},
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="load_resume",
+            status="running",
+            progress=20,
+            message="Loading structured resume profile",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        self.rag_store.persist_artifact(
-            run_id=state["run_id"],
-            candidate_id=state["candidate_id"],
-            artifact_type="resume_profile",
-            summary=state["resume_profile"].candidate_name,
-            content=state["resume_profile"].model_dump(mode="json"),
+        resume_profile = self.rag_store.load_document_profile(
+            user_id=state["user_id"],
+            document_type="resume",
+            document_id=state["resume_document_id"],
         )
+        if not job_profile or not resume_profile:
+            raise ValueError("向量库中缺少结构化 JD 或简历，请先重新解析对应文档")
+        state["job_profile"] = JobProfile.model_validate(job_profile)
+        state["resume_profile"] = ResumeProfile.model_validate(resume_profile)
         return state
 
     def retrieve_evidence(self, state: CandidateState) -> CandidateState:
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="milvus_search",
+            status="running",
+            progress=35,
+            message="Searching resume evidence in Milvus",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
+        )
         evidence_by_criterion: dict[str, list[dict[str, Any]]] = {}
         for criterion in state["job_profile"].criteria:
             evidence = self.rag_store.search_resume_evidence(
-                run_id=state["run_id"],
-                candidate_id=state["candidate_id"],
+                user_id=state["user_id"],
+                document_id=state["resume_document_id"],
                 query=criterion.evidence_query,
                 top_k=4,
             )
@@ -152,6 +137,14 @@ class CandidateAnalysisGraph:
         return state
 
     def evaluate_match(self, state: CandidateState) -> CandidateState:
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="llm_match",
+            status="running",
+            progress=58,
+            message="Evaluating JD-resume match with LLM",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
+        )
         criteria_payload = [item.model_dump(mode="json") for item in state["job_profile"].criteria]
         state["evaluation"] = self.harness.run_schema(
             task="evaluate_match",
@@ -163,32 +156,36 @@ class CandidateAnalysisGraph:
             },
         )
         state["evaluation"] = MatchEvaluation(
-            evaluations=self._align_evaluations(state["job_profile"], state["evaluation"])
+            evaluations=hydrate_match_evaluation(
+                state["job_profile"],
+                state["evaluation"],
+                state["evidence_by_criterion"],
+            )
         )
         return state
 
     def calculate_score(self, state: CandidateState) -> CandidateState:
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="score",
+            status="running",
+            progress=72,
+            message="Calculating weighted match score",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
+        )
         state["total_score"] = calculate_total_score(state["evaluation"].evaluations)
         state["recommendation"] = recommendation_for_score(state["total_score"])
         return state
 
-    def generate_questions(self, state: CandidateState) -> CandidateState:
-        report_context = {
-            "job_profile": state["job_profile"].model_dump(mode="json"),
-            "resume_profile": state["resume_profile"].model_dump(mode="json"),
-            "evaluations": [item.model_dump(mode="json") for item in state["evaluation"].evaluations],
-            "total_score": state["total_score"],
-            "recommendation": state["recommendation"],
-        }
-        state["question_set"] = self.harness.run_schema(
-            task="generate_questions",
-            prompt_name="generate_questions",
-            schema=QuestionSet,
-            variables={"report_json": json.dumps(report_context, ensure_ascii=False)},
-        )
-        return state
-
     def persist_report(self, state: CandidateState) -> CandidateState:
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="vectorize",
+            status="running",
+            progress=84,
+            message="Vectorizing candidate report artifact",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
+        )
         evaluations = state["evaluation"].evaluations
         strengths = [
             item.name
@@ -210,12 +207,21 @@ class CandidateAnalysisGraph:
             recommendation=state["recommendation"],
             top_strengths=strengths,
             summary=self._build_summary(state),
-            formal_questions=state["question_set"].formal_questions,
-            ambiguity_followups=state["question_set"].ambiguity_followups,
+            formal_questions=[],
+            ambiguity_followups=[],
         )
         state["report"] = report
-        run_repository.save_report(state["run_id"], report)
+        self.repository.save_report(job=state["job"], candidate=state["candidate"], report=report)
+        progress_hub.publish(
+            state.get("task_id"),
+            stage="milvus_save",
+            status="running",
+            progress=92,
+            message="Saving match artifact to Milvus and report to PostgreSQL",
+            data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
+        )
         self.rag_store.persist_artifact(
+            user_id=state["user_id"],
             run_id=state["run_id"],
             candidate_id=state["candidate_id"],
             artifact_type="candidate_report",
@@ -223,35 +229,6 @@ class CandidateAnalysisGraph:
             content=report.model_dump(mode="json"),
         )
         return state
-
-    @staticmethod
-    def _align_evaluations(job_profile: JobProfile, evaluation: MatchEvaluation) -> list[CriterionEvaluation]:
-        by_id = {item.criterion_id: item for item in evaluation.evaluations}
-        aligned: list[CriterionEvaluation] = []
-        for criterion in job_profile.criteria:
-            item = by_id.get(criterion.criterion_id)
-            if item is None:
-                item = CriterionEvaluation(
-                    criterion_id=criterion.criterion_id,
-                    name=criterion.name,
-                    weight=criterion.weight,
-                    score=0,
-                    status="no_evidence",
-                    reason="No evaluation was returned for this criterion.",
-                    evidence=[],
-                    missing_evidence=["evaluation_missing"],
-                    risk="The model did not evaluate this criterion.",
-                )
-            aligned.append(
-                item.model_copy(
-                    update={
-                        "criterion_id": criterion.criterion_id,
-                        "name": criterion.name,
-                        "weight": criterion.weight,
-                    }
-                )
-            )
-        return aligned
 
     @staticmethod
     def _build_summary(state: CandidateState) -> str:

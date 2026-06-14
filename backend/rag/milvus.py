@@ -14,6 +14,7 @@ from backend.vector.embedding import embedding_service
 
 DOCUMENT_COLLECTION = "document_chunks"
 ARTIFACT_COLLECTION = "analysis_artifacts"
+PROFILE_COLLECTION = "document_profiles"
 DOCUMENT_TYPES = {"jd", "resume"}
 
 DOCUMENT_FIELD_TYPES = {
@@ -41,6 +42,15 @@ ARTIFACT_FIELD_TYPES = {
     "summary": DataType.VARCHAR,
     "content": DataType.JSON,
     "created_at": DataType.VARCHAR,
+}
+PROFILE_FIELD_TYPES = {
+    "id": DataType.VARCHAR,
+    "embedding": DataType.FLOAT_VECTOR,
+    "user_id": DataType.INT64,
+    "document_id": DataType.INT64,
+    "document_type": DataType.VARCHAR,
+    "summary": DataType.VARCHAR,
+    "content": DataType.JSON,
 }
 
 
@@ -130,6 +140,7 @@ class MilvusRagStore:
     def ensure_collections(self, dimension: int) -> None:
         self._ensure_document_chunks(dimension)
         self._ensure_analysis_artifacts(dimension)
+        self._ensure_document_profiles(dimension)
 
     def _ensure_document_chunks(self, dimension: int) -> None:
         if self._validate_existing_collection(
@@ -174,6 +185,24 @@ class MilvusRagStore:
         schema.add_field("created_at", DataType.VARCHAR, max_length=64)
         self._create_collection(ARTIFACT_COLLECTION, schema)
         self._validated_dimensions[ARTIFACT_COLLECTION] = dimension
+
+    def _ensure_document_profiles(self, dimension: int) -> None:
+        if self._validate_existing_collection(
+            PROFILE_COLLECTION,
+            PROFILE_FIELD_TYPES,
+            dimension,
+        ):
+            return
+        schema = MilvusClient.create_schema(auto_id=False, enable_dynamic_field=False)
+        schema.add_field("id", DataType.VARCHAR, is_primary=True, max_length=256)
+        schema.add_field("embedding", DataType.FLOAT_VECTOR, dim=dimension)
+        schema.add_field("user_id", DataType.INT64)
+        schema.add_field("document_id", DataType.INT64)
+        schema.add_field("document_type", DataType.VARCHAR, max_length=32)
+        schema.add_field("summary", DataType.VARCHAR, max_length=4096)
+        schema.add_field("content", DataType.JSON)
+        self._create_collection(PROFILE_COLLECTION, schema)
+        self._validated_dimensions[PROFILE_COLLECTION] = dimension
 
     def _create_collection(self, collection_name: str, schema: Any) -> None:
         index_params = self.client.prepare_index_params()
@@ -282,20 +311,28 @@ class MilvusRagStore:
         self,
         *,
         user_id: int,
-        run_id: int,
-        candidate_id: int,
+        document_id: int | None = None,
+        run_id: int | None = None,
+        candidate_id: int | None = None,
         query: str,
         top_k: int = 4,
     ) -> list[EvidenceChunk]:
         scoped_user_id = _int_id(user_id, "user_id")
-        scoped_run_id = _int_id(run_id, "run_id")
-        scoped_candidate_id = _int_id(candidate_id, "candidate_id")
         vector = self.embedding_client.embed(query)
         self.ensure_collections(_vector_dimension(vector))
-        expr = (
-            f"user_id == {scoped_user_id} && run_id == {scoped_run_id} && "
-            f'candidate_id == {scoped_candidate_id} && document_type == "resume"'
-        )
+        if document_id is not None:
+            scoped_document_id = _int_id(document_id, "document_id")
+            expr = (
+                f"user_id == {scoped_user_id} && document_id == {scoped_document_id} && "
+                'document_type == "resume"'
+            )
+        else:
+            scoped_run_id = _int_id(run_id, "run_id")
+            scoped_candidate_id = _int_id(candidate_id, "candidate_id")
+            expr = (
+                f"user_id == {scoped_user_id} && run_id == {scoped_run_id} && "
+                f'candidate_id == {scoped_candidate_id} && document_type == "resume"'
+            )
         hits = self.client.search(
             collection_name=DOCUMENT_COLLECTION,
             data=[vector],
@@ -304,6 +341,63 @@ class MilvusRagStore:
             output_fields=["id", "filename", "page_number", "section", "text"],
         )
         return [self._hit_to_evidence(hit) for hit in (hits[0] if hits else [])]
+
+    def persist_document_profile(
+        self,
+        *,
+        user_id: int,
+        document_type: str,
+        document_id: int,
+        summary: str,
+        content: dict[str, Any],
+    ) -> None:
+        scoped_user_id = _int_id(user_id, "user_id")
+        scoped_document_id = _int_id(document_id, "document_id")
+        scoped_document_type = _document_type(document_type)
+        vector = self.embedding_client.embed(
+            summary or json.dumps(content, ensure_ascii=False)[:1000]
+        )
+        self.ensure_collections(_vector_dimension(vector))
+        self.client.upsert(
+            collection_name=PROFILE_COLLECTION,
+            data=[
+                {
+                    "id": f"{scoped_user_id}:{scoped_document_type}:{scoped_document_id}",
+                    "embedding": vector,
+                    "user_id": scoped_user_id,
+                    "document_id": scoped_document_id,
+                    "document_type": scoped_document_type,
+                    "summary": summary[:4096],
+                    "content": content,
+                }
+            ],
+        )
+
+    def load_document_profile(
+        self,
+        *,
+        user_id: int,
+        document_type: str,
+        document_id: int,
+    ) -> dict[str, Any] | None:
+        scoped_user_id = _int_id(user_id, "user_id")
+        scoped_document_id = _int_id(document_id, "document_id")
+        scoped_document_type = _document_type(document_type)
+        if not self._validate_existing_collection(PROFILE_COLLECTION, PROFILE_FIELD_TYPES):
+            return None
+        rows = self.client.query(
+            collection_name=PROFILE_COLLECTION,
+            filter=(
+                f"user_id == {scoped_user_id} && document_id == {scoped_document_id} && "
+                f'document_type == "{scoped_document_type}"'
+            ),
+            output_fields=["content"],
+            limit=1,
+        )
+        if not rows:
+            return None
+        content = rows[0].get("content")
+        return content if isinstance(content, dict) else None
 
     def persist_artifact(
         self,
@@ -353,14 +447,17 @@ class MilvusRagStore:
         scoped_document_id = _int_id(document_id, "document_id")
         scoped_document_type = _document_type(document_type)
         if not self._validate_existing_collection(DOCUMENT_COLLECTION, DOCUMENT_FIELD_TYPES):
-            return
-        self.client.delete(
-            collection_name=DOCUMENT_COLLECTION,
-            filter=(
-                f"user_id == {scoped_user_id} && document_id == {scoped_document_id} && "
-                f'document_type == "{scoped_document_type}"'
-            ),
+            document_chunks_exist = False
+        else:
+            document_chunks_exist = True
+        expr = (
+            f"user_id == {scoped_user_id} && document_id == {scoped_document_id} && "
+            f'document_type == "{scoped_document_type}"'
         )
+        if document_chunks_exist:
+            self.client.delete(collection_name=DOCUMENT_COLLECTION, filter=expr)
+        if self._validate_existing_collection(PROFILE_COLLECTION, PROFILE_FIELD_TYPES):
+            self.client.delete(collection_name=PROFILE_COLLECTION, filter=expr)
 
     def delete_candidate_artifacts(
         self,

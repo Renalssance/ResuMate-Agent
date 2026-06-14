@@ -1,4 +1,35 @@
 services:
+  backend:
+    container_name: resumate-agent-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      ARK_API_KEY: ${ARK_API_KEY:-}
+      BASE_URL: ${BASE_URL:-}
+      MODEL: ${MODEL:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      MILVUS_URI: http://milvus:19530
+      MILVUS_TOKEN: ${MILVUS_TOKEN:-}
+      BACKEND_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      - milvus
+
+  frontend:
+    container_name: resumate-agent-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
   postgres:
     container_name: resumate-agent-postgres
     image: postgres:15

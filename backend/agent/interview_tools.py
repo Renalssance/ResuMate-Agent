@@ -73,9 +73,14 @@ def _parse_llm_json(content: str) -> dict:
         lines = content.split("\n")
         content = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
     try:
-        return json.loads(content)
+        parsed = json.loads(content)
     except json.JSONDecodeError:
         return {}
+    if isinstance(parsed, dict):
+        return parsed
+    if isinstance(parsed, list):
+        return next((item for item in parsed if isinstance(item, dict)), {})
+    return {}
 
 
 # ---------- Prompt 模板 ----------

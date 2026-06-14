@@ -3,12 +3,13 @@ name = "resumate-agent"
 version = "0.1.0"
 description = "Resume and JD analysis agent for recruiting workflows."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "rich>=14.2.0",
     "fastapi>=0.115.0",
     "uvicorn>=0.30.0",
     "python-dotenv>=1.0.1",
+    "openai>=1.55.0",
     "pymilvus>=2.5.0",
     "python-multipart>=0.0.9",
     "pydantic>=2.8.0",
@@ -19,6 +20,8 @@ dependencies = [
     "langchain-openai>=0.1.22",
     "langgraph>=0.2.31",
     "sentence-transformers>=3.0.0",
+    "pymupdf>=1.24.0",
+    "python-docx>=1.1.2",
     "pypdf>=4.3.1",
     "docx2txt>=0.8",
     "unstructured",

@@ -15,15 +15,23 @@ def _join_values(values: list[Any], limit: int = 12) -> str:
     return ", ".join(items[:limit])
 
 
-def _compact_json(data: dict | None, max_chars: int = 4000) -> str:
+def _compact_json(data: Any, max_chars: int = 4000) -> str:
     if not data:
         return "{}"
     text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     return text[:max_chars]
 
 
-def build_resume_profile_text(structured_data: dict | None, raw_text: str = "") -> str:
-    data = structured_data or {}
+def _profile_dict(structured_data: Any) -> dict[str, Any]:
+    if isinstance(structured_data, dict):
+        return structured_data
+    if isinstance(structured_data, list):
+        return next((item for item in structured_data if isinstance(item, dict)), {})
+    return {}
+
+
+def build_resume_profile_text(structured_data: dict | list | None, raw_text: str = "") -> str:
+    data = _profile_dict(structured_data)
     lines = [
         f"类型: 简历",
         f"姓名: {data.get('name', '')}",
@@ -74,8 +82,8 @@ def build_resume_profile_text(structured_data: dict | None, raw_text: str = "") 
     return "\n".join(line for line in lines if line.strip())
 
 
-def build_jd_profile_text(structured_data: dict | None, raw_text: str = "") -> str:
-    data = structured_data or {}
+def build_jd_profile_text(structured_data: dict | list | None, raw_text: str = "") -> str:
+    data = _profile_dict(structured_data)
     lines = [
         "类型: JD",
         f"职位: {data.get('title', '')}",
@@ -195,7 +203,7 @@ class MilvusVectorStore:
         raw_text: str,
     ) -> None:
         content = build_resume_profile_text(structured_data, raw_text)
-        title = (structured_data or {}).get("name") or filename
+        title = _profile_dict(structured_data).get("name") or filename
         self.upsert_profile(
             doc_type="resume",
             user_id=user_id,
