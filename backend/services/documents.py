@@ -54,8 +54,8 @@ class StoredDocument:
 @dataclass(frozen=True)
 class DocumentChunk:
     id: str
-    run_id: str
-    candidate_id: str
+    run_id: int
+    candidate_id: int
     document_type: str
     filename: str
     page_number: int
@@ -348,8 +348,8 @@ def _section_for_line(line: str, current: str) -> str:
 def chunk_pages(
     *,
     pages: list[PageText],
-    run_id: str,
-    candidate_id: str,
+    run_id: int,
+    candidate_id: int,
     document_type: str,
     filename: str,
     chunk_size: int = 500,
@@ -406,8 +406,8 @@ def chunk_pages(
 
 def _append_chunk(
     chunks: list[DocumentChunk],
-    run_id: str,
-    candidate_id: str,
+    run_id: int,
+    candidate_id: int,
     document_type: str,
     filename: str,
     page_number: int,
