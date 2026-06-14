@@ -15,6 +15,7 @@ from backend.services.documents import (
     UnsupportedDocumentError,
     delete_stored_file,
     extract_stored_pages,
+    store_upload,
     store_and_extract_upload,
 )
 from backend.services.pdf_ocr import PdfOcrResult
@@ -81,6 +82,38 @@ async def test_store_and_extract_upload_persists_real_upload_bytes(tmp_path: Pat
     assert stored.size == len(payload)
     assert stored.raw_text == payload.decode()
     assert stored.pages == [PageText(page_number=1, text=payload.decode())]
+
+
+@pytest.mark.asyncio
+async def test_store_upload_persists_bytes_without_extracting(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(documents, "extract_stored_pages", Mock(side_effect=AssertionError("must not extract")))
+    payload = b"Real candidate experience from the uploaded file."
+
+    stored = await store_upload(_upload("resume.txt", payload), storage_root=tmp_path)
+
+    assert stored.filename == "resume.txt"
+    assert stored.path.read_bytes() == payload
+    assert stored.size == len(payload)
+
+
+def test_extract_stored_pages_reports_real_pdf_page_progress(tmp_path: Path) -> None:
+    path = tmp_path / "resume.pdf"
+    path.write_bytes(
+        _pdf_bytes(
+            "Candidate experience from page one with enough text.",
+            "Candidate project history from page two with enough text.",
+        )
+    )
+    events: list[tuple[int, int]] = []
+
+    pages = extract_stored_pages(
+        path,
+        "resume.pdf",
+        progress_callback=lambda current, total: events.append((current, total)),
+    )
+
+    assert [page.page_number for page in pages] == [1, 2]
+    assert events == [(1, 2), (2, 2)]
 
 
 @pytest.mark.asyncio

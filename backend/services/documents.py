@@ -3,15 +3,17 @@ from __future__ import annotations
 import os
 import re
 import tempfile
+import hashlib
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
+from typing import Callable
 
 import fitz
 from fastapi import UploadFile
 from docx import Document
 
-from backend.services.pdf_ocr import extract_pdf_text_with_ocr
+from backend.services.pdf_ocr import NormalizedOcrText, extract_pdf_text_with_ocr, normalize_ocr_text
 
 
 DOCUMENT_DIR = Path(__file__).resolve().parents[2] / "data" / "documents"
@@ -34,12 +36,18 @@ WINDOWS_UNSAFE_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 SUPERSCRIPT_DIGITS = str.maketrans(
     {"¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9"}
 )
+PARSER_VERSION = "resume-parser-v2"
+PROMPT_VERSION = "parse-resume-v2"
+SCHEMA_VERSION = "workflow-v2"
 
 
 @dataclass(frozen=True)
 class PageText:
     page_number: int
     text: str
+    raw_text: str = ""
+    normalized_text: str = ""
+    metadata: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -49,6 +57,13 @@ class StoredDocument:
     size: int
     raw_text: str
     pages: list[PageText]
+
+
+@dataclass(frozen=True)
+class StoredUpload:
+    filename: str
+    path: Path
+    size: int
 
 
 @dataclass(frozen=True)
@@ -132,7 +147,29 @@ async def _write_upload_chunks(file: UploadFile, stream, filename: str) -> int:
 async def store_and_extract_upload(
     file: UploadFile,
     storage_root: str | Path = DOCUMENT_DIR,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> StoredDocument:
+    stored = await store_upload(file, storage_root=storage_root)
+    try:
+        pages = extract_stored_pages(stored.path, stored.filename, progress_callback=progress_callback)
+        raw_text = "\n".join(page.text for page in pages).strip()
+        _ensure_text(raw_text, stored.filename)
+        return StoredDocument(
+            filename=stored.filename,
+            path=stored.path,
+            size=stored.size,
+            raw_text=raw_text,
+            pages=pages,
+        )
+    except Exception:
+        _best_effort_delete(stored.path)
+        raise
+
+
+async def store_upload(
+    file: UploadFile,
+    storage_root: str | Path = DOCUMENT_DIR,
+) -> StoredUpload:
     filename = _safe_filename(file.filename or "")
     directory = Path(storage_root)
     directory.mkdir(parents=True, exist_ok=True)
@@ -141,28 +178,27 @@ async def store_and_extract_upload(
         path, stored_filename, stream = _open_exclusive_storage_file(directory, filename)
         with stream:
             size = await _write_upload_chunks(file, stream, stored_filename)
-        pages = extract_stored_pages(path, stored_filename)
-        raw_text = "\n".join(page.text for page in pages).strip()
-        _ensure_text(raw_text, stored_filename)
-        return StoredDocument(
+        return StoredUpload(
             filename=stored_filename,
             path=path,
             size=size,
-            raw_text=raw_text,
-            pages=pages,
         )
     except Exception:
         _best_effort_delete(path)
         raise
 
 
-def extract_stored_pages(path: str | Path, filename: str) -> list[PageText]:
+def extract_stored_pages(
+    path: str | Path,
+    filename: str,
+    progress_callback: Callable[[int, int], None] | None = None,
+) -> list[PageText]:
     document_path = Path(path)
     safe_filename = _safe_filename(filename)
     ext = _extension(safe_filename)
     try:
         if ext == ".pdf":
-            return _extract_pdf(document_path, safe_filename)
+            return _extract_pdf(document_path, safe_filename, progress_callback=progress_callback)
         if ext == ".docx":
             text = _extract_docx(document_path)
         elif ext == ".doc":
@@ -175,6 +211,8 @@ def extract_stored_pages(path: str | Path, filename: str) -> list[PageText]:
         raise UnsupportedDocumentError(f"Failed to extract text from {safe_filename}: {exc}") from exc
 
     _ensure_text(text, safe_filename)
+    if progress_callback:
+        progress_callback(1, 1)
     return [PageText(page_number=1, text=text)]
 
 
@@ -204,17 +242,22 @@ async def extract_upload_pages(file: UploadFile) -> list[PageText]:
         _best_effort_delete(tmp_path)
 
 
-def _extract_pdf(path: Path, filename: str) -> list[PageText]:
+def _extract_pdf(
+    path: Path,
+    filename: str,
+    progress_callback: Callable[[int, int], None] | None = None,
+) -> list[PageText]:
     doc = fitz.open(path)
     native_pages: dict[int, str] = {}
     visual_pages: set[int] = set()
-    page_count = 0
+    page_count = len(doc)
     try:
         for index, page in enumerate(doc, start=1):
-            page_count = index
             native_pages[index] = (page.get_text("text") or "").strip()
             if page.get_images(full=True) or page.get_drawings():
                 visual_pages.add(index)
+            if progress_callback:
+                progress_callback(index, page_count)
     finally:
         doc.close()
 
@@ -376,16 +419,46 @@ def detect_multiple_positions(text: str) -> bool:
     return len(title_markers) >= 2 or len(responsibility_markers) >= 2
 
 
-SECTION_RE = re.compile(r"^\s*(#{1,6}\s*)?([\w\u4e00-\u9fff][^:\n：]{0,40})([:：])?\s*$")
+SECTION_ALIASES = {
+    "教育经历": "教育经历",
+    "教育背景": "教育经历",
+    "实习经历": "实习经历",
+    "工作经历": "工作经历",
+    "科研经历": "科研经历",
+    "项目经历": "项目经历",
+    "项目经验": "项目经历",
+    "校园经历": "校园经历",
+    "专业技能": "专业技能",
+    "技能证书": "技能证书",
+    "荣誉奖项": "荣誉奖项",
+    "自我评价": "自我评价",
+    "个人总结": "个人总结",
+    "education": "Education",
+    "experience": "Experience",
+    "workexperience": "Experience",
+    "internshipexperience": "Experience",
+    "projects": "Projects",
+    "projectexperience": "Projects",
+    "skills": "Skills",
+    "professionalskills": "Skills",
+    "awards": "Awards",
+    "honors": "Awards",
+    "summary": "Summary",
+}
+WORK_SECTIONS = {"实习经历", "工作经历", "Experience"}
+BULLET_RE = re.compile(r"^\s*[-*•·]\s*(.+)$")
+DATE_RANGE_RE = re.compile(
+    r"((?:20\d{2}|19\d{2})[./-]\d{1,2}|(?:20\d{2}|19\d{2}))[至~\-—–到 ]+((?:20\d{2}|19\d{2})[./-]\d{1,2}|(?:20\d{2}|19\d{2})|至今|Present)",
+    re.IGNORECASE,
+)
 
 
-def _section_for_line(line: str, current: str) -> str:
-    stripped = line.strip()
-    if not stripped:
-        return current
-    if len(stripped) <= 48 and SECTION_RE.match(stripped):
-        return stripped.strip("# ：:")
-    return current
+def _canonical_section(line: str) -> str | None:
+    stripped = line.strip().strip("#").strip().strip("：:")
+    if not stripped or len(stripped) > 40:
+        return None
+    compact = re.sub(r"[\s:：|/\\_-]+", "", stripped).casefold()
+    return SECTION_ALIASES.get(compact) or SECTION_ALIASES.get(stripped)
 
 
 def chunk_pages(
@@ -400,51 +473,210 @@ def chunk_pages(
 ) -> list[DocumentChunk]:
     chunks: list[DocumentChunk] = []
     chunk_index = 0
-    for page in pages:
-        section = "正文"
-        paragraphs: list[tuple[str, str]] = []
-        for line in page.text.splitlines():
-            section = _section_for_line(line, section)
-            text = line.strip()
-            if text:
-                paragraphs.append((section, text))
-        if not paragraphs:
-            paragraphs = [(section, page.text)]
+    current_section = "正文"
+    section_lines: list[tuple[str, int, str, str, list[dict]]] = []
+    work_context: dict[str, str] = {}
+    pending_work_lines: list[tuple[str, int, str, str, list[dict]]] = []
 
-        buffer = ""
-        buffer_section = paragraphs[0][0]
-        for para_section, paragraph in paragraphs:
-            if len(buffer) + len(paragraph) + 1 <= chunk_size:
-                buffer = f"{buffer}\n{paragraph}".strip()
-                buffer_section = para_section or buffer_section
+    def append_chunk_from_lines(
+        lines: list[tuple[str, int, str, str, list[dict]]],
+        section: str,
+        *,
+        entity_type: str = "",
+        entity_id: str = "",
+        prefix_context: dict[str, str] | None = None,
+    ) -> None:
+        nonlocal chunk_index
+        if not lines:
+            return
+        text = "\n".join(item[0] for item in lines).strip()
+        if prefix_context is not None:
+            text = _with_work_prefix(text, section, prefix_context)
+        raw_text = "\n".join(item[2] for item in lines).strip()
+        normalized_text = "\n".join(item[3] for item in lines).strip()
+        ambiguities = [entry for item in lines for entry in item[4]]
+        page_start = min(item[1] for item in lines)
+        page_end = max(item[1] for item in lines)
+        for part in _split_text_units(text, chunk_size):
+            chunk_index = _append_chunk(
+                chunks,
+                run_id,
+                candidate_id,
+                document_type,
+                filename,
+                page_start,
+                section,
+                chunk_index,
+                part,
+                page_end=page_end,
+                raw_text=raw_text,
+                normalized_text=normalized_text,
+                entity_type=entity_type,
+                entity_id=entity_id,
+                extraction_method="ocr",
+                ambiguities=ambiguities,
+            )
+
+    def flush_section_lines() -> None:
+        nonlocal section_lines
+        if not section_lines:
+            return
+        append_chunk_from_lines(section_lines, current_section)
+        section_lines = []
+
+    def flush_pending_work() -> None:
+        nonlocal pending_work_lines
+        if not pending_work_lines:
+            return
+        append_chunk_from_lines(
+            pending_work_lines,
+            current_section,
+            entity_type="work",
+            entity_id=_work_entity_id(work_context),
+            prefix_context=work_context,
+        )
+        pending_work_lines = []
+
+    for page in pages:
+        normalized_page = _normalized_page_text(page)
+        lines = [line.strip() for line in normalized_page.normalized_text.splitlines() if line.strip()]
+        for line in lines:
+            next_section = _canonical_section(line)
+            if next_section:
+                flush_pending_work()
+                flush_section_lines()
+                current_section = next_section
+                if current_section in WORK_SECTIONS:
+                    work_context = {}
                 continue
-            chunk_index = _append_chunk(
-                chunks,
-                run_id,
-                candidate_id,
-                document_type,
-                filename,
-                page.page_number,
-                buffer_section,
-                chunk_index,
-                buffer,
+
+            if current_section in WORK_SECTIONS:
+                bullet = _bullet_text(line)
+                line_tuple = (
+                    bullet or line,
+                    page.page_number,
+                    bullet or line,
+                    bullet or line,
+                    normalized_page.ambiguities,
+                )
+                if _looks_like_work_header(line):
+                    flush_pending_work()
+                    work_context = {}
+                    _update_work_context(work_context, line)
+                    continue
+                if bullet:
+                    flush_pending_work()
+                    pending_work_lines.append(line_tuple)
+                    flush_pending_work()
+                    continue
+                if _work_context_complete(work_context):
+                    pending_work_lines.append(line_tuple)
+                    continue
+                _update_work_context(work_context, line)
+                if _work_context_complete(work_context):
+                    continue
+                if _has_work_context(work_context):
+                    pending_work_lines.append(line_tuple)
+                    continue
+
+            section_lines.append(
+                (
+                    line,
+                    page.page_number,
+                    line,
+                    line,
+                    normalized_page.ambiguities,
+                )
             )
-            tail = buffer[-overlap:] if overlap > 0 else ""
-            buffer = f"{tail}\n{paragraph}".strip()
-            buffer_section = para_section or buffer_section
-        if buffer:
-            chunk_index = _append_chunk(
-                chunks,
-                run_id,
-                candidate_id,
-                document_type,
-                filename,
-                page.page_number,
-                buffer_section,
-                chunk_index,
-                buffer,
-            )
+    flush_pending_work()
+    flush_section_lines()
     return chunks
+
+
+def _normalized_page_text(page: PageText) -> NormalizedOcrText:
+    if page.normalized_text:
+        return NormalizedOcrText(
+            raw_text=page.raw_text or page.text,
+            normalized_text=page.normalized_text,
+            ambiguities=(_page_metadata(page).get("ocr_ambiguities") or []),
+        )
+    return normalize_ocr_text(page.text)
+
+
+def _page_metadata(page: PageText) -> dict:
+    return page.metadata or {}
+
+
+def _page_extraction_method(_ambiguities: list[dict]) -> str:
+    return "ocr"
+
+
+def _bullet_text(line: str) -> str:
+    match = BULLET_RE.match(line)
+    return match.group(1).strip() if match else ""
+
+
+def _update_work_context(context: dict[str, str], line: str) -> None:
+    date_match = DATE_RANGE_RE.search(line)
+    if date_match:
+        context["time"] = date_match.group(0)
+        line = DATE_RANGE_RE.sub("", line).strip(" -｜|")
+    if line and "company" not in context:
+        parts = re.split(r"\s{2,}|[｜|]", line)
+        if len(parts) >= 2:
+            context["company"] = parts[0].strip()
+            context["title"] = parts[1].strip()
+        else:
+            context["company"] = line
+    elif line and "title" not in context:
+        context["title"] = line
+
+
+def _looks_like_work_header(line: str) -> bool:
+    return bool(DATE_RANGE_RE.search(line) and re.search(r"[|丨｜]", line))
+
+
+def _work_context_complete(context: dict[str, str]) -> bool:
+    return bool(context.get("company") and context.get("title") and context.get("time"))
+
+
+def _has_work_context(context: dict[str, str]) -> bool:
+    return bool(context.get("company") or context.get("title") or context.get("time"))
+
+
+def _with_work_prefix(text: str, section: str, context: dict[str, str]) -> str:
+    prefix = [
+        f"章节：{section}",
+        f"公司：{context.get('company', '')}",
+        f"职位：{context.get('title', '')}",
+        f"时间：{context.get('time', '')}",
+    ]
+    return "\n".join([*prefix, text]).strip()
+
+
+def _work_entity_id(context: dict[str, str]) -> str:
+    return "|".join(
+        part for part in [context.get("company", ""), context.get("title", ""), context.get("time", "")] if part
+    )
+
+
+def _split_text_units(text: str, chunk_size: int) -> list[str]:
+    if len(text) <= chunk_size:
+        return [text]
+    sentences = [item.strip() for item in re.split(r"(?<=[。！？.!?])\s*", text) if item.strip()]
+    if len(sentences) <= 1:
+        return [text]
+    parts: list[str] = []
+    buffer = ""
+    for sentence in sentences:
+        if buffer and len(buffer) + len(sentence) + 1 > chunk_size:
+            parts.append(buffer.strip())
+            buffer = sentence
+        else:
+            buffer = f"{buffer}\n{sentence}".strip()
+    if buffer:
+        parts.append(buffer.strip())
+    return parts
 
 
 def _append_chunk(
@@ -457,10 +689,29 @@ def _append_chunk(
     section: str,
     chunk_index: int,
     text: str,
+    *,
+    page_end: int | None = None,
+    raw_text: str = "",
+    normalized_text: str = "",
+    entity_type: str = "",
+    entity_id: str = "",
+    extraction_method: str = "native",
+    ambiguities: list[dict] | None = None,
 ) -> int:
     clean_text = text.strip()
     if not clean_text:
         return chunk_index
+    normalized_value = normalized_text or clean_text
+    embedding_text = "\n".join(
+        part
+        for part in [
+            f"section: {section or 'body'}",
+            f"entity_type: {entity_type}" if entity_type else "",
+            f"entity_id: {entity_id}" if entity_id else "",
+            normalized_value,
+        ]
+        if part
+    )
     chunk_id = f"{run_id}:{candidate_id or 'jd'}:{document_type}:{chunk_index}"
     chunks.append(
         DocumentChunk(
@@ -473,7 +724,28 @@ def _append_chunk(
             section=section or "正文",
             chunk_index=chunk_index,
             text=clean_text,
-            metadata={"text_length": len(clean_text)},
+            metadata={
+                "section": section or "正文",
+                "entity_type": entity_type,
+                "entity_id": entity_id,
+                "page_start": page_number,
+                "page_end": page_end or page_number,
+                "extraction_method": extraction_method,
+                "normalized": True,
+                "text_length": len(clean_text),
+                "raw_text": raw_text or clean_text,
+                "normalized_text": normalized_value,
+                "embedding_text": embedding_text,
+                "ocr_ambiguities": ambiguities or [],
+                "parser_version": PARSER_VERSION,
+                "prompt_version": PROMPT_VERSION,
+                "schema_version": SCHEMA_VERSION,
+                "ocr_engine": "rapidocr",
+                "ocr_version": os.getenv("OCR_VERSION", "unknown") or "unknown",
+                "embedding_model": os.getenv("EMBEDDING_MODEL", "unknown") or "unknown",
+                "embedding_version": os.getenv("EMBEDDING_VERSION", "unknown") or "unknown",
+                "normalized_text_hash": hashlib.sha256(normalized_value.encode("utf-8")).hexdigest(),
+            },
         )
     )
     return chunk_index + 1

@@ -152,7 +152,9 @@ class CandidateAnalysisGraph:
             schema=MatchEvaluation,
             variables={
                 "criteria_json": criteria_payload,
+                "resume_profile_json": state["resume_profile"].model_dump(mode="json"),
                 "evidence_json": state["evidence_by_criterion"],
+                "ambiguities_json": state["resume_profile"].structured_ambiguities,
             },
         )
         state["evaluation"] = MatchEvaluation(

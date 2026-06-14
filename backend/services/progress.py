@@ -14,10 +14,12 @@ class TaskProgressHub:
     def __init__(self) -> None:
         self._history: dict[str, list[SseProgressEvent]] = defaultdict(list)
         self._queues: dict[str, list[asyncio.Queue[SseProgressEvent]]] = defaultdict(list)
+        self._last_progress: dict[str, int] = defaultdict(int)
 
     def create_task(self, prefix: str = "task") -> str:
         task_id = f"{prefix}_{uuid4().hex}"
         self._history[task_id] = []
+        self._last_progress[task_id] = 0
         return task_id
 
     def publish(
@@ -28,15 +30,29 @@ class TaskProgressHub:
         status: TaskStatus,
         progress: int,
         message: str,
+        document_id: str | None = None,
+        filename: str | None = None,
+        stage_progress: int | None = None,
+        current: int | None = None,
+        total: int | None = None,
         data: dict | None = None,
     ) -> None:
         if not task_id:
             return
+        clamped_progress = max(0, min(100, progress))
+        overall_progress = max(self._last_progress[task_id], clamped_progress)
+        self._last_progress[task_id] = overall_progress
         event = SseProgressEvent(
             task_id=task_id,
+            document_id=document_id,
+            filename=filename,
             stage=stage,
             status=status,
-            progress=max(0, min(100, progress)),
+            progress=overall_progress,
+            overall_progress=overall_progress,
+            stage_progress=None if stage_progress is None else max(0, min(100, stage_progress)),
+            current=current,
+            total=total,
             message=message,
             data=data or {},
         )

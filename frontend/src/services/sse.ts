@@ -6,17 +6,18 @@ interface TaskCallbacks {
   onClose?: () => void
 }
 
-interface ActiveConnection {
+export interface TaskConnection {
   close: () => void
 }
 
-const activeConnections = new Map<string, ActiveConnection>()
+const activeConnections = new Map<string, TaskConnection>()
 
 export function subscribeTaskProgress(taskId: string, callbacks: TaskCallbacks) {
   const existing = activeConnections.get(taskId)
-  if (existing) return existing
+  if (existing) existing.close()
 
   const source = new EventSource(`/api/tasks/${taskId}/events`)
+  let terminalClose = false
   const connection = {
     close: () => {
       source.close()
@@ -30,6 +31,7 @@ export function subscribeTaskProgress(taskId: string, callbacks: TaskCallbacks) 
       const event = JSON.parse(message.data) as SseProgressEvent
       callbacks.onMessage(event)
       if (event.status === 'success' || event.status === 'failed') {
+        terminalClose = true
         connection.close()
       }
     } catch {
@@ -38,7 +40,7 @@ export function subscribeTaskProgress(taskId: string, callbacks: TaskCallbacks) 
   }
 
   source.onerror = () => {
-    callbacks.onError?.(new Error('SSE connection closed'))
+    if (!terminalClose) callbacks.onError?.(new Error('SSE connection closed'))
     connection.close()
   }
 

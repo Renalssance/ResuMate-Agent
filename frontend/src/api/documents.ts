@@ -1,5 +1,6 @@
 import { request } from '../services/request'
 import type { DocumentType } from '../types/document'
+import type { AxiosProgressEvent } from 'axios'
 
 export interface UploadDocumentsResponse {
   documentIds: string[]
@@ -31,8 +32,8 @@ export interface JDUploadResponse {
   message: string
 }
 
-export function uploadDocumentsApi(formData: FormData) {
-  return request.post<ParseDocumentsResponse, ParseDocumentsResponse>('/documents', formData)
+export function uploadDocumentsApi(formData: FormData, onUploadProgress?: (event: AxiosProgressEvent) => void) {
+  return request.post<ParseDocumentsResponse, ParseDocumentsResponse>('/documents', formData, { onUploadProgress })
 }
 
 export function fetchDocumentsApi() {

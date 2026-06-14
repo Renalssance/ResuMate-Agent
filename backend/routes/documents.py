@@ -26,15 +26,17 @@ from backend.services.documents import (
     delete_stored_file,
     detect_multiple_positions,
     extract_stored_pages,
-    store_and_extract_upload,
+    store_upload,
 )
 from backend.services.llm_validation import validate_resume_source_refs
 from backend.services.progress import progress_hub
+from backend.services.resume_postprocess import postprocess_resume_profile
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 
 def _record(document_type: str, row) -> DocumentParseResult:
+    succeeded = str(row.parse_status or "") in {"success", "success_with_warnings"}
     return DocumentParseResult(
         id=f"{document_type}:{row.id}",
         type=document_type,
@@ -44,7 +46,7 @@ def _record(document_type: str, row) -> DocumentParseResult:
         parsed_content=row.structured_data or {},
         parse_status=row.parse_status,
         created_at=row.created_at.isoformat(),
-        vectorized=True,
+        vectorized=succeeded,
         local_stored=bool(row.file_path),
     )
 
@@ -75,16 +77,25 @@ def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks):
         return content
     payload = [
         {"chunk_id": chunk.id, "page_number": chunk.page_number, "section": chunk.section, "text": chunk.text}
-        for chunk in chunks[:80]
+        for chunk in chunks
     ]
     profile = harness.run_schema(
         task="document.parse_resume", prompt_name="parse_resume", schema=ResumeProfile,
         variables={"filename": filename, "chunks_json": payload},
     )
-    validate_resume_source_refs(profile, chunks[:80])
+    profile = postprocess_resume_profile(profile, chunks)
+    validate_resume_source_refs(profile, chunks)
     content = profile.model_dump(mode="json")
     content["name"] = profile.candidate_name
     return content
+
+
+def _parse_status(kind: DocumentType, content: dict) -> str:
+    if kind != "resume":
+        return "success"
+    quality = content.get("quality") if isinstance(content, dict) else {}
+    status = quality.get("status") if isinstance(quality, dict) else ""
+    return str(status or "success")
 
 
 @router.post("", response_model=DocumentParseResponse)
@@ -95,54 +106,68 @@ def upload_documents(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if len(files) != 1:
+        raise HTTPException(status_code=422, detail="exactly one file is required per document parsing task")
     task_id = task_id or progress_hub.create_task("task_parse")
     results = []
     for file in files:
         stored = None
         row = None
+        rag_store = None
         try:
+            stored = anyio.from_thread.run(store_upload, file)
             progress_hub.publish(
                 task_id,
-                stage="upload",
+                stage="server_save",
                 status="running",
-                progress=5,
-                message=f"Receiving {file.filename}",
-                data={"document_type": document_type},
-            )
-            stored = anyio.from_thread.run(store_and_extract_upload, file)
-            progress_hub.publish(
-                task_id,
-                stage="extract",
-                status="running",
-                progress=20,
-                message=f"Extracted text from {stored.filename}",
+                progress=12,
+                filename=stored.filename,
+                message=f"Saved {stored.filename} on server",
                 data={"filename": stored.filename, "size": stored.size},
             )
+            pages = extract_stored_pages(
+                stored.path,
+                stored.filename,
+                progress_callback=lambda current, total: progress_hub.publish(
+                    task_id,
+                    stage="extract",
+                    status="running",
+                    progress=12 + round((current / max(total, 1)) * 20),
+                    stage_progress=round((current / max(total, 1)) * 100),
+                    current=current,
+                    total=total,
+                    filename=stored.filename if stored else None,
+                    message=f"Extracting text page {current}/{total}",
+                ),
+            )
+            raw_text = "\n".join(page.text for page in pages).strip()
             if document_type == "resume":
                 row = Resume(
                     user_id=current_user.id, filename=stored.filename, file_path=str(stored.path),
-                    raw_text=stored.raw_text, structured_data={}, document_size=stored.size, parse_status="running",
+                    raw_text=raw_text, structured_data={}, document_size=stored.size, parse_status="running",
                 )
             else:
                 row = JobDescription(
                     user_id=current_user.id, title=Path(stored.filename).stem, company="",
-                    filename=stored.filename, file_path=str(stored.path), raw_text=stored.raw_text,
+                    filename=stored.filename, file_path=str(stored.path), raw_text=raw_text,
                     structured_data={}, document_size=stored.size, parse_status="running",
                 )
             db.add(row)
             db.flush()
             chunks = chunk_pages(
-                pages=stored.pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
+                pages=pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
             )
             progress_hub.publish(
                 task_id,
                 stage="llm_analyze",
                 status="running",
                 progress=45,
+                document_id=f"{document_type}:{row.id}",
+                filename=stored.filename,
                 message=f"Structuring {document_type} with LLM",
                 data={"document_id": f"{document_type}:{row.id}"},
             )
-            row.structured_data = _parse_profile(document_type, stored.filename, stored.raw_text, chunks)
+            row.structured_data = _parse_profile(document_type, stored.filename, raw_text, chunks)
             if document_type == "jd":
                 row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
             rag_store = MilvusRagStore()
@@ -151,6 +176,8 @@ def upload_documents(
                 stage="embedding",
                 status="running",
                 progress=65,
+                document_id=f"{document_type}:{row.id}",
+                filename=stored.filename,
                 message=f"Generating embeddings for {stored.filename}",
                 data={"chunk_count": len(chunks)},
             )
@@ -160,6 +187,8 @@ def upload_documents(
                 stage="milvus_save",
                 status="running",
                 progress=78,
+                document_id=f"{document_type}:{row.id}",
+                filename=stored.filename,
                 message=f"Saving {document_type} vectors to Milvus",
                 data={"document_id": f"{document_type}:{row.id}"},
             )
@@ -174,20 +203,38 @@ def upload_documents(
                 ),
                 content=row.structured_data,
             )
-            row.parse_status = "success"
+            row.parse_status = _parse_status(document_type, row.structured_data)
             progress_hub.publish(
                 task_id,
                 stage="local_save",
                 status="running",
                 progress=92,
+                document_id=f"{document_type}:{row.id}",
+                filename=stored.filename,
                 message=f"Saving {document_type} record to PostgreSQL",
                 data={"document_id": f"{document_type}:{row.id}"},
             )
             db.commit()
             db.refresh(row)
-            results.append(_record(document_type, row))
+            result = _record(document_type, row)
+            results.append(result)
+            progress_hub.publish(
+                task_id,
+                stage="completed",
+                status="success",
+                progress=100,
+                document_id=result.id,
+                filename=result.filename,
+                message="Document parsing completed",
+                data={"documents": [result.model_dump(mode="json")]},
+            )
         except Exception as exc:
             db.rollback()
+            if rag_store is not None and row is not None and row.id is not None:
+                try:
+                    rag_store.delete_document(user_id=current_user.id, document_type=document_type, document_id=row.id)
+                except Exception:
+                    pass
             if stored:
                 delete_stored_file(stored.path)
             progress_hub.publish(
@@ -195,17 +242,10 @@ def upload_documents(
                 stage="failed",
                 status="failed",
                 progress=100,
+                filename=file.filename,
                 message=f"{file.filename}: {exc}",
             )
             raise HTTPException(status_code=400, detail=f"{file.filename}: {exc}") from exc
-    progress_hub.publish(
-        task_id,
-        stage="completed",
-        status="success",
-        progress=100,
-        message="Document parsing completed",
-        data={"documents": [item.model_dump(mode="json") for item in results]},
-    )
     return DocumentParseResponse(documents=results, task_id=task_id)
 
 
@@ -232,17 +272,55 @@ def reparse_document(
     kind, row = _find_document(db, current_user.id, document_id)
     task_id = task_id or progress_hub.create_task("task_parse")
     try:
-        progress_hub.publish(task_id, stage="extract", status="running", progress=20, message=f"Re-extracting {row.filename}")
-        pages = extract_stored_pages(Path(row.file_path), row.filename)
+        pages = extract_stored_pages(
+            Path(row.file_path),
+            row.filename,
+            progress_callback=lambda current, total: progress_hub.publish(
+                task_id,
+                stage="extract",
+                status="running",
+                progress=12 + round((current / max(total, 1)) * 20),
+                document_id=document_id,
+                filename=row.filename,
+                stage_progress=round((current / max(total, 1)) * 100),
+                current=current,
+                total=total,
+                message=f"Re-extracting page {current}/{total}",
+            ),
+        )
         chunks = chunk_pages(pages=pages, run_id=0, candidate_id=row.id, document_type=kind, filename=row.filename)
         row.raw_text = "\n\n".join(page.text for page in pages)
-        progress_hub.publish(task_id, stage="llm_analyze", status="running", progress=45, message=f"Re-structuring {kind} with LLM")
+        progress_hub.publish(
+            task_id,
+            stage="llm_analyze",
+            status="running",
+            progress=45,
+            document_id=document_id,
+            filename=row.filename,
+            message=f"Re-structuring {kind} with LLM",
+        )
         row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks)
         rag_store = MilvusRagStore()
         rag_store.delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
-        progress_hub.publish(task_id, stage="embedding", status="running", progress=65, message=f"Regenerating embeddings for {row.filename}")
+        progress_hub.publish(
+            task_id,
+            stage="embedding",
+            status="running",
+            progress=65,
+            document_id=document_id,
+            filename=row.filename,
+            message=f"Regenerating embeddings for {row.filename}",
+        )
         rag_store.index_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
-        progress_hub.publish(task_id, stage="milvus_save", status="running", progress=78, message=f"Replacing {kind} vectors in Milvus")
+        progress_hub.publish(
+            task_id,
+            stage="milvus_save",
+            status="running",
+            progress=78,
+            document_id=document_id,
+            filename=row.filename,
+            message=f"Replacing {kind} vectors in Milvus",
+        )
         rag_store.persist_document_profile(
             user_id=current_user.id,
             document_type=kind,
@@ -254,8 +332,16 @@ def reparse_document(
             ),
             content=row.structured_data,
         )
-        row.parse_status = "success"
-        progress_hub.publish(task_id, stage="local_save", status="running", progress=92, message=f"Saving {kind} record to PostgreSQL")
+        row.parse_status = _parse_status(kind, row.structured_data)
+        progress_hub.publish(
+            task_id,
+            stage="local_save",
+            status="running",
+            progress=92,
+            document_id=document_id,
+            filename=row.filename,
+            message=f"Saving {kind} record to PostgreSQL",
+        )
         db.commit()
         db.refresh(row)
         result = _record(kind, row)
@@ -264,13 +350,29 @@ def reparse_document(
             stage="completed",
             status="success",
             progress=100,
+            document_id=result.id,
+            filename=result.filename,
             message="Document reparse completed",
             data={"document": result.model_dump(mode="json")},
         )
         return result
     except Exception as exc:
         db.rollback()
-        progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message=str(exc))
+        row.parse_status = "failed"
+        try:
+            db.add(row)
+            db.commit()
+        except Exception:
+            db.rollback()
+        progress_hub.publish(
+            task_id,
+            stage="failed",
+            status="failed",
+            progress=100,
+            document_id=document_id,
+            filename=row.filename,
+            message=str(exc),
+        )
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 

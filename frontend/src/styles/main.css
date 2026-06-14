@@ -373,10 +373,6 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
 }
 
-.followup-form {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-}
-
 select[multiple] {
   min-height: 88px;
   padding: var(--space-2);
@@ -663,6 +659,27 @@ textarea:focus {
   font-size: 13px;
 }
 
+.task-row {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.task-row:last-child {
+  border-bottom: 0;
+}
+
+.progress-head.compact {
+  align-items: flex-start;
+}
+
+.progress-head.compact small {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-muted);
+}
+
 .error-note {
   margin: 0;
   padding: var(--space-3);
@@ -945,118 +962,6 @@ textarea:focus {
   border-color: var(--color-primary-border);
 }
 
-.followup-layout {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 280px;
-  gap: var(--space-4);
-  align-items: start;
-}
-
-.context-panel h2,
-.evaluation-panel h2 {
-  margin: 0 0 var(--space-4);
-  font-size: 18px;
-}
-
-.context-panel dl {
-  display: grid;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.context-panel dt,
-.summary-block span {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.context-panel dd {
-  margin: 0 0 var(--space-3);
-  line-height: 1.6;
-}
-
-.chat-panel {
-  min-height: 620px;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: var(--space-4);
-}
-
-.conversation {
-  display: grid;
-  gap: var(--space-5);
-  align-content: start;
-  overflow: auto;
-}
-
-.round-block {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.message {
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-}
-
-.message.agent {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary-border);
-}
-
-.message.candidate {
-  background: var(--color-bg-subtle);
-}
-
-.message strong {
-  display: block;
-  margin-bottom: var(--space-2);
-  font-size: 13px;
-}
-
-.message p,
-.message small,
-.summary-block p,
-.summary-block li {
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-.message p,
-.summary-block p {
-  margin: 0;
-}
-
-.answer-box {
-  display: grid;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
-}
-
-.answer-box div {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-3);
-}
-
-.evaluation-panel {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.summary-block {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.summary-block ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
 .drawer-layer {
   position: fixed;
   inset: 0;
@@ -1158,9 +1063,7 @@ textarea:focus {
   .filter-grid,
   .form-panel.three,
   .questions-form,
-  .followup-form,
-  .question-layout,
-  .followup-layout {
+  .question-layout {
     grid-template-columns: 1fr;
   }
 

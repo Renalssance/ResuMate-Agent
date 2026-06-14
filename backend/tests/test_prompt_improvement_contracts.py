@@ -241,7 +241,7 @@ def test_resume_source_refs_must_match_input_chunks_verbatim():
         validate_resume_source_refs(profile, chunks)
 
 
-def test_resume_source_refs_normalize_section_from_chunk_metadata():
+def test_resume_source_refs_preserve_llm_section_when_valid():
     from backend.services import llm_validation
 
     validate_resume_source_refs = llm_validation.validate_resume_source_refs
@@ -274,10 +274,10 @@ def test_resume_source_refs_normalize_section_from_chunk_metadata():
 
     validate_resume_source_refs(profile, chunks)
 
-    assert profile.source_refs[0].section == "Summary"
+    assert profile.source_refs[0].section == "Candidate Summary"
 
 
-def test_resume_source_refs_repair_ocr_noise_inside_source_quote():
+def test_resume_source_refs_reject_non_contiguous_or_repaired_source_quote():
     from backend.services import llm_validation
 
     validate_resume_source_refs = llm_validation.validate_resume_source_refs
@@ -308,9 +308,8 @@ def test_resume_source_refs_repair_ocr_noise_inside_source_quote():
         )
     ]
 
-    validate_resume_source_refs(profile, chunks)
-
-    assert profile.source_refs[0].text == "校级创业大赛二等塡n奖"
+    with pytest.raises(ValueError, match="non-verbatim source text"):
+        validate_resume_source_refs(profile, chunks)
 
 
 def test_text_quality_gate_blocks_garbled_ocr_before_llm():
@@ -428,7 +427,7 @@ def test_prompt_templates_render_without_unresolved_placeholders():
     variables_by_prompt = {
         "parse_jd": {"jd_text": "Backend Engineer"},
         "parse_resume": {"filename": "resume.pdf", "chunks_json": []},
-        "evaluate_match": {"criteria_json": [], "evidence_json": {}},
+        "evaluate_match": {"criteria_json": [], "resume_profile_json": {}, "evidence_json": {}, "ambiguities_json": []},
         "plan_question_blueprint": {"report_json": {}},
         "generate_question_batch": {
             "report_json": {},

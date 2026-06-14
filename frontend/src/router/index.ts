@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DocumentsView from '../views/DocumentsView.vue'
 import MatchingView from '../views/MatchingView.vue'
 import QuestionsView from '../views/QuestionsView.vue'
-import FollowUpView from '../views/FollowUpView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,12 +24,6 @@ const router = createRouter({
       name: 'questions',
       component: QuestionsView,
       meta: { title: '试题生成', description: '基于岗位和候选人生成面试试题' },
-    },
-    {
-      path: '/follow-up',
-      name: 'follow-up',
-      component: FollowUpView,
-      meta: { title: '追问模拟', description: '根据候选人回答生成下一轮追问' },
     },
   ],
 })

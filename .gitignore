@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+.tmp
 
 # Python generated files
 __pycache__/
@@ -54,6 +55,7 @@ scripts/test_analysis_module.py
 
 # Runtime data and logs
 data/
+docs/
 log/
 logs/
 *.log

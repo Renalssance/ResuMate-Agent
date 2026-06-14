@@ -74,7 +74,6 @@ const navItems = [
   { path: '/documents', label: '文档管理', icon: '文' },
   { path: '/matching', label: '岗位匹配', icon: '配' },
   { path: '/questions', label: '试题生成', icon: '题' },
-  { path: '/follow-up', label: '追问模拟', icon: '问' },
 ]
 
 async function submitAuth(mode: AuthMode) {

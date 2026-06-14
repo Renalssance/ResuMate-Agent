@@ -64,16 +64,7 @@
       </div>
     </section>
 
-    <TaskProgress
-      title="文档解析进度"
-      :task-id="task.taskId.value"
-      :progress="task.progress.value"
-      :current-step="task.currentStep.value"
-      :completed-count="task.completedSteps.value.length"
-      :steps="task.steps.value"
-      :message="task.message.value"
-      :error-reason="task.errorReason.value"
-    />
+    <DocumentParseTaskList :tasks="[...parseTasks.tasks.values()]" />
 
     <section class="card">
       <div class="tabs">
@@ -82,7 +73,7 @@
         </button>
       </div>
 
-      <div v-if="store.loading" class="loading-state">正在加载文档列表...</div>
+      <div v-if="store.listLoading && !store.documents.length" class="loading-state">正在加载文档列表...</div>
       <EmptyState
         v-else-if="!filteredDocuments.length"
         title="暂无符合条件的文档"
@@ -131,22 +122,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import DocumentDetailDrawer from '../components/DocumentDetailDrawer.vue'
+import DocumentParseTaskList from '../components/DocumentParseTaskList.vue'
 import EmptyState from '../components/EmptyState.vue'
 import StatusTag from '../components/StatusTag.vue'
-import TaskProgress from '../components/TaskProgress.vue'
-import { useTaskSse } from '../composables/useTaskSse'
+import { useDocumentParseTasks } from '../composables/useDocumentParseTasks'
 import { useDocumentStore } from '../stores/document'
-import type { DocumentRecord, DocumentType } from '../types/document'
-import { PARSE_STEPS, type TaskStatus } from '../types/task'
-import { createId, formatDate, formatSize } from '../utils/format'
+import type { DocumentParseStatus, DocumentRecord, DocumentType } from '../types/document'
+import { formatDate, formatSize } from '../utils/format'
 
 const store = useDocumentStore()
-const task = useTaskSse(PARSE_STEPS)
+const parseTasks = useDocumentParseTasks({
+  refreshDocumentsSilently: store.refreshDocumentsSilently,
+  reparse: store.reparseDocument,
+})
 const activeTab = ref<'all' | DocumentType>('all')
 const typeFilter = ref<'all' | DocumentType>('all')
-const statusFilter = ref<'all' | TaskStatus>('all')
+const statusFilter = ref<'all' | DocumentParseStatus>('all')
 const keyword = ref('')
 const selectedDocument = ref<DocumentRecord | null>(null)
 
@@ -176,29 +169,19 @@ const parsedCount = computed(() => store.documents.filter((doc) => doc.parseStat
 const runningCount = computed(() => store.documents.filter((doc) => doc.parseStatus === 'running').length)
 
 onMounted(store.loadDocuments)
+onBeforeUnmount(parseTasks.closeAll)
 
 async function handleUpload(type: DocumentType, event: Event) {
   const input = event.target as HTMLInputElement
   const files = Array.from(input.files || [])
   if (!files.length) return
-  const taskId = createId('task_parse')
-  task.start(taskId)
-  try {
-    await store.uploadDocuments(type, files, taskId)
-    input.value = ''
-  } catch (err) {
-    task.failManual(err instanceof Error ? err.message : String(err))
-  }
+  await parseTasks.enqueueFiles(type, files)
+  input.value = ''
 }
 
 async function reparse(id: string) {
-  const taskId = createId('task_parse')
-  task.start(taskId)
-  try {
-    await store.reparseDocument(id, taskId)
-  } catch (err) {
-    task.failManual(err instanceof Error ? err.message : String(err))
-  }
+  const document = store.documents.find((doc) => doc.id === id)
+  if (document) await parseTasks.reparseDocument(document)
 }
 
 async function remove(id: string) {

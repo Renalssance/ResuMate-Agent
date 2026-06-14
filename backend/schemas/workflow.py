@@ -17,6 +17,7 @@ QuestionType = Literal[
 ]
 TaskStatus = Literal["pending", "running", "success", "failed"]
 Difficulty = Literal["easy", "medium", "hard"]
+SkillEvidenceLevel = Literal["demonstrated", "self_claimed", "course_only", "mentioned"]
 
 
 class ApiModel(BaseModel):
@@ -25,9 +26,15 @@ class ApiModel(BaseModel):
 
 class SseProgressEvent(ApiModel):
     task_id: str = Field(alias="taskId")
+    document_id: str | None = Field(default=None, alias="documentId")
+    filename: str | None = None
     stage: str
     status: TaskStatus
     progress: int = Field(ge=0, le=100)
+    overall_progress: int | None = Field(default=None, ge=0, le=100, alias="overallProgress")
+    stage_progress: int | None = Field(default=None, ge=0, le=100, alias="stageProgress")
+    current: int | None = None
+    total: int | None = None
     message: str
     data: dict[str, Any] = Field(default_factory=dict)
 
@@ -63,11 +70,31 @@ class SourceRef(BaseModel):
     chunk_id: str
 
 
+class MetricItem(BaseModel):
+    name: str = ""
+    value: str = ""
+    unit: str = ""
+    raw_text: str = ""
+    source_refs: list[SourceRef] = Field(default_factory=list)
+
+
+class ResumeBullet(BaseModel):
+    raw_text: str = ""
+    action: str = ""
+    technologies: list[str] = Field(default_factory=list)
+    metrics: list[MetricItem] = Field(default_factory=list)
+    source_refs: list[SourceRef] = Field(default_factory=list)
+
+
 class EducationItem(BaseModel):
     school: str = ""
     degree: str = ""
     major: str = ""
     years: str = ""
+    start_date: str = ""
+    end_date: str = ""
+    courses: list[str] = Field(default_factory=list)
+    achievements: list[str] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(default_factory=list)
 
 
@@ -75,14 +102,38 @@ class WorkItem(BaseModel):
     company: str = ""
     title: str = ""
     duration: str = ""
+    start_date: str = ""
+    end_date: str = ""
     description: str = ""
+    bullets: list[ResumeBullet] = Field(default_factory=list)
+    technologies: list[str] = Field(default_factory=list)
+    metrics: list[MetricItem] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(default_factory=list)
 
 
 class ProjectItem(BaseModel):
     name: str = ""
+    role: str = ""
+    duration: str = ""
     description: str = ""
     technologies: list[str] = Field(default_factory=list)
+    bullets: list[ResumeBullet] = Field(default_factory=list)
+    metrics: list[MetricItem] = Field(default_factory=list)
+    source_refs: list[SourceRef] = Field(default_factory=list)
+
+
+class SkillItem(BaseModel):
+    name: str = ""
+    category: str = ""
+    evidence_level: SkillEvidenceLevel = "mentioned"
+    proficiency_claim: str = ""
+    source_refs: list[SourceRef] = Field(default_factory=list)
+
+
+class AchievementItem(BaseModel):
+    name: str = ""
+    level: str = ""
+    category: str = ""
     source_refs: list[SourceRef] = Field(default_factory=list)
 
 
@@ -92,10 +143,31 @@ class ResumeProfile(BaseModel):
     education: list[EducationItem] = Field(default_factory=list)
     work_experience: list[WorkItem] = Field(default_factory=list)
     projects: list[ProjectItem] = Field(default_factory=list)
-    skills: list[str] = Field(default_factory=list)
-    achievements: list[str] = Field(default_factory=list)
+    skills: list[SkillItem] = Field(default_factory=list)
+    achievements: list[AchievementItem] = Field(default_factory=list)
     ambiguities: list[str] = Field(default_factory=list)
+    self_summary: str = ""
+    certifications: list[str] = Field(default_factory=list)
+    languages: list[str] = Field(default_factory=list)
+    quality: dict[str, Any] = Field(default_factory=dict)
+    structured_ambiguities: list[dict[str, Any]] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_legacy_skill_and_achievement_lists(cls, data):
+        if not isinstance(data, dict):
+            return data
+        data = dict(data)
+        data["skills"] = [
+            {"name": item} if isinstance(item, str) else item
+            for item in data.get("skills") or []
+        ]
+        data["achievements"] = [
+            {"name": item} if isinstance(item, str) else item
+            for item in data.get("achievements") or []
+        ]
+        return data
 
 
 class EvidenceChunk(BaseModel):

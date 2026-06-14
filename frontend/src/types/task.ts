@@ -10,9 +10,15 @@ export interface ProgressStep {
 
 export interface SseProgressEvent {
   taskId: string
+  documentId?: string
+  filename?: string
   stage: string
   status: TaskStatus
   progress: number
+  overallProgress?: number
+  stageProgress?: number
+  current?: number
+  total?: number
   message: string
   data?: Record<string, unknown>
 }
@@ -23,7 +29,8 @@ export interface StepTemplate {
 }
 
 export const PARSE_STEPS: StepTemplate[] = [
-  { key: 'upload', label: '文件上传' },
+  { key: 'upload_client', label: '文件上传' },
+  { key: 'server_save', label: '服务端保存' },
   { key: 'extract', label: '文本提取' },
   { key: 'llm_analyze', label: 'LLM 结构化分析' },
   { key: 'embedding', label: '向量生成' },
@@ -48,13 +55,4 @@ export const QUESTION_STEPS: StepTemplate[] = [
   { key: 'generate_questions', label: 'LLM 生成试题' },
   { key: 'rubric', label: '生成评分标准' },
   { key: 'save', label: '结果入库' },
-]
-
-export const FOLLOW_UP_STEPS: StepTemplate[] = [
-  { key: 'load_context', label: '加载上下文' },
-  { key: 'retrieve_evidence', label: '检索简历证据' },
-  { key: 'answer_integrity', label: '分析回答完整性' },
-  { key: 'identify_risk', label: '识别矛盾或模糊点' },
-  { key: 'generate_followup', label: '生成下一轮追问' },
-  { key: 'save', label: '保存会话记录' },
 ]

@@ -21,40 +21,17 @@ def _canonicalize_ws(value: str) -> str:
     return re.sub(r"\s+", " ", value or "").strip()
 
 
-def _repair_source_text(text: str, source_text: str) -> str | None:
-    normalized = _canonicalize_ws(text)
-    normalized_source = _canonicalize_ws(source_text)
-    if normalized in normalized_source:
-        return text
-
-    target = "".join(normalized.split())
-    source = "".join(source_text.split())
-    if not target:
-        return None
-
-    target_index = 0
-    start = end = -1
-    for source_index, char in enumerate(source):
-        if char != target[target_index]:
-            continue
-        if start == -1:
-            start = source_index
-        target_index += 1
-        end = source_index
-        if target_index == len(target):
-            break
-    if target_index != len(target) or start == -1:
-        return None
-
-    repaired = source[start : end + 1]
-    if len(repaired) > max(len(target) + 4, int(len(target) * 1.5)):
-        return None
-    return repaired
-
-
 def _iter_source_refs(profile: ResumeProfile) -> Iterable[SourceRef]:
     yield from profile.source_refs
     for item in [*profile.education, *profile.work_experience, *profile.projects]:
+        yield from item.source_refs
+    for item in profile.work_experience:
+        for bullet in item.bullets:
+            yield from bullet.source_refs
+    for item in profile.projects:
+        for bullet in item.bullets:
+            yield from bullet.source_refs
+    for item in [*profile.skills, *profile.achievements]:
         yield from item.source_refs
 
 
@@ -66,12 +43,8 @@ def validate_resume_source_refs(profile: ResumeProfile, chunks: list[DocumentChu
             raise ValueError(f"unknown chunk_id: {ref.chunk_id}")
         if ref.page_number != source.page_number:
             raise ValueError(f"page mismatch: {ref.chunk_id}")
-        ref.section = source.section
         if _canonicalize_ws(ref.text) not in _canonicalize_ws(source.text):
-            repaired = _repair_source_text(ref.text, source.text)
-            if repaired is None:
-                raise ValueError(f"non-verbatim source text: {ref.chunk_id}")
-            ref.text = repaired
+            raise ValueError(f"non-verbatim source text: {ref.chunk_id}")
 
 
 def hydrate_match_evaluation(

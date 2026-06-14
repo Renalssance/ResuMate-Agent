@@ -1,6 +1,7 @@
 import type { TaskStatus } from './task'
 
 export type DocumentType = 'resume' | 'jd'
+export type DocumentParseStatus = TaskStatus | 'success_with_warnings'
 
 export interface DocumentRecord {
   id: string
@@ -8,7 +9,7 @@ export interface DocumentRecord {
   filename: string
   size: number
   createdAt: string
-  parseStatus: TaskStatus
+  parseStatus: DocumentParseStatus
   rawText?: string
   parsedContent?: Record<string, unknown>
   vectorized: boolean

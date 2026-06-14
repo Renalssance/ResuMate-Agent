@@ -1,5 +1,7 @@
 import logging
 import os
+import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -12,6 +14,82 @@ class PdfOcrResult:
     page_count: int
     ocr_page_count: int
     source: str = "ocr"
+    pages: list["OcrPageResult"] | None = None
+
+
+@dataclass(frozen=True)
+class OcrLine:
+    text: str
+    bbox: list | None = None
+    confidence: float | None = None
+    page_number: int = 0
+
+
+@dataclass(frozen=True)
+class OcrPageResult:
+    page_number: int
+    raw_text: str
+    normalized_text: str
+    lines: list[OcrLine]
+    ambiguities: list[dict]
+
+
+@dataclass(frozen=True)
+class NormalizedOcrText:
+    raw_text: str
+    normalized_text: str
+    ambiguities: list[dict]
+
+
+SUSPICIOUS_OCR_PATTERNS = (
+    re.compile(r"引I入"),
+    re.compile(r"(?<![A-Za-z])Al(?![A-Za-z])"),
+    re.compile(r"(?<=[A-Za-z])0(?=[A-Za-z])|(?<=[A-Za-z])O(?=\d)|(?<=\d)O(?=[A-Za-z])"),
+)
+
+
+def normalize_ocr_text(text: str) -> NormalizedOcrText:
+    raw_text = text or ""
+    lines = raw_text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    merged: list[str] = []
+    for line in lines:
+        clean = unicodedata.normalize("NFKC", line).strip()
+        if not clean:
+            if merged and merged[-1] != "":
+                merged.append("")
+            continue
+        if (
+            merged
+            and len(merged[-1]) == 1
+            and _is_cjk(merged[-1])
+            and _is_cjk(clean[0])
+        ):
+            merged[-1] = f"{merged[-1]}{clean}"
+        else:
+            merged.append(clean)
+    normalized = "\n".join(merged)
+    normalized = re.sub(r"[ \t]+", " ", normalized)
+    normalized = re.sub(r"\n{3,}", "\n\n", normalized).strip()
+    ambiguities: list[dict] = []
+    for pattern in SUSPICIOUS_OCR_PATTERNS:
+        for match in pattern.finditer(normalized):
+            ambiguities.append(
+                {
+                    "type": "ocr_suspicious_token",
+                    "text": match.group(0),
+                    "start": match.start(),
+                    "end": match.end(),
+                }
+            )
+    return NormalizedOcrText(
+        raw_text=raw_text,
+        normalized_text=normalized,
+        ambiguities=ambiguities,
+    )
+
+
+def _is_cjk(value: str) -> bool:
+    return bool(value) and "\u4e00" <= value[0] <= "\u9fff"
 
 
 _ocr_engine = None
@@ -36,6 +114,22 @@ def _line_text(item) -> str:
     return str(item[1] or "").strip()
 
 
+def _line_confidence(item) -> float | None:
+    if not isinstance(item, (list, tuple)) or len(item) < 3:
+        return None
+    try:
+        return float(item[2])
+    except (TypeError, ValueError):
+        return None
+
+
+def _line_bbox(item) -> list | None:
+    if not isinstance(item, (list, tuple)) or not item:
+        return None
+    bbox = item[0]
+    return bbox if isinstance(bbox, list) else None
+
+
 def extract_pdf_text_with_ocr(
     file_path: str | Path,
     *,
@@ -57,6 +151,7 @@ def extract_pdf_text_with_ocr(
     try:
         page_count = len(doc)
         page_texts: list[str] = []
+        page_results: list[OcrPageResult] = []
         engine = _get_ocr_engine()
 
         for page_index in range(min(page_count, max_pages)):
@@ -69,9 +164,28 @@ def extract_pdf_text_with_ocr(
                 bitmap.close()
                 page.close()
 
-            lines = [_line_text(item) for item in result or []]
-            page_text = "\n".join(line for line in lines if line)
+            line_items = [
+                OcrLine(
+                    text=_line_text(item),
+                    bbox=_line_bbox(item),
+                    confidence=_line_confidence(item),
+                    page_number=page_index + 1,
+                )
+                for item in result or []
+                if _line_text(item)
+            ]
+            page_text = "\n".join(line.text for line in line_items if line.text)
             if page_text:
+                normalized = normalize_ocr_text(page_text)
+                page_results.append(
+                    OcrPageResult(
+                        page_number=page_index + 1,
+                        raw_text=normalized.raw_text,
+                        normalized_text=normalized.normalized_text,
+                        lines=line_items,
+                        ambiguities=normalized.ambiguities,
+                    )
+                )
                 page_texts.append(f"--- OCR Page {page_index + 1} ---\n{page_text}")
     finally:
         doc.close()
@@ -84,7 +198,12 @@ def extract_pdf_text_with_ocr(
         len(page_texts),
         len(text),
     )
-    return PdfOcrResult(text=text, page_count=page_count, ocr_page_count=len(page_texts))
+    return PdfOcrResult(
+        text=text,
+        page_count=page_count,
+        ocr_page_count=len(page_texts),
+        pages=page_results,
+    )
 
 
 def looks_like_scanned_pdf(extracted_text: str, *, min_chars: int | None = None) -> bool:

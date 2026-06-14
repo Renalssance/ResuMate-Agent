@@ -88,6 +88,162 @@ def _vector_dimension(vector: list[float]) -> int:
     return dimension
 
 
+def _as_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        for key in ("name", "title", "company", "school", "major", "value", "raw_text"):
+            if value.get(key):
+                return str(value[key])
+    return str(value) if value is not None else ""
+
+
+def _join_values(values: Any, limit: int = 20) -> str:
+    if not values:
+        return ""
+    if not isinstance(values, list):
+        values = [values]
+    text_values = _dedupe_text_values([_as_text(item) for item in values])
+    return "、".join(item for item in text_values[:limit] if item)
+
+
+def _dedupe_text_values(values: list[str]) -> list[str]:
+    results: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        clean = (value or "").strip()
+        if not clean:
+            continue
+        key = _canonical_summary_key(clean)
+        if key in seen:
+            continue
+        seen.add(key)
+        results.append(_display_summary_value(clean))
+    return results
+
+
+def _canonical_summary_key(value: str) -> str:
+    compact = "".join(char for char in value.casefold() if char.isalnum())
+    aliases = {
+        "k8s": "kubernetes",
+        "kubernetes": "kubernetes",
+        "springboot": "springboot",
+        "postgres": "postgresql",
+        "postgresql": "postgresql",
+    }
+    return aliases.get(compact, compact)
+
+
+def _display_summary_value(value: str) -> str:
+    displays = {
+        "kubernetes": "Kubernetes",
+        "springboot": "SpringBoot",
+        "postgresql": "PostgreSQL",
+    }
+    return displays.get(_canonical_summary_key(value), value)
+
+
+def _canonical_keys_in_text(value: str) -> set[str]:
+    compact = "".join(char for char in value.casefold() if char.isalnum())
+    aliases = {
+        "kubernetes": ("kubernetes", "k8s"),
+        "springboot": ("springboot", "spring boot"),
+        "postgresql": ("postgresql", "postgres"),
+    }
+    keys = set()
+    for key, needles in aliases.items():
+        if any("".join(char for char in needle.casefold() if char.isalnum()) in compact for needle in needles):
+            keys.add(key)
+    return keys
+
+
+def build_resume_semantic_summary(content: dict[str, Any]) -> str:
+    education = []
+    for item in content.get("education") or []:
+        if isinstance(item, dict):
+            education.append(
+                " ".join(
+                    part
+                    for part in [
+                        _as_text(item.get("school")),
+                        _as_text(item.get("degree")),
+                        _as_text(item.get("major")),
+                        _join_values(item.get("courses") or [], 8),
+                        _join_values(item.get("achievements") or [], 5),
+                    ]
+                    if part
+                )
+            )
+    work = []
+    work_tech = []
+    metrics = []
+    for item in content.get("work_experience") or []:
+        if isinstance(item, dict):
+            work.append(
+                " ".join(
+                    part
+                    for part in [
+                        _as_text(item.get("company")),
+                        _as_text(item.get("title")),
+                        _as_text(item.get("duration")),
+                        _as_text(item.get("description")),
+                    ]
+                    if part
+                )
+            )
+            work_tech.extend(item.get("technologies") or [])
+            metrics.extend(item.get("metrics") or [])
+            for bullet in item.get("bullets") or []:
+                if isinstance(bullet, dict):
+                    work.append(_as_text(bullet.get("raw_text")))
+                    work_tech.extend(bullet.get("technologies") or [])
+                    metrics.extend(bullet.get("metrics") or [])
+    projects = []
+    project_tech = []
+    for item in content.get("projects") or []:
+        if isinstance(item, dict):
+            projects.append(
+                " ".join(
+                    part
+                    for part in [
+                        _as_text(item.get("name")),
+                        _as_text(item.get("role")),
+                        _as_text(item.get("description")),
+                    ]
+                    if part
+                )
+            )
+            project_tech.extend(item.get("technologies") or [])
+            metrics.extend(item.get("metrics") or [])
+            for bullet in item.get("bullets") or []:
+                if isinstance(bullet, dict):
+                    projects.append(_as_text(bullet.get("raw_text")))
+                    project_tech.extend(bullet.get("technologies") or [])
+                    metrics.extend(bullet.get("metrics") or [])
+    skills = content.get("skills") or []
+    achievements = content.get("achievements") or []
+    narrative_keys = _canonical_keys_in_text(" ".join([*work, *projects]))
+    core_skills = [
+        item
+        for item in [*skills, *work_tech, *project_tech]
+        if _canonical_summary_key(_as_text(item)) not in narrative_keys
+    ]
+    sections = [
+        f"候选人: {_as_text(content.get('candidate_name'))}",
+        f"教育: {'; '.join(item for item in education if item)}",
+        f"工作角色: {'; '.join(item for item in work if item)}",
+        f"核心技能: {_join_values([*skills, *work_tech, *project_tech], 40)}",
+        f"项目: {'; '.join(item for item in projects if item)}",
+        f"奖项: {_join_values(achievements, 20)}",
+        f"主要量化成果: {_join_values(metrics, 20)}",
+    ]
+    original_skill_text = _join_values([*skills, *work_tech, *project_tech], 40)
+    core_skill_text = _join_values(core_skills, 40)
+    if original_skill_text != core_skill_text:
+        sections = [section.replace(original_skill_text, core_skill_text) for section in sections]
+    return "\n".join(section for section in sections if not section.endswith(": "))
+
+
 def _described_fields(description: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {
         str(field.get("name")): field
@@ -276,7 +432,12 @@ class MilvusRagStore:
             )
             for chunk in chunks
         ]
-        vectors = [self.embedding_client.embed(chunk.text) for chunk in chunks]
+        vectors = [
+            self.embedding_client.embed(
+                str(chunk.metadata.get("embedding_text") or chunk.metadata.get("normalized_text") or chunk.text)
+            )
+            for chunk in chunks
+        ]
         dimension = _vector_dimension(vectors[0])
         if any(len(vector) != dimension for vector in vectors):
             raise RuntimeError("Embedding service returned inconsistent vector dimensions")
@@ -302,7 +463,17 @@ class MilvusRagStore:
                     "section": chunk.section[:256],
                     "chunk_index": int(chunk.chunk_index),
                     "text": chunk.text[:8192],
-                    "metadata": chunk.metadata,
+                    "metadata": {
+                        **chunk.metadata,
+                        "section": chunk.metadata.get("section") or chunk.section,
+                        "raw_text": chunk.metadata.get("raw_text") or chunk.text,
+                        "normalized_text": chunk.metadata.get("normalized_text") or chunk.text,
+                        "embedding_text": chunk.metadata.get("embedding_text") or chunk.metadata.get("normalized_text") or chunk.text,
+                        "entity_type": chunk.metadata.get("entity_type", ""),
+                        "entity_id": chunk.metadata.get("entity_id", ""),
+                        "page_start": chunk.metadata.get("page_start", chunk.page_number),
+                        "page_end": chunk.metadata.get("page_end", chunk.page_number),
+                    },
                 }
             )
         self.client.upsert(collection_name=DOCUMENT_COLLECTION, data=rows)
@@ -354,9 +525,12 @@ class MilvusRagStore:
         scoped_user_id = _int_id(user_id, "user_id")
         scoped_document_id = _int_id(document_id, "document_id")
         scoped_document_type = _document_type(document_type)
-        vector = self.embedding_client.embed(
-            summary or json.dumps(content, ensure_ascii=False)[:1000]
+        embedding_text = (
+            build_resume_semantic_summary(content)
+            if scoped_document_type == "resume"
+            else summary or json.dumps(content, ensure_ascii=False)[:1000]
         )
+        vector = self.embedding_client.embed(embedding_text)
         self.ensure_collections(_vector_dimension(vector))
         self.client.upsert(
             collection_name=PROFILE_COLLECTION,
