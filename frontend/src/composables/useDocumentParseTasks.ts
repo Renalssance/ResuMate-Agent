@@ -100,8 +100,10 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
 
   async function runItem(item: QueueItem) {
     const taskId = createTaskId()
-    const task = createTask(taskId, item.file.name, item.type)
-    tasks.set(taskId, task)
+    const rawTask = createTask(taskId, item.file.name, item.type)
+    tasks.set(taskId, rawTask)
+    const task = tasks.get(taskId)!
+
     connections.set(
       taskId,
       subscribe(taskId, {
@@ -111,7 +113,11 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
             void refreshDocumentsSilently()
           }
         },
-        onError: (error) => failTask(task, error.message),
+        onError: () => {
+          if (task.status !== 'success' && task.status !== 'failed') {
+            task.message = '实时进度连接已中断，正在等待服务端解析结果'
+          }
+        },
       }),
     )
 
@@ -134,9 +140,11 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   async function reparseDocument(document: DocumentRecord) {
     if (!reparse) return
     const taskId = createTaskId()
-    const task = createTask(taskId, document.filename, document.type)
-    task.message = 'Reparse submitted'
-    tasks.set(taskId, task)
+    const rawTask = createTask(taskId, document.filename, document.type)
+    rawTask.message = 'Reparse submitted'
+    tasks.set(taskId, rawTask)
+    const task = tasks.get(taskId)!
+
     connections.set(
       taskId,
       subscribe(taskId, {
@@ -146,7 +154,11 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
             void refreshDocumentsSilently()
           }
         },
-        onError: (error) => failTask(task, error.message),
+        onError: () => {
+          if (task.status !== 'success' && task.status !== 'failed') {
+            task.message = '实时进度连接已中断，正在等待服务端解析结果'
+          }
+        },
       }),
     )
     try {
@@ -177,11 +189,11 @@ function createTask(taskId: string, filename: string, documentType: DocumentType
     taskId,
     filename,
     documentType,
-    status: 'running',
+    status: 'pending',
     stage: 'pending',
     uploadProgress: 0,
     overallProgress: 0,
-    message: 'Waiting to upload',
+    message: '等待上传',
     errorReason: '',
     steps: PARSE_STEPS.map((step) => ({ ...step, status: 'pending', progress: 0 })),
   }
@@ -194,7 +206,8 @@ function updateUploadProgress(task: DocumentParseTask, event: UploadProgressLike
   if (event.total) {
     task.uploadProgress = Math.round((event.loaded * 100) / event.total)
     task.overallProgress = Math.max(task.overallProgress, Math.min(10, Math.round(task.uploadProgress / 10)))
-    updateStep(task, 'upload_client', 'running', task.uploadProgress, task.message)
+    const stepStatus = task.uploadProgress >= 100 ? 'success' : 'running'
+    updateStep(task, 'upload_client', stepStatus, task.uploadProgress, task.message)
   } else {
     updateStep(task, 'upload_client', 'running', 0, task.message)
   }

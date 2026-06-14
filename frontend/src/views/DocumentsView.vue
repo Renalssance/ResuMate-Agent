@@ -129,7 +129,12 @@ import EmptyState from '../components/EmptyState.vue'
 import StatusTag from '../components/StatusTag.vue'
 import { useDocumentParseTasks } from '../composables/useDocumentParseTasks'
 import { useDocumentStore } from '../stores/document'
-import type { DocumentParseStatus, DocumentRecord, DocumentType } from '../types/document'
+import {
+  isDocumentParseSuccess,
+  type DocumentParseStatus,
+  type DocumentRecord,
+  type DocumentType,
+} from '../types/document'
 import { formatDate, formatSize } from '../utils/format'
 
 const store = useDocumentStore()
@@ -154,7 +159,7 @@ const filteredDocuments = computed(() => {
   return store.documents.filter((doc) => {
     const tabMatched = activeTab.value === 'all' || doc.type === activeTab.value
     const typeMatched = typeFilter.value === 'all' || doc.type === typeFilter.value
-    const statusMatched = statusFilter.value === 'all' || doc.parseStatus === statusFilter.value
+    const statusMatched = statusFilter.value === 'all' || (statusFilter.value === 'success' ? isDocumentParseSuccess(doc.parseStatus) : doc.parseStatus === statusFilter.value)
     const keywordMatched =
       !normalizedKeyword ||
       doc.filename.toLowerCase().includes(normalizedKeyword) ||
@@ -165,7 +170,7 @@ const filteredDocuments = computed(() => {
 
 const jdCount = computed(() => store.documents.filter((doc) => doc.type === 'jd').length)
 const resumeCount = computed(() => store.documents.filter((doc) => doc.type === 'resume').length)
-const parsedCount = computed(() => store.documents.filter((doc) => doc.parseStatus === 'success').length)
+const parsedCount = computed(() => store.documents.filter((doc) => isDocumentParseSuccess(doc.parseStatus)).length)
 const runningCount = computed(() => store.documents.filter((doc) => doc.parseStatus === 'running').length)
 
 onMounted(store.loadDocuments)

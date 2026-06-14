@@ -8,7 +8,12 @@ import {
   uploadDocumentsApi,
   type BackendDocumentParseResult,
 } from '../api/documents'
-import type { DocumentRecord, DocumentType } from '../types/document'
+
+import {
+  isDocumentParseSuccess,
+  type DocumentRecord,
+  type DocumentType,
+} from '../types/document'
 
 export const useDocumentStore = defineStore('document', () => {
   const documents = ref<DocumentRecord[]>([])
@@ -17,8 +22,8 @@ export const useDocumentStore = defineStore('document', () => {
   const deletingIds = ref<Set<string>>(new Set())
   const reparsingIds = ref<Set<string>>(new Set())
   const error = ref('')
-  const parsedJds = computed(() => documents.value.filter((doc) => doc.type === 'jd' && doc.parseStatus === 'success'))
-  const parsedResumes = computed(() => documents.value.filter((doc) => doc.type === 'resume' && doc.parseStatus === 'success'))
+  const parsedJds = computed(() => documents.value.filter((doc) => doc.type === 'jd' && isDocumentParseSuccess(doc.parseStatus)))
+  const parsedResumes = computed(() => documents.value.filter((doc) => doc.type === 'resume' && isDocumentParseSuccess(doc.parseStatus)))
 
   async function loadDocuments() {
     listLoading.value = true
