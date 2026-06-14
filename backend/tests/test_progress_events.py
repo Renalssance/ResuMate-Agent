@@ -17,6 +17,8 @@ async def test_progress_hub_replays_events_as_sse_lines():
     hub.publish(task_id, stage="completed", status="success", progress=100, message="Done")
 
     stream = hub.stream(task_id)
+    heartbeat = await anext(stream)
+    assert heartbeat == ": heartbeat\n\n"
     first = await anext(stream)
     second = await anext(stream)
 

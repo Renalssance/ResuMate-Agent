@@ -13,7 +13,7 @@ TERMINAL_STATUSES: set[TaskStatus] = {"success", "failed"}
 class TaskProgressHub:
     def __init__(self) -> None:
         self._history: dict[str, list[SseProgressEvent]] = defaultdict(list)
-        self._queues: dict[str, list[asyncio.Queue[SseProgressEvent]]] = defaultdict(list)
+        self._queues: dict[str, list[tuple[asyncio.AbstractEventLoop, asyncio.Queue[SseProgressEvent]]]] = defaultdict(list)
         self._last_progress: dict[str, int] = defaultdict(int)
 
     def create_task(self, prefix: str = "task") -> str:
@@ -57,12 +57,16 @@ class TaskProgressHub:
             data=data or {},
         )
         self._history[task_id].append(event)
-        for queue in list(self._queues.get(task_id, [])):
-            queue.put_nowait(event)
+        for loop, queue in list(self._queues.get(task_id, [])):
+            loop.call_soon_threadsafe(queue.put_nowait, event)
 
     async def stream(self, task_id: str):
+        # 立即发送一个空注释，确保 HTTP 响应头能被 BaseHTTPMiddleware 立即发给客户端
+        yield ": heartbeat\n\n"
         queue: asyncio.Queue[SseProgressEvent] = asyncio.Queue()
-        self._queues[task_id].append(queue)
+        loop = asyncio.get_running_loop()
+        item = (loop, queue)
+        self._queues[task_id].append(item)
         try:
             for event in self._history.get(task_id, []):
                 yield self._format(event)
@@ -75,8 +79,8 @@ class TaskProgressHub:
                     return
         finally:
             queues = self._queues.get(task_id, [])
-            if queue in queues:
-                queues.remove(queue)
+            if item in queues:
+                queues.remove(item)
 
     @staticmethod
     def _format(event: SseProgressEvent) -> str:

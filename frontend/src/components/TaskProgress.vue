@@ -1,33 +1,48 @@
 <template>
-  <section v-if="taskId" class="card progress-card">
+  <section v-if="taskId" class="card progress-card parse-task-list">
     <div class="progress-head">
       <div>
         <h2>{{ title }}</h2>
-        <p>{{ currentStep || '等待任务状态' }}</p>
       </div>
-      <strong>{{ progress }}%</strong>
     </div>
 
-    <div class="progress-track" aria-label="任务进度">
-      <span :style="{ width: `${progress}%` }"></span>
-    </div>
-
-    <div class="step-list">
-      <div v-for="step in steps" :key="step.key" class="step-row">
-        <span :class="['step-dot', step.status]">{{ symbolFor(step.status) }}</span>
-        <div>
-          <strong>{{ step.label }}</strong>
-          <small v-if="step.message">{{ step.message }}</small>
+    <article class="parse-task-card" style="margin-top: 20px;">
+      <div class="parse-task-head">
+        <div class="parse-task-title">
+          <strong>{{ currentStep || '等待任务状态' }}</strong>
+        </div>
+        <div class="parse-task-status">
+          <strong>{{ progress }}%</strong>
         </div>
       </div>
-    </div>
 
-    <div class="progress-meta">
-      <span>完成步骤：{{ completedCount }} / {{ steps.length }}</span>
-      <span>{{ message }}</span>
-    </div>
+      <div class="progress-track" aria-label="任务进度">
+        <span :style="{ width: `${progress}%` }"></span>
+      </div>
 
-    <p v-if="errorReason" class="error-note">失败原因：{{ errorReason }}</p>
+      <div class="parse-step-grid">
+        <div
+          v-for="step in steps"
+          :key="step.key"
+          :class="['parse-step-item', step.status]"
+          :title="step.message || step.label"
+        >
+          <span :class="['parse-step-icon', step.status]">
+            <span v-if="step.status === 'success'">✓</span>
+            <span v-else-if="step.status === 'failed'">!</span>
+            <span v-else-if="step.status === 'running'" class="mini-spinner"></span>
+            <span v-else>·</span>
+          </span>
+          <div>
+            <strong>{{ step.label }}</strong>
+            <small>{{ stepStatusText(step) }}</small>
+          </div>
+        </div>
+      </div>
+
+      <p class="parse-task-message">{{ message }}</p>
+      <p v-if="errorReason" class="error-note">失败原因：{{ errorReason }}</p>
+    </article>
   </section>
 </template>
 
@@ -45,10 +60,12 @@ defineProps<{
   errorReason: string
 }>()
 
-function symbolFor(status: ProgressStep['status']) {
-  if (status === 'success') return '✓'
-  if (status === 'failed') return '!'
-  if (status === 'running') return '●'
-  return '○'
+function stepStatusText(step: ProgressStep) {
+  if (step.status === 'success') return '已完成'
+  if (step.status === 'failed') return '失败'
+  if (step.status === 'running') {
+    return step.progress > 0 ? `进行中 ${step.progress}%` : '进行中'
+  }
+  return '等待中'
 }
 </script>

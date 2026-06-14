@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/runs", tags=["runs"])
 
 
 @router.post("", response_model=AnalyzeResponse)
-async def create_run(request: AnalyzeRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_run(request: AnalyzeRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         return AnalysisService(db=db).analyze_document_ids(
             user_id=current_user.id,
@@ -47,7 +47,7 @@ async def get_candidate_report(run_id: int, candidate_id: int, current_user: Use
 
 
 @router.post("/{run_id}/candidates/{candidate_id}/questions", response_model=CandidateReport)
-async def generate_candidate_questions(
+def generate_candidate_questions(
     run_id: int,
     candidate_id: int,
     task_id: str = Query(""),
