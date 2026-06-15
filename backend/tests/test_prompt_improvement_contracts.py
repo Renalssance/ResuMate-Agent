@@ -131,7 +131,7 @@ def test_score_status_and_evidence_state_are_strictly_validated():
         )
 
 
-def test_hydrate_match_evaluation_rejects_cross_criterion_chunk_and_restores_original_evidence():
+def test_hydrate_match_evaluation_drops_cross_criterion_chunk_and_downgrades_empty_match():
     from backend.services import llm_validation
 
     assert hasattr(llm_validation, "hydrate_match_evaluation")
@@ -166,8 +166,12 @@ def test_hydrate_match_evaluation_rejects_cross_criterion_chunk_and_restores_ori
     assert hydrated[1].evidence[0].section == "Projects"
 
     raw.evaluations[1].evidence_chunk_ids = ["api-1"]
-    with pytest.raises(ValueError, match="outside allowed candidate set"):
-        hydrate_match_evaluation(_job_profile(), raw, _evidence())
+    hydrated = hydrate_match_evaluation(_job_profile(), raw, _evidence())
+
+    assert hydrated[1].score == 0
+    assert hydrated[1].status == "no_evidence"
+    assert hydrated[1].evidence_chunk_ids == []
+    assert hydrated[1].evidence == []
 
 
 def test_hydrate_match_evaluation_rejects_missing_or_reordered_criteria():
@@ -320,6 +324,21 @@ def test_text_quality_gate_blocks_garbled_ocr_before_llm():
 
     with pytest.raises(ValueError, match="TEXT_QUALITY_TOO_LOW"):
         assert_acceptable_text_quality("锟斤拷" * 50 + "@@@@@@@" * 10, filename="resume.pdf")
+
+
+def test_text_quality_gate_accepts_readable_chinese_jd_without_whitespace():
+    from backend.services import documents
+
+    assert_acceptable_text_quality = documents.assert_acceptable_text_quality
+    jd_text = (
+        "岗位职责负责后端服务开发接口设计数据库建模性能优化线上问题排查"
+        "任职要求熟悉PythonFastAPIPostgreSQL具备良好沟通能力和工程质量意识"
+        "能够独立推进需求落地并与产品前端测试协作完成交付"
+        "参与系统架构演进代码评审自动化测试监控告警容量规划和技术文档沉淀"
+        "关注安全合规稳定性可维护性并持续优化研发流程提升团队交付效率"
+    )
+
+    assert_acceptable_text_quality(jd_text, filename="jd-text.txt")
 
 
 def test_multi_position_jd_is_detected_before_single_profile_parse():

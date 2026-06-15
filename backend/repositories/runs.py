@@ -113,10 +113,17 @@ class SqlAlchemyRunRepository:
         if not candidate or not candidate.match_result or not candidate.match_result.report_json:
             raise ValueError("candidate report not found")
 
-        report = CandidateReport.model_validate(candidate.match_result.report_json).model_copy(
+        stored_report = CandidateReport.model_validate(candidate.match_result.report_json)
+        warnings = list(stored_report.warnings)
+        if not any(item.evidence_chunk_ids for item in stored_report.evaluations):
+            warning = "未找到可用于引用的简历证据，已保存面试题，但题目依据可能不完整。"
+            if warning not in warnings:
+                warnings.append(warning)
+        report = stored_report.model_copy(
             update={
                 "formal_questions": question_set.formal_questions,
                 "ambiguity_followups": question_set.ambiguity_followups,
+                "warnings": warnings,
             }
         )
         candidate.match_result.report_json = report.model_dump(mode="json")

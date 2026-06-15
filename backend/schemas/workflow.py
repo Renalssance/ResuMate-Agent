@@ -57,8 +57,12 @@ class JobProfile(BaseModel):
 
     @model_validator(mode="after")
     def _weights_sum_to_100(self) -> "JobProfile":
-        total = sum(item.weight for item in self.criteria)
-        if round(total, 2) != 100:
+        total = round(sum(item.weight for item in self.criteria), 2)
+        drift = round(100 - total, 2)
+        if total != 100 and abs(drift) <= 0.05 and self.criteria:
+            self.criteria[0].weight = round(self.criteria[0].weight + drift, 2)
+            total = round(sum(item.weight for item in self.criteria), 2)
+        if total != 100:
             raise ValueError("JobProfile criteria weights must sum to 100")
         return self
 
@@ -339,6 +343,7 @@ class CandidateReport(BaseModel):
     total_score: float = Field(ge=0, le=100)
     recommendation: Recommendation
     top_strengths: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
     summary: str
     formal_questions: list[InterviewQuestion] = Field(default_factory=list, max_length=10)
     ambiguity_followups: list[InterviewQuestion] = Field(default_factory=list, max_length=5)

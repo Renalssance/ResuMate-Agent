@@ -17,6 +17,7 @@ from backend.schemas.workflow import (
     InterviewQuestion,
     QuestionBatch,
     QuestionBlueprint,
+    QuestionBlueprintItem,
     QuestionSet,
 )
 from backend.services.llm_validation import question_primary_evidence_limit, validate_question_set
@@ -183,12 +184,18 @@ class AnalysisService:
                 task="plan_question_blueprint",
                 prompt_name="plan_question_blueprint",
                 schema=QuestionBlueprint,
+                task_id=task_id,
+                progress_stage="generate_questions",
+                progress=65,
                 variables={"report_json": json.dumps(report_context, ensure_ascii=False)},
             )
             batch_1 = self.harness.run_schema(
                 task="generate_question_batch",
                 prompt_name="generate_question_batch",
                 schema=QuestionBatch,
+                task_id=task_id,
+                progress_stage="generate_questions",
+                progress=68,
                 variables={
                     "report_json": json.dumps(report_context, ensure_ascii=False),
                     "blueprint_json": json.dumps(
@@ -202,6 +209,9 @@ class AnalysisService:
                 task="generate_question_batch",
                 prompt_name="generate_question_batch",
                 schema=QuestionBatch,
+                task_id=task_id,
+                progress_stage="generate_questions",
+                progress=72,
                 variables={
                     "report_json": json.dumps(report_context, ensure_ascii=False),
                     "blueprint_json": json.dumps(
@@ -218,6 +228,9 @@ class AnalysisService:
                 task="generate_ambiguity_followups",
                 prompt_name="generate_ambiguity_followups",
                 schema=AmbiguityFollowupSet,
+                task_id=task_id,
+                progress_stage="generate_questions",
+                progress=76,
                 variables={
                     "report_json": json.dumps(report_context, ensure_ascii=False),
                     "blueprint_json": json.dumps(blueprint.model_dump(mode="json"), ensure_ascii=False),
@@ -296,27 +309,36 @@ class AnalysisService:
     ) -> QuestionSet:
         formal_questions = [question for batch in batches for question in batch.formal_questions]
         allowed_evidence_ids = {chunk_id for item in report.evaluations for chunk_id in item.evidence_chunk_ids}
-        primary_evidence_limit = question_primary_evidence_limit(
-            question_set=QuestionSet.model_construct(formal_questions=formal_questions, ambiguity_followups=[]),
-            allowed_evidence_chunk_ids=allowed_evidence_ids,
-        )
-        # Backfill only from already-cited match evidence, then validate the
-        # final set so unsupported chunk IDs never leak into saved questions.
-        formal_questions = self._backfill_non_gap_question_evidence(
-            report=report,
-            blueprint=blueprint,
-            formal_questions=formal_questions,
-            primary_evidence_limit=primary_evidence_limit,
-        )
-        question_set = QuestionSet(
-            formal_questions=formal_questions,
-            ambiguity_followups=followups.ambiguity_followups,
-        )
         gap_ids = {
             item.criterion_id
             for item in report.evaluations
             if item.score <= 2 or item.status in {"no_evidence", "conflict"} or item.missing_evidence
         }
+        primary_evidence_limit = question_primary_evidence_limit(
+            question_set=QuestionSet.model_construct(formal_questions=formal_questions, ambiguity_followups=[]),
+            allowed_evidence_chunk_ids=allowed_evidence_ids,
+        )
+        # LLM output is a draft at this boundary. Normalize criterion aliases
+        # and evidence IDs into the persisted report contract before applying
+        # strict validation or saving.
+        formal_questions = self._normalize_generated_questions(
+            report=report,
+            blueprint_items=blueprint.formal_questions,
+            questions=formal_questions,
+            gap_criterion_ids=gap_ids,
+            primary_evidence_limit=primary_evidence_limit,
+        )
+        followup_questions = self._normalize_generated_questions(
+            report=report,
+            blueprint_items=[],
+            questions=followups.ambiguity_followups,
+            gap_criterion_ids=gap_ids,
+            primary_evidence_limit=primary_evidence_limit,
+        )
+        question_set = QuestionSet(
+            formal_questions=formal_questions,
+            ambiguity_followups=followup_questions,
+        )
         validate_question_set(
             question_set,
             job_profile=report.job_profile,
@@ -330,13 +352,25 @@ class AnalysisService:
         return question_set
 
     @staticmethod
-    def _backfill_non_gap_question_evidence(
+    def _normalize_generated_questions(
         *,
         report: CandidateReport,
-        blueprint: QuestionBlueprint,
-        formal_questions: list[InterviewQuestion],
+        blueprint_items: list[QuestionBlueprintItem],
+        questions: list[InterviewQuestion],
+        gap_criterion_ids: set[str],
         primary_evidence_limit: int = 2,
     ) -> list[InterviewQuestion]:
+        criteria_by_id = {item.criterion_id: item for item in report.job_profile.criteria}
+        criterion_id_by_alias = {
+            AnalysisService._reference_key(item.criterion_id): item.criterion_id
+            for item in report.job_profile.criteria
+        }
+        criterion_id_by_alias.update(
+            {
+                AnalysisService._reference_key(item.name): item.criterion_id
+                for item in report.job_profile.criteria
+            }
+        )
         evidence_by_criterion = {
             item.criterion_id: item.evidence_chunk_ids
             for item in report.evaluations
@@ -346,10 +380,13 @@ class AnalysisService:
             for item in report.evaluations
             for chunk_id in item.evidence_chunk_ids
         ]
+        report_evidence_id_set = set(report_evidence_ids)
         primary_use_count: Counter[str] = Counter()
         normalized: list[InterviewQuestion] = []
-        for index, question in enumerate(formal_questions):
-            blueprint_item = blueprint.formal_questions[index] if index < len(blueprint.formal_questions) else None
+        fallback_criterion_id = next(iter(criteria_by_id), "")
+        fallback_gap_criterion_id = next(iter(gap_criterion_ids), "")
+        for index, question in enumerate(questions):
+            blueprint_item = blueprint_items[index] if index < len(blueprint_items) else None
             candidate_ids: list[str] = []
 
             def add_unique(values: list[str]) -> None:
@@ -362,34 +399,64 @@ class AnalysisService:
             add_unique(question.evidence_chunk_ids)
 
             if blueprint_item:
-                criterion_ids = [
+                raw_criterion_ids = [
                     blueprint_item.primary_criterion_id,
                     *blueprint_item.secondary_criterion_ids,
                     *question.related_criteria,
                 ]
             else:
-                criterion_ids = question.related_criteria
+                raw_criterion_ids = question.related_criteria
+
+            criterion_ids = [
+                criterion_id
+                for criterion_id in (
+                    criterion_id_by_alias.get(AnalysisService._reference_key(value), "")
+                    for value in raw_criterion_ids
+                )
+                if criterion_id
+            ]
+            if question.question_type == "gap_validation" and gap_criterion_ids:
+                criterion_ids = [criterion_id for criterion_id in criterion_ids if criterion_id in gap_criterion_ids]
+                if not criterion_ids and blueprint_item and blueprint_item.primary_criterion_id in gap_criterion_ids:
+                    criterion_ids = [blueprint_item.primary_criterion_id]
+                if not criterion_ids and fallback_gap_criterion_id:
+                    criterion_ids = [fallback_gap_criterion_id]
+            if not criterion_ids and blueprint_item:
+                criterion_ids = [blueprint_item.primary_criterion_id]
+            if not criterion_ids and fallback_criterion_id:
+                criterion_ids = [fallback_criterion_id]
+            criterion_ids = list(dict.fromkeys(criterion_ids))
 
             if question.question_type == "gap_validation" and not candidate_ids:
-                normalized.append(question)
+                normalized.append(question.model_copy(update={"related_criteria": criterion_ids, "evidence_chunk_ids": []}))
                 continue
 
             for criterion_id in criterion_ids:
                 add_unique(evidence_by_criterion.get(criterion_id, []))
+            candidate_ids = [chunk_id for chunk_id in candidate_ids if chunk_id in report_evidence_id_set]
             if question.question_type != "gap_validation" and not candidate_ids:
                 add_unique(report_evidence_ids)
 
             primary = next((chunk_id for chunk_id in candidate_ids if primary_use_count[chunk_id] < primary_evidence_limit), "")
+            if not primary and question.question_type != "gap_validation":
+                add_unique(report_evidence_ids)
+                primary = next((chunk_id for chunk_id in candidate_ids if primary_use_count[chunk_id] < primary_evidence_limit), "")
             if primary:
                 secondary = next((chunk_id for chunk_id in candidate_ids if chunk_id != primary), "")
                 selected_ids = [primary, *([secondary] if secondary else [])]
-                question = question.model_copy(update={"evidence_chunk_ids": selected_ids})
+                question = question.model_copy(update={"related_criteria": criterion_ids, "evidence_chunk_ids": selected_ids})
                 primary_use_count.update(selected_ids[:1])
             elif question.question_type == "gap_validation":
-                question = question.model_copy(update={"evidence_chunk_ids": []})
+                question = question.model_copy(update={"related_criteria": criterion_ids, "evidence_chunk_ids": []})
             elif candidate_ids:
                 selected_ids = candidate_ids[:2]
-                question = question.model_copy(update={"evidence_chunk_ids": selected_ids})
+                question = question.model_copy(update={"related_criteria": criterion_ids, "evidence_chunk_ids": selected_ids})
                 primary_use_count.update(selected_ids[:1])
+            else:
+                question = question.model_copy(update={"related_criteria": criterion_ids, "evidence_chunk_ids": []})
             normalized.append(question)
         return normalized
+
+    @staticmethod
+    def _reference_key(value: str) -> str:
+        return " ".join((value or "").split()).casefold()

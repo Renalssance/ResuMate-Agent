@@ -67,13 +67,16 @@ def hydrate_match_evaluation(
             chunk["chunk_id"]: EvidenceChunk.model_validate(chunk)
             for chunk in evidence_by_criterion.get(item.criterion_id, [])
         }
-        selected_ids = set(item.evidence_chunk_ids)
-        if not selected_ids <= set(allowed_chunks):
-            raise ValueError(f"evidence outside allowed candidate set: {item.criterion_id}")
+        selected_ids = [chunk_id for chunk_id in item.evidence_chunk_ids if chunk_id in allowed_chunks]
+        payload = item.model_dump(mode="json")
+        payload["evidence_chunk_ids"] = selected_ids
+        if item.score > 0 and not selected_ids:
+            payload["score"] = 0
+            payload["status"] = "no_evidence"
         hydrated.append(
             HydratedCriterionEvaluation(
-                **item.model_dump(mode="json"),
-                evidence=[allowed_chunks[chunk_id] for chunk_id in item.evidence_chunk_ids],
+                **payload,
+                evidence=[allowed_chunks[chunk_id] for chunk_id in selected_ids],
             )
         )
     return hydrated
@@ -102,9 +105,9 @@ def validate_question_set(
             raise ValueError("question references unknown criterion")
         if not set(question.evidence_chunk_ids) <= allowed_evidence_chunk_ids:
             raise ValueError("question evidence outside candidate report")
-        if question.question_type != "gap_validation" and not question.evidence_chunk_ids:
+        if allowed_evidence_chunk_ids and question.question_type != "gap_validation" and not question.evidence_chunk_ids:
             raise ValueError("non-gap question requires evidence")
-        if question.question_type == "gap_validation" and not set(question.related_criteria) <= gap_criterion_ids:
+        if gap_criterion_ids and question.question_type == "gap_validation" and not set(question.related_criteria) <= gap_criterion_ids:
             raise ValueError("gap question must target low-score or missing-evidence criteria")
         evidence_use_count.update(question.evidence_chunk_ids[:1])
     overused = [chunk_id for chunk_id, count in evidence_use_count.items() if count > primary_evidence_limit]

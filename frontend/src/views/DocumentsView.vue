@@ -27,16 +27,22 @@
         </div>
       </div>
       <div class="action-grid">
-        <label class="upload-box">
-          <input type="file" accept=".pdf,.doc,.docx,.md,.txt" @change="handleUpload('jd', $event)" />
-          <strong>上传 JD</strong>
-          <span>支持 PDF、DOC、DOCX、TXT、MD</span>
-        </label>
-        <label class="upload-box">
-          <input type="file" multiple accept=".pdf,.doc,.docx" @change="handleUpload('resume', $event)" />
-          <strong>上传简历</strong>
-          <span>可一次选择多份简历文件</span>
-        </label>
+        <div class="upload-choice">
+          <label class="upload-box">
+            <input type="file" accept=".pdf,.doc,.docx,.md,.txt" @change="handleUpload('jd', $event)" />
+            <strong>上传 JD</strong>
+            <span>支持 PDF、DOC、DOCX、TXT、MD</span>
+          </label>
+          <button class="button-secondary" type="button" @click="openTextUpload('jd')">输入 JD 文本</button>
+        </div>
+        <div class="upload-choice">
+          <label class="upload-box">
+            <input type="file" multiple accept=".pdf,.doc,.docx" @change="handleUpload('resume', $event)" />
+            <strong>上传简历</strong>
+            <span>可一次选择多份简历文件</span>
+          </label>
+          <button class="button-secondary" type="button" @click="openTextUpload('resume')">输入简历文本</button>
+        </div>
         <div class="filter-grid">
           <label>
             <span>类型筛选</span>
@@ -60,6 +66,22 @@
             <span>关键词搜索</span>
             <input v-model="keyword" class="input" type="search" placeholder="文件名或解析内容" />
           </label>
+        </div>
+      </div>
+      <div v-if="activeTextType" class="text-upload-panel">
+        <label>
+          <span>{{ activeTextType === 'jd' ? 'JD 文本' : '简历文本' }}</span>
+          <textarea
+            v-model="activeText"
+            :placeholder="activeTextType === 'jd' ? '粘贴 JD 文本...' : '粘贴简历文本...'"
+            rows="8"
+          ></textarea>
+        </label>
+        <div class="text-upload-actions">
+          <button class="button-primary" type="button" :disabled="!activeText.trim()" @click="handleTextUpload">
+            上传文本
+          </button>
+          <button class="button-secondary" type="button" @click="activeTextType = null">取消</button>
         </div>
       </div>
     </section>
@@ -136,6 +158,7 @@ import {
   type DocumentType,
 } from '../types/document'
 import { formatDate, formatSize } from '../utils/format'
+import { createTextUploadFile } from '../utils/textUpload'
 
 const store = useDocumentStore()
 const parseTasks = useDocumentParseTasks({
@@ -147,6 +170,8 @@ const typeFilter = ref<'all' | DocumentType>('all')
 const statusFilter = ref<'all' | DocumentParseStatus>('all')
 const keyword = ref('')
 const selectedDocument = ref<DocumentRecord | null>(null)
+const activeTextType = ref<DocumentType | null>(null)
+const textInputs = ref<Record<DocumentType, string>>({ jd: '', resume: '' })
 
 const tabs = [
   { key: 'all' as const, label: '全部文档' },
@@ -172,6 +197,12 @@ const jdCount = computed(() => store.documents.filter((doc) => doc.type === 'jd'
 const resumeCount = computed(() => store.documents.filter((doc) => doc.type === 'resume').length)
 const parsedCount = computed(() => store.documents.filter((doc) => isDocumentParseSuccess(doc.parseStatus)).length)
 const runningCount = computed(() => store.documents.filter((doc) => doc.parseStatus === 'running').length)
+const activeText = computed({
+  get: () => (activeTextType.value ? textInputs.value[activeTextType.value] : ''),
+  set: (value: string) => {
+    if (activeTextType.value) textInputs.value[activeTextType.value] = value
+  },
+})
 
 onMounted(store.loadDocuments)
 onBeforeUnmount(parseTasks.closeAll)
@@ -182,6 +213,19 @@ async function handleUpload(type: DocumentType, event: Event) {
   if (!files.length) return
   await parseTasks.enqueueFiles(type, files)
   input.value = ''
+}
+
+function openTextUpload(type: DocumentType) {
+  activeTextType.value = type
+}
+
+async function handleTextUpload() {
+  if (!activeTextType.value) return
+  const type = activeTextType.value
+  const file = createTextUploadFile(type, textInputs.value[type])
+  await parseTasks.enqueueFiles(type, [file])
+  textInputs.value[type] = ''
+  activeTextType.value = null
 }
 
 async function reparse(id: string) {

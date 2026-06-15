@@ -152,6 +152,9 @@ class CandidateAnalysisGraph:
             task="evaluate_match",
             prompt_name="evaluate_match",
             schema=MatchEvaluation,
+            task_id=state.get("task_id"),
+            progress_stage="llm_match",
+            progress=58,
             variables={
                 "criteria_json": criteria_payload,
                 "resume_profile_json": state["resume_profile"].model_dump(mode="json"),
@@ -198,6 +201,9 @@ class CandidateAnalysisGraph:
         ][:3]
         if not strengths:
             strengths = [item.name for item in sorted(evaluations, key=lambda entry: entry.score, reverse=True)[:3]]
+        warnings = []
+        if not any(item.evidence_chunk_ids for item in evaluations):
+            warnings.append("未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。")
 
         report = CandidateReport(
             run_id=state["run_id"],
@@ -210,6 +216,7 @@ class CandidateAnalysisGraph:
             total_score=state["total_score"],
             recommendation=state["recommendation"],
             top_strengths=strengths,
+            warnings=warnings,
             summary=self._build_summary(state),
             formal_questions=[],
             ambiguity_followups=[],
