@@ -35,7 +35,7 @@
         </label>
         <label>
           <span>题目数量</span>
-          <input v-model.number="questionCount" type="number" min="1" max="20" />
+          <input v-model.number="questionCount" type="number" min="1" max="10" />
         </label>
         <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">开始生成</button>
       </div>

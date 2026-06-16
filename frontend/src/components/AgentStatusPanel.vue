@@ -12,7 +12,7 @@
     <div class="agent-current">
       <div>
         <strong>{{ current ? phaseText(current.phase) : idleText }}</strong>
-        <small v-if="current">{{ elapsedText(current.timestamp) }}</small>
+        <small v-if="current">{{ elapsedText(current.timestamp, true) }}</small>
       </div>
     </div>
 
@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import type { AgentProgressEvent, AgentProgressLevel, AgentProgressPhase } from '../types/task'
 
 const props = withDefaults(defineProps<{
@@ -40,6 +41,19 @@ const props = withDefaults(defineProps<{
 }>(), {
   taskId: '',
   idleText: '等待分析',
+})
+
+const now = ref(Date.now())
+let timer: number | undefined
+
+onMounted(() => {
+  timer = window.setInterval(() => {
+    now.value = Date.now()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (timer) window.clearInterval(timer)
 })
 
 function phaseText(phase: AgentProgressPhase) {
@@ -64,9 +78,11 @@ function levelText(level: AgentProgressLevel) {
   return labels[level]
 }
 
-function elapsedText(value: string) {
+function elapsedText(value: string, live = false) {
   const startedAt = new Date(props.events[0]?.timestamp || value).getTime()
-  const currentAt = new Date(value).getTime()
+  const currentAt = live && (props.current?.level === 'info' || props.current?.level === 'warning')
+    ? now.value
+    : new Date(value).getTime()
   if (Number.isNaN(startedAt) || Number.isNaN(currentAt)) return '+0s'
   const seconds = Math.max(0, Math.round((currentAt - startedAt) / 1000))
   if (seconds < 60) return `+${seconds}s`

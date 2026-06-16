@@ -23,6 +23,19 @@ from backend.schemas.workflow import (
 from backend.services.llm_validation import question_primary_evidence_limit, validate_question_set
 from backend.services.progress import progress_hub
 
+QUESTION_TYPE_SEQUENCE = [
+    "resume_experience",
+    "jd_core_capability",
+    "scenario_design",
+    "gap_validation",
+    "behavior_review",
+    "resume_experience",
+    "jd_core_capability",
+    "scenario_design",
+    "gap_validation",
+    "resume_experience",
+]
+
 
 def parse_document_id(value: str, expected_type: str) -> int:
     prefix, separator, raw_id = value.partition(":")
@@ -127,8 +140,17 @@ class AnalysisService:
         )
         return response
 
-    def generate_questions(self, *, user_id: int, run_id: int, candidate_id: int, task_id: str = "") -> CandidateReport:
+    def generate_questions(
+        self,
+        *,
+        user_id: int,
+        run_id: int,
+        candidate_id: int,
+        task_id: str = "",
+        question_count: int = 10,
+    ) -> CandidateReport:
         task_id = task_id or progress_hub.create_task("task_questions")
+        question_count = max(1, min(question_count, 10))
         progress_hub.publish(
             task_id,
             stage="load_context",
@@ -187,7 +209,11 @@ class AnalysisService:
                 task_id=task_id,
                 progress_stage="generate_questions",
                 progress=65,
-                variables={"report_json": json.dumps(report_context, ensure_ascii=False)},
+                variables={
+                    "report_json": json.dumps(report_context, ensure_ascii=False),
+                    "question_count": question_count,
+                    "question_type_distribution": _question_type_distribution(question_count),
+                },
             )
             batch_1 = self.harness.run_schema(
                 task="generate_question_batch",
@@ -205,25 +231,29 @@ class AnalysisService:
                     "existing_questions_json": "[]",
                 },
             )
-            batch_2 = self.harness.run_schema(
-                task="generate_question_batch",
-                prompt_name="generate_question_batch",
-                schema=QuestionBatch,
-                task_id=task_id,
-                progress_stage="generate_questions",
-                progress=72,
-                variables={
-                    "report_json": json.dumps(report_context, ensure_ascii=False),
-                    "blueprint_json": json.dumps(
-                        {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[5:]]},
-                        ensure_ascii=False,
-                    ),
-                    "existing_questions_json": json.dumps(
-                        [item.question for item in batch_1.formal_questions],
-                        ensure_ascii=False,
-                    ),
-                },
-            )
+            batches = [batch_1]
+            if blueprint.formal_questions[5:]:
+                batches.append(
+                    self.harness.run_schema(
+                        task="generate_question_batch",
+                        prompt_name="generate_question_batch",
+                        schema=QuestionBatch,
+                        task_id=task_id,
+                        progress_stage="generate_questions",
+                        progress=72,
+                        variables={
+                            "report_json": json.dumps(report_context, ensure_ascii=False),
+                            "blueprint_json": json.dumps(
+                                {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[5:]]},
+                                ensure_ascii=False,
+                            ),
+                            "existing_questions_json": json.dumps(
+                                [item.question for item in batch_1.formal_questions],
+                                ensure_ascii=False,
+                            ),
+                        },
+                    )
+                )
             followups = self.harness.run_schema(
                 task="generate_ambiguity_followups",
                 prompt_name="generate_ambiguity_followups",
@@ -235,7 +265,7 @@ class AnalysisService:
                     "report_json": json.dumps(report_context, ensure_ascii=False),
                     "blueprint_json": json.dumps(blueprint.model_dump(mode="json"), ensure_ascii=False),
                     "formal_questions_json": json.dumps(
-                        [item.model_dump(mode="json") for item in [*batch_1.formal_questions, *batch_2.formal_questions]],
+                        [item.model_dump(mode="json") for batch in batches for item in batch.formal_questions],
                         ensure_ascii=False,
                     ),
                 },
@@ -243,7 +273,7 @@ class AnalysisService:
             question_set = self._build_question_set_from_split(
                 report=report,
                 blueprint=blueprint,
-                batches=[batch_1, batch_2],
+                batches=batches,
                 followups=followups,
             )
         except Exception as exc:
@@ -460,3 +490,7 @@ class AnalysisService:
     @staticmethod
     def _reference_key(value: str) -> str:
         return " ".join((value or "").split()).casefold()
+
+
+def _question_type_distribution(question_count: int) -> dict[str, int]:
+    return dict(Counter(QUESTION_TYPE_SEQUENCE[:question_count]))

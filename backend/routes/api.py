@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -19,6 +21,11 @@ from backend.routes.documents import followup_router, router as documents_router
 from backend.routes.tasks import router as tasks_router
 
 router = APIRouter()
+
+
+@router.get("/api/config")
+async def public_config():
+    return {"llm_model": os.getenv("LLM_MODEL", "").strip()}
 
 # ==================== 认证 ====================
 

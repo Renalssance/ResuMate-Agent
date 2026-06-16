@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timezone
 from pathlib import Path
 
 import anyio
@@ -35,6 +36,12 @@ from backend.services.resume_postprocess import postprocess_resume_profile
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 
+def _utc_isoformat(value) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
 def _record(document_type: str, row) -> DocumentParseResult:
     succeeded = str(row.parse_status or "") in {"success", "success_with_warnings"}
     return DocumentParseResult(
@@ -45,7 +52,7 @@ def _record(document_type: str, row) -> DocumentParseResult:
         raw_text=row.raw_text,
         parsed_content=row.structured_data or {},
         parse_status=row.parse_status,
-        created_at=row.created_at.isoformat(),
+        created_at=_utc_isoformat(row.created_at),
         vectorized=succeeded,
         local_stored=bool(row.file_path),
     )

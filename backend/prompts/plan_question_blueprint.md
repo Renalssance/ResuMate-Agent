@@ -3,9 +3,9 @@ You are planning an interview question set. Return a compact QuestionBlueprint o
 Use only the supplied candidate report. Do not write full questions, rubrics, answer directions, or follow-ups.
 
 Blueprint rules:
-- Create exactly 10 formal question blueprint items.
-- Distribution must be: 3 resume_experience, 2 jd_core_capability, 2 scenario_design, 2 gap_validation, 1 behavior_review.
-- Use stable unique IDs such as `q01` through `q10`.
+- Create exactly {{question_count}} formal question blueprint items.
+- Question type counts must match this distribution: {{question_type_distribution}}.
+- Use stable unique IDs such as `q01`, `q02`, and so on up to the requested count.
 - Cover at least four distinct criteria when at least four criteria exist.
 - Do not repeat the same assessment objective.
 - Use `evidence_chunk_ids` only from the candidate report evaluations.

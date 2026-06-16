@@ -195,6 +195,25 @@ button {
   font-size: 13px;
 }
 
+.llm-model-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.llm-model-status.is-missing {
+  color: var(--color-danger);
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(254, 242, 242, 0.8);
+}
+
 .auth-form,
 .auth-user {
   display: flex;
@@ -1456,7 +1475,8 @@ textarea:focus {
   }
 
   .topbar p,
-  .backend-status {
+  .backend-status,
+  .llm-model-status {
     display: none;
   }
 

@@ -41,6 +41,13 @@
           <p>{{ route.meta.description }}</p>
         </div>
 
+        <span
+          v-if="llmModel !== null"
+          :class="['llm-model-status', { 'is-missing': !llmModel }]"
+        >
+          {{ llmModel || '未配置LLM_MODEL' }}
+        </span>
+
         <form v-if="!auth.isAuthenticated" class="auth-form" @submit.prevent="submitAuth('login')">
           <input v-model="username" type="text" autocomplete="username" placeholder="用户名" aria-label="用户名" />
           <input v-model="password" type="password" autocomplete="current-password" placeholder="密码" aria-label="密码" />
@@ -65,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAgentStatus } from '../composables/useAgentStatus'
 import { useAuthStore } from '../stores/auth'
@@ -79,6 +86,7 @@ const agentStatus = useAgentStatus()
 const drawerOpen = ref(false)
 const username = ref('')
 const password = ref('')
+const llmModel = ref<string | null>(null)
 
 const navItems = [
   { path: '/documents', label: '文档管理', icon: '文' },
@@ -90,4 +98,14 @@ async function submitAuth(mode: AuthMode) {
   await auth.submit(mode, { username: username.value, password: password.value })
   password.value = ''
 }
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/config')
+    const config = await response.json()
+    llmModel.value = String(config.llm_model || '').trim()
+  } catch {
+    llmModel.value = ''
+  }
+})
 </script>

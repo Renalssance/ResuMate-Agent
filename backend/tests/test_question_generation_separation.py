@@ -148,7 +148,7 @@ def test_matching_graph_does_not_generate_questions():
     assert report.ambiguity_followups == []
 
 
-def test_question_generation_only_runs_generate_questions_and_persists_result():
+def test_question_generation_honors_requested_question_count():
     job_profile, resume_profile = _profiles()
     report = CandidateReport.model_construct(
         run_id=2,
@@ -165,7 +165,13 @@ def test_question_generation_only_runs_generate_questions_and_persists_result():
         formal_questions=[],
         ambiguity_followups=[],
     )
-    blueprint = QuestionBlueprint.model_construct(formal_questions=[], ambiguity_sources=[])
+    blueprint = QuestionBlueprint.model_construct(
+        formal_questions=[
+            QuestionBlueprintItem.model_construct(question_id=f"q{index:02d}")
+            for index in range(1, 6)
+        ],
+        ambiguity_sources=[],
+    )
     batch = QuestionBatch.model_construct(formal_questions=[])
     followups = AmbiguityFollowupSet.model_construct(ambiguity_followups=[])
     question_set = QuestionSet.model_construct(formal_questions=[], ambiguity_followups=[])
@@ -175,6 +181,7 @@ def test_question_generation_only_runs_generate_questions_and_persists_result():
     def run_schema(**kwargs):
         harness.tasks.append(kwargs["task"])
         if kwargs["task"] == "plan_question_blueprint":
+            assert kwargs["variables"]["question_count"] == 5
             return blueprint
         if kwargs["task"] == "generate_question_batch":
             return batch
@@ -188,11 +195,10 @@ def test_question_generation_only_runs_generate_questions_and_persists_result():
     service.repository = repository
     service._build_question_set_from_split = lambda **_kwargs: question_set
 
-    updated = service.generate_questions(user_id=1, run_id=2, candidate_id=3)
+    updated = service.generate_questions(user_id=1, run_id=2, candidate_id=3, question_count=5)
 
     assert harness.tasks == [
         "plan_question_blueprint",
-        "generate_question_batch",
         "generate_question_batch",
         "generate_ambiguity_followups",
     ]

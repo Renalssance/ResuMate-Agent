@@ -19,9 +19,10 @@ export function fetchCandidateReportApi(runId: string | number, candidateId: str
   return request.get<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}`)
 }
 
-export function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '') {
-  const suffix = taskId ? `?task_id=${encodeURIComponent(taskId)}` : ''
-  return request.post<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}/questions${suffix}`)
+export function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '', questionCount = 10) {
+  const params = new URLSearchParams({ question_count: String(questionCount) })
+  if (taskId) params.set('task_id', taskId)
+  return request.post<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}/questions?${params.toString()}`)
 }
 
 export function deleteCandidateReportApi(runId: string | number, candidateId: string | number) {

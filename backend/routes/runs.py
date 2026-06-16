@@ -51,6 +51,7 @@ def generate_candidate_questions(
     run_id: int,
     candidate_id: int,
     task_id: str = Query(""),
+    question_count: int = Query(10, ge=1, le=10),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -60,6 +61,7 @@ def generate_candidate_questions(
             run_id=run_id,
             candidate_id=candidate_id,
             task_id=task_id,
+            question_count=question_count,
         )
     except ValueError as exc:
         status_code = 404 if str(exc) == "candidate report not found" else 400

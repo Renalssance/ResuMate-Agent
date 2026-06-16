@@ -5,7 +5,7 @@ This legacy prompt is kept for compatibility. Prefer the split prompts:
 
 Rules:
 - Return only JSON matching the injected QuestionSet schema.
-- Generate exactly 10 formal_questions with distribution 3 resume_experience, 2 jd_core_capability, 2 scenario_design, 2 gap_validation, 1 behavior_review.
+- Generate the requested number of formal_questions, between 1 and 10. When the requested count is 10, use distribution 3 resume_experience, 2 jd_core_capability, 2 scenario_design, 2 gap_validation, 1 behavior_review.
 - Generate 3 to 5 ambiguity_followups.
 - Return only `evidence_chunk_ids`; do not create or rewrite evidence objects.
 - Evidence IDs must appear in the candidate report evaluations.

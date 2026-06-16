@@ -280,7 +280,7 @@ class AmbiguitySource(BaseModel):
 
 
 class QuestionBlueprint(BaseModel):
-    formal_questions: list[QuestionBlueprintItem] = Field(min_length=10, max_length=10)
+    formal_questions: list[QuestionBlueprintItem] = Field(min_length=1, max_length=10)
     ambiguity_sources: list[AmbiguitySource] = Field(default_factory=list, max_length=5)
 
     @model_validator(mode="after")
@@ -292,6 +292,8 @@ class QuestionBlueprint(BaseModel):
             "gap_validation": 2,
             "behavior_review": 1,
         }
+        if len(self.formal_questions) != 10:
+            return self
         actual = {key: 0 for key in expected}
         for question in self.formal_questions:
             actual[question.question_type] = actual.get(question.question_type, 0) + 1
@@ -312,7 +314,7 @@ class AmbiguityFollowupSet(BaseModel):
 
 
 class QuestionSet(BaseModel):
-    formal_questions: list[InterviewQuestion] = Field(min_length=10, max_length=10)
+    formal_questions: list[InterviewQuestion] = Field(min_length=1, max_length=10)
     ambiguity_followups: list[InterviewQuestion] = Field(min_length=3, max_length=5)
 
     @model_validator(mode="after")
@@ -324,6 +326,8 @@ class QuestionSet(BaseModel):
             "gap_validation": 2,
             "behavior_review": 1,
         }
+        if len(self.formal_questions) != 10:
+            return self
         actual = {key: 0 for key in expected}
         for question in self.formal_questions:
             actual[question.question_type] = actual.get(question.question_type, 0) + 1

@@ -447,7 +447,17 @@ def test_prompt_templates_render_without_unresolved_placeholders():
         "parse_jd": {"jd_text": "Backend Engineer"},
         "parse_resume": {"filename": "resume.pdf", "chunks_json": []},
         "evaluate_match": {"criteria_json": [], "resume_profile_json": {}, "evidence_json": {}, "ambiguities_json": []},
-        "plan_question_blueprint": {"report_json": {}},
+        "plan_question_blueprint": {
+            "report_json": {},
+            "question_count": 10,
+            "question_type_distribution": {
+                "resume_experience": 3,
+                "jd_core_capability": 2,
+                "scenario_design": 2,
+                "gap_validation": 2,
+                "behavior_review": 1,
+            },
+        },
         "generate_question_batch": {
             "report_json": {},
             "blueprint_json": {"formal_questions": []},

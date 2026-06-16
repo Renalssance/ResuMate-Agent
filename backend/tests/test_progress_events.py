@@ -1,11 +1,13 @@
 import pytest
 import inspect
+from datetime import datetime
 from fastapi import HTTPException
 from fastapi import UploadFile
 from io import BytesIO
+from types import SimpleNamespace
 
 from backend.schemas.workflow import AnalyzeResponse, DocumentParseResponse, SseProgressEvent
-from backend.routes.documents import reparse_document, upload_documents
+from backend.routes.documents import _record, reparse_document, upload_documents
 from backend.services.progress import TaskProgressHub
 
 
@@ -99,3 +101,20 @@ def test_document_upload_rejects_multi_file_requests_before_sharing_one_task():
         upload_documents(document_type="resume", files=files, task_id="task-shared", current_user=object(), db=object())
 
     assert exc_info.value.status_code == 422
+
+
+def test_document_record_marks_naive_database_upload_time_as_utc():
+    row = SimpleNamespace(
+        id=1,
+        filename="resume.pdf",
+        document_size=42,
+        raw_text="Candidate text",
+        structured_data={},
+        parse_status="success",
+        created_at=datetime(2026, 6, 14, 0, 0, 0),
+        file_path="data/documents/resume.pdf",
+    )
+
+    record = _record("resume", row)
+
+    assert record.created_at == "2026-06-14T00:00:00Z"
