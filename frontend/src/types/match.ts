@@ -16,6 +16,7 @@ export interface MatchResult {
   strengths: string[]
   gaps: string[]
   risks: string[]
+  warnings: string[]
   summary: string
   criteria: MatchCriterion[]
   evidence: string[]

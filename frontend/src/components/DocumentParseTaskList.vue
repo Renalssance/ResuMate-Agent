@@ -18,7 +18,7 @@
             <strong>{{ task.filename }}</strong>
             <small>
               {{ stageLabel(task.stage) }}
-              <template v-if="task.stageProgress !== undefined">
+              <template v-if="typeof task.stageProgress === 'number'">
                 · {{ task.stageProgress }}%
               </template>
             </small>

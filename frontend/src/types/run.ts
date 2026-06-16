@@ -29,7 +29,7 @@ export interface CriterionEvaluation {
   score: number
   status: string
   reason: string
-  evidence: EvidenceChunk[]
+  evidence?: EvidenceChunk[]
   missing_evidence: string[]
   risk: string
 }
@@ -76,6 +76,7 @@ export interface CandidateReport {
   total_score: number
   recommendation: string
   top_strengths: string[]
+  warnings?: string[]
   summary: string
   formal_questions: InterviewQuestion[]
   ambiguity_followups: InterviewQuestion[]

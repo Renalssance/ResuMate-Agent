@@ -20,6 +20,13 @@
           {{ item.label }}
         </RouterLink>
       </nav>
+      <AgentStatusPanel
+        class="sidebar-agent-status"
+        title="Agent 状态"
+        :task-id="agentStatus.taskId.value"
+        :current="agentStatus.current.value"
+        :events="agentStatus.events.value"
+      />
     </aside>
 
     <div v-if="drawerOpen" class="drawer-mask" @click="drawerOpen = false"></div>
@@ -60,12 +67,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAgentStatus } from '../composables/useAgentStatus'
 import { useAuthStore } from '../stores/auth'
+import AgentStatusPanel from './AgentStatusPanel.vue'
 
 type AuthMode = 'login' | 'register'
 
 const route = useRoute()
 const auth = useAuthStore()
+const agentStatus = useAgentStatus()
 const drawerOpen = ref(false)
 const username = ref('')
 const password = ref('')

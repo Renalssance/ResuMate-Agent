@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import { createRunApi, deleteCandidateReportApi, fetchCandidateReportApi, fetchRunsApi } from '../api/runs'
 import type { DocumentRecord } from '../types/document'
 import type { MatchResult } from '../types/match'
-import type { CandidateReport, CandidateSummary } from '../types/run'
+import type { CandidateReport } from '../types/run'
+import { reportToMatch } from './matchMapping'
 
 const reportByMatchId = new Map<string, CandidateReport>()
 
@@ -76,52 +77,3 @@ export const useMatchStore = defineStore('match', () => {
 
   return { results, loading, error, loadMatches, createMatch, deleteMatch }
 })
-
-function reportToMatch(runId: string, candidate: CandidateSummary, report: CandidateReport): MatchResult {
-  const id = `${runId}:${candidate.candidate_id}`
-  const jobProfile = report.job_profile
-  return {
-    id,
-    jdId: runId,
-    jdTitle: jobProfile?.job_title || extractJobTitle(report.summary),
-    resumeId: String(candidate.candidate_id),
-    candidateName: candidate.candidate_name,
-    score: candidate.total_score,
-    conclusion: recommendationText(candidate.recommendation),
-    strengths: candidate.top_strengths,
-    gaps: report.evaluations.flatMap((item) => item.missing_evidence).slice(0, 3),
-    risks: report.evaluations.map((item) => item.risk).filter(Boolean).slice(0, 3),
-    summary: report.summary,
-    criteria: report.evaluations.map((item) => ({
-      name: item.name,
-      weight: item.weight,
-      score: item.score,
-      reason: item.reason,
-    })),
-    evidence: report.evaluations.flatMap((item) =>
-      item.evidence.map((evidence) => `${evidence.filename} p${evidence.page_number} ${evidence.section}: ${evidence.text}`),
-    ),
-    agentContent: report.summary,
-    logs: [
-      'Documents indexed in Milvus',
-      'Evidence retrieved per JD criterion',
-      'LLM evaluated criterion-level match',
-      'Python calculated total score',
-    ],
-    createdAt: new Date().toISOString(),
-  }
-}
-
-function extractJobTitle(summary: string) {
-  return summary.split(' matched ')[1]?.split(' with score ')[0] || 'JD'
-}
-
-function recommendationText(value: string) {
-  const map: Record<string, string> = {
-    strong_recommend: 'Strong recommend',
-    recommend: 'Recommend',
-    hold: 'Hold',
-    reject: 'Reject',
-  }
-  return map[value] || value
-}

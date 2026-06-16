@@ -1,8 +1,10 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { closeTaskProgress, subscribeTaskProgress } from '../services/sse'
-import type { ProgressStep, SseProgressEvent, StepTemplate, TaskStatus } from '../types/task'
+import type { AgentProgressEvent, ProgressStep, SseProgressEvent, StepTemplate, TaskStatus } from '../types/task'
+import { useAgentStatus } from './useAgentStatus'
 
 export function useTaskSse(stepTemplates: StepTemplate[]) {
+  const globalAgentStatus = useAgentStatus()
   const taskId = ref('')
   const status = ref<TaskStatus>('pending')
   const progress = ref(0)
@@ -10,9 +12,11 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
   const message = ref('')
   const errorReason = ref('')
   const steps = ref<ProgressStep[]>(createSteps(stepTemplates))
+  const agentEvents = ref<AgentProgressEvent[]>([])
 
   const completedSteps = computed(() => steps.value.filter((step) => step.status === 'success'))
   const currentStep = computed(() => steps.value.find((step) => step.status === 'running')?.label || currentStage.value)
+  const currentAgent = computed(() => agentEvents.value[0] || null)
 
   function start(id: string) {
     reset()
@@ -66,6 +70,11 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
     currentStage.value = event.stage
     message.value = event.message
     if (event.status === 'failed') errorReason.value = event.message
+    const agent = readAgentProgress(event)
+    if (agent) {
+      agentEvents.value = [agent, ...agentEvents.value].slice(0, 12)
+      globalAgentStatus.record(agent, event.taskId)
+    }
 
     const activeIndex = steps.value.findIndex((step) => step.key === event.stage)
     steps.value = steps.value.map((step, index) => {
@@ -96,6 +105,8 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
     message.value = ''
     errorReason.value = ''
     steps.value = createSteps(stepTemplates)
+    agentEvents.value = []
+    globalAgentStatus.clear(taskId.value)
   }
 
   onBeforeUnmount(reset)
@@ -106,9 +117,11 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
     progress,
     currentStage,
     currentStep,
+    currentAgent,
     message,
     errorReason,
     steps,
+    agentEvents,
     completedSteps,
     start,
     startManual,
@@ -124,4 +137,10 @@ function createSteps(templates: StepTemplate[]): ProgressStep[] {
     status: 'pending',
     progress: 0,
   }))
+}
+
+function readAgentProgress(event: SseProgressEvent): AgentProgressEvent | null {
+  const agent = event.data?.agent
+  if (!agent || typeof agent !== 'object') return null
+  return agent as AgentProgressEvent
 }

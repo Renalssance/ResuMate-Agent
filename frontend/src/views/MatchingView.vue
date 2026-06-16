@@ -82,6 +82,9 @@
           <p>{{ selectedResult.summary }}</p>
         </div>
       </div>
+      <div v-if="selectedResult.warnings.length" class="warning-list">
+        <p v-for="warning in selectedResult.warnings" :key="warning">{{ warning }}</p>
+      </div>
       <div class="detail-columns">
         <div>
           <h3>优势、差距与风险</h3>

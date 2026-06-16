@@ -3,8 +3,11 @@ import { reactive } from 'vue'
 import { uploadDocumentsApi, type ParseDocumentsResponse } from '../api/documents'
 import { subscribeTaskProgress, type TaskConnection } from '../services/sse'
 import type { DocumentRecord, DocumentType } from '../types/document'
-import { PARSE_STEPS, type ProgressStep, type SseProgressEvent, type TaskStatus } from '../types/task'
+import { PARSE_STEPS, type AgentProgressEvent, type ProgressStep, type SseProgressEvent, type TaskStatus } from '../types/task'
 import { createId } from '../utils/format'
+import { useAgentStatus } from './useAgentStatus'
+
+const globalAgentStatus = useAgentStatus()
 
 export type ParseStage =
   | 'pending'
@@ -29,6 +32,7 @@ export interface DocumentParseTask {
   overallProgress: number
   message: string
   errorReason: string
+  agentEvents: AgentProgressEvent[]
   steps: ProgressStep[]
 }
 
@@ -195,6 +199,7 @@ function createTask(taskId: string, filename: string, documentType: DocumentType
     overallProgress: 0,
     message: '等待上传',
     errorReason: '',
+    agentEvents: [],
     steps: PARSE_STEPS.map((step) => ({ ...step, status: 'pending', progress: 0 })),
   }
 }
@@ -220,6 +225,11 @@ function updateFromSse(task: DocumentParseTask, event: SseProgressEvent) {
   task.overallProgress = Math.max(task.overallProgress, event.overallProgress ?? event.progress ?? 0)
   task.message = event.message
   if (event.status === 'failed') task.errorReason = event.message
+  const agent = readAgentProgress(event)
+  if (agent) {
+    task.agentEvents = [agent, ...task.agentEvents].slice(0, 12)
+    globalAgentStatus.record(agent, event.taskId)
+  }
   if (event.stage === 'completed') {
     task.steps = task.steps.map((step) => ({ ...step, status: 'success', progress: 100 }))
     task.overallProgress = 100
@@ -227,6 +237,12 @@ function updateFromSse(task: DocumentParseTask, event: SseProgressEvent) {
   }
   const status = event.status === 'success' ? 'success' : event.status === 'failed' ? 'failed' : 'running'
   updateStep(task, event.stage, status, event.stageProgress ?? event.progress, event.message)
+}
+
+function readAgentProgress(event: SseProgressEvent): AgentProgressEvent | null {
+  const agent = event.data?.agent
+  if (!agent || typeof agent !== 'object') return null
+  return agent as AgentProgressEvent
 }
 
 function failTask(task: DocumentParseTask, reason: string) {

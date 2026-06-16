@@ -63,7 +63,7 @@ def _find_document(db: Session, user_id: int, document_id: str):
     return kind, row
 
 
-def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks):
+def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks, task_id: str = ""):
     harness = AgentHarness()
     if kind == "jd":
         if detect_multiple_positions(raw_text):
@@ -71,6 +71,9 @@ def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks):
         profile = harness.run_schema(
             task="document.parse_jd", prompt_name="parse_jd", schema=JobProfile,
             variables={"jd_text": raw_text[:24000]},
+            task_id=task_id,
+            progress_stage="llm_analyze",
+            progress=45,
         )
         content = profile.model_dump(mode="json")
         content["title"] = profile.job_title
@@ -82,6 +85,9 @@ def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks):
     profile = harness.run_schema(
         task="document.parse_resume", prompt_name="parse_resume", schema=ResumeProfile,
         variables={"filename": filename, "chunks_json": payload},
+        task_id=task_id,
+        progress_stage="llm_analyze",
+        progress=45,
     )
     profile = postprocess_resume_profile(profile, chunks)
     validate_resume_source_refs(profile, chunks)
@@ -167,7 +173,7 @@ def upload_documents(
                 message=f"Structuring {document_type} with LLM",
                 data={"document_id": f"{document_type}:{row.id}"},
             )
-            row.structured_data = _parse_profile(document_type, stored.filename, raw_text, chunks)
+            row.structured_data = _parse_profile(document_type, stored.filename, raw_text, chunks, task_id)
             if document_type == "jd":
                 row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
             rag_store = MilvusRagStore()
@@ -299,7 +305,7 @@ def reparse_document(
             filename=row.filename,
             message=f"Re-structuring {kind} with LLM",
         )
-        row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks)
+        row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id)
         rag_store = MilvusRagStore()
         rag_store.delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
         progress_hub.publish(
