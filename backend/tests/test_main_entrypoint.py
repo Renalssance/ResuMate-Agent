@@ -35,5 +35,6 @@ def test_public_config_returns_empty_llm_model_when_unconfigured(monkeypatch):
 def test_container_entrypoint_includes_autofill_routes():
     paths = {route.path for route in container_app.routes}
     assert "/api/autofill/profiles" in paths
+    assert "/api/autofill/profiles/{profile_id}" in paths
     assert "/api/autofill/match" in paths
     assert "/api/autofill/events" in paths
