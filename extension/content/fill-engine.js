@@ -23,6 +23,22 @@
     return element.isContentEditable || (attr !== null && attr.toLowerCase() !== 'false');
   }
 
+  function isVisibleFillTarget(element) {
+    if (!element || element.getAttribute('aria-hidden') === 'true' || element.closest('[aria-hidden="true"]')) return false;
+    if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') && element.disabled) return false;
+    if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') && element.readOnly) return false;
+
+    const style = window.getComputedStyle(element);
+    if (!style || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+
+    const rect = element.getBoundingClientRect();
+    if (rect.width < 20 || rect.height < 10) return false;
+
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    return rect.right > 0 && rect.bottom > 0 && rect.left < viewportWidth && rect.top < viewportHeight;
+  }
+
   function textOf(element) {
     return element && element.textContent ? element.textContent.trim().replace(/\s+/g, ' ').slice(0, 120) : '';
   }
@@ -42,18 +58,13 @@
     return textOf(container).slice(0, 160);
   }
 
-  function isTinyHiddenish(element) {
-    const rect = element.getBoundingClientRect();
-    return rect.width < 20 || rect.height < 10;
-  }
-
   function scanForm() {
     scannedElements = [];
     const elements = [];
     const selector = 'input, textarea, select, [contenteditable]';
     document.querySelectorAll(selector).forEach((element) => {
       if (!isFillable(element)) return;
-      if (isTinyHiddenish(element)) return;
+      if (!isVisibleFillTarget(element)) return;
       scannedElements.push(element);
       elements.push({
         index: scannedElements.length - 1,
@@ -77,7 +88,6 @@
     const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
     if (descriptor && descriptor.set) descriptor.set.call(element, value);
     else element.value = value;
-    if (element._valueTracker) element._valueTracker.setValue(element.value);
     element.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
     element.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
     return { success: true, filled: value };
@@ -114,6 +124,9 @@
   function fillElement(element, value) {
     if (!element || !document.contains(element) || !isFillable(element)) {
       return { success: false, error: 'Element is no longer fillable' };
+    }
+    if (!isVisibleFillTarget(element)) {
+      return { success: false, error: 'Element is not visible or editable' };
     }
     const tag = element.tagName.toLowerCase();
     if (tag === 'select') return fillSelect(element, value);

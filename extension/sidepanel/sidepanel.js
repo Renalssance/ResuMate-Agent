@@ -18,7 +18,9 @@ const state = {
   offline: false,
   matches: [],
   page: null,
-  elements: []
+  elements: [],
+  scannedTabId: null,
+  scannedTabUrl: ''
 };
 
 const $ = (id) => document.getElementById(id);
@@ -146,7 +148,7 @@ function createMatchRow(match) {
 function renderMatches() {
   const matchesContainer = $('matches');
   const matches = Array.isArray(state.matches) ? state.matches : [];
-  $('fillBtn').disabled = matches.length === 0;
+  $('fillBtn').disabled = matches.length === 0 || state.scannedTabId === null;
   matchesContainer.replaceChildren(...(matches.length ? matches.map(createMatchRow) : createEmptyMatches('No matches yet')));
 }
 
@@ -220,6 +222,12 @@ async function scanPage() {
   }
 
   setStatus('Scanning page...');
+  state.matches = [];
+  state.elements = [];
+  state.page = null;
+  state.scannedTabId = null;
+  state.scannedTabUrl = '';
+  renderMatches();
   try {
     const tab = await activeTab();
     if (!tab || tab.id === undefined) throw new Error('No active tab');
@@ -238,6 +246,8 @@ async function scanPage() {
     state.page = page;
     state.elements = elements;
     state.matches = Array.isArray(response && response.matches) ? response.matches : [];
+    state.scannedTabId = tab.id;
+    state.scannedTabUrl = page.url;
     $('pageInfo').textContent = `${safeText(page.title || page.url, 'Current page')} - ${elements.length} fields, ${state.matches.length} matches`;
     renderMatches();
 
@@ -254,12 +264,21 @@ async function scanPage() {
     setStatus(state.offline ? 'Offline matches ready' : 'Matches ready');
   } catch (error) {
     state.matches = [];
+    state.elements = [];
+    state.page = null;
+    state.scannedTabId = null;
+    state.scannedTabUrl = '';
     renderMatches();
     setStatus(`Scan failed: ${error.message}`);
   }
 }
 
 async function fillSelected() {
+  if (state.scannedTabId === null) {
+    setStatus('Scan the page before filling');
+    return;
+  }
+
   const selected = Array.from(document.querySelectorAll('#matches input[type="checkbox"]:checked'));
   if (selected.length === 0) {
     setStatus('Select at least one match');
@@ -275,8 +294,9 @@ async function fillSelected() {
 
   setStatus('Filling selected fields...');
   try {
-    const tab = await activeTab();
-    if (!tab || tab.id === undefined) throw new Error('No active tab');
+    const tab = await chrome.tabs.get(state.scannedTabId);
+    if (!tab || tab.id === undefined) throw new Error('Scanned tab is no longer available');
+    if (state.scannedTabUrl && tab.url !== state.scannedTabUrl) throw new Error('Scanned tab URL changed; scan again before filling');
 
     const response = await chrome.tabs.sendMessage(tab.id, { type: 'FILL_SELECTED', items });
     const results = Array.isArray(response && response.results) ? response.results : [];
