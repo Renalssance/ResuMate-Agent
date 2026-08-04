@@ -127,3 +127,52 @@ def test_build_application_profile_maps_resume_profile_fields():
     assert fields["work_experience.0.description"] == "Built FastAPI services.\nReduced latency by 30%."
     assert fields["projects.0.description"] == "Built document parsing workflow.\nAdded OCR fallback."
     assert fields["skills"] == "Python, FastAPI"
+
+
+def test_build_application_profile_ignores_malformed_structured_data():
+    resume = Resume(
+        id=8,
+        user_id=1,
+        filename="malformed.pdf",
+        raw_text="",
+        structured_data=["bad"],
+        created_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+    )
+
+    profile = build_application_profile(resume)
+    fields = {field.key: field.value for field in flatten_application_fields(profile)}
+
+    assert profile.id == "resume:8"
+    assert profile.name == "malformed.pdf"
+    assert fields["candidate_name"] == "malformed.pdf"
+
+
+def test_build_application_profile_accepts_legacy_experience_key():
+    resume = Resume(
+        id=9,
+        user_id=1,
+        filename="grace.pdf",
+        raw_text="",
+        structured_data={
+            "candidate_name": "Grace Hopper",
+            "experience": [
+                {
+                    "company": "Navy",
+                    "title": "Computer Scientist",
+                    "duration": "1944-1986",
+                    "description": "Built compiler systems.",
+                }
+            ],
+        },
+        created_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+    )
+
+    profile = build_application_profile(resume)
+    fields = {field.key: field.value for field in flatten_application_fields(profile)}
+
+    assert fields["work_experience.0.company"] == "Navy"
+    assert fields["work_experience.0.title"] == "Computer Scientist"
+    assert fields["work_experience.0.duration"] == "1944-1986"
+    assert fields["work_experience.0.description"] == "Built compiler systems."

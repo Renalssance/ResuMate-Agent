@@ -50,7 +50,7 @@ def flatten_application_fields(profile: ApplicationProfile) -> list[ApplicationF
 
 
 def build_application_profile(resume: Resume) -> ApplicationProfile:
-    data = resume.structured_data or {}
+    data = resume.structured_data if isinstance(resume.structured_data, dict) else {}
     contact = data.get("contact") if isinstance(data.get("contact"), dict) else {}
     name = _text(data.get("candidate_name") or data.get("name") or resume.filename)
     sections: list[ApplicationSection] = [
@@ -83,7 +83,8 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
     sections.append(ApplicationSection(id="education", label="Education", fields=education_fields))
 
     work_fields: list[ApplicationField] = []
-    for index, item in enumerate(data.get("work_experience") or []):
+    work_items = data.get("work_experience") or data.get("experience") or []
+    for index, item in enumerate(work_items):
         if not isinstance(item, dict):
             continue
         number = index + 1
