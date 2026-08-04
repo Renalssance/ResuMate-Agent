@@ -52,3 +52,20 @@ def test_match_application_fields_blocks_sensitive_elements():
 
     assert [item.element_index for item in response.blocked] == [0, 1]
     assert [(item.field_key, item.element_index) for item in response.matches] == [("contact.email", 2)]
+
+
+def test_match_application_fields_does_not_match_mailing_address_as_email():
+    response_with_email = match_application_fields(
+        _profile(),
+        [
+            PageElement(index=0, tag="input", type="text", label_text="Mailing Address"),
+            PageElement(index=1, tag="input", type="email", label_text="Email"),
+        ],
+    )
+    response_without_email = match_application_fields(
+        _profile(),
+        [PageElement(index=0, tag="input", type="text", label_text="Mailing Address")],
+    )
+
+    assert [(item.field_key, item.element_index) for item in response_with_email.matches] == [("contact.email", 1)]
+    assert response_without_email.matches == []

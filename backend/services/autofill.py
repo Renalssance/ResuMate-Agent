@@ -171,7 +171,7 @@ SENSITIVE_PATTERNS = [
 
 FIELD_KEYWORDS = {
     "candidate_name": ["name", "full name", "姓名", "名字"],
-    "contact.email": ["email", "e-mail", "mail", "邮箱"],
+    "contact.email": ["email", "e-mail", "邮箱"],
     "contact.phone": ["phone", "mobile", "tel", "telephone", "手机", "电话"],
     "contact.location": ["city", "location", "current city", "城市", "所在地"],
     "skills": ["skills", "technical skills", "技能", "专业技能"],
