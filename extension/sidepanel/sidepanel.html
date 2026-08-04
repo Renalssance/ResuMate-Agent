@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ResuMate Autofill</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>ResuMate</h1>
+          <p id="statusText">Disconnected</p>
+        </div>
+        <button id="refreshProfilesBtn" type="button">Refresh</button>
+      </header>
+
+      <section class="panel">
+        <label for="apiBaseInput">Backend</label>
+        <div class="row">
+          <input id="apiBaseInput" type="url" />
+          <button id="saveSettingsBtn" type="button">Save</button>
+        </div>
+        <label for="tokenInput">Token</label>
+        <input id="tokenInput" type="password" placeholder="Paste ResuMate JWT" />
+      </section>
+
+      <section class="panel">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect"></select>
+        <div id="profileFields" class="field-list"></div>
+      </section>
+
+      <section class="actions">
+        <button id="scanBtn" type="button">Scan Page</button>
+        <button id="fillBtn" type="button" disabled>Fill Selected</button>
+      </section>
+
+      <section id="pageInfo" class="page-info"></section>
+      <section id="matches" class="matches"></section>
+    </main>
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>
