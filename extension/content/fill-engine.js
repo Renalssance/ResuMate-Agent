@@ -15,7 +15,9 @@
       const type = (element.type || 'text').toLowerCase();
       return !['hidden', 'submit', 'button', 'reset', 'file', 'password'].includes(type);
     }
-    return tag === 'textarea' || tag === 'select' || element.isContentEditable || element.getAttribute('contenteditable') === 'true';
+    const contentEditable = (element.getAttribute('contenteditable') || '').toLowerCase();
+    const hasContentEditable = element.hasAttribute('contenteditable');
+    return tag === 'textarea' || tag === 'select' || element.isContentEditable || (hasContentEditable && (contentEditable === '' || contentEditable === 'true'));
   }
 
   function textOf(element) {
@@ -45,7 +47,7 @@
   function scanForm() {
     scannedElements = [];
     const elements = [];
-    const selector = 'input, textarea, select, [contenteditable="true"]';
+    const selector = 'input, textarea, select, [contenteditable]';
     document.querySelectorAll(selector).forEach((element) => {
       if (!isFillable(element)) return;
       if (isTinyHiddenish(element)) return;
@@ -113,7 +115,9 @@
     const tag = element.tagName.toLowerCase();
     if (tag === 'select') return fillSelect(element, value);
     if (tag === 'input' || tag === 'textarea') return fillInput(element, value);
-    if (element.isContentEditable || element.getAttribute('contenteditable') === 'true') return fillContentEditable(element, value);
+    const contentEditable = (element.getAttribute('contenteditable') || '').toLowerCase();
+    const hasContentEditable = element.hasAttribute('contenteditable');
+    if (element.isContentEditable || (hasContentEditable && (contentEditable === '' || contentEditable === 'true'))) return fillContentEditable(element, value);
     return { success: false, error: `Unsupported element ${tag}` };
   }
 
