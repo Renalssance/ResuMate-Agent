@@ -15,9 +15,12 @@
       const type = (element.type || 'text').toLowerCase();
       return !['hidden', 'submit', 'button', 'reset', 'file', 'password'].includes(type);
     }
-    const contentEditable = (element.getAttribute('contenteditable') || '').toLowerCase();
-    const hasContentEditable = element.hasAttribute('contenteditable');
-    return tag === 'textarea' || tag === 'select' || element.isContentEditable || (hasContentEditable && (contentEditable === '' || contentEditable === 'true'));
+    return tag === 'textarea' || tag === 'select' || isContentEditableCandidate(element);
+  }
+
+  function isContentEditableCandidate(element) {
+    const attr = element.getAttribute('contenteditable');
+    return element.isContentEditable || (attr !== null && attr.toLowerCase() !== 'false');
   }
 
   function textOf(element) {
@@ -115,9 +118,7 @@
     const tag = element.tagName.toLowerCase();
     if (tag === 'select') return fillSelect(element, value);
     if (tag === 'input' || tag === 'textarea') return fillInput(element, value);
-    const contentEditable = (element.getAttribute('contenteditable') || '').toLowerCase();
-    const hasContentEditable = element.hasAttribute('contenteditable');
-    if (element.isContentEditable || (hasContentEditable && (contentEditable === '' || contentEditable === 'true'))) return fillContentEditable(element, value);
+    if (isContentEditableCandidate(element)) return fillContentEditable(element, value);
     return { success: false, error: `Unsupported element ${tag}` };
   }
 
