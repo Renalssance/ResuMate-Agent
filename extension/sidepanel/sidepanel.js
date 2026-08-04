@@ -14,17 +14,55 @@ function setStatus(text) {
   $('statusText').textContent = text;
 }
 
+function renderProfiles() {
+  const profileSelect = $('profileSelect');
+  const options = state.profiles.map((profile) => {
+    const option = document.createElement('option');
+    option.value = profile.id;
+    option.textContent = profile.name;
+    return option;
+  });
+
+  profileSelect.replaceChildren(...options);
+}
+
+function createFallbackProfileFields() {
+  const fallback = document.createElement('div');
+  fallback.className = 'muted';
+  fallback.textContent = 'No profile loaded';
+  return [fallback];
+}
+
+function createProfileField(field) {
+  const container = document.createElement('div');
+  container.className = 'field';
+
+  const label = document.createElement('strong');
+  label.textContent = field.label;
+
+  const value = document.createElement('div');
+  value.className = 'muted';
+  value.textContent = field.value;
+
+  container.append(label, value);
+  return container;
+}
+
+function renderProfileFields() {
+  const profileFields = $('profileFields');
+  const fields = state.activeProfile
+    ? state.activeProfile.sections.flatMap((section) => section.fields).filter((field) => field.value).slice(0, 8)
+        .map(createProfileField)
+    : createFallbackProfileFields();
+
+  profileFields.replaceChildren(...fields);
+}
+
 function render() {
   $('apiBaseInput').value = state.apiBase;
   $('tokenInput').value = state.token;
-  $('profileSelect').innerHTML = state.profiles
-    .map((profile) => `<option value="${profile.id}">${profile.name}</option>`)
-    .join('');
-  $('profileFields').innerHTML = state.activeProfile
-    ? state.activeProfile.sections.flatMap((section) => section.fields).filter((field) => field.value).slice(0, 8)
-        .map((field) => `<div class="field"><strong>${field.label}</strong><div class="muted">${field.value}</div></div>`)
-        .join('')
-    : '<div class="muted">No profile loaded</div>';
+  renderProfiles();
+  renderProfileFields();
 }
 
 function bind() {
