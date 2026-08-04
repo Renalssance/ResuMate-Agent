@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -20,6 +21,8 @@ from backend.services.autofill import build_application_profile, flatten_applica
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/autofill", tags=["autofill"])
+SAFE_ELEMENT_KEYS = {"index", "tag", "type", "id", "name", "placeholder", "labelText", "ariaLabel", "nearbyText"}
+MAX_LOG_VALUE_LENGTH = 160
 
 
 def _resume_id(profile_id: str) -> int:
@@ -34,6 +37,24 @@ def _find_resume(db: Session, user_id: int, profile_id: str) -> Resume:
     if not row:
         raise HTTPException(status_code=404, detail="profile not found")
     return row
+
+
+def _safe_element_summary(element: dict[str, Any]) -> dict[str, Any]:
+    safe: dict[str, Any] = {}
+    for key in SAFE_ELEMENT_KEYS:
+        if key not in element:
+            continue
+        value = element[key]
+        if key == "index":
+            try:
+                safe[key] = int(value)
+            except (TypeError, ValueError):
+                continue
+            continue
+        if isinstance(value, (dict, list, tuple, set)):
+            continue
+        safe[key] = str(value)[:MAX_LOG_VALUE_LENGTH]
+    return safe
 
 
 @router.get("/profiles", response_model=list[ApplicationProfileSummary])
@@ -75,18 +96,15 @@ def match_fields(
 
 @router.post("/events", response_model=AutofillEventResponse)
 def record_event(request: AutofillEventRequest, current_user: User = Depends(get_current_user)):
-    safe_elements = []
-    for element in request.element_summaries:
-        safe = {key: value for key, value in element.items() if key != "value"}
-        safe_elements.append(safe)
+    safe_elements = [_safe_element_summary(element) for element in request.element_summaries]
     logger.info(
-        "Autofill event | user_id=%s type=%s status=%s profile_id=%s fields=%s elements=%s errors=%s",
+        "Autofill event | user_id=%s type=%s status=%s profile_id=%s fields=%s elements=%s error_count=%s",
         current_user.id,
         request.event_type,
         request.status,
         request.profile_id,
         request.field_keys,
         safe_elements,
-        request.errors,
+        len(request.errors),
     )
     return AutofillEventResponse(ok=True)

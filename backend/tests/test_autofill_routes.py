@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 
 from fastapi.testclient import TestClient
@@ -13,6 +14,11 @@ class FakeQuery:
         self.rows = rows
 
     def filter(self, *args):
+        for expression in args:
+            field_name = getattr(getattr(expression, "left", None), "key", "")
+            expected = getattr(getattr(expression, "right", None), "value", None)
+            if field_name:
+                self.rows = [row for row in self.rows if getattr(row, field_name) == expected]
         return self
 
     def order_by(self, *args):
@@ -34,10 +40,10 @@ class FakeDb:
         return FakeQuery(self.rows)
 
 
-def _resume() -> Resume:
+def _resume(id=3, user_id=42) -> Resume:
     return Resume(
-        id=3,
-        user_id=42,
+        id=id,
+        user_id=user_id,
         filename="ada.pdf",
         raw_text="",
         structured_data={"candidate_name": "Ada", "contact": {"email": "ada@example.com"}},
@@ -74,6 +80,18 @@ def test_get_autofill_profile_returns_full_profile():
     assert payload["sections"][0]["fields"][0]["value"] == "Ada"
 
 
+def test_get_autofill_profile_rejects_wrong_profile_id():
+    response = _client([_resume()]).get("/api/autofill/profiles/resume:999")
+
+    assert response.status_code == 404
+
+
+def test_get_autofill_profile_rejects_other_user_resume():
+    response = _client([_resume(user_id=99)]).get("/api/autofill/profiles/resume:3")
+
+    assert response.status_code == 404
+
+
 def test_match_autofill_profile_by_payload():
     profile = _client([_resume()]).get("/api/autofill/profiles/resume:3").json()
 
@@ -90,7 +108,9 @@ def test_match_autofill_profile_by_payload():
     assert response.json()["matches"][0]["fieldKey"] == "contact.email"
 
 
-def test_events_endpoint_redacts_values_from_response():
+def test_events_endpoint_redacts_values_from_response(caplog):
+    caplog.set_level(logging.INFO, logger="backend.routes.autofill")
+
     response = _client([_resume()]).post(
         "/api/autofill/events",
         json={
@@ -98,9 +118,24 @@ def test_events_endpoint_redacts_values_from_response():
             "status": "success",
             "profileId": "resume:3",
             "fieldKeys": ["contact.email"],
-            "elementSummaries": [{"index": 0, "labelText": "Email", "value": "ada@example.com"}],
+            "elementSummaries": [
+                {
+                    "index": 0,
+                    "labelText": "Email",
+                    "name": "email",
+                    "type": "email",
+                    "value": "ada@example.com",
+                    "inputValue": "secret@example.com",
+                    "nested": {"value": "nested@example.com"},
+                }
+            ],
+            "errors": ["failed to fill secret@example.com"],
         },
     )
 
     assert response.status_code == 200
     assert response.json() == {"ok": True}
+    messages = "\n".join(record.getMessage() for record in caplog.records)
+    assert "ada@example.com" not in messages
+    assert "secret@example.com" not in messages
+    assert "nested@example.com" not in messages
