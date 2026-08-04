@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Backend Engineer - Example Careers</title>
+    <style>
+      body { font: 14px Arial, sans-serif; margin: 32px; max-width: 720px; }
+      label { display: grid; gap: 4px; margin: 12px 0; }
+      input, textarea, select { min-height: 34px; padding: 6px 8px; }
+      textarea { min-height: 96px; }
+    </style>
+  </head>
+  <body>
+    <h1>Backend Engineer</h1>
+    <form>
+      <label>姓名 <input name="candidate_name" /></label>
+      <label>邮箱 <input type="email" name="email" /></label>
+      <label>手机 <input type="tel" name="mobile" /></label>
+      <label>学校 <input name="school" /></label>
+      <label>专业 <input name="major" /></label>
+      <label>技能 <textarea name="skills"></textarea></label>
+      <label>城市
+        <select name="city">
+          <option value="">Select</option>
+          <option>Shanghai</option>
+          <option>Beijing</option>
+          <option>Shenzhen</option>
+        </select>
+      </label>
+      <label>验证码 <input name="captcha" /></label>
+      <button type="button">Submit button stays manual</button>
+    </form>
+  </body>
+</html>
