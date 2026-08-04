@@ -21,12 +21,13 @@
 1. Start ResuMate backend at `http://127.0.0.1:8000`.
 2. Log in through the main app and copy the JWT from local storage, or call `/auth/login` and copy `access_token`.
 3. Load the unpacked extension.
-4. Open `extension/fixtures/application-form.html` in the browser.
-5. Open the extension side panel.
-6. Set backend URL and token.
-7. Refresh profiles.
-8. Scan page.
-9. Confirm high-confidence fields are checked.
-10. Click Fill Selected.
-11. Verify normal fields are filled and the captcha field remains unchanged.
-12. Verify the submit button was not clicked.
+4. From the repo root, run `python -m http.server 8899`.
+5. Open `http://127.0.0.1:8899/extension/fixtures/application-form.html` in the browser.
+6. Open the extension side panel.
+7. Set backend URL and token.
+8. Refresh profiles.
+9. Scan page.
+10. Confirm high-confidence fields are checked.
+11. Click Fill Selected.
+12. Verify normal fields are filled and the captcha field remains unchanged.
+13. Verify the submit button was not clicked.
