@@ -232,9 +232,22 @@ async function scanPage() {
     const tab = await activeTab();
     if (!tab || tab.id === undefined) throw new Error('No active tab');
 
+    const scrapeResults = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ['content/scraper.js']
+    });
+    const scraped = scrapeResults && scrapeResults[0] ? scrapeResults[0].result : {};
+
     const scan = await chrome.tabs.sendMessage(tab.id, { type: 'SCAN_FORM' });
     const elements = Array.isArray(scan && scan.elements) ? scan.elements : [];
-    const page = pageFromTab(tab);
+    const tabPage = pageFromTab(tab);
+    const page = {
+      url: scraped && scraped.url ? scraped.url : tabPage.url,
+      title: scraped && scraped.title ? scraped.title : tabPage.title,
+      company: scraped && scraped.company ? scraped.company : tabPage.company,
+      position: scraped && scraped.position ? scraped.position : tabPage.position,
+      confidence: scraped && scraped.confidence ? scraped.confidence : tabPage.confidence
+    };
     const payload = {
       profile: state.activeProfile,
       profileId: state.activeProfile.id || '',
@@ -248,7 +261,7 @@ async function scanPage() {
     state.matches = Array.isArray(response && response.matches) ? response.matches : [];
     state.scannedTabId = tab.id;
     state.scannedTabUrl = page.url;
-    $('pageInfo').textContent = `${safeText(page.title || page.url, 'Current page')} - ${elements.length} fields, ${state.matches.length} matches`;
+    $('pageInfo').textContent = `${safeText(page.title || page.url, 'Current page')} - ${elements.length} fields - ${safeText(page.company, 'Unknown company')} / ${safeText(page.position, 'Unknown position')} - ${state.matches.length} matches`;
     renderMatches();
 
     await recordSafely({
