@@ -2,9 +2,18 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import timezone
+import re
 
 from backend.db.models import Resume
-from backend.schemas.autofill import ApplicationField, ApplicationProfile, ApplicationSection
+from backend.schemas.autofill import (
+    ApplicationField,
+    ApplicationProfile,
+    ApplicationSection,
+    AutofillMatchResponse,
+    BlockedElement,
+    MatchSuggestion,
+    PageElement,
+)
 
 
 def _utc_isoformat(value) -> str:
@@ -137,3 +146,131 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
         updated_at=_utc_isoformat(resume.updated_at),
         sections=sections,
     )
+
+
+SENSITIVE_PATTERNS = [
+    "password",
+    "captcha",
+    "verification",
+    "verify code",
+    "sms code",
+    "one-time",
+    "otp",
+    "id card",
+    "identity card",
+    "national id",
+    "bank card",
+    "credit card",
+    "密码",
+    "验证码",
+    "校验码",
+    "身份证",
+    "银行卡",
+]
+
+
+FIELD_KEYWORDS = {
+    "candidate_name": ["name", "full name", "姓名", "名字"],
+    "contact.email": ["email", "e-mail", "mail", "邮箱"],
+    "contact.phone": ["phone", "mobile", "tel", "telephone", "手机", "电话"],
+    "contact.location": ["city", "location", "current city", "城市", "所在地"],
+    "skills": ["skills", "technical skills", "技能", "专业技能"],
+    "languages": ["languages", "language", "语言"],
+    "certifications": ["certifications", "certificate", "证书"],
+    "self_summary": ["summary", "self introduction", "about me", "自我介绍", "个人介绍"],
+}
+
+
+def _norm(value: str) -> str:
+    return re.sub(r"\s+", " ", (value or "").lower()).strip()
+
+
+def _element_text(element: PageElement) -> str:
+    parts = [
+        element.type,
+        element.id,
+        element.name,
+        element.placeholder,
+        element.label_text,
+        element.aria_label,
+        element.nearby_text,
+    ]
+    return _norm(" ".join(part for part in parts if part))
+
+
+def is_sensitive_element(element: PageElement) -> bool:
+    text = _element_text(element)
+    if _norm(element.type) in {"password"}:
+        return True
+    return any(pattern in text for pattern in SENSITIVE_PATTERNS)
+
+
+def _keywords_for_field(field: ApplicationField) -> list[str]:
+    keywords = [field.key, field.label, *field.aliases]
+    keywords.extend(FIELD_KEYWORDS.get(field.key, []))
+    if field.key.startswith("education.") and field.key.endswith(".school"):
+        keywords.extend(["school", "university", "学校"])
+    if field.key.startswith("education.") and field.key.endswith(".major"):
+        keywords.extend(["major", "专业"])
+    if field.key.startswith("education.") and field.key.endswith(".degree"):
+        keywords.extend(["degree", "学位"])
+    if field.key.startswith("work_experience.") and field.key.endswith(".company"):
+        keywords.extend(["company", "employer", "公司"])
+    if field.key.startswith("work_experience.") and field.key.endswith(".title"):
+        keywords.extend(["title", "role", "position", "岗位"])
+    if field.key.endswith(".description"):
+        keywords.extend(["description", "details", "介绍", "描述", "职责"])
+    return [_norm(keyword) for keyword in keywords if _norm(keyword)]
+
+
+def _score_field_for_element(field: ApplicationField, element: PageElement) -> tuple[int, str]:
+    text = _element_text(element)
+    if not text or not field.value:
+        return 0, ""
+    best = 0
+    reason = ""
+    for keyword in _keywords_for_field(field):
+        if keyword == text:
+            return 100, f'exact match on "{keyword}"'
+        if keyword in text:
+            if len(keyword) > best:
+                best = len(keyword)
+                reason = f'label contains "{keyword}"'
+    return best, reason
+
+
+def match_application_fields(profile: ApplicationProfile, elements: list[PageElement]) -> AutofillMatchResponse:
+    fields = [field for field in flatten_application_fields(profile) if field.value]
+    blocked: list[BlockedElement] = []
+    candidates: list[tuple[int, int, ApplicationField, PageElement, str]] = []
+
+    for element in elements:
+        if is_sensitive_element(element):
+            blocked.append(BlockedElement(element_index=element.index, reason="sensitive field", element=element))
+            continue
+        for field in fields:
+            score, reason = _score_field_for_element(field, element)
+            if score > 0:
+                candidates.append((score, element.index, field, element, reason))
+
+    matches: list[MatchSuggestion] = []
+    used_fields: set[str] = set()
+    used_elements: set[int] = set()
+    for score, element_index, field, element, reason in sorted(candidates, key=lambda item: item[0], reverse=True):
+        if field.key in used_fields or element_index in used_elements:
+            continue
+        confidence = "high" if score >= 2 else "medium"
+        matches.append(
+            MatchSuggestion(
+                field_key=field.key,
+                element_index=element_index,
+                confidence=confidence,
+                reason=reason,
+                field=field,
+                element=element,
+            )
+        )
+        used_fields.add(field.key)
+        used_elements.add(element_index)
+
+    return AutofillMatchResponse(matches=sorted(matches, key=lambda item: item.element_index), blocked=blocked, warnings=[])
