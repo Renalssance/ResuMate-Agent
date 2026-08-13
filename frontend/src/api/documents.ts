@@ -52,3 +52,10 @@ export function reparseDocumentApi(documentId: string, taskId = '') {
 export function deleteDocumentApi(documentId: string) {
   return request.delete<void, void>(`/documents/${documentId}`)
 }
+
+export function updateStructuredDataApi(documentId: string, structuredData: Record<string, unknown>) {
+  return request.patch<BackendDocumentParseResult, BackendDocumentParseResult>(
+    `/documents/${documentId}/structured-data`,
+    { structuredData },
+  )
+}

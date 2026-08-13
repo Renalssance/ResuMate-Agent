@@ -91,6 +91,7 @@ const llmModel = ref<string | null>(null)
 const navItems = [
   { path: '/documents', label: '文档管理', icon: '文' },
   { path: '/matching', label: '岗位匹配', icon: '配' },
+  { path: '/profile-fields', label: '结构资料', icon: '档' },
   { path: '/questions', label: '试题生成', icon: '题' },
 ]
 

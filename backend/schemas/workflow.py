@@ -405,6 +405,10 @@ class DocumentParseResult(BaseModel):
     local_stored: bool = True
 
 
+class StructuredDataUpdate(ApiModel):
+    structured_data: dict[str, Any] = Field(alias="structuredData")
+
+
 class DocumentParseResponse(ApiModel):
     documents: list[DocumentParseResult]
     task_id: str = Field(default="", alias="taskId")

@@ -54,6 +54,10 @@ export function fieldKeywords(field) {
   if (field.key.startsWith('work_experience.') && field.key.endsWith('.company')) keywords.push('company', 'employer', '\u516c\u53f8');
   if (field.key.startsWith('work_experience.') && field.key.endsWith('.title')) keywords.push('title', 'role', 'position', '\u5c97\u4f4d');
   if (field.key.endsWith('.description')) keywords.push('description', 'details', '\u4ecb\u7ecd', '\u63cf\u8ff0', '\u804c\u8d23');
+  if (field.key.startsWith('projects.') && field.key.endsWith('.name')) keywords.push('project name', '\u9879\u76ee\u540d\u79f0', '\u9879\u76ee');
+  if (field.key.startsWith('projects.') && field.key.endsWith('.role')) keywords.push('project role', 'role', '\u9879\u76ee\u89d2\u8272', '\u89d2\u8272');
+  if (field.key.startsWith('projects.') && field.key.endsWith('.duration')) keywords.push('project date', 'project period', 'date', 'period', '\u8d77\u6b62\u65f6\u95f4', '\u9879\u76ee\u65f6\u95f4', '\u65f6\u95f4');
+  if (field.key.startsWith('projects.') && field.key.endsWith('.description')) keywords.push('project description', '\u9879\u76ee\u63cf\u8ff0', '\u63cf\u8ff0');
   return keywords.map(norm).filter(Boolean);
 }
 
@@ -74,6 +78,9 @@ export function flattenFields(profile) {
 function scoreFieldForElement(field, element) {
   const text = elementText(element);
   if (!text || !field.value) return { score: 0, reason: '' };
+  if (field.key.startsWith('projects.') && !field.key.endsWith('.url') && /\b(url|link)\b|\u94fe\u63a5/.test(text)) {
+    return { score: 0, reason: '' };
+  }
   let best = 0;
   let reason = '';
   for (const keyword of fieldKeywords(field)) {
@@ -84,6 +91,43 @@ function scoreFieldForElement(field, element) {
     }
   }
   return { score: best, reason };
+}
+
+export function diagnoseMatches(profile, elements) {
+  const fields = flattenFields(profile);
+  const valuedFields = fields.filter((field) => field.value);
+  const diagnostics = (elements || []).map((element) => {
+    const text = elementText(element);
+    const sensitive = isSensitive(element);
+    const candidates = valuedFields
+      .map((field) => {
+        const scored = scoreFieldForElement(field, element);
+        return {
+          fieldKey: field.key,
+          fieldLabel: field.label,
+          valuePreview: String(field.value || '').slice(0, 80),
+          score: scored.score,
+          reason: scored.reason
+        };
+      })
+      .filter((candidate) => candidate.score > 0)
+      .sort((left, right) => right.score - left.score)
+      .slice(0, 5);
+    return {
+      element,
+      elementText: text,
+      sensitive,
+      status: sensitive ? 'sensitive' : candidates.length ? 'candidate' : 'no-candidate',
+      bestCandidate: candidates[0] || { fieldKey: '', fieldLabel: '', valuePreview: '', score: 0, reason: '' },
+      candidates
+    };
+  });
+
+  return {
+    fieldCount: fields.length,
+    valuedFieldCount: valuedFields.length,
+    elements: diagnostics
+  };
 }
 
 export function matchLocally(profile, elements) {

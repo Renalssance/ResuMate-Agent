@@ -84,8 +84,36 @@ API Key 等敏感信息必须放在 `.env` 中管理。仓库会忽略 `.env`，
 
 ### 2. 使用 Docker 启动完整 Demo
 
+首次启动，或修改了 `Dockerfile`、`backend/requirements.txt`、`frontend/package.json`、`frontend/package-lock.json` 等依赖/构建文件后，执行：
+
 ```bash
 docker compose up --build
+```
+
+日常只是启动已经构建过的容器时，执行：
+
+```bash
+docker compose up
+```
+
+`--build` 会在启动前检查并构建镜像。首次构建仍会下载基础镜像和依赖包；后续构建会复用 Docker 层缓存。项目已优化 Docker 缓存：后端只有依赖文件变化时才会重新安装 Python 包，前端构建会忽略 `node_modules`、`dist` 和本地 npm 缓存，避免传入不必要的构建上下文。
+
+Docker 构建中的 Python 和 npm 依赖默认使用清华源：
+
+- PyPI: `https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple`
+- npm: `https://mirrors.tuna.tsinghua.edu.cn/npm/`
+
+基础镜像默认使用 DaoCloud 的 Docker Hub 镜像加速：
+
+- Python base image: `docker.m.daocloud.io/library/python:3.12-slim`
+- Node base image: `docker.m.daocloud.io/library/node:22-alpine`
+- Nginx base image: `docker.m.daocloud.io/library/nginx:1.27-alpine`
+
+如需临时切回官方源，可以在构建时覆盖参数：
+
+```bash
+docker compose build backend --build-arg PYTHON_IMAGE=python:3.12-slim --build-arg PIP_INDEX_URL=https://pypi.org/simple
+docker compose build frontend --build-arg NODE_IMAGE=node:22-alpine --build-arg NGINX_IMAGE=nginx:1.27-alpine --build-arg NPM_REGISTRY=https://registry.npmjs.org/
 ```
 
 Docker Compose 会启动：

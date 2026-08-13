@@ -87,14 +87,37 @@ def test_build_application_profile_maps_resume_profile_fields():
         structured_data={
             "candidate_name": "Ada Lovelace",
             "contact": {"email": "ada@example.com", "phone": "1234567890", "location": "Shanghai"},
+            "application": {
+                "referral_code": "BT-123",
+                "gender": "Female",
+                "birth_date": "1999.01.01",
+                "ethnicity": "Han",
+                "nationality": "China",
+                "id_document_type": "Chinese Resident ID",
+                "expected_salary": "20k-30k",
+                "current_address": "Shanghai Pudong",
+                "portfolio_url": "https://ada.dev",
+                "linkedin_url": "https://linkedin.com/in/ada",
+            },
             "education": [
-                {"school": "Example University", "degree": "MS", "major": "Computer Science", "years": "2022-2024"}
+                {
+                    "school": "Example University",
+                    "degree": "MS",
+                    "major": "Computer Science",
+                    "years": "2022-2024",
+                    "college": "School of Computing",
+                    "lab": "AI Lab",
+                    "research_direction": "Agent systems",
+                    "advisor": "Dr. Turing",
+                }
             ],
             "work_experience": [
                 {
                     "company": "Analytical Engines Ltd",
                     "title": "Backend Engineer",
                     "duration": "2024-2026",
+                    "start_date": "2024.01",
+                    "end_date": "2026.02",
                     "description": "Built FastAPI services.",
                     "bullets": [{"raw_text": "Reduced latency by 30%."}],
                 }
@@ -103,6 +126,10 @@ def test_build_application_profile_maps_resume_profile_fields():
                 {
                     "name": "Resume Agent",
                     "role": "Developer",
+                    "duration": "2025.01 - 2025.06",
+                    "start_date": "2025.01",
+                    "end_date": "2025.06",
+                    "url": "https://github.com/ada/resume-agent",
                     "description": "Built document parsing workflow.",
                     "bullets": [{"raw_text": "Added OCR fallback."}],
                 }
@@ -123,8 +150,28 @@ def test_build_application_profile_maps_resume_profile_fields():
     assert profile.name == "Ada Lovelace"
     assert fields["candidate_name"] == "Ada Lovelace"
     assert fields["contact.email"] == "ada@example.com"
+    assert fields["application.referral_code"] == "BT-123"
+    assert fields["application.gender"] == "Female"
+    assert fields["application.birth_date"] == "1999.01.01"
+    assert fields["application.ethnicity"] == "Han"
+    assert fields["application.nationality"] == "China"
+    assert fields["application.id_document_type"] == "Chinese Resident ID"
+    assert fields["application.expected_salary"] == "20k-30k"
+    assert fields["application.current_address"] == "Shanghai Pudong"
+    assert fields["application.portfolio_url"] == "https://ada.dev"
+    assert fields["application.linkedin_url"] == "https://linkedin.com/in/ada"
     assert fields["education.0.school"] == "Example University"
+    assert fields["education.0.college"] == "School of Computing"
+    assert fields["education.0.lab"] == "AI Lab"
+    assert fields["education.0.research_direction"] == "Agent systems"
+    assert fields["education.0.advisor"] == "Dr. Turing"
+    assert fields["work_experience.0.start_date"] == "2024.01"
+    assert fields["work_experience.0.end_date"] == "2026.02"
     assert fields["work_experience.0.description"] == "Built FastAPI services.\nReduced latency by 30%."
+    assert fields["projects.0.url"] == "https://github.com/ada/resume-agent"
+    assert fields["projects.0.duration"] == "2025.01 - 2025.06"
+    assert fields["projects.0.start_date"] == "2025.01"
+    assert fields["projects.0.end_date"] == "2025.06"
     assert fields["projects.0.description"] == "Built document parsing workflow.\nAdded OCR fallback."
     assert fields["skills"] == "Python, FastAPI"
 

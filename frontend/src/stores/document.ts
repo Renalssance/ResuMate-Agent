@@ -5,6 +5,7 @@ import {
   deleteDocumentApi,
   fetchDocumentsApi,
   reparseDocumentApi,
+  updateStructuredDataApi,
   uploadDocumentsApi,
   type BackendDocumentParseResult,
 } from '../api/documents'
@@ -99,6 +100,12 @@ export const useDocumentStore = defineStore('document', () => {
     }
   }
 
+  async function updateStructuredData(id: string, structuredData: Record<string, unknown>) {
+    const updated = toDocumentRecord(await updateStructuredDataApi(id, structuredData))
+    upsertDocument(updated)
+    return updated
+  }
+
   function upsertDocument(document: DocumentRecord) {
     upsertDocuments([document])
   }
@@ -128,6 +135,7 @@ export const useDocumentStore = defineStore('document', () => {
     uploadDocuments,
     reparseDocument,
     deleteDocument,
+    updateStructuredData,
     upsertDocument,
     upsertDocuments,
     toDocumentRecord,

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DocumentsView from '../views/DocumentsView.vue'
 import MatchingView from '../views/MatchingView.vue'
+import ProfileFieldsView from '../views/ProfileFieldsView.vue'
 import QuestionsView from '../views/QuestionsView.vue'
 
 const router = createRouter({
@@ -18,6 +19,12 @@ const router = createRouter({
       name: 'matching',
       component: MatchingView,
       meta: { title: '岗位匹配', description: '选择 JD 和简历，运行匹配 Agent' },
+    },
+    {
+      path: '/profile-fields',
+      name: 'profile-fields',
+      component: ProfileFieldsView,
+      meta: { title: '结构资料', description: '查看、补充并保存招聘表单常用字段' },
     },
     {
       path: '/questions',

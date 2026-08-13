@@ -23,7 +23,10 @@
     return element.isContentEditable || (attr !== null && attr.toLowerCase() !== 'false');
   }
 
-  function isVisibleFillTarget(element) {
+  function isVisibleFillTarget(element, options = {}) {
+    if (window.ResuMateVisibilityUtils && window.ResuMateVisibilityUtils.isRenderableFillTarget) {
+      return window.ResuMateVisibilityUtils.isRenderableFillTarget(element, options);
+    }
     if (!element || element.getAttribute('aria-hidden') === 'true' || element.closest('[aria-hidden="true"]')) return false;
     if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') && element.disabled) return false;
     if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') && element.readOnly) return false;
@@ -34,6 +37,7 @@
     const rect = element.getBoundingClientRect();
     if (rect.width < 20 || rect.height < 10) return false;
 
+    if (!options.requireViewport) return true;
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     return rect.right > 0 && rect.bottom > 0 && rect.left < viewportWidth && rect.top < viewportHeight;
@@ -44,6 +48,9 @@
   }
 
   function labelFor(element) {
+    if (window.ResuMateLabelUtils && window.ResuMateLabelUtils.findElementLabel) {
+      return window.ResuMateLabelUtils.findElementLabel(element);
+    }
     if (element.id) {
       const label = document.querySelector(`label[for="${CSS.escape(element.id)}"]`);
       if (label) return textOf(label);
@@ -54,6 +61,9 @@
   }
 
   function nearbyText(element) {
+    if (window.ResuMateLabelUtils && window.ResuMateLabelUtils.nearbyTextFor) {
+      return window.ResuMateLabelUtils.nearbyTextFor(element);
+    }
     const container = element.closest('label, .form-item, .form-row, .field, .ant-form-item, .semi-form-field, .arco-form-item, div');
     return textOf(container).slice(0, 160);
   }
@@ -64,7 +74,7 @@
     const selector = 'input, textarea, select, [contenteditable]';
     document.querySelectorAll(selector).forEach((element) => {
       if (!isFillable(element)) return;
-      if (!isVisibleFillTarget(element)) return;
+      if (!isVisibleFillTarget(element, { requireViewport: false })) return;
       scannedElements.push(element);
       elements.push({
         index: scannedElements.length - 1,
@@ -125,7 +135,12 @@
     if (!element || !document.contains(element) || !isFillable(element)) {
       return { success: false, error: 'Element is no longer fillable' };
     }
-    if (!isVisibleFillTarget(element)) {
+    if (window.ResuMateVisibilityUtils && window.ResuMateVisibilityUtils.scrollIntoViewIfNeeded) {
+      window.ResuMateVisibilityUtils.scrollIntoViewIfNeeded(element);
+    } else if (element.scrollIntoView) {
+      element.scrollIntoView({ block: 'center', inline: 'nearest' });
+    }
+    if (!isVisibleFillTarget(element, { requireViewport: true })) {
       return { success: false, error: 'Element is not visible or editable' };
     }
     const tag = element.tagName.toLowerCase();

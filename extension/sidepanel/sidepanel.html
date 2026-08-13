@@ -9,36 +9,90 @@
   <body>
     <main class="shell">
       <header class="topbar">
-        <div>
-          <h1>ResuMate</h1>
-          <p id="statusText">Disconnected</p>
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <div>
+            <h1>ResuMate</h1>
+            <p class="promise" data-i18n="promise">Review first. Fill only selected.</p>
+          </div>
         </div>
-        <button id="refreshProfilesBtn" type="button">Refresh</button>
+        <div class="top-actions">
+          <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="actions.selectLanguage">
+            <button id="languageZhBtn" class="lang-btn" type="button" data-language="zh" data-i18n="language.chinese" data-i18n-aria-label="actions.useChinese">中文</button>
+            <button id="languageEnBtn" class="lang-btn" type="button" data-language="en" data-i18n="language.english" data-i18n-aria-label="actions.useEnglish">EN</button>
+          </div>
+          <p id="statusText" class="status-badge" aria-live="polite">Disconnected</p>
+          <button id="refreshProfilesBtn" class="ghost-btn" type="button" aria-label="Refresh profiles" data-i18n="actions.refreshProfiles" data-i18n-aria-label="actions.refreshProfiles">Refresh</button>
+        </div>
       </header>
 
-      <section class="panel">
-        <label for="apiBaseInput">Backend</label>
-        <div class="row">
-          <input id="apiBaseInput" type="url" />
-          <button id="saveSettingsBtn" type="button">Save</button>
+      <section class="panel page-card" aria-labelledby="pageHeading">
+        <div class="section-head">
+          <div>
+            <p class="kicker" data-i18n="currentPage.kicker">Current page</p>
+            <h2 id="pageHeading" data-i18n="currentPage.heading">Scan workspace</h2>
+          </div>
+          <span class="safety-pill" data-i18n="safety.noAutoSubmit">No auto-submit</span>
         </div>
-        <label for="tokenInput">Token</label>
-        <input id="tokenInput" type="password" placeholder="Paste ResuMate JWT" />
+        <section id="pageInfo" class="page-info"></section>
       </section>
 
-      <section class="panel">
-        <label for="profileSelect">Profile</label>
+      <section class="panel profile-card" aria-labelledby="profileHeading">
+        <div class="section-head compact">
+          <div>
+            <p class="kicker" data-i18n="resume.kicker">Resume</p>
+            <h2 id="profileHeading" data-i18n="resume.heading">Stored resume</h2>
+          </div>
+          <p id="profileSummary" class="panel-note">No profile loaded</p>
+        </div>
+        <label for="profileSelect" class="sr-only" data-i18n="resume.selectLabel">Stored resume</label>
         <select id="profileSelect"></select>
         <div id="profileFields" class="field-list"></div>
       </section>
 
-      <section class="actions">
-        <button id="scanBtn" type="button">Scan Page</button>
-        <button id="fillBtn" type="button" disabled>Fill Selected</button>
+      <section class="panel" aria-labelledby="matchesHeading">
+        <div class="section-head compact">
+          <div>
+            <p class="kicker" data-i18n="review.kicker">Review</p>
+            <h2 id="matchesHeading" data-i18n="review.heading">Matched fields</h2>
+          </div>
+          <p class="panel-note" data-i18n="review.sensitiveUntouched">Sensitive fields stay untouched.</p>
+        </div>
+        <section id="matches" class="matches"></section>
       </section>
 
-      <section id="pageInfo" class="page-info"></section>
-      <section id="matches" class="matches"></section>
+      <details class="panel settings-card">
+        <summary data-i18n="settings.summary">Settings</summary>
+        <label for="apiBaseInput" data-i18n="settings.backend">Backend</label>
+        <div class="row">
+          <input id="apiBaseInput" type="url" />
+          <button id="saveSettingsBtn" class="secondary-btn" type="button" data-i18n="actions.save">Save</button>
+        </div>
+        <div class="auth-head">
+          <strong data-i18n="settings.account">Account</strong>
+          <span id="authStatus" class="auth-status" data-i18n="auth.signedOut">Signed out</span>
+        </div>
+        <label for="usernameInput" data-i18n="auth.username">Username</label>
+        <input id="usernameInput" type="text" autocomplete="username" />
+        <label for="passwordInput" data-i18n="auth.password">Password</label>
+        <input id="passwordInput" type="password" autocomplete="current-password" />
+        <div class="auth-actions">
+          <button id="loginBtn" class="primary-btn" type="button" data-i18n="actions.login">Log in</button>
+          <button id="logoutBtn" class="secondary-btn" type="button" data-i18n="actions.logout">Log out</button>
+        </div>
+      </details>
+
+      <details class="panel debug-card" open>
+        <summary>开发诊断 / Diagnostics</summary>
+        <div id="debugSummary" class="debug-summary">尚未扫描。</div>
+        <pre id="debugOutput" class="debug-output" aria-live="polite"></pre>
+      </details>
+
+      <section class="actions" aria-label="Autofill actions">
+        <button id="scanBtn" class="secondary-btn" type="button" aria-label="Scan current page" data-i18n="actions.scanPage" data-i18n-aria-label="actions.scanPage">Scan page</button>
+        <button id="fillBtn" class="primary-btn" type="button" aria-label="Fill selected fields" disabled data-i18n="actions.fillSelected" data-i18n-aria-label="actions.fillSelected">Fill selected</button>
+        <p id="actionHint" class="action-hint" aria-live="polite">Scan this page to preview matches.</p>
+      </section>
     </main>
     <script type="module" src="sidepanel.js"></script>
   </body>

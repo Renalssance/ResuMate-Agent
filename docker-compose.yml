@@ -12,13 +12,28 @@ services:
       BASE_URL: ${BASE_URL:-}
       MODEL: ${MODEL:-}
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      EMBEDDING_DEVICE: ${EMBEDDING_DEVICE:-cpu}
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-postgresql+psycopg2://postgres:postgres@postgres:5432/langchain_app}
+      REDIS_URL: ${DOCKER_REDIS_URL:-redis://redis:6379/0}
+      REDIS_KEY_PREFIX: ${REDIS_KEY_PREFIX:-resumate-agent}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable is required}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-1440}
+      ADMIN_INVITE_CODE: ${ADMIN_INVITE_CODE:-resumate-agent-admin-2026}
+      PASSWORD_PBKDF2_ROUNDS: ${PASSWORD_PBKDF2_ROUNDS:-310000}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
       MILVUS_URI: http://milvus:19530
       MILVUS_TOKEN: ${MILVUS_TOKEN:-}
       BACKEND_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
     ports:
       - "8000:8000"
     depends_on:
-      - milvus
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      milvus:
+        condition: service_healthy
 
   frontend:
     container_name: resumate-agent-frontend

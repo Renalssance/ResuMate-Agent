@@ -77,6 +77,14 @@ def log_llm_prompt(task: str, prompt: str, metadata: dict[str, Any] | None = Non
     )
 
 
+def log_llm_request(task: str, metadata: dict[str, Any] | None = None) -> None:
+    logging.getLogger("backend.llm").info(
+        "LLM request start | task=%s | metadata=%s",
+        task,
+        _format_metadata(metadata),
+    )
+
+
 def log_llm_response(task: str, response: str, metadata: dict[str, Any] | None = None) -> None:
     logging.getLogger("backend.llm").info(
         "LLM response | task=%s | metadata=%s\n%s",

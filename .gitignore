@@ -58,6 +58,7 @@ data/
 docs/
 log/
 logs/
+.superpowers/
 *.log
 *.pid
 *.sqlite

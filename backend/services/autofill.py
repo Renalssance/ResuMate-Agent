@@ -32,6 +32,11 @@ def _join_lines(*values: str) -> str:
     return "\n".join(value.strip() for value in values if value and value.strip())
 
 
+def _date_range(*values: str) -> str:
+    parts = [value.strip() for value in values if value and value.strip()]
+    return " - ".join(parts)
+
+
 def _bullet_text(items: Iterable[dict]) -> str:
     lines = []
     for item in items or []:
@@ -61,6 +66,7 @@ def flatten_application_fields(profile: ApplicationProfile) -> list[ApplicationF
 def build_application_profile(resume: Resume) -> ApplicationProfile:
     data = resume.structured_data if isinstance(resume.structured_data, dict) else {}
     contact = data.get("contact") if isinstance(data.get("contact"), dict) else {}
+    application = data.get("application") if isinstance(data.get("application"), dict) else {}
     name = _text(data.get("candidate_name") or data.get("name") or resume.filename)
     sections: list[ApplicationSection] = [
         ApplicationSection(
@@ -71,9 +77,37 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
                 _field("contact.email", "Email", _text(contact.get("email")), ["email", "邮箱"], "basic"),
                 _field("contact.phone", "Phone", _text(contact.get("phone")), ["phone", "mobile", "手机"], "basic"),
                 _field("contact.location", "City", _text(contact.get("location") or contact.get("city")), ["city", "location", "城市"], "basic"),
+                _field("contact.wechat", "WeChat", _text(contact.get("wechat") or contact.get("wechat_id")), ["wechat", "微信"], "basic"),
             ],
         )
     ]
+    sections.append(
+        ApplicationSection(
+            id="application",
+            label="Application Extras",
+            fields=[
+                _field("application.referral_code", "Referral Code", _text(application.get("referral_code")), ["referral code", "referral", "内推码"], "application"),
+                _field("application.gender", "Gender", _text(application.get("gender")), ["gender", "sex", "性别"], "application"),
+                _field("application.birth_date", "Birth Date", _text(application.get("birth_date") or application.get("birthday")), ["birth date", "birthday", "出生日期"], "application"),
+                _field("application.ethnicity", "Ethnicity", _text(application.get("ethnicity")), ["ethnicity", "民族"], "application"),
+                _field("application.nationality", "Nationality", _text(application.get("nationality")), ["nationality", "国籍"], "application"),
+                _field("application.id_document_type", "ID Document Type", _text(application.get("id_document_type")), ["id document type", "证件类型"], "application"),
+                _field("application.expected_city", "Expected City", _text(application.get("expected_city")), ["expected city", "preferred city", "意向城市", "期望城市"], "application"),
+                _field("application.expected_position", "Expected Position", _text(application.get("expected_position")), ["expected position", "意向岗位", "期望职位"], "application"),
+                _field("application.expected_salary", "Expected Salary", _text(application.get("expected_salary")), ["expected salary", "期望薪资", "薪资要求"], "application"),
+                _field("application.earliest_start_date", "Earliest Start Date", _text(application.get("earliest_start_date")), ["earliest start", "到岗时间", "入职时间"], "application"),
+                _field("application.current_address", "Current Address", _text(application.get("current_address")), ["current address", "现居地址", "通讯地址"], "application"),
+                _field("application.portfolio_url", "Portfolio URL", _text(application.get("portfolio_url") or application.get("portfolio")), ["portfolio", "作品集", "个人主页"], "application"),
+                _field("application.github_url", "GitHub URL", _text(application.get("github_url") or application.get("github")), ["github", "代码仓库"], "application"),
+                _field("application.linkedin_url", "LinkedIn URL", _text(application.get("linkedin_url") or application.get("linkedin")), ["linkedin", "领英"], "application"),
+                _field("application.political_status", "Political Status", _text(application.get("political_status")), ["political status", "政治面貌"], "application"),
+                _field("application.native_place", "Native Place", _text(application.get("native_place")), ["native place", "籍贯"], "application"),
+                _field("application.hukou_location", "Hukou Location", _text(application.get("hukou_location")), ["hukou", "户口所在地"], "application"),
+                _field("application.emergency_contact_name", "Emergency Contact", _text(application.get("emergency_contact_name")), ["emergency contact", "紧急联系人"], "application"),
+                _field("application.emergency_contact_phone", "Emergency Phone", _text(application.get("emergency_contact_phone")), ["emergency phone", "紧急联系电话"], "application"),
+            ],
+        )
+    )
 
     education_fields: list[ApplicationField] = []
     for index, item in enumerate(data.get("education") or []):
@@ -84,8 +118,14 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
         education_fields.extend(
             [
                 _field(f"{prefix}.school", f"School {number}", _text(item.get("school")), ["school", "university", "学校"], "education"),
+                _field(f"{prefix}.college", f"College {number}", _text(item.get("college")), ["college", "school department", "学院"], "education"),
                 _field(f"{prefix}.degree", f"Degree {number}", _text(item.get("degree")), ["degree", "学位"], "education"),
                 _field(f"{prefix}.major", f"Major {number}", _text(item.get("major")), ["major", "专业"], "education"),
+                _field(f"{prefix}.lab", f"Lab {number}", _text(item.get("lab") or item.get("laboratory")), ["lab", "laboratory", "实验室"], "education"),
+                _field(f"{prefix}.research_direction", f"Research Direction {number}", _text(item.get("research_direction") or item.get("field_direction")), ["research direction", "领域方向", "研究方向"], "education"),
+                _field(f"{prefix}.advisor", f"Advisor {number}", _text(item.get("advisor") or item.get("supervisor")), ["advisor", "supervisor", "导师"], "education"),
+                _field(f"{prefix}.start_date", f"Education Start {number}", _text(item.get("start_date")), ["education start", "入学时间", "开始时间"], "education"),
+                _field(f"{prefix}.end_date", f"Education End {number}", _text(item.get("end_date")), ["education end", "毕业时间", "结束时间"], "education"),
                 _field(f"{prefix}.years", f"Education Dates {number}", _text(item.get("years") or _join_lines(_text(item.get("start_date")), _text(item.get("end_date")))), ["education date", "graduation", "时间"], "education"),
             ]
         )
@@ -103,6 +143,8 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
             [
                 _field(f"{prefix}.company", f"Company {number}", _text(item.get("company")), ["company", "employer", "公司"], "work"),
                 _field(f"{prefix}.title", f"Title {number}", _text(item.get("title")), ["title", "role", "position", "岗位"], "work"),
+                _field(f"{prefix}.start_date", f"Work Start {number}", _text(item.get("start_date")), ["work start", "开始时间", "起始时间"], "work"),
+                _field(f"{prefix}.end_date", f"Work End {number}", _text(item.get("end_date")), ["work end", "结束时间"], "work"),
                 _field(f"{prefix}.duration", f"Work Dates {number}", _text(item.get("duration")), ["work date", "employment period", "时间"], "work"),
                 _field(f"{prefix}.description", f"Work Description {number}", description, ["work description", "experience", "职责"], "work"),
             ]
@@ -116,11 +158,16 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
         number = index + 1
         prefix = f"projects.{index}"
         description = _join_lines(_text(item.get("description")), _bullet_text(item.get("bullets") or []))
+        duration = _text(item.get("duration") or _date_range(_text(item.get("start_date")), _text(item.get("end_date"))))
         project_fields.extend(
             [
-                _field(f"{prefix}.name", f"Project {number}", _text(item.get("name")), ["project", "项目"], "project"),
-                _field(f"{prefix}.role", f"Project Role {number}", _text(item.get("role")), ["project role", "角色"], "project"),
-                _field(f"{prefix}.description", f"Project Description {number}", description, ["project description", "项目描述"], "project"),
+                _field(f"{prefix}.name", f"Project {number}", _text(item.get("name")), ["project", "项目", "项目名称"], "project"),
+                _field(f"{prefix}.role", f"Project Role {number}", _text(item.get("role")), ["project role", "role", "角色", "项目角色"], "project"),
+                _field(f"{prefix}.start_date", f"Project Start {number}", _text(item.get("start_date")), ["project start", "开始时间", "起始时间"], "project"),
+                _field(f"{prefix}.end_date", f"Project End {number}", _text(item.get("end_date")), ["project end", "结束时间"], "project"),
+                _field(f"{prefix}.duration", f"Project Dates {number}", duration, ["project date", "project period", "项目时间", "起止时间"], "project"),
+                _field(f"{prefix}.url", f"Project URL {number}", _text(item.get("url") or item.get("link")), ["project link", "project url", "项目链接"], "project"),
+                _field(f"{prefix}.description", f"Project Description {number}", description, ["project description", "项目描述", "描述"], "project"),
             ]
         )
     sections.append(ApplicationSection(id="projects", label="Projects", fields=project_fields))
@@ -220,12 +267,22 @@ def _keywords_for_field(field: ApplicationField) -> list[str]:
         keywords.extend(["title", "role", "position", "岗位"])
     if field.key.endswith(".description"):
         keywords.extend(["description", "details", "介绍", "描述", "职责"])
+    if field.key.startswith("projects.") and field.key.endswith(".name"):
+        keywords.extend(["project name", "项目名称", "项目"])
+    if field.key.startswith("projects.") and field.key.endswith(".role"):
+        keywords.extend(["project role", "role", "项目角色", "角色"])
+    if field.key.startswith("projects.") and field.key.endswith(".duration"):
+        keywords.extend(["project date", "project period", "date", "period", "起止时间", "项目时间", "时间"])
+    if field.key.startswith("projects.") and field.key.endswith(".description"):
+        keywords.extend(["project description", "项目描述", "描述"])
     return [_norm(keyword) for keyword in keywords if _norm(keyword)]
 
 
 def _score_field_for_element(field: ApplicationField, element: PageElement) -> tuple[int, str]:
     text = _element_text(element)
     if not text or not field.value:
+        return 0, ""
+    if field.key.startswith("projects.") and not field.key.endswith(".url") and re.search(r"\b(url|link)\b|链接", text):
         return 0, ""
     best = 0
     reason = ""

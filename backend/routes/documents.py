@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import anyio
@@ -20,6 +20,7 @@ from backend.schemas.workflow import (
     FollowUpAnalysisResponse,
     JobProfile,
     ResumeProfile,
+    StructuredDataUpdate,
 )
 from backend.services.analysis import parse_document_id
 from backend.services.documents import (
@@ -272,6 +273,25 @@ async def list_documents(current_user: User = Depends(get_current_user), db: Ses
 @router.get("/{document_id}", response_model=DocumentParseResult)
 async def get_document(document_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     kind, row = _find_document(db, current_user.id, document_id)
+    return _record(kind, row)
+
+
+@router.patch("/{document_id}/structured-data", response_model=DocumentParseResult)
+def update_document_structured_data(
+    document_id: str,
+    request: StructuredDataUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    kind, row = _find_document(db, current_user.id, document_id)
+    if kind != "resume":
+        raise HTTPException(status_code=422, detail="only resume structured data can be edited")
+    row.structured_data = request.structured_data
+    row.updated_at = datetime.now(timezone.utc)
+    row.parse_status = _parse_status(kind, row.structured_data)
+    db.add(row)
+    db.commit()
+    db.refresh(row)
     return _record(kind, row)
 
 
