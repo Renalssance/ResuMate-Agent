@@ -31,7 +31,7 @@
       </div>
     </section>
 
-    <section v-if="!selectedResume" class="card">
+    <section v-if="!selectedResume" class="card profile-empty-card">
       <EmptyState title="选择一份简历" description="上传并解析简历后，可以在这里检查、编辑和保存结构化字段。" />
     </section>
 
@@ -354,24 +354,29 @@ function valuePreview(path: string) {
 <style scoped>
 .profile-fields-page {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 320px;
-  gap: var(--space-4);
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr) minmax(260px, 320px);
+  gap: var(--space-5);
   align-items: start;
 }
 
 .profile-fields-rail,
 .profile-fields-aside {
   position: sticky;
-  top: 88px;
+  top: 96px;
 }
 
-.section-head.compact {
-  margin-bottom: var(--space-4);
+.profile-empty-card {
+  grid-column: span 2;
+  min-height: 280px;
+  display: grid;
+  align-items: center;
 }
 
 .editor-actions {
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
 
 .field-grid {
@@ -391,126 +396,55 @@ function valuePreview(path: string) {
   grid-column: 1 / -1;
 }
 
-.coverage-card {
-  margin-top: var(--space-4);
-  padding: var(--space-4);
-  background: var(--color-primary-light);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-md);
-}
-
-.coverage-card strong {
-  display: block;
-  color: var(--color-primary);
-  font-size: 28px;
-}
-
-.coverage-card span,
-.coverage-row small,
-.profile-fields-aside p {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-}
-
-.coverage-list,
-.field-map {
-  display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-
-.coverage-row,
-.field-map > div {
-  display: grid;
-  gap: 3px;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-subtle);
-}
-
-.coverage-row.filled {
-  border-color: rgba(22, 163, 74, 0.35);
-  background: #f0fdf4;
-}
-
-.coverage-row span,
-.field-map strong {
-  font-weight: 600;
-}
-
-.field-map code {
-  overflow-wrap: anywhere;
-  color: var(--color-primary);
-  font-size: 12px;
-}
-
-.field-map span {
-  overflow: hidden;
-  color: var(--color-text-secondary);
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .editor-section {
   margin-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-4);
 }
 
 .editor-section summary {
   margin-bottom: var(--space-4);
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
 }
 
 .repeat-card {
-  display: grid;
-  gap: var(--space-3);
   margin-bottom: var(--space-4);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-subtle);
-}
-
-.repeat-head {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
 }
 
 .save-message {
   margin-bottom: var(--space-4);
-  padding: var(--space-3);
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-sm);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .profile-fields-page {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
   }
 
-  .profile-fields-rail,
-  .profile-fields-aside {
+  .profile-fields-aside,
+  .profile-empty-card {
     position: static;
+    grid-column: 1 / -1;
+  }
+
+  .field-grid.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
+  .profile-fields-page,
   .field-grid.three,
   .field-grid.two {
     grid-template-columns: 1fr;
   }
 
+  .profile-fields-rail {
+    position: static;
+  }
+
   .editor-actions {
-    width: 100%;
-    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+
+  .editor-actions button {
+    flex: 1 1 160px;
   }
 }
 </style>

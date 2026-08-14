@@ -1,21 +1,21 @@
 <template>
   <div class="page-stack">
-    <section class="card">
+    <section class="card workflow-card question-config-card">
       <div class="section-head">
         <div>
           <h2>生成配置</h2>
           <p>基于一份 JD 与一份简历生成正式面试题，不包含在线编辑和拖拽排序。</p>
         </div>
       </div>
-      <div class="form-panel questions-form">
-        <label>
+      <div class="question-flow-grid">
+        <label class="workflow-field">
           <span>JD</span>
           <select v-model="selectedJdId">
             <option value="">请选择 JD</option>
             <option v-for="jd in documentStore.parsedJds" :key="jd.id" :value="jd.id">{{ jd.parsedContent?.title || jd.filename }}</option>
           </select>
         </label>
-        <label>
+        <label class="workflow-field">
           <span>候选人</span>
           <select v-model="selectedResumeId">
             <option value="">请选择简历</option>
@@ -24,7 +24,7 @@
             </option>
           </select>
         </label>
-        <label>
+        <label class="workflow-field">
           <span>匹配结果（必选）</span>
           <select v-model="selectedMatchId">
             <option value="">请选择匹配结果</option>
@@ -33,11 +33,13 @@
             </option>
           </select>
         </label>
-        <label>
+        <label class="workflow-field question-count-field">
           <span>题目数量</span>
           <input v-model.number="questionCount" type="number" min="1" max="10" />
         </label>
-        <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">开始生成</button>
+        <div class="question-action-panel">
+          <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">开始生成</button>
+        </div>
       </div>
     </section>
 
@@ -52,7 +54,7 @@
       :error-reason="task.errorReason.value"
     />
 
-    <section class="card">
+    <section class="card workflow-card question-history-card">
       <div class="section-head">
         <div>
           <h2>历史试题集</h2>

@@ -1,31 +1,40 @@
 <template>
   <div class="page-stack">
-    <section class="card">
+    <section class="card workflow-card matching-config-card">
       <div class="section-head">
         <div>
           <h2>匹配任务配置</h2>
           <p>仅展示解析成功的 JD 和简历，匹配过程通过 SSE 进度面板反馈。</p>
         </div>
       </div>
-      <div class="form-panel three">
-        <label>
-          <span>目标 JD</span>
-          <select v-model="selectedJdId">
-            <option value="">请选择 JD</option>
-            <option v-for="jd in documentStore.parsedJds" :key="jd.id" :value="jd.id">
-              {{ jd.parsedContent?.title || jd.filename }}
-            </option>
-          </select>
-        </label>
-        <label>
-          <span>候选人简历</span>
-          <select v-model="selectedResumeIds" multiple>
-            <option v-for="resume in documentStore.parsedResumes" :key="resume.id" :value="resume.id">
-              {{ resume.parsedContent?.name || resume.filename }}
-            </option>
-          </select>
-        </label>
-        <button class="button-primary" type="button" :disabled="!canRun" @click="runMatch">开始匹配</button>
+
+      <div class="matching-flow-grid">
+        <div class="workflow-config-panel">
+          <label class="workflow-row">
+            <span>目标 JD</span>
+            <select v-model="selectedJdId">
+              <option value="">请选择 JD</option>
+              <option v-for="jd in documentStore.parsedJds" :key="jd.id" :value="jd.id">
+                {{ jd.parsedContent?.title || jd.filename }}
+              </option>
+            </select>
+          </label>
+
+          <label class="workflow-row">
+            <span>候选人简历</span>
+            <select v-model="selectedResumeIds" multiple>
+              <option v-for="resume in documentStore.parsedResumes" :key="resume.id" :value="resume.id">
+                {{ resume.parsedContent?.name || resume.filename }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="workflow-action-panel">
+          <strong>{{ selectedResumeIds.length || 0 }}</strong>
+          <span>已选择候选人</span>
+          <button class="button-primary" type="button" :disabled="!canRun" @click="runMatch">开始匹配</button>
+        </div>
       </div>
     </section>
 
@@ -40,7 +49,7 @@
       :error-reason="task.errorReason.value"
     />
 
-    <section class="card">
+    <section class="card workflow-card matching-results-card">
       <div class="section-head">
         <div>
           <h2>匹配结果</h2>
@@ -75,7 +84,7 @@
       </div>
     </section>
 
-    <section v-if="selectedResult" class="card">
+    <section v-if="selectedResult" class="card workflow-card matching-detail-card">
       <div class="section-head">
         <div>
           <h2>{{ selectedResult.candidateName }} · 匹配详情</h2>

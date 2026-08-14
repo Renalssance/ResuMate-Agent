@@ -16,8 +16,8 @@
           :to="item.path"
           @click="drawerOpen = false"
         >
-          <span class="nav-icon">{{ item.icon }}</span>
-          {{ item.label }}
+          <span :class="['nav-icon', item.icon]" aria-hidden="true"></span>
+          <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
       <AgentStatusPanel
@@ -89,10 +89,10 @@ const password = ref('')
 const llmModel = ref<string | null>(null)
 
 const navItems = [
-  { path: '/documents', label: '文档管理', icon: '文' },
-  { path: '/matching', label: '岗位匹配', icon: '配' },
-  { path: '/profile-fields', label: '结构资料', icon: '档' },
-  { path: '/questions', label: '试题生成', icon: '题' },
+  { path: '/documents', label: '文档管理', icon: 'documents' },
+  { path: '/matching', label: '岗位匹配', icon: 'matching' },
+  { path: '/profile-fields', label: '结构资料', icon: 'profile' },
+  { path: '/questions', label: '试题生成', icon: 'questions' },
 ]
 
 async function submitAuth(mode: AuthMode) {

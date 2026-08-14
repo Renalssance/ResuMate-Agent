@@ -19,33 +19,37 @@
       </article>
     </section>
 
-    <section class="card">
+    <section class="card document-action-card">
       <div class="section-head">
         <div>
           <h2>上传与筛选</h2>
           <p>上传后会立即创建解析任务，并通过统一 SSE 进度组件展示。</p>
         </div>
       </div>
-      <div class="action-grid">
-        <div class="upload-choice">
-          <label class="upload-box">
-            <input type="file" accept=".pdf,.doc,.docx,.md,.txt" @change="handleUpload('jd', $event)" />
-            <strong>上传 JD</strong>
-            <span>支持 PDF、DOC、DOCX、TXT、MD</span>
-          </label>
-          <button class="button-secondary" type="button" @click="openTextUpload('jd')">输入 JD 文本</button>
+
+      <div class="document-workflow">
+        <div class="upload-panel">
+          <div class="upload-choice">
+            <label class="upload-box">
+              <input type="file" accept=".pdf,.doc,.docx,.md,.txt" @change="handleUpload('jd', $event)" />
+              <strong>上传 JD</strong>
+              <span>支持 PDF、DOC、DOCX、TXT、MD</span>
+            </label>
+            <button class="button-secondary" type="button" @click="openTextUpload('jd')">输入 JD 文本</button>
+          </div>
+          <div class="upload-choice">
+            <label class="upload-box">
+              <input type="file" multiple accept=".pdf,.doc,.docx" @change="handleUpload('resume', $event)" />
+              <strong>上传简历</strong>
+              <span>可一次选择多份简历文件</span>
+            </label>
+            <button class="button-secondary" type="button" @click="openTextUpload('resume')">输入简历文本</button>
+          </div>
         </div>
-        <div class="upload-choice">
-          <label class="upload-box">
-            <input type="file" multiple accept=".pdf,.doc,.docx" @change="handleUpload('resume', $event)" />
-            <strong>上传简历</strong>
-            <span>可一次选择多份简历文件</span>
-          </label>
-          <button class="button-secondary" type="button" @click="openTextUpload('resume')">输入简历文本</button>
-        </div>
-        <div class="filter-grid">
+
+        <div class="filter-panel">
           <label>
-            <span>类型筛选</span>
+            <span>类型</span>
             <select v-model="typeFilter" class="input">
               <option value="all">全部</option>
               <option value="jd">JD</option>
@@ -53,7 +57,7 @@
             </select>
           </label>
           <label>
-            <span>状态筛选</span>
+            <span>状态</span>
             <select v-model="statusFilter" class="input">
               <option value="all">全部</option>
               <option value="pending">未解析</option>
@@ -62,8 +66,8 @@
               <option value="failed">失败</option>
             </select>
           </label>
-          <label>
-            <span>关键词搜索</span>
+          <label class="filter-search">
+            <span>搜索</span>
             <input v-model="keyword" class="input" type="search" placeholder="文件名或解析内容" />
           </label>
         </div>
@@ -88,7 +92,7 @@
 
     <DocumentParseTaskList :tasks="[...parseTasks.tasks.values()]" />
 
-    <section class="card">
+    <section class="card document-list-card">
       <div class="tabs">
         <button v-for="tab in tabs" :key="tab.key" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
           {{ tab.label }}
