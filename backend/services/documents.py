@@ -387,7 +387,10 @@ def assert_acceptable_text_quality(text: str, *, filename: str = "document") -> 
     ascii_alpha = sum(1 for char in stripped if char.isascii() and char.isalpha())
     symbol_count = sum(1 for char in stripped if not char.isalnum() and not char.isspace())
     symbol_ratio = symbol_count / max(len(stripped), 1)
-    long_token = any(len(token) > 120 for token in re.split(r"\s+", stripped))
+    long_token = any(
+        len(token) > 120 and not any("\u4e00" <= char <= "\u9fff" for char in token)
+        for token in re.split(r"\s+", stripped)
+    )
     if (
         printable_ratio < 0.85
         or replacement_ratio > 0.01
