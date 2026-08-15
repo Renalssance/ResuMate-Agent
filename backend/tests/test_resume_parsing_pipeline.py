@@ -5,13 +5,11 @@ from types import SimpleNamespace
 import pytest
 
 from backend.graph.candidate_workflow import CandidateAnalysisGraph
-from backend.rag.milvus import DOCUMENT_COLLECTION, PROFILE_COLLECTION, MilvusRagStore, build_resume_semantic_summary
 from backend.schemas.workflow import ResumeProfile
 from backend.services.documents import PageText, chunk_pages, normalize_ocr_text
 from backend.services.llm_validation import validate_resume_source_refs
 from backend.services.resume_postprocess import postprocess_resume_profile
 
-from backend.tests.test_rag_filters import FakeEmbedding, _ready_client
 
 
 def test_section_detection_uses_whitelist_not_short_body_lines():
@@ -254,60 +252,6 @@ def test_resume_profile_schema_accepts_legacy_and_structured_fields():
     )
     assert structured.work_experience[0].bullets[0].raw_text == "使用 Docker 和 K8s 建设部署流程。"
     assert structured.skills[0].evidence_level == "demonstrated"
-
-
-def test_resume_profile_embedding_uses_semantic_resume_content_not_only_name():
-    content = {
-        "candidate_name": "小文",
-        "education": [{"school": "浙江大学", "major": "软件工程", "courses": ["机器学习"]}],
-        "work_experience": [
-            {"company": "某互联网大厂", "title": "后端开发实习生", "technologies": ["Docker", "K8s"]}
-        ],
-        "projects": [{"name": "智能问答平台", "technologies": ["LoRA", "RAG"]}],
-        "skills": [{"name": "SpringBoot", "evidence_level": "self_claimed"}],
-        "achievements": [{"name": "一等奖"}],
-    }
-    summary = build_resume_semantic_summary(content)
-
-    assert summary != "小文"
-    assert "浙江大学" in summary
-    assert "后端开发实习生" in summary
-    assert "Docker" in summary
-    assert "LoRA" in summary
-
-    embedding = FakeEmbedding()
-    client = _ready_client()
-    store = MilvusRagStore(client=client, embedding_client=embedding)
-    store.persist_document_profile(
-        user_id=7,
-        document_type="resume",
-        document_id=21,
-        summary="小文",
-        content=content,
-    )
-    assert embedding.calls[0] == summary
-
-
-def test_chunk_embedding_uses_normalized_text_and_preserves_metadata():
-    embedding = FakeEmbedding()
-    client = _ready_client()
-    store = MilvusRagStore(client=client, embedding_client=embedding)
-    chunks = chunk_pages(
-        pages=[PageText(page_number=1, text="项目经历\n智能问答平台\n资\n源利用率提升12%。")],
-        run_id=1,
-        candidate_id=2,
-        document_type="resume",
-        filename="resume.pdf",
-    )
-
-    store.index_chunks(user_id=7, document_id=21, chunks=chunks)
-
-    row = client.upsert_calls[0]["data"][0]
-    assert embedding.calls[0] == chunks[0].metadata["embedding_text"]
-    assert row["metadata"]["raw_text"]
-    assert row["metadata"]["section"] == row["section"]
-    assert "entity_id" in row["metadata"]
-    assert "page_start" in row["metadata"]
 
 
 def test_candidate_match_prompt_receives_resume_profile_and_ambiguities():

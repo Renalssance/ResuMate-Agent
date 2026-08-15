@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from backend.rag.milvus import build_resume_semantic_summary
 from backend.schemas.workflow import ResumeProfile
 from backend.services.documents import PageText, chunk_pages
 from backend.services.resume_postprocess import postprocess_resume_profile
@@ -94,7 +93,7 @@ def test_resume_postprocess_fills_descriptions_and_normalizes_skill_evidence():
     assert levels["Machine Learning"] == "course_only"
 
 
-def test_resume_summary_deduplicates_aliases_and_chunk_versions_are_non_empty(monkeypatch):
+def test_chunk_versions_are_non_empty(monkeypatch):
     monkeypatch.delenv("EMBEDDING_MODEL", raising=False)
     monkeypatch.delenv("EMBEDDING_VERSION", raising=False)
     chunks = chunk_pages(
@@ -104,21 +103,6 @@ def test_resume_summary_deduplicates_aliases_and_chunk_versions_are_non_empty(mo
         document_type="resume",
         filename="resume.pdf",
     )
-    content = {
-        "candidate_name": "Ada",
-        "skills": [
-            {"name": "Kubernetes", "evidence_level": "demonstrated"},
-            {"name": "K8s", "evidence_level": "demonstrated"},
-            {"name": "Spring Boot", "evidence_level": "self_claimed"},
-            {"name": "SpringBoot", "evidence_level": "self_claimed"},
-        ],
-        "work_experience": [{"description": "Used Kubernetes for deployment.", "technologies": ["K8s"]}],
-    }
-
-    summary = build_resume_semantic_summary(content)
-
-    assert summary.count("Kubernetes") == 1
-    assert summary.count("SpringBoot") == 1
     assert chunks[0].metadata["embedding_text"]
     assert chunks[0].metadata["ocr_version"] == "unknown"
     assert chunks[0].metadata["embedding_model"] == "unknown"

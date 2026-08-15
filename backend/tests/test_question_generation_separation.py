@@ -55,15 +55,8 @@ class RecordingRagStore:
         self.job_profile = job_profile
         self.resume_profile = resume_profile
 
-    def load_document_profile(self, *, document_type, **_kwargs):
-        profile = self.job_profile if document_type == "jd" else self.resume_profile
-        return profile.model_dump(mode="json")
-
     def search_resume_evidence(self, **_kwargs):
         return []
-
-    def persist_artifact(self, **_kwargs):
-        pass
 
 
 class RecordingRepository:
@@ -138,8 +131,10 @@ def test_matching_graph_does_not_generate_questions():
             "jd_document_id": 4,
             "resume_document_id": 5,
             "filename": "candidate.pdf",
-            "job": SimpleNamespace(),
-            "candidate": SimpleNamespace(),
+            "job": SimpleNamespace(jd=SimpleNamespace(structured_data=job_profile.model_dump(mode="json"))),
+            "candidate": SimpleNamespace(
+                resume=SimpleNamespace(structured_data=resume_profile.model_dump(mode="json"))
+            ),
         }
     )
 

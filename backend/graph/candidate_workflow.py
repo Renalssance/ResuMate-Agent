@@ -5,7 +5,7 @@ from typing import Any, TypedDict
 from langgraph.graph import END, StateGraph
 
 from backend.agents.harness import AgentHarness
-from backend.rag.milvus import MilvusRagStore
+from backend.rag.chroma import ChromaRagStore
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     CandidateReport,
@@ -57,7 +57,7 @@ def recommendation_for_score(score: float) -> Recommendation:
 
 
 class CandidateAnalysisGraph:
-    def __init__(self, *, harness: AgentHarness, rag_store: MilvusRagStore, repository: SqlAlchemyRunRepository) -> None:
+    def __init__(self, *, harness: AgentHarness, rag_store: ChromaRagStore, repository: SqlAlchemyRunRepository) -> None:
         self.harness = harness
         self.rag_store = rag_store
         self.repository = repository
@@ -93,11 +93,7 @@ class CandidateAnalysisGraph:
             message="Loading structured JD profile",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        job_profile = self.rag_store.load_document_profile(
-            user_id=state["user_id"],
-            document_type="jd",
-            document_id=state["jd_document_id"],
-        )
+        job_data = state["job"].jd.structured_data if state["job"].jd else None
         progress_hub.publish(
             state.get("task_id"),
             stage="load_resume",
@@ -106,24 +102,20 @@ class CandidateAnalysisGraph:
             message="Loading structured resume profile",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        resume_profile = self.rag_store.load_document_profile(
-            user_id=state["user_id"],
-            document_type="resume",
-            document_id=state["resume_document_id"],
-        )
-        if not job_profile or not resume_profile:
-            raise ValueError("向量库中缺少结构化 JD 或简历，请先重新解析对应文档")
-        state["job_profile"] = JobProfile.model_validate(job_profile)
-        state["resume_profile"] = ResumeProfile.model_validate(resume_profile)
+        resume_data = state["candidate"].resume.structured_data
+        if not job_data or not resume_data:
+            raise ValueError("SQLite is missing a structured JD or resume; reparse the document")
+        state["job_profile"] = JobProfile.model_validate(job_data)
+        state["resume_profile"] = ResumeProfile.model_validate(resume_data)
         return state
 
     def retrieve_evidence(self, state: CandidateState) -> CandidateState:
         progress_hub.publish(
             state.get("task_id"),
-            stage="milvus_search",
+            stage="chroma_search",
             status="running",
             progress=35,
-            message="Searching resume evidence in Milvus",
+            message="Searching resume evidence in Chroma",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         evidence_by_criterion: dict[str, list[dict[str, Any]]] = {}
@@ -187,10 +179,10 @@ class CandidateAnalysisGraph:
     def persist_report(self, state: CandidateState) -> CandidateState:
         progress_hub.publish(
             state.get("task_id"),
-            stage="vectorize",
+            stage="local_save",
             status="running",
             progress=84,
-            message="Vectorizing candidate report artifact",
+            message="Preparing candidate report for SQLite",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         evaluations = state["evaluation"].evaluations
@@ -225,19 +217,11 @@ class CandidateAnalysisGraph:
         self.repository.save_report(job=state["job"], candidate=state["candidate"], report=report)
         progress_hub.publish(
             state.get("task_id"),
-            stage="milvus_save",
+            stage="chroma_save",
             status="running",
             progress=92,
-            message="Saving match artifact to Milvus and report to PostgreSQL",
+            message="Saving match report to SQLite",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
-        )
-        self.rag_store.persist_artifact(
-            user_id=state["user_id"],
-            run_id=state["run_id"],
-            candidate_id=state["candidate_id"],
-            artifact_type="candidate_report",
-            summary=report.summary,
-            content=report.model_dump(mode="json"),
         )
         return state
 

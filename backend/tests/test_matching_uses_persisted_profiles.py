@@ -7,13 +7,8 @@ from backend.schemas.workflow import Criterion, JobProfile, ResumeProfile
 
 
 class RecordingRagStore:
-    def __init__(self, profiles):
-        self.profiles = profiles
-        self.load_calls = []
-
-    def load_document_profile(self, *, user_id, document_type, document_id):
-        self.load_calls.append((user_id, document_type, document_id))
-        return self.profiles.get((document_type, document_id))
+    def search_resume_evidence(self, **_kwargs):
+        return []
 
 
 def _graph(rag_store):
@@ -24,7 +19,7 @@ def _graph(rag_store):
     )
 
 
-def test_matching_loads_persisted_profiles_without_parsing():
+def test_matching_loads_sqlite_profiles_without_parsing_or_rag_profile_reads():
     job_profile = JobProfile(
         job_title="Backend Engineer",
         summary="Build APIs",
@@ -40,24 +35,33 @@ def test_matching_loads_persisted_profiles_without_parsing():
         ],
     )
     resume_profile = ResumeProfile(candidate_name="Persisted Candidate")
-    rag_store = RecordingRagStore(
-        {
-            ("jd", 4): job_profile.model_dump(mode="json"),
-            ("resume", 9): resume_profile.model_dump(mode="json"),
-        }
+    rag_store = RecordingRagStore()
+    job = SimpleNamespace(jd=SimpleNamespace(structured_data=job_profile.model_dump(mode="json")))
+    candidate = SimpleNamespace(
+        resume=SimpleNamespace(structured_data=resume_profile.model_dump(mode="json"))
     )
+    state = {
+        "user_id": 7,
+        "run_id": 11,
+        "candidate_id": 13,
+        "resume_document_id": 21,
+        "job": job,
+        "candidate": candidate,
+    }
 
-    state = _graph(rag_store).load_structured_profiles(
-        {"user_id": 7, "jd_document_id": 4, "resume_document_id": 9}
-    )
+    result = _graph(rag_store).load_structured_profiles(state)
 
-    assert state["job_profile"] == job_profile
-    assert state["resume_profile"] == resume_profile
-    assert rag_store.load_calls == [(7, "jd", 4), (7, "resume", 9)]
+    assert result["job_profile"] == job_profile
+    assert result["resume_profile"] == resume_profile
+    assert not hasattr(rag_store, "load_document_profile")
 
 
-def test_matching_requires_persisted_profiles():
-    with pytest.raises(ValueError, match="重新解析"):
-        _graph(RecordingRagStore({})).load_structured_profiles(
-            {"user_id": 7, "jd_document_id": 4, "resume_document_id": 9}
-        )
+def test_matching_requires_sqlite_profiles():
+    state = {
+        "user_id": 7,
+        "job": SimpleNamespace(jd=SimpleNamespace(structured_data=None)),
+        "candidate": SimpleNamespace(resume=SimpleNamespace(structured_data=None)),
+    }
+
+    with pytest.raises(ValueError, match="SQLite is missing"):
+        _graph(RecordingRagStore()).load_structured_profiles(state)

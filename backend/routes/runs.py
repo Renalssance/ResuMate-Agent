@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
-from backend.rag.milvus import MilvusRagStore
+from backend.rag.chroma import ChromaRagStore
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import AnalyzeRequest, AnalyzeResponse, CandidateReport, EvidenceSearchRequest, EvidenceSearchResponse, RunSummary
 from backend.services.analysis import AnalysisService
@@ -74,7 +74,6 @@ def generate_candidate_questions(
 async def delete_candidate_report(run_id: int, candidate_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not SqlAlchemyRunRepository(db).delete_candidate(user_id=current_user.id, run_id=run_id, candidate_id=candidate_id):
         raise HTTPException(status_code=404, detail="candidate report not found")
-    MilvusRagStore().delete_candidate_artifacts(user_id=current_user.id, run_id=run_id, candidate_id=candidate_id)
     return {"candidate_id": candidate_id}
 
 
@@ -90,7 +89,7 @@ async def search_candidate_evidence(run_id: int, candidate_id: int, request: Evi
     )
     if resume_id is None:
         raise HTTPException(status_code=404, detail="candidate resume not found")
-    results = MilvusRagStore().search_resume_evidence(
+    results = ChromaRagStore().search_resume_evidence(
         user_id=current_user.id,
         document_id=resume_id,
         query=request.query,

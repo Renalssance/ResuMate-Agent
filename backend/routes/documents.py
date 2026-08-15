@@ -11,7 +11,7 @@ from backend.agents.harness import AgentHarness
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import JobDescription, Resume, User
-from backend.rag.milvus import MilvusRagStore
+from backend.rag.chroma import ChromaRagStore
 from backend.schemas.workflow import (
     DocumentParseResponse,
     DocumentParseResult,
@@ -184,7 +184,7 @@ def upload_documents(
             row.structured_data = _parse_profile(document_type, stored.filename, raw_text, chunks, task_id)
             if document_type == "jd":
                 row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
-            rag_store = MilvusRagStore()
+            rag_store = ChromaRagStore()
             progress_hub.publish(
                 task_id,
                 stage="embedding",
@@ -195,27 +195,16 @@ def upload_documents(
                 message=f"Generating embeddings for {stored.filename}",
                 data={"chunk_count": len(chunks)},
             )
-            rag_store.index_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
+            rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
             progress_hub.publish(
                 task_id,
-                stage="milvus_save",
+                stage="chroma_save",
                 status="running",
                 progress=78,
                 document_id=f"{document_type}:{row.id}",
                 filename=stored.filename,
-                message=f"Saving {document_type} vectors to Milvus",
+                message=f"Saving {document_type} vectors to Chroma",
                 data={"document_id": f"{document_type}:{row.id}"},
-            )
-            rag_store.persist_document_profile(
-                user_id=current_user.id,
-                document_type=document_type,
-                document_id=row.id,
-                summary=(
-                    str(row.structured_data.get("job_title") or row.title)
-                    if document_type == "jd"
-                    else str(row.structured_data.get("candidate_name") or row.filename)
-                ),
-                content=row.structured_data,
             )
             row.parse_status = _parse_status(document_type, row.structured_data)
             progress_hub.publish(
@@ -225,7 +214,7 @@ def upload_documents(
                 progress=92,
                 document_id=f"{document_type}:{row.id}",
                 filename=stored.filename,
-                message=f"Saving {document_type} record to PostgreSQL",
+                message=f"Saving {document_type} record to SQLite",
                 data={"document_id": f"{document_type}:{row.id}"},
             )
             db.commit()
@@ -333,8 +322,7 @@ def reparse_document(
             message=f"Re-structuring {kind} with LLM",
         )
         row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id)
-        rag_store = MilvusRagStore()
-        rag_store.delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
+        rag_store = ChromaRagStore()
         progress_hub.publish(
             task_id,
             stage="embedding",
@@ -344,26 +332,15 @@ def reparse_document(
             filename=row.filename,
             message=f"Regenerating embeddings for {row.filename}",
         )
-        rag_store.index_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
+        rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
         progress_hub.publish(
             task_id,
-            stage="milvus_save",
+            stage="chroma_save",
             status="running",
             progress=78,
             document_id=document_id,
             filename=row.filename,
-            message=f"Replacing {kind} vectors in Milvus",
-        )
-        rag_store.persist_document_profile(
-            user_id=current_user.id,
-            document_type=kind,
-            document_id=row.id,
-            summary=(
-                str(row.structured_data.get("job_title") or row.title)
-                if kind == "jd"
-                else str(row.structured_data.get("candidate_name") or row.filename)
-            ),
-            content=row.structured_data,
+            message=f"Replacing {kind} vectors in Chroma",
         )
         row.parse_status = _parse_status(kind, row.structured_data)
         progress_hub.publish(
@@ -373,7 +350,7 @@ def reparse_document(
             progress=92,
             document_id=document_id,
             filename=row.filename,
-            message=f"Saving {kind} record to PostgreSQL",
+            message=f"Saving {kind} record to SQLite",
         )
         db.commit()
         db.refresh(row)
@@ -412,7 +389,7 @@ def reparse_document(
 @router.delete("/{document_id}")
 async def delete_document(document_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     kind, row = _find_document(db, current_user.id, document_id)
-    MilvusRagStore().delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
+    ChromaRagStore().delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
     delete_stored_file(row.file_path)
     db.delete(row)
     db.commit()

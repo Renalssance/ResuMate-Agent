@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from backend.agents.harness import AgentHarness
 from backend.db.models import JobDescription, Resume
 from backend.graph.candidate_workflow import CandidateAnalysisGraph
-from backend.rag.milvus import MilvusRagStore
+from backend.rag.chroma import ChromaRagStore
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     AmbiguityFollowupSet,
@@ -50,11 +50,11 @@ class AnalysisService:
         *,
         db: Session,
         harness: AgentHarness | None = None,
-        rag_store: MilvusRagStore | None = None,
+        rag_store: ChromaRagStore | None = None,
     ) -> None:
         self.db = db
         self.harness = harness or AgentHarness()
-        self.rag_store = rag_store or MilvusRagStore()
+        self.rag_store = rag_store or ChromaRagStore()
         self.repository = SqlAlchemyRunRepository(db)
         self.graph = CandidateAnalysisGraph(
             harness=self.harness,
@@ -94,7 +94,7 @@ class AnalysisService:
             stage="load_jd",
             status="running",
             progress=5,
-            message="Creating PostgreSQL analysis run",
+            message="Creating SQLite analysis run",
             data={"jd_document_id": jd_document_id, "resume_count": len(resume_ids)},
         )
         job = self.repository.create_run(user_id=user_id, jd=jd, resumes=[by_id[item] for item in resume_ids])
@@ -156,7 +156,7 @@ class AnalysisService:
             stage="load_context",
             status="running",
             progress=15,
-            message="Loading persisted match report from PostgreSQL",
+            message="Loading persisted match report from SQLite",
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         report = self.repository.get_candidate_report(
@@ -316,7 +316,7 @@ class AnalysisService:
             stage="save",
             status="running",
             progress=94,
-            message="Saving generated questions to PostgreSQL",
+            message="Saving generated questions to SQLite",
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         progress_hub.publish(
