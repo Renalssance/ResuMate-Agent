@@ -602,70 +602,6 @@ def test_extract_stored_pages_supports_lightweight_real_format_branches(
     assert expected in "\n".join(page.text for page in pages)
 
 
-def test_extract_stored_pages_uses_partition_doc_for_legacy_doc(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    path = tmp_path / "resume.doc"
-    path.write_bytes(b"legacy word bytes")
-    calls: list[str] = []
-
-    class Element:
-        def __init__(self, text: str) -> None:
-            self.text = text
-
-        def __str__(self) -> str:
-            return self.text
-
-    def stub_partition_doc(*, filename: str) -> list[Element]:
-        calls.append(filename)
-        return [
-            Element("Legacy Word candidate experience content."),
-            Element("Additional legacy Word project details."),
-        ]
-
-    monkeypatch.setattr(documents, "partition_doc", stub_partition_doc)
-
-    pages = extract_stored_pages(path, "resume.doc")
-
-    assert calls == [str(path)]
-    assert pages == [
-        PageText(
-            page_number=1,
-            text="Legacy Word candidate experience content.\nAdditional legacy Word project details.",
-        ),
-    ]
-
-
-def test_extract_stored_pages_reports_unsupported_legacy_doc_parser(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    path = tmp_path / "resume.doc"
-    path.write_bytes(b"legacy word bytes")
-
-    def failing_partition_doc(*, filename: str) -> list:
-        raise RuntimeError("LibreOffice is not installed")
-
-    monkeypatch.setattr(documents, "partition_doc", failing_partition_doc)
-
-    with pytest.raises(UnsupportedDocumentError, match="LibreOffice is not installed"):
-        extract_stored_pages(path, "resume.doc")
-
-
-def test_extract_stored_pages_reports_missing_legacy_doc_parser(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    path = tmp_path / "resume.doc"
-    path.write_bytes(b"legacy word bytes")
-
-    def missing_parser(_module: str):
-        raise ModuleNotFoundError("unstructured.partition.doc is unavailable")
-
-    monkeypatch.setattr(documents, "import_module", missing_parser)
-
-    with pytest.raises(UnsupportedDocumentError, match="unstructured.partition.doc is unavailable"):
-        extract_stored_pages(path, "resume.doc")
-
-
 @pytest.mark.asyncio
 async def test_store_and_extract_upload_removes_file_when_extraction_fails(tmp_path: Path) -> None:
     with pytest.raises(UnsupportedDocumentError, match="no extractable text"):
@@ -710,3 +646,16 @@ def test_delete_stored_file_is_idempotent(tmp_path: Path) -> None:
     delete_stored_file(None)
 
     assert not path.exists()
+
+
+def test_doc_is_not_a_supported_upload_extension():
+    assert ".doc" not in documents.SUPPORTED_EXTENSIONS
+
+
+def test_missing_ocr_extra_has_install_instruction(monkeypatch):
+    from backend.services import pdf_ocr
+
+    monkeypatch.setenv("PDF_OCR_ENABLED", "true")
+    monkeypatch.setattr(pdf_ocr, "_import_rapidocr", lambda: (_ for _ in ()).throw(ImportError()))
+    with pytest.raises(RuntimeError, match="uv sync --extra ocr"):
+        pdf_ocr._get_ocr_engine()

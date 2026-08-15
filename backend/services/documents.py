@@ -5,7 +5,6 @@ import re
 import tempfile
 import hashlib
 from dataclasses import dataclass
-from importlib import import_module
 from pathlib import Path
 from typing import Callable
 
@@ -20,7 +19,7 @@ DOCUMENT_DIR = Path(__file__).resolve().parents[2] / "data" / "documents"
 MAX_DOCUMENT_SIZE = int(os.getenv("MAX_DOCUMENT_SIZE", str(10 * 1024 * 1024)))
 UPLOAD_CHUNK_SIZE = 64 * 1024
 PDF_OCR_HARD_MAX_PAGES = int(os.getenv("PDF_OCR_HARD_MAX_PAGES", "100"))
-SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".doc", ".txt", ".md"}
+SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}
 WINDOWS_RESERVED_NAMES = {
     "CON",
     "PRN",
@@ -201,8 +200,6 @@ def extract_stored_pages(
             return _extract_pdf(document_path, safe_filename, progress_callback=progress_callback)
         if ext == ".docx":
             text = _extract_docx(document_path)
-        elif ext == ".doc":
-            return _extract_legacy_doc(document_path, safe_filename)
         else:
             text = _extract_text_file(document_path, safe_filename)
     except UnsupportedDocumentError:
@@ -367,25 +364,6 @@ def _extract_text_file(path: Path, filename: str) -> str:
         except UnicodeDecodeError as exc:
             decode_errors.append(f"{encoding}: {exc}")
     raise UnsupportedDocumentError(f"Failed to decode text from {filename}: {'; '.join(decode_errors)}")
-
-
-def partition_doc(*, filename: str):
-    parser = import_module("unstructured.partition.doc").partition_doc
-    return parser(filename=filename)
-
-
-def _extract_legacy_doc(path: Path, filename: str) -> list[PageText]:
-    try:
-        elements = partition_doc(filename=str(path))
-    except Exception as exc:
-        raise UnsupportedDocumentError(
-            f"Failed to extract legacy Word document {filename}; "
-            f"the .doc parser or its external dependencies may be unavailable: {exc}"
-        ) from exc
-
-    text = "\n".join(str(element).strip() for element in elements if str(element).strip())
-    _ensure_text(text, filename)
-    return [PageText(page_number=1, text=text)]
 
 
 def _ensure_text(text: str, filename: str) -> None:

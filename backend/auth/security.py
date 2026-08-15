@@ -46,16 +46,6 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
         except Exception:
             return False
 
-    # Backward compatibility for legacy passlib/bcrypt hashes.
-    if password_hash.startswith("$2") or password_hash.startswith("$bcrypt"):
-        try:
-            from passlib.context import CryptContext
-
-            legacy_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
-            return legacy_context.verify(plain_password, password_hash)
-        except Exception:
-            return False
-
     return False
 
 

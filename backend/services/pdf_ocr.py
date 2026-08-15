@@ -96,15 +96,22 @@ _ocr_engine = None
 
 
 def ocr_enabled() -> bool:
-    return os.getenv("PDF_OCR_ENABLED", "true").lower() != "false"
+    return (os.getenv("PDF_OCR_ENABLED") or "false").lower() == "true"
+
+
+def _import_rapidocr():
+    from rapidocr_onnxruntime import RapidOCR
+
+    return RapidOCR
 
 
 def _get_ocr_engine():
     global _ocr_engine
     if _ocr_engine is None:
-        from rapidocr_onnxruntime import RapidOCR
-
-        _ocr_engine = RapidOCR()
+        try:
+            _ocr_engine = _import_rapidocr()()
+        except ImportError as exc:
+            raise RuntimeError("PDF OCR requires: uv sync --extra ocr") from exc
     return _ocr_engine
 
 
@@ -141,7 +148,10 @@ def extract_pdf_text_with_ocr(
     if not ocr_enabled():
         return PdfOcrResult(text="", page_count=0, ocr_page_count=0)
 
-    import pypdfium2 as pdfium
+    try:
+        import pypdfium2 as pdfium
+    except ImportError as exc:
+        raise RuntimeError("PDF OCR requires: uv sync --extra ocr") from exc
 
     path = Path(file_path)
     max_pages = max_pages or int(os.getenv("PDF_OCR_MAX_PAGES", "8"))
