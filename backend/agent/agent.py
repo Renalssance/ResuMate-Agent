@@ -10,7 +10,6 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
 from backend.agent.interview_tools import create_interview_tools
-from backend.db.cache import cache
 from backend.db.database import SessionLocal
 from backend.db.models import ChatMessage, ChatSession, User
 from backend.logging_config import log_llm_prompt, log_llm_response
@@ -29,9 +28,8 @@ MAX_CONTEXT_MESSAGES = 20
 class ConversationStorage:
     """Minimal conversation storage for the interview assistant chat surface."""
 
-    @staticmethod
-    def _messages_cache_key(user_id: str, session_id: str) -> str:
-        return f"chat_messages:{user_id}:{session_id}"
+    def __init__(self, session_factory=SessionLocal):
+        self.session_factory = session_factory
 
     @staticmethod
     def _to_langchain_messages(records: list[dict]) -> list:
@@ -45,7 +43,7 @@ class ConversationStorage:
         return messages
 
     def save(self, user_id: str, session_id: str, messages: list):
-        db = SessionLocal()
+        db = self.session_factory()
         try:
             user = db.query(User).filter(User.username == user_id).first()
             if not user:
@@ -63,7 +61,6 @@ class ConversationStorage:
 
             db.query(ChatMessage).filter(ChatMessage.session_ref_id == session.id).delete(synchronize_session=False)
 
-            serialized = []
             now = datetime.utcnow()
             for msg in messages[-MAX_CONTEXT_MESSAGES:]:
                 db.add(
@@ -74,35 +71,18 @@ class ConversationStorage:
                         timestamp=now,
                     )
                 )
-                serialized.append(
-                    {
-                        "type": msg.type,
-                        "content": str(msg.content),
-                        "timestamp": now.isoformat(),
-                    }
-                )
 
             session.updated_at = now
             db.commit()
-            cache.set_json(self._messages_cache_key(user_id, session_id), serialized)
         finally:
             db.close()
 
     def load(self, user_id: str, session_id: str) -> list:
-        cached = cache.get_json(self._messages_cache_key(user_id, session_id))
-        if cached is not None:
-            return self._to_langchain_messages(cached[-MAX_CONTEXT_MESSAGES:])
-
         records = self.get_session_messages(user_id, session_id)
-        cache.set_json(self._messages_cache_key(user_id, session_id), records)
         return self._to_langchain_messages(records[-MAX_CONTEXT_MESSAGES:])
 
     def get_session_messages(self, user_id: str, session_id: str) -> list[dict]:
-        cached = cache.get_json(self._messages_cache_key(user_id, session_id))
-        if cached is not None:
-            return cached
-
-        db = SessionLocal()
+        db = self.session_factory()
         try:
             user = db.query(User).filter(User.username == user_id).first()
             if not user:
@@ -129,7 +109,6 @@ class ConversationStorage:
                 }
                 for row in rows
             ]
-            cache.set_json(self._messages_cache_key(user_id, session_id), result)
             return result
         finally:
             db.close()
