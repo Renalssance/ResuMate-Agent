@@ -1,6 +1,6 @@
 from sqlalchemy import text
 
-from backend.db.database import build_engine
+from backend.db.database import build_engine, ensure_sqlite_schema
 
 
 def test_build_engine_enables_sqlite_safety_pragmas(tmp_path):
@@ -17,3 +17,22 @@ def test_build_engine_creates_parent_directory(tmp_path):
     with engine.begin() as connection:
         connection.execute(text("CREATE TABLE check_table (id INTEGER PRIMARY KEY)"))
     assert database.exists()
+
+
+def test_ensure_sqlite_schema_adds_document_content_hash_to_existing_tables(tmp_path):
+    engine = build_engine(f"sqlite:///{tmp_path / 'old-resumate.db'}")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE resumes (id INTEGER PRIMARY KEY)"))
+        connection.execute(text("CREATE TABLE job_descriptions (id INTEGER PRIMARY KEY)"))
+
+    ensure_sqlite_schema(engine)
+
+    with engine.connect() as connection:
+        resume_columns = {
+            row[1] for row in connection.execute(text("PRAGMA table_info(resumes)"))
+        }
+        jd_columns = {
+            row[1] for row in connection.execute(text("PRAGMA table_info(job_descriptions)"))
+        }
+    assert "content_hash" in resume_columns
+    assert "content_hash" in jd_columns

@@ -6,6 +6,7 @@ from openai import OpenAI
 
 DEFAULT_REMOTE_MODEL = "text-embedding-3-small"
 DEFAULT_LOCAL_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+REMOTE_PROVIDERS = {"openai", "qwen"}
 
 
 class EmbeddingService:
@@ -52,7 +53,7 @@ class EmbeddingService:
                 texts, normalize_embeddings=True, show_progress_bar=False
             )
             return [[float(value) for value in vector] for vector in vectors]
-        if self.provider != "openai":
+        if self.provider not in REMOTE_PROVIDERS:
             raise RuntimeError(f"Unsupported EMBEDDING_PROVIDER: {self.provider}")
         response = self._remote_client().embeddings.create(
             model=self.model_name,

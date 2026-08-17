@@ -63,6 +63,7 @@ class StoredUpload:
     filename: str
     path: Path
     size: int
+    content_hash: str
 
 
 @dataclass(frozen=True)
@@ -128,8 +129,9 @@ def _open_exclusive_storage_file(directory: Path, filename: str):
             counter += 1
 
 
-async def _write_upload_chunks(file: UploadFile, stream, filename: str) -> int:
+async def _write_upload_chunks(file: UploadFile, stream, filename: str) -> tuple[int, str]:
     total = 0
+    digest = hashlib.sha256()
     read_size = min(UPLOAD_CHUNK_SIZE, MAX_DOCUMENT_SIZE + 1)
     while chunk := await file.read(read_size):
         total += len(chunk)
@@ -137,10 +139,11 @@ async def _write_upload_chunks(file: UploadFile, stream, filename: str) -> int:
             raise UnsupportedDocumentError(
                 f"{filename} exceeds maximum size of {MAX_DOCUMENT_SIZE} bytes"
             )
+        digest.update(chunk)
         stream.write(chunk)
     if not total:
         raise UnsupportedDocumentError(f"{filename} is empty")
-    return total
+    return total, digest.hexdigest()
 
 
 async def store_and_extract_upload(
@@ -176,11 +179,12 @@ async def store_upload(
     try:
         path, stored_filename, stream = _open_exclusive_storage_file(directory, filename)
         with stream:
-            size = await _write_upload_chunks(file, stream, stored_filename)
+            size, content_hash = await _write_upload_chunks(file, stream, stored_filename)
         return StoredUpload(
             filename=stored_filename,
             path=path,
             size=size,
+            content_hash=content_hash,
         )
     except Exception:
         _best_effort_delete(path)

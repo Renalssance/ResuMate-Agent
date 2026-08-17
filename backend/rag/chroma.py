@@ -80,7 +80,9 @@ class ChromaRagStore:
                 "Embedding configuration changed; remove data/chroma and reparse documents"
             )
         if missing:
-            collection.modify(metadata=expected)
+            collection.modify(
+                metadata={key: value for key, value in expected.items() if key != "hnsw:space"}
+            )
         self._collection = collection
         return collection
 

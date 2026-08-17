@@ -84,7 +84,7 @@ const labels: Record<ParseStage, string> = {
   extract: '文本提取',
   llm_analyze: 'LLM 结构化分析',
   embedding: '向量生成',
-  milvus_save: 'Milvus 入库',
+  milvus_save: '向量入库',
   local_save: '本地保存',
   completed: '解析完成',
   failed: '解析失败',

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -112,6 +113,26 @@ def _parse_status(kind: DocumentType, content: dict) -> str:
     return str(status or "success")
 
 
+def _cached_structured_data(db: Session, model, *, user_id: int, content_hash: str) -> dict | None:
+    if not content_hash:
+        return None
+    rows = (
+        db.query(model)
+        .filter(
+            model.user_id == user_id,
+            model.content_hash == content_hash,
+            model.parse_status.in_(("success", "success_with_warnings")),
+            model.structured_data.isnot(None),
+        )
+        .order_by(model.created_at.desc())
+        .all()
+    )
+    for row in rows:
+        if isinstance(row.structured_data, dict) and row.structured_data:
+            return copy.deepcopy(row.structured_data)
+    return None
+
+
 @router.post("", response_model=DocumentParseResponse)
 def upload_documents(
     document_type: DocumentType = Form(...),
@@ -156,15 +177,23 @@ def upload_documents(
             )
             raw_text = "\n".join(page.text for page in pages).strip()
             if document_type == "resume":
+                cached_structured_data = _cached_structured_data(
+                    db, Resume, user_id=current_user.id, content_hash=stored.content_hash
+                )
                 row = Resume(
                     user_id=current_user.id, filename=stored.filename, file_path=str(stored.path),
-                    raw_text=raw_text, structured_data={}, document_size=stored.size, parse_status="running",
+                    content_hash=stored.content_hash, raw_text=raw_text, structured_data={},
+                    document_size=stored.size, parse_status="running",
                 )
             else:
+                cached_structured_data = _cached_structured_data(
+                    db, JobDescription, user_id=current_user.id, content_hash=stored.content_hash
+                )
                 row = JobDescription(
                     user_id=current_user.id, title=Path(stored.filename).stem, company="",
                     filename=stored.filename, file_path=str(stored.path), raw_text=raw_text,
-                    structured_data={}, document_size=stored.size, parse_status="running",
+                    content_hash=stored.content_hash, structured_data={},
+                    document_size=stored.size, parse_status="running",
                 )
             db.add(row)
             db.flush()
@@ -178,10 +207,16 @@ def upload_documents(
                 progress=45,
                 document_id=f"{document_type}:{row.id}",
                 filename=stored.filename,
-                message=f"Structuring {document_type} with LLM",
-                data={"document_id": f"{document_type}:{row.id}"},
+                message=(
+                    f"Reusing cached {document_type} structured data"
+                    if cached_structured_data
+                    else f"Structuring {document_type} with LLM"
+                ),
+                data={"document_id": f"{document_type}:{row.id}", "cached": bool(cached_structured_data)},
             )
-            row.structured_data = _parse_profile(document_type, stored.filename, raw_text, chunks, task_id)
+            row.structured_data = cached_structured_data or _parse_profile(
+                document_type, stored.filename, raw_text, chunks, task_id
+            )
             if document_type == "jd":
                 row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
             rag_store = ChromaRagStore()

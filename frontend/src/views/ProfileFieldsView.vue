@@ -45,7 +45,7 @@
           <div class="editor-actions">
             <button class="button-secondary" type="button" @click="resetDraft">还原</button>
             <button class="button-primary" type="button" :disabled="saving" @click="saveDraft">
-              {{ saving ? '保存中...' : '保存结构化资料' }}
+              {{ saving ? '保存中...' : '保存' }}
             </button>
           </div>
         </div>

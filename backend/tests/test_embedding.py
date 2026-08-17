@@ -30,6 +30,19 @@ def test_remote_embedding_batches_and_restores_response_order(monkeypatch):
     assert api.calls == [{"model": "embed-model", "input": ["first", "second"]}]
 
 
+def test_qwen_embedding_uses_openai_compatible_client(monkeypatch):
+    api = FakeEmbeddingsApi()
+    client = SimpleNamespace(embeddings=api)
+    monkeypatch.setenv("EMBEDDING_PROVIDER", "qwen")
+    monkeypatch.setenv("EMBEDDING_MODEL", "qwen3.7-text-embedding")
+    service = EmbeddingService(client=client)
+
+    assert service.embed_many(["first", "second"]) == [[1.0, 0.0], [0.0, 1.0]]
+    assert api.calls == [
+        {"model": "qwen3.7-text-embedding", "input": ["first", "second"]}
+    ]
+
+
 def test_remote_embedding_requires_an_api_key_without_injected_client(monkeypatch):
     monkeypatch.setenv("EMBEDDING_PROVIDER", "openai")
     monkeypatch.delenv("EMBEDDING_API_KEY", raising=False)

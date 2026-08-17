@@ -31,6 +31,9 @@ export const useDocumentStore = defineStore('document', () => {
     try {
       documents.value = (await fetchDocumentsApi()).map(toDocumentRecord)
       error.value = ''
+    } catch (err) {
+      documents.value = []
+      error.value = err instanceof Error ? err.message : String(err)
     } finally {
       listLoading.value = false
     }
@@ -120,6 +123,11 @@ export const useDocumentStore = defineStore('document', () => {
     ].map((doc) => byId.get(doc.id) || doc)
   }
 
+  function clearDocuments() {
+    documents.value = []
+    error.value = ''
+  }
+
   return {
     documents,
     listLoading,
@@ -138,6 +146,7 @@ export const useDocumentStore = defineStore('document', () => {
     updateStructuredData,
     upsertDocument,
     upsertDocuments,
+    clearDocuments,
     toDocumentRecord,
   }
 })

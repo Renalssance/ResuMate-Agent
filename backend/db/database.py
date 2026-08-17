@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 
@@ -52,3 +52,22 @@ def init_db() -> None:
     from backend.db import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    ensure_sqlite_schema(engine)
+
+
+def ensure_sqlite_schema(engine: Engine) -> None:
+    if engine.dialect.name != "sqlite":
+        return
+    with engine.begin() as connection:
+        for table_name in ("resumes", "job_descriptions"):
+            columns = {
+                row[1]
+                for row in connection.execute(text(f"PRAGMA table_info({table_name})"))
+            }
+            if columns and "content_hash" not in columns:
+                connection.execute(
+                    text(
+                        f"ALTER TABLE {table_name} "
+                        "ADD COLUMN content_hash VARCHAR(64) NOT NULL DEFAULT ''"
+                    )
+                )

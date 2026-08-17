@@ -19,7 +19,12 @@ npm --prefix frontend run dev
 Frontend: `http://localhost:5173`
 Backend docs: `http://127.0.0.1:8000/docs`
 
-Set `JWT_SECRET_KEY`, `OPENAI_API_KEY`, and `LLM_MODEL` in `.env` before using the app. Embeddings default to OpenAI-compatible remote embeddings with `text-embedding-3-small`.
+Set `JWT_SECRET_KEY`, `OPENAI_API_KEY`, and `LLM_MODEL` in `.env` before using the app. Embeddings default to Qwen3-compatible remote embeddings with `qwen3.7-text-embedding`.
+
+Fetch `JWT_SECRET_KEY` by:
+```bash
+openssl rand -hex 32
+```
 
 ## Optional Extras
 

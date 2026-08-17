@@ -114,7 +114,7 @@
               <th>大小</th>
               <th>上传时间</th>
               <th>解析状态</th>
-              <th>Milvus</th>
+              <th>向量库</th>
               <th>本地保存</th>
               <th>操作</th>
             </tr>
@@ -238,7 +238,7 @@ async function reparse(id: string) {
 }
 
 async function remove(id: string) {
-  const confirmed = window.confirm('删除后将同时移除本地文件、结构化结果和 Milvus 向量数据。确定删除吗？')
+  const confirmed = window.confirm('删除后将同时移除本地文件、结构化结果和 向量库数据。确定删除吗？')
   if (!confirmed) return
   await store.deleteDocument(id)
   if (selectedDocument.value?.id === id) selectedDocument.value = null

@@ -30,8 +30,28 @@
         <h3>结构化结果</h3>
         <div class="kv-grid">
           <template v-for="item in parsedItems" :key="item.key">
-            <span>{{ item.key }}</span>
-            <p>{{ item.value }}</p>
+            <span class="kv-label">{{ item.label }}</span>
+            <div class="structured-value">
+              <p v-if="item.value">{{ item.value }}</p>
+              <div v-if="item.children.length" class="structured-tags">
+                <span v-for="child in item.children" :key="child.label" class="structured-tag">
+                  <strong>{{ child.label }}</strong>
+                  {{ child.value }}
+                </span>
+              </div>
+              <div v-if="item.groups.length" class="structured-groups">
+                <article v-for="(group, index) in item.groups" :key="`${item.key}-${index}`" class="structured-group">
+                  <strong v-if="group.title">{{ group.title }}</strong>
+                  <p v-if="group.value">{{ group.value }}</p>
+                  <div v-if="group.children.length" class="structured-tags">
+                    <span v-for="child in group.children" :key="child.label" class="structured-tag">
+                      <strong>{{ child.label }}</strong>
+                      {{ child.value }}
+                    </span>
+                  </div>
+                </article>
+              </div>
+            </div>
           </template>
         </div>
       </section>
@@ -40,7 +60,7 @@
         <h3>向量与本地存储</h3>
         <div class="storage-list">
           <div>
-            <span>Milvus 入库</span>
+            <span>向量入库</span>
             <StatusTag :status="document.vectorized" true-label="已入库" false-label="未入库" />
           </div>
           <div>
@@ -61,6 +81,7 @@
 import { computed, ref } from 'vue'
 import type { DocumentRecord } from '../types/document'
 import { formatSize } from '../utils/format'
+import { formatStructuredEntries } from '../utils/structuredDisplay'
 import StatusTag from './StatusTag.vue'
 
 const props = defineProps<{
@@ -80,31 +101,6 @@ const tabs = [
 
 const parsedItems = computed(() => {
   const content = props.document?.parsedContent || {}
-  return Object.entries(content).map(([key, value]) => ({
-    key: labelMap[key] || key,
-    value: Array.isArray(value) ? value.map(stringify).join('；') : stringify(value),
-  }))
+  return formatStructuredEntries(content)
 })
-
-const labelMap: Record<string, string> = {
-  title: '岗位名称',
-  responsibilities: '岗位职责',
-  requirements: '必备要求',
-  bonus: '加分项',
-  skills: '技能关键词',
-  weights: '评价标准与权重',
-  name: '基本信息',
-  education: '教育经历',
-  work: '工作经历',
-  projects: '项目经历',
-  achievements: '成果',
-  ambiguities: '模糊点',
-}
-
-function stringify(value: unknown) {
-  if (typeof value === 'string') return value
-  if (typeof value === 'number') return String(value)
-  if (value && typeof value === 'object') return JSON.stringify(value)
-  return '暂无'
-}
 </script>

@@ -1385,15 +1385,62 @@ textarea:focus {
   grid-template-columns: 120px minmax(0, 1fr);
 }
 
-.kv-grid span,
+.kv-label,
 .storage-list span {
   color: var(--color-text-secondary);
   font-size: 13px;
 }
 
-.kv-grid p {
+.kv-grid p,
+.structured-value p {
   margin: 0;
   line-height: 1.7;
+}
+
+.structured-value {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.structured-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.structured-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 8px;
+  color: var(--color-text);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.structured-tag strong,
+.structured-group > strong {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.structured-groups {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.structured-group {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .storage-list > div {

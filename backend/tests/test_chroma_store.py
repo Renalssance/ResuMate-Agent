@@ -77,6 +77,42 @@ def test_embedding_contract_mismatch_requires_reindex(tmp_path):
         )
 
 
+def test_empty_collection_metadata_update_does_not_reset_distance_function():
+    class ExistingCollection:
+        metadata = {"hnsw:space": "cosine"}
+
+        def count(self):
+            return 0
+
+        def modify(self, *, metadata):
+            if "hnsw:space" in metadata:
+                raise RuntimeError("Changing the distance function of a collection once it is created is not supported currently.")
+            self.metadata = {**self.metadata, **metadata}
+
+        def get(self, **_kwargs):
+            return {"ids": []}
+
+        def upsert(self, **_kwargs):
+            pass
+
+    collection = ExistingCollection()
+
+    class ExistingClient:
+        def get_or_create_collection(self, **_kwargs):
+            return collection
+
+    ChromaRagStore(
+        client=ExistingClient(), embedding_client=FakeEmbedding()
+    ).replace_document_chunks(user_id=7, document_id=21, chunks=[chunk("python", "Python APIs")])
+
+    assert collection.metadata == {
+        "hnsw:space": "cosine",
+        "embedding_provider": "fake",
+        "embedding_model": "fake-v1",
+        "embedding_dimension": 2,
+    }
+
+
 def test_chunk_embedding_prefers_embedding_text(tmp_path):
     embedding = FakeEmbedding()
     item = chunk("python", "raw display text")

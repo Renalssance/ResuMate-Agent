@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { loginApi, registerApi } from '../api/auth'
 import { clearAccessToken, readAccessToken, saveAccessToken } from '../services/authToken'
+import { useDocumentStore } from './document'
 
 type AuthMode = 'login' | 'register'
 
@@ -30,6 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
       saveAccessToken(response.access_token)
       localStorage.setItem('username', response.username)
       localStorage.setItem('role', response.role)
+      await useDocumentStore().loadDocuments()
     } catch (err) {
       error.value = err instanceof Error ? err.message : String(err)
       throw err
@@ -45,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
     clearAccessToken()
     localStorage.removeItem('username')
     localStorage.removeItem('role')
+    useDocumentStore().clearDocuments()
   }
 
   return {

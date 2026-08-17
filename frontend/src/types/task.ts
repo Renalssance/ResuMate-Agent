@@ -65,7 +65,7 @@ export const MATCH_STEPS: StepTemplate[] = [
   { key: 'llm_match', label: 'Agent 分析' },
   { key: 'score', label: '匹配度打分' },
   { key: 'vectorize', label: '向量化入库' },
-  // { key: 'milvus_save', label: 'Milvus 入库' },
+  // { key: 'milvus_save', label: '向量入库' },
 ]
 
 export const QUESTION_STEPS: StepTemplate[] = [

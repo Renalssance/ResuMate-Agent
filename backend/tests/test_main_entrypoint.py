@@ -32,6 +32,14 @@ def test_public_config_returns_empty_llm_model_when_unconfigured(monkeypatch):
     assert response.json() == {"llm_model": ""}
 
 
+def test_frontend_routes_fall_back_to_index_html():
+    response = TestClient(canonical_app).get("/documents")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert '<div id="app">' in response.text
+
+
 def test_container_entrypoint_includes_autofill_routes():
     paths = {route.path for route in container_app.routes}
     assert "/api/autofill/profiles" in paths

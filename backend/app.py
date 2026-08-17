@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException
 from pathlib import Path
 import os
 import logging
@@ -20,6 +21,16 @@ FRONTEND_STATIC_DIR = FRONTEND_DIR / "dist" if (FRONTEND_DIR / "dist").exists() 
 # CORS 配置：从环境变量读取允许的源列表
 # 开发环境使用 "*"，生产环境必须指定具体域名
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+
+
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as exc:
+            if exc.status_code == 404 and scope["method"] in {"GET", "HEAD"} and not Path(path).suffix:
+                return await super().get_response("index.html", scope)
+            raise
 
 
 def create_app() -> FastAPI:
@@ -76,7 +87,7 @@ def create_app() -> FastAPI:
 
     # serve frontend static files at root
     if FRONTEND_STATIC_DIR.exists():
-        app.mount("/", StaticFiles(directory=str(FRONTEND_STATIC_DIR), html=True), name="static")
+        app.mount("/", SPAStaticFiles(directory=str(FRONTEND_STATIC_DIR), html=True), name="static")
 
     return app
 
