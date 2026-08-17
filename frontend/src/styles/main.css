@@ -1831,6 +1831,21 @@ summary:focus-visible {
   border-radius: 50%;
 }
 
+.nav-icon.extension::before {
+  inset: 5px 6px 7px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.nav-icon.extension::after {
+  left: 9px;
+  bottom: 4px;
+  width: 6px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 999px;
+}
+
 .app-main {
   background: transparent;
 }

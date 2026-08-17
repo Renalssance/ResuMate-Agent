@@ -93,6 +93,7 @@ const navItems = [
   { path: '/matching', label: '岗位匹配', icon: 'matching' },
   { path: '/profile-fields', label: '结构资料', icon: 'profile' },
   { path: '/questions', label: '试题生成', icon: 'questions' },
+  { path: '/extension', label: '浏览器插件', icon: 'extension' },
 ]
 
 async function submitAuth(mode: AuthMode) {
