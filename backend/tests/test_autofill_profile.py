@@ -94,10 +94,13 @@ def test_build_application_profile_maps_resume_profile_fields():
                 "ethnicity": "Han",
                 "nationality": "China",
                 "id_document_type": "Chinese Resident ID",
+                "id_number": "31010119990101001X",
+                "expected_city": "上海",
                 "expected_salary": "20k-30k",
                 "current_address": "Shanghai Pudong",
                 "portfolio_url": "https://ada.dev",
                 "linkedin_url": "https://linkedin.com/in/ada",
+                "emergency_contact_phone": "13800000001",
             },
             "education": [
                 {
@@ -106,9 +109,12 @@ def test_build_application_profile_maps_resume_profile_fields():
                     "major": "Computer Science",
                     "years": "2022-2024",
                     "college": "School of Computing",
+                    "gpa": "3.83/4.00",
+                    "rank": "前10%",
                     "lab": "AI Lab",
                     "research_direction": "Agent systems",
                     "advisor": "Dr. Turing",
+                    "papers": ["Graph RAG for Recruiting"],
                 }
             ],
             "work_experience": [
@@ -156,15 +162,21 @@ def test_build_application_profile_maps_resume_profile_fields():
     assert fields["application.ethnicity"] == "Han"
     assert fields["application.nationality"] == "China"
     assert fields["application.id_document_type"] == "Chinese Resident ID"
+    assert fields["application.id_number"] == "31010119990101001X"
+    assert fields["application.expected_city"] == "上海"
     assert fields["application.expected_salary"] == "20k-30k"
     assert fields["application.current_address"] == "Shanghai Pudong"
+    assert fields["application.emergency_contact_phone"] == "13800000001"
     assert fields["application.portfolio_url"] == "https://ada.dev"
     assert fields["application.linkedin_url"] == "https://linkedin.com/in/ada"
     assert fields["education.0.school"] == "Example University"
     assert fields["education.0.college"] == "School of Computing"
+    assert fields["education.0.gpa"] == "3.83/4.00"
+    assert fields["education.0.rank"] == "前10%"
     assert fields["education.0.lab"] == "AI Lab"
     assert fields["education.0.research_direction"] == "Agent systems"
     assert fields["education.0.advisor"] == "Dr. Turing"
+    assert fields["education.0.papers"] == "Graph RAG for Recruiting"
     assert fields["work_experience.0.start_date"] == "2024.01"
     assert fields["work_experience.0.end_date"] == "2026.02"
     assert fields["work_experience.0.description"] == "Built FastAPI services.\nReduced latency by 30%."

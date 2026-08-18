@@ -6,15 +6,11 @@ const SENSITIVE = [
   'sms code',
   'one-time',
   'otp',
-  'id card',
-  'identity card',
-  'national id',
   'bank card',
   'credit card',
   '\u5bc6\u7801',
   '\u9a8c\u8bc1\u7801',
   '\u6821\u9a8c\u7801',
-  '\u8eab\u4efd\u8bc1',
   '\u94f6\u884c\u5361'
 ];
 
@@ -23,6 +19,9 @@ const KEYWORDS = {
   'contact.email': ['email', 'e-mail', '\u90ae\u7bb1', '\u7535\u5b50\u90ae\u7bb1'],
   'contact.phone': ['phone', 'mobile', 'tel', 'telephone', '\u624b\u673a', '\u7535\u8bdd'],
   'contact.location': ['city', 'location', 'current city', '\u57ce\u5e02', '\u6240\u5728\u5730'],
+  'application.id_number': ['id number', 'id card number', 'identity number', 'document number', '\u8bc1\u4ef6\u53f7\u7801', '\u8bc1\u4ef6\u53f7', '\u8eab\u4efd\u8bc1\u53f7', '\u8eab\u4efd\u8bc1\u53f7\u7801'],
+  'application.emergency_contact_phone': ['emergency phone', 'emergency contact phone', '\u7d27\u6025\u8054\u7cfb\u7535\u8bdd', '\u7d27\u6025\u8054\u7cfb\u4eba\u7535\u8bdd'],
+  'application.expected_city': ['expected city', 'preferred city', '\u610f\u5411\u57ce\u5e02', '\u671f\u671b\u57ce\u5e02', '\u671f\u671b\u5de5\u4f5c\u57ce\u5e02', '\u5de5\u4f5c\u57ce\u5e02'],
   skills: ['skills', 'technical skills', '\u6280\u80fd', '\u4e13\u4e1a\u6280\u80fd'],
   languages: ['languages', 'language', '\u8bed\u8a00'],
   certifications: ['certifications', 'certificate', '\u8bc1\u4e66'],
@@ -49,8 +48,13 @@ export function elementText(element) {
 export function fieldKeywords(field) {
   const keywords = [field.key, field.label, ...(field.aliases || []), ...(KEYWORDS[field.key] || [])];
   if (field.key.startsWith('education.') && field.key.endsWith('.school')) keywords.push('school', 'university', '\u5b66\u6821');
+  if (field.key.startsWith('education.') && field.key.endsWith('.college')) keywords.push('college', 'school department', '\u5b66\u9662', '\u9662\u7cfb');
   if (field.key.startsWith('education.') && field.key.endsWith('.major')) keywords.push('major', '\u4e13\u4e1a');
   if (field.key.startsWith('education.') && field.key.endsWith('.degree')) keywords.push('degree', '\u5b66\u4f4d');
+  if (field.key.startsWith('education.') && field.key.endsWith('.gpa')) keywords.push('gpa', '\u7ee9\u70b9');
+  if (field.key.startsWith('education.') && field.key.endsWith('.rank')) keywords.push('rank', 'ranking', '\u6210\u7ee9\u6392\u540d', '\u6392\u540d');
+  if (field.key.startsWith('education.') && field.key.endsWith('.research_direction')) keywords.push('research direction', '\u9886\u57df\u65b9\u5411', '\u7814\u7a76\u65b9\u5411');
+  if (field.key.startsWith('education.') && field.key.endsWith('.papers')) keywords.push('papers', 'publications', '\u8bba\u6587', '\u53d1\u8868\u8bba\u6587');
   if (field.key.startsWith('work_experience.') && field.key.endsWith('.company')) keywords.push('company', 'employer', '\u516c\u53f8');
   if (field.key.startsWith('work_experience.') && field.key.endsWith('.title')) keywords.push('title', 'role', 'position', '\u5c97\u4f4d');
   if (field.key.endsWith('.description')) keywords.push('description', 'details', '\u4ecb\u7ecd', '\u63cf\u8ff0', '\u804c\u8d23');

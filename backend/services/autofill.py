@@ -47,6 +47,12 @@ def _bullet_text(items: Iterable[dict]) -> str:
     return "\n".join(lines)
 
 
+def _list_text(value) -> str:
+    if isinstance(value, list):
+        return "\n".join(_text(item) for item in value if _text(item))
+    return _text(value)
+
+
 def _field(key: str, label: str, value: str, aliases: list[str], category: str) -> ApplicationField:
     return ApplicationField(
         key=key,
@@ -92,7 +98,14 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
                 _field("application.ethnicity", "Ethnicity", _text(application.get("ethnicity")), ["ethnicity", "民族"], "application"),
                 _field("application.nationality", "Nationality", _text(application.get("nationality")), ["nationality", "国籍"], "application"),
                 _field("application.id_document_type", "ID Document Type", _text(application.get("id_document_type")), ["id document type", "证件类型"], "application"),
-                _field("application.expected_city", "Expected City", _text(application.get("expected_city")), ["expected city", "preferred city", "意向城市", "期望城市"], "application"),
+                _field(
+                    "application.id_number",
+                    "ID Number",
+                    _text(application.get("id_number") or application.get("id_card_number") or application.get("id_document_number")),
+                    ["id number", "id card number", "identity number", "document number", "证件号码", "证件号", "身份证号", "身份证号码"],
+                    "application",
+                ),
+                _field("application.expected_city", "Expected City", _text(application.get("expected_city")), ["expected city", "preferred city", "意向城市", "期望城市", "期望工作城市", "工作城市"], "application"),
                 _field("application.expected_position", "Expected Position", _text(application.get("expected_position")), ["expected position", "意向岗位", "期望职位"], "application"),
                 _field("application.expected_salary", "Expected Salary", _text(application.get("expected_salary")), ["expected salary", "期望薪资", "薪资要求"], "application"),
                 _field("application.earliest_start_date", "Earliest Start Date", _text(application.get("earliest_start_date")), ["earliest start", "到岗时间", "入职时间"], "application"),
@@ -104,7 +117,7 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
                 _field("application.native_place", "Native Place", _text(application.get("native_place")), ["native place", "籍贯"], "application"),
                 _field("application.hukou_location", "Hukou Location", _text(application.get("hukou_location")), ["hukou", "户口所在地"], "application"),
                 _field("application.emergency_contact_name", "Emergency Contact", _text(application.get("emergency_contact_name")), ["emergency contact", "紧急联系人"], "application"),
-                _field("application.emergency_contact_phone", "Emergency Phone", _text(application.get("emergency_contact_phone")), ["emergency phone", "紧急联系电话"], "application"),
+                _field("application.emergency_contact_phone", "Emergency Phone", _text(application.get("emergency_contact_phone")), ["emergency phone", "emergency contact phone", "紧急联系电话", "紧急联系人电话"], "application"),
             ],
         )
     )
@@ -118,12 +131,15 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
         education_fields.extend(
             [
                 _field(f"{prefix}.school", f"School {number}", _text(item.get("school")), ["school", "university", "学校"], "education"),
-                _field(f"{prefix}.college", f"College {number}", _text(item.get("college")), ["college", "school department", "学院"], "education"),
+                _field(f"{prefix}.college", f"College {number}", _text(item.get("college")), ["college", "school department", "学院", "院系"], "education"),
                 _field(f"{prefix}.degree", f"Degree {number}", _text(item.get("degree")), ["degree", "学位"], "education"),
                 _field(f"{prefix}.major", f"Major {number}", _text(item.get("major")), ["major", "专业"], "education"),
+                _field(f"{prefix}.gpa", f"GPA {number}", _text(item.get("gpa")), ["gpa", "绩点"], "education"),
+                _field(f"{prefix}.rank", f"Rank {number}", _text(item.get("rank") or item.get("ranking") or item.get("grade_rank")), ["rank", "ranking", "成绩排名", "排名"], "education"),
                 _field(f"{prefix}.lab", f"Lab {number}", _text(item.get("lab") or item.get("laboratory")), ["lab", "laboratory", "实验室"], "education"),
                 _field(f"{prefix}.research_direction", f"Research Direction {number}", _text(item.get("research_direction") or item.get("field_direction")), ["research direction", "领域方向", "研究方向"], "education"),
                 _field(f"{prefix}.advisor", f"Advisor {number}", _text(item.get("advisor") or item.get("supervisor")), ["advisor", "supervisor", "导师"], "education"),
+                _field(f"{prefix}.papers", f"Papers {number}", _list_text(item.get("papers") or item.get("publications")), ["papers", "publications", "论文", "发表论文"], "education"),
                 _field(f"{prefix}.start_date", f"Education Start {number}", _text(item.get("start_date")), ["education start", "入学时间", "开始时间"], "education"),
                 _field(f"{prefix}.end_date", f"Education End {number}", _text(item.get("end_date")), ["education end", "毕业时间", "结束时间"], "education"),
                 _field(f"{prefix}.years", f"Education Dates {number}", _text(item.get("years") or _join_lines(_text(item.get("start_date")), _text(item.get("end_date")))), ["education date", "graduation", "时间"], "education"),
@@ -203,15 +219,11 @@ SENSITIVE_PATTERNS = [
     "sms code",
     "one-time",
     "otp",
-    "id card",
-    "identity card",
-    "national id",
     "bank card",
     "credit card",
     "密码",
     "验证码",
     "校验码",
-    "身份证",
     "银行卡",
 ]
 
@@ -221,6 +233,9 @@ FIELD_KEYWORDS = {
     "contact.email": ["email", "e-mail", "邮箱"],
     "contact.phone": ["phone", "mobile", "tel", "telephone", "手机", "电话"],
     "contact.location": ["city", "location", "current city", "城市", "所在地"],
+    "application.id_number": ["id number", "id card number", "identity number", "document number", "证件号码", "证件号", "身份证号", "身份证号码"],
+    "application.emergency_contact_phone": ["emergency phone", "emergency contact phone", "紧急联系电话", "紧急联系人电话"],
+    "application.expected_city": ["expected city", "preferred city", "意向城市", "期望城市", "期望工作城市", "工作城市"],
     "skills": ["skills", "technical skills", "技能", "专业技能"],
     "languages": ["languages", "language", "语言"],
     "certifications": ["certifications", "certificate", "证书"],
@@ -257,10 +272,20 @@ def _keywords_for_field(field: ApplicationField) -> list[str]:
     keywords.extend(FIELD_KEYWORDS.get(field.key, []))
     if field.key.startswith("education.") and field.key.endswith(".school"):
         keywords.extend(["school", "university", "学校"])
+    if field.key.startswith("education.") and field.key.endswith(".college"):
+        keywords.extend(["college", "school department", "学院", "院系"])
     if field.key.startswith("education.") and field.key.endswith(".major"):
         keywords.extend(["major", "专业"])
     if field.key.startswith("education.") and field.key.endswith(".degree"):
         keywords.extend(["degree", "学位"])
+    if field.key.startswith("education.") and field.key.endswith(".gpa"):
+        keywords.extend(["gpa", "绩点"])
+    if field.key.startswith("education.") and field.key.endswith(".rank"):
+        keywords.extend(["rank", "ranking", "成绩排名", "排名"])
+    if field.key.startswith("education.") and field.key.endswith(".research_direction"):
+        keywords.extend(["research direction", "领域方向", "研究方向"])
+    if field.key.startswith("education.") and field.key.endswith(".papers"):
+        keywords.extend(["papers", "publications", "论文", "发表论文"])
     if field.key.startswith("work_experience.") and field.key.endswith(".company"):
         keywords.extend(["company", "employer", "公司"])
     if field.key.startswith("work_experience.") and field.key.endswith(".title"):

@@ -144,3 +144,53 @@ def test_match_application_fields_does_not_fill_project_link_without_url_field()
     )
 
     assert response.matches == []
+
+
+def test_match_application_fields_matches_common_problem_labels():
+    profile = ApplicationProfile(
+        id="resume:3",
+        name="Zhu",
+        source_resume_id="resume:3",
+        updated_at="2026-08-04T00:00:00Z",
+        sections=[
+            ApplicationSection(
+                id="problem",
+                label="Problem Fields",
+                fields=[
+                    ApplicationField(key="application.emergency_contact_phone", label="Emergency Phone", value="13800000001", aliases=["紧急联系电话"], category="application", confidence="high", source="resume"),
+                    ApplicationField(key="application.expected_city", label="Expected City", value="上海", aliases=["期望城市"], category="application", confidence="high", source="resume"),
+                    ApplicationField(key="application.id_number", label="ID Number", value="31010119990101001X", aliases=["身份证号"], category="application", confidence="high", source="resume"),
+                    ApplicationField(key="education.0.college", label="College 1", value="信息科学与技术学院", aliases=["学院"], category="education", confidence="high", source="resume"),
+                    ApplicationField(key="education.0.rank", label="Rank 1", value="前10%", aliases=["成绩排名"], category="education", confidence="high", source="resume"),
+                    ApplicationField(key="education.0.gpa", label="GPA 1", value="3.83/4.00", aliases=["GPA"], category="education", confidence="high", source="resume"),
+                    ApplicationField(key="education.0.research_direction", label="Research Direction 1", value="智能网络", aliases=["研究方向"], category="education", confidence="high", source="resume"),
+                    ApplicationField(key="education.0.papers", label="Papers 1", value="Graph RAG for Recruiting", aliases=["论文"], category="education", confidence="high", source="resume"),
+                ],
+            )
+        ],
+    )
+
+    response = match_application_fields(
+        profile,
+        [
+            PageElement(index=0, tag="input", type="tel", label_text="紧急联系人电话"),
+            PageElement(index=1, tag="input", type="text", label_text="期望工作城市"),
+            PageElement(index=2, tag="input", type="text", label_text="院系"),
+            PageElement(index=3, tag="select", type="select-one", label_text="成绩排名"),
+            PageElement(index=4, tag="input", type="text", label_text="GPA"),
+            PageElement(index=5, tag="input", type="text", label_text="研究方向"),
+            PageElement(index=6, tag="textarea", type="", label_text="论文"),
+            PageElement(index=7, tag="input", type="text", label_text="身份证号"),
+        ],
+    )
+
+    assert [(item.field_key, item.element_index) for item in response.matches] == [
+        ("application.emergency_contact_phone", 0),
+        ("application.expected_city", 1),
+        ("education.0.college", 2),
+        ("education.0.rank", 3),
+        ("education.0.gpa", 4),
+        ("education.0.research_direction", 5),
+        ("education.0.papers", 6),
+        ("application.id_number", 7),
+    ]

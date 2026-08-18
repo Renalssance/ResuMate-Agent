@@ -77,6 +77,7 @@
           <label><span>紧急联系人</span><input v-model="draft.application.emergency_contact_name" /></label>
           <label><span>紧急联系电话</span><input v-model="draft.application.emergency_contact_phone" /></label>
           <label><span>证件类型</span><input v-model="draft.application.id_document_type" placeholder="如：中国 - 居民身份证" /></label>
+          <label><span>身份证号</span><input v-model="draft.application.id_number" /></label>
         </div>
 
         <details class="editor-section" open>
@@ -91,11 +92,14 @@
               <label><span>学院</span><input v-model="item.college" /></label>
               <label><span>专业</span><input v-model="item.major" /></label>
               <label><span>学历/学位</span><input v-model="item.degree" /></label>
+              <label><span>GPA</span><input v-model="item.gpa" /></label>
+              <label><span>成绩排名</span><input v-model="item.rank" /></label>
               <label><span>入学时间</span><input v-model="item.start_date" placeholder="2024.09" /></label>
               <label><span>毕业时间</span><input v-model="item.end_date" placeholder="2027.06" /></label>
               <label><span>实验室</span><input v-model="item.lab" /></label>
               <label><span>领域方向</span><input v-model="item.research_direction" /></label>
               <label><span>导师</span><input v-model="item.advisor" /></label>
+              <label class="span-two"><span>论文</span><input v-model="item.papers" /></label>
             </div>
           </div>
           <button class="button-secondary" type="button" @click="addEducation">添加教育经历</button>
@@ -194,6 +198,7 @@ const requiredFields = [
   { label: '户口所在地', path: 'application.hukou_location' },
   { label: '民族', path: 'application.ethnicity' },
   { label: '证件类型', path: 'application.id_document_type', sensitive: true },
+  { label: '身份证号', path: 'application.id_number', sensitive: true },
   { label: '内推码', path: 'application.referral_code' },
   { label: '期望城市', path: 'application.expected_city' },
   { label: '期望职位', path: 'application.expected_position' },
@@ -208,9 +213,12 @@ const requiredFields = [
   { label: '学校名称', path: 'education.0.school' },
   { label: '学院', path: 'education.0.college' },
   { label: '专业', path: 'education.0.major' },
+  { label: 'GPA', path: 'education.0.gpa' },
+  { label: '成绩排名', path: 'education.0.rank' },
   { label: '实验室', path: 'education.0.lab' },
   { label: '领域方向', path: 'education.0.research_direction' },
   { label: '导师', path: 'education.0.advisor' },
+  { label: '论文', path: 'education.0.papers' },
   { label: '项目名称', path: 'projects.0.name' },
   { label: '项目角色', path: 'projects.0.role' },
   { label: '项目链接', path: 'projects.0.url' },
@@ -261,7 +269,7 @@ function emptyProfile(): AnyRecord {
 }
 
 function emptyEducation(): AnyRecord {
-  return { school: '', college: '', degree: '', major: '', years: '', start_date: '', end_date: '', lab: '', research_direction: '', advisor: '' }
+  return { school: '', college: '', degree: '', major: '', gpa: '', rank: '', years: '', start_date: '', end_date: '', lab: '', research_direction: '', advisor: '', papers: '' }
 }
 
 function emptyWork(): AnyRecord {

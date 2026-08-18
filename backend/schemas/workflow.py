@@ -92,11 +92,18 @@ class ResumeBullet(BaseModel):
 
 class EducationItem(BaseModel):
     school: str = ""
+    college: str = ""
     degree: str = ""
     major: str = ""
     years: str = ""
     start_date: str = ""
     end_date: str = ""
+    gpa: str = ""
+    rank: str = ""
+    lab: str = ""
+    research_direction: str = ""
+    advisor: str = ""
+    papers: list[str] = Field(default_factory=list)
     courses: list[str] = Field(default_factory=list)
     achievements: list[str] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(default_factory=list)

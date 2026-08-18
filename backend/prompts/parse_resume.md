@@ -4,7 +4,7 @@ Objective:
 - Extract resume facts without inference.
 - Deduplicate overlapping chunks.
 - Preserve exact provenance for important facts supported by the schema.
-- Extract education courses, work/project bullets, technologies, metrics, awards, certifications, languages, self summary, quality warnings, and structured ambiguities when explicitly present.
+- Extract education courses, GPA, ranking, papers, work/project bullets, technologies, metrics, awards, certifications, languages, self summary, quality warnings, and structured ambiguities when explicitly present.
 
 Fact boundary:
 - Use only the supplied chunks.

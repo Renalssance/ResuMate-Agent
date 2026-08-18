@@ -13,14 +13,18 @@
     const tag = element.tagName.toLowerCase();
     if (tag === 'input') {
       const type = (element.type || 'text').toLowerCase();
-      return !['hidden', 'submit', 'button', 'reset', 'file', 'password'].includes(type);
+      return !['hidden', 'submit', 'button', 'reset', 'file', 'password'].includes(type) || isComboboxCandidate(element);
     }
-    return tag === 'textarea' || tag === 'select' || isContentEditableCandidate(element);
+    return tag === 'textarea' || tag === 'select' || isContentEditableCandidate(element) || isComboboxCandidate(element);
   }
 
   function isContentEditableCandidate(element) {
     const attr = element.getAttribute('contenteditable');
     return element.isContentEditable || (attr !== null && attr.toLowerCase() !== 'false');
+  }
+
+  function isComboboxCandidate(element) {
+    return String(element.getAttribute('role') || '').toLowerCase() === 'combobox';
   }
 
   function isVisibleFillTarget(element, options = {}) {
@@ -29,7 +33,7 @@
     }
     if (!element || element.getAttribute('aria-hidden') === 'true' || element.closest('[aria-hidden="true"]')) return false;
     if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') && element.disabled) return false;
-    if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') && element.readOnly) return false;
+    if ((element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') && element.readOnly && !isComboboxCandidate(element)) return false;
 
     const style = window.getComputedStyle(element);
     if (!style || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
@@ -103,6 +107,14 @@
     return { success: true, filled: value };
   }
 
+  function fillCombobox(element, value) {
+    element.focus();
+    element.click();
+    const result = fillInput(element, value);
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }));
+    return result;
+  }
+
   function fillSelect(element, value) {
     element.focus();
     const search = String(value || '').toLowerCase().trim();
@@ -145,6 +157,7 @@
     }
     const tag = element.tagName.toLowerCase();
     if (tag === 'select') return fillSelect(element, value);
+    if (isComboboxCandidate(element)) return fillCombobox(element, value);
     if (tag === 'input' || tag === 'textarea') return fillInput(element, value);
     if (isContentEditableCandidate(element)) return fillContentEditable(element, value);
     return { success: false, error: `Unsupported element ${tag}` };
