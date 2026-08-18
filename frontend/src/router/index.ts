@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ApplicationsView from '../views/ApplicationsView.vue'
 import DocumentsView from '../views/DocumentsView.vue'
 import ExtensionView from '../views/ExtensionView.vue'
 import MatchingView from '../views/MatchingView.vue'
@@ -32,6 +33,12 @@ const router = createRouter({
       name: 'questions',
       component: QuestionsView,
       meta: { title: '试题生成', description: '基于岗位和候选人生成面试试题' },
+    },
+    {
+      path: '/applications',
+      name: 'applications',
+      component: ApplicationsView,
+      meta: { title: '投递记录', description: '记录公司、岗位、投递日期和进展状态' },
     },
     {
       path: '/extension',

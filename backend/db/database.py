@@ -71,3 +71,54 @@ def ensure_sqlite_schema(engine: Engine) -> None:
                         "ADD COLUMN content_hash VARCHAR(64) NOT NULL DEFAULT ''"
                     )
                 )
+        application_columns = {
+            row[1]
+            for row in connection.execute(text("PRAGMA table_info(job_applications)"))
+        }
+        if application_columns and "resume_id" not in application_columns:
+            connection.execute(text("ALTER TABLE job_applications ADD COLUMN resume_id INTEGER"))
+            connection.execute(text("CREATE INDEX IF NOT EXISTS ix_job_applications_resume_id ON job_applications (resume_id)"))
+        if application_columns:
+            connection.execute(
+                text(
+                    "CREATE TABLE IF NOT EXISTS job_application_status_events ("
+                    "id INTEGER NOT NULL PRIMARY KEY, "
+                    "application_id INTEGER NOT NULL, "
+                    "status VARCHAR(40) NOT NULL, "
+                    "changed_at DATETIME NOT NULL, "
+                    "note TEXT NOT NULL DEFAULT '', "
+                    "created_at DATETIME NOT NULL, "
+                    "FOREIGN KEY(application_id) REFERENCES job_applications (id) ON DELETE CASCADE"
+                    ")"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_status_events_application_id "
+                    "ON job_application_status_events (application_id)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_status_events_status "
+                    "ON job_application_status_events (status)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_status_events_changed_at "
+                    "ON job_application_status_events (changed_at)"
+                )
+            )
+            connection.execute(
+                text(
+                    "INSERT INTO job_application_status_events "
+                    "(application_id, status, changed_at, note, created_at) "
+                    "SELECT app.id, app.status, app.updated_at, '', app.updated_at "
+                    "FROM job_applications app "
+                    "WHERE NOT EXISTS ("
+                    "SELECT 1 FROM job_application_status_events event "
+                    "WHERE event.application_id = app.id"
+                    ")"
+                )
+            )

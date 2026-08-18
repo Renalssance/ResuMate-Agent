@@ -34,7 +34,7 @@
     <main class="app-main">
       <header class="topbar">
         <button class="icon-button mobile-only" type="button" aria-label="打开导航" @click="drawerOpen = true">
-          ☰
+          <span class="icon-glyph menu" aria-hidden="true"></span>
         </button>
         <div class="topbar-title">
           <h1>{{ route.meta.title }}</h1>
@@ -93,6 +93,7 @@ const navItems = [
   { path: '/matching', label: '岗位匹配', icon: 'matching' },
   { path: '/profile-fields', label: '结构资料', icon: 'profile' },
   { path: '/questions', label: '试题生成', icon: 'questions' },
+  { path: '/applications', label: '投递记录', icon: 'applications' },
   { path: '/extension', label: '浏览器插件', icon: 'extension' },
 ]
 

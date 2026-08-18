@@ -22,7 +22,7 @@
     <section class="card document-action-card">
       <div class="section-head">
         <div>
-          <h2>上传与筛选</h2>
+          <h2>上传文档</h2>
           <p>上传后会立即创建解析任务，并通过统一 SSE 进度组件展示。</p>
         </div>
       </div>
@@ -32,44 +32,27 @@
           <div class="upload-choice">
             <label class="upload-box">
               <input type="file" accept=".pdf,.doc,.docx,.md,.txt" @change="handleUpload('jd', $event)" />
+              <span class="icon-glyph document" aria-hidden="true"></span>
               <strong>上传 JD</strong>
               <span>支持 PDF、DOC、DOCX、TXT、MD</span>
             </label>
-            <button class="button-secondary" type="button" @click="openTextUpload('jd')">输入 JD 文本</button>
+            <button class="button-secondary" type="button" @click="openTextUpload('jd')">
+              <span class="icon-glyph text" aria-hidden="true"></span>
+              <span>输入 JD 文本</span>
+            </button>
           </div>
           <div class="upload-choice">
             <label class="upload-box">
               <input type="file" multiple accept=".pdf,.doc,.docx" @change="handleUpload('resume', $event)" />
+              <span class="icon-glyph resume" aria-hidden="true"></span>
               <strong>上传简历</strong>
               <span>可一次选择多份简历文件</span>
             </label>
-            <button class="button-secondary" type="button" @click="openTextUpload('resume')">输入简历文本</button>
+            <button class="button-secondary" type="button" @click="openTextUpload('resume')">
+              <span class="icon-glyph text" aria-hidden="true"></span>
+              <span>输入简历文本</span>
+            </button>
           </div>
-        </div>
-
-        <div class="filter-panel">
-          <label>
-            <span>类型</span>
-            <select v-model="typeFilter" class="input">
-              <option value="all">全部</option>
-              <option value="jd">JD</option>
-              <option value="resume">简历</option>
-            </select>
-          </label>
-          <label>
-            <span>状态</span>
-            <select v-model="statusFilter" class="input">
-              <option value="all">全部</option>
-              <option value="pending">未解析</option>
-              <option value="running">解析中</option>
-              <option value="success">成功</option>
-              <option value="failed">失败</option>
-            </select>
-          </label>
-          <label class="filter-search">
-            <span>搜索</span>
-            <input v-model="keyword" class="input" type="search" placeholder="文件名或解析内容" />
-          </label>
         </div>
       </div>
       <div v-if="activeTextType" class="text-upload-panel">
@@ -83,9 +66,13 @@
         </label>
         <div class="text-upload-actions">
           <button class="button-primary" type="button" :disabled="!activeText.trim()" @click="handleTextUpload">
-            上传文本
+            <span class="icon-glyph upload" aria-hidden="true"></span>
+            <span>上传文本</span>
           </button>
-          <button class="button-secondary" type="button" @click="activeTextType = null">取消</button>
+          <button class="button-secondary" type="button" @click="activeTextType = null">
+            <span class="icon-glyph close" aria-hidden="true"></span>
+            <span>取消</span>
+          </button>
         </div>
       </div>
     </section>
@@ -97,6 +84,31 @@
         <button v-for="tab in tabs" :key="tab.key" :class="{ active: activeTab === tab.key }" @click="activeTab = tab.key">
           {{ tab.label }}
         </button>
+      </div>
+
+      <div class="filter-panel document-filter-panel">
+        <label>
+          <span>类型</span>
+          <select v-model="typeFilter" class="input">
+            <option value="all">全部</option>
+            <option value="jd">JD</option>
+            <option value="resume">简历</option>
+          </select>
+        </label>
+        <label>
+          <span>状态</span>
+          <select v-model="statusFilter" class="input">
+            <option value="all">全部</option>
+            <option value="pending">未解析</option>
+            <option value="running">解析中</option>
+            <option value="success">成功</option>
+            <option value="failed">失败</option>
+          </select>
+        </label>
+        <label class="filter-search">
+          <span>搜索</span>
+          <input v-model="keyword" class="input" type="search" placeholder="文件名或解析内容" />
+        </label>
       </div>
 
       <div v-if="store.listLoading && !store.documents.length" class="loading-state">正在加载文档列表...</div>
@@ -132,9 +144,18 @@
               <td><StatusTag :status="doc.localStored" true-label="已保存" false-label="未保存" /></td>
               <td>
                 <div class="table-actions">
-                  <button type="button" @click="selectedDocument = doc">查看</button>
-                  <button type="button" @click="reparse(doc.id)">重解析</button>
-                  <button type="button" class="danger-text" @click="remove(doc.id)">删除</button>
+                  <button type="button" @click="selectedDocument = doc">
+                    <span class="icon-glyph view" aria-hidden="true"></span>
+                    <span>查看</span>
+                  </button>
+                  <button type="button" @click="reparse(doc.id)">
+                    <span class="icon-glyph refresh" aria-hidden="true"></span>
+                    <span>重解析</span>
+                  </button>
+                  <button type="button" class="danger-text" @click="remove(doc.id)">
+                    <span class="icon-glyph delete" aria-hidden="true"></span>
+                    <span>删除</span>
+                  </button>
                 </div>
               </td>
             </tr>

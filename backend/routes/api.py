@@ -20,6 +20,7 @@ from backend.routes.runs import router as runs_router
 from backend.routes.documents import followup_router, router as documents_router
 from backend.routes.tasks import router as tasks_router
 from backend.routes.autofill import router as autofill_router
+from backend.routes.applications import router as applications_router
 
 router = APIRouter()
 
@@ -73,3 +74,4 @@ router.include_router(documents_router)
 router.include_router(followup_router)
 router.include_router(tasks_router)
 router.include_router(autofill_router)
+router.include_router(applications_router)

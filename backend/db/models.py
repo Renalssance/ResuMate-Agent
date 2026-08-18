@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.db.database import Base
@@ -23,6 +23,52 @@ class User(Base):
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
     job_descriptions = relationship("JobDescription", back_populates="user", cascade="all, delete-orphan")
     analysis_jobs = relationship("AnalysisJob", back_populates="user", cascade="all, delete-orphan")
+    applications = relationship("JobApplication", back_populates="user", cascade="all, delete-orphan")
+
+
+class JobApplication(Base):
+    """用户手动维护的简历投递记录。"""
+
+    __tablename__ = "job_applications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    resume_id: Mapped[int | None] = mapped_column(ForeignKey("resumes.id", ondelete="SET NULL"), nullable=True, index=True)
+    company: Mapped[str] = mapped_column(String(255), nullable=False)
+    position: Mapped[str] = mapped_column(String(255), nullable=False)
+    applied_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(40), default="applied", nullable=False, index=True)
+    job_url: Mapped[str] = mapped_column(String(1024), default="", server_default="", nullable=False)
+    source: Mapped[str] = mapped_column(String(120), default="", server_default="", nullable=False)
+    notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+    user = relationship("User", back_populates="applications")
+    resume = relationship("Resume")
+    status_events = relationship(
+        "JobApplicationStatusEvent",
+        back_populates="application",
+        cascade="all, delete-orphan",
+        order_by="desc(JobApplicationStatusEvent.changed_at)",
+    )
+
+
+class JobApplicationStatusEvent(Base):
+    """投递状态变化时间线。"""
+
+    __tablename__ = "job_application_status_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    application_id: Mapped[int] = mapped_column(
+        ForeignKey("job_applications.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    status: Mapped[str] = mapped_column(String(40), nullable=False, index=True)
+    changed_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False, index=True)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+    application = relationship("JobApplication", back_populates="status_events")
 
 
 class ChatSession(Base):
