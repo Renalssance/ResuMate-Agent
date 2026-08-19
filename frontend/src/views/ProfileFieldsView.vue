@@ -420,6 +420,35 @@ function valuePreview(path: string) {
   margin-bottom: var(--space-4);
 }
 
+@media (min-width: 1281px) and (orientation: landscape) {
+  .profile-fields-page {
+    height: calc(100vh - 136px);
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  .profile-fields-rail,
+  .profile-fields-editor,
+  .profile-fields-aside,
+  .profile-empty-card {
+    max-height: 100%;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .profile-fields-rail,
+  .profile-fields-aside {
+    position: static;
+  }
+
+  .coverage-list,
+  .field-map {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
 @media (max-width: 1280px) {
   .profile-fields-page {
     grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);

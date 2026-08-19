@@ -16,8 +16,15 @@
         </div>
       </div>
 
-      <div class="progress-track" aria-label="任务进度">
-        <span :style="{ width: `${progress}%` }"></span>
+      <div class="progress-track segmented" aria-label="任务进度">
+        <span
+          v-for="segment in progressSegments"
+          :key="segment.key"
+          :class="['progress-segment', segment.status]"
+          :title="segment.title"
+        >
+          <span :style="{ width: `${segment.fillPercent}%` }"></span>
+        </span>
       </div>
 
       <div class="parse-step-grid">
@@ -47,9 +54,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ProgressStep } from '../types/task'
+import { buildProgressSegments } from '../utils/taskProgressChart'
 
-defineProps<{
+const props = defineProps<{
   title: string
   taskId: string
   progress: number
@@ -59,6 +68,8 @@ defineProps<{
   message: string
   errorReason: string
 }>()
+
+const progressSegments = computed(() => buildProgressSegments(props.steps))
 
 function stepStatusText(step: ProgressStep) {
   if (step.status === 'success') return '已完成'

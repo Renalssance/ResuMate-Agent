@@ -647,6 +647,42 @@ textarea:focus {
   border-radius: inherit;
 }
 
+.progress-track.segmented {
+  height: 10px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 3px;
+  background: transparent;
+  border-radius: 0;
+}
+
+.progress-track.segmented > .progress-segment {
+  overflow: hidden;
+  background: var(--color-bg-muted);
+  border-radius: 999px;
+}
+
+.progress-track.segmented > .progress-segment > span {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  background: var(--color-primary);
+  border-radius: inherit;
+}
+
+.progress-track.segmented > .progress-segment.success > span {
+  background: var(--color-success);
+}
+
+.progress-track.segmented > .progress-segment.failed > span {
+  background: var(--color-danger);
+}
+
+.progress-track.segmented > .progress-segment.pending > span {
+  background: transparent;
+}
+
 .parse-task-list {
   display: grid;
   gap: var(--space-4);
@@ -1090,9 +1126,60 @@ textarea:focus {
   font-size: 13px;
 }
 
-.result-card-head strong {
+.result-card-head > strong {
   font-size: 28px;
   line-height: 1;
+}
+
+.match-score {
+  min-width: 68px;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.match-score strong {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.match-score span {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.match-score-track,
+.criterion-track {
+  height: 8px;
+  overflow: hidden;
+  background: var(--color-bg-muted);
+  border-radius: 999px;
+}
+
+.match-score-track span,
+.criterion-track span {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  background: var(--color-primary);
+  border-radius: inherit;
+}
+
+.match-score-track span.score-success,
+.criterion-track span.strong {
+  background: var(--color-success);
+}
+
+.match-score-track span.score-warning,
+.criterion-track span.good {
+  background: var(--color-warning);
+}
+
+.match-score-track span.score-danger,
+.criterion-track span.weak {
+  background: var(--color-danger);
 }
 
 .score-success {
@@ -1188,6 +1275,53 @@ textarea:focus {
 
 .data-table.compact {
   min-width: 720px;
+}
+
+.criteria-chart {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.criterion-row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.criterion-row-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.criterion-row-head strong {
+  display: block;
+  font-size: 14px;
+}
+
+.criterion-row-head span {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.criterion-row-head b {
+  color: var(--color-text);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.criterion-row p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .question-layout {
@@ -2466,8 +2600,16 @@ label > span {
 }
 
 .auth-user {
-  padding: 0 4px 0 var(--space-3);
+  overflow: hidden;
+  padding: 0 0 0 var(--space-3);
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.auth-user .button-secondary {
+  align-self: stretch;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-width: 0 0 0 1px;
+  box-shadow: none;
 }
 
 .status-dot {
@@ -3338,6 +3480,77 @@ label > span {
   width: 3px;
   content: "";
   background: var(--color-primary);
+}
+
+.application-metric::after {
+  content: none;
+}
+
+.application-metric.active::before {
+  background: var(--status-active);
+}
+
+.application-metric.rejected::before {
+  background: var(--status-rejected);
+}
+
+.application-metric.passed::before {
+  background: var(--status-passed);
+}
+
+.metric-card-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.metric-card-foot small {
+  min-width: 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-mini-track,
+.metric-stack {
+  height: 5px;
+  display: flex;
+  overflow: hidden;
+  margin-top: var(--space-2);
+  background: var(--color-bg-muted);
+  border-radius: 999px;
+}
+
+.metric-mini-track span,
+.metric-stack span {
+  min-width: 0;
+}
+
+.metric-mini-track span {
+  border-radius: inherit;
+}
+
+.metric-mini-track.active span,
+.metric-stack span.info {
+  background: var(--status-active);
+}
+
+.metric-mini-track.rejected span,
+.metric-stack span.danger {
+  background: var(--status-rejected);
+}
+
+.metric-mini-track.passed span,
+.metric-stack span.success {
+  background: var(--status-passed);
+}
+
+.metric-stack span.muted {
+  background: var(--status-applied);
 }
 
 .application-form {

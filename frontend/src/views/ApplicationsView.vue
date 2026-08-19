@@ -4,18 +4,51 @@
       <article class="metric-card application-metric total">
         <span>总投递</span>
         <strong>{{ store.totalCount }}</strong>
+        <div class="metric-card-foot">
+          <small>状态构成</small>
+          <small>待推进 / 放弃 {{ segmentCount('other') }} 个</small>
+        </div>
+        <div class="metric-stack" aria-label="投递状态构成">
+          <span
+            v-for="segment in statusSegments"
+            :key="segment.key"
+            :class="segment.tone"
+            :style="{ flexBasis: `${segment.percent}%` }"
+          ></span>
+        </div>
       </article>
       <article class="metric-card application-metric active">
         <span>流程中</span>
         <strong>{{ store.activeCount }}</strong>
+        <div class="metric-card-foot">
+          <small>占总投递</small>
+          <small>{{ segmentPercent('active') }}%</small>
+        </div>
+        <div class="metric-mini-track active" aria-hidden="true">
+          <span :style="{ width: `${segmentPercent('active')}%` }"></span>
+        </div>
       </article>
       <article class="metric-card application-metric rejected">
         <span>已挂</span>
         <strong>{{ store.rejectedCount }}</strong>
+        <div class="metric-card-foot">
+          <small>占总投递</small>
+          <small>{{ segmentPercent('rejected') }}%</small>
+        </div>
+        <div class="metric-mini-track rejected" aria-hidden="true">
+          <span :style="{ width: `${segmentPercent('rejected')}%` }"></span>
+        </div>
       </article>
       <article class="metric-card application-metric passed">
         <span>Offer / 通过</span>
         <strong>{{ store.passedCount }}</strong>
+        <div class="metric-card-foot">
+          <small>占总投递</small>
+          <small>{{ segmentPercent('passed') }}%</small>
+        </div>
+        <div class="metric-mini-track passed" aria-hidden="true">
+          <span :style="{ width: `${segmentPercent('passed')}%` }"></span>
+        </div>
       </article>
     </section>
 
@@ -220,6 +253,7 @@ import {
   type JobApplicationPayload,
   type JobApplicationRecord,
 } from '../types/application'
+import { buildApplicationStatusSegments } from '../utils/applicationChart'
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
@@ -236,6 +270,17 @@ const statusDraft = reactive({
 })
 
 const parsedResumes = computed(() => documentStore.parsedResumes)
+const statusSegments = computed(() => buildApplicationStatusSegments(store.applications))
+
+type StatusSegmentKey = 'active' | 'rejected' | 'passed' | 'other'
+
+function segmentPercent(key: StatusSegmentKey) {
+  return statusSegments.value.find((segment) => segment.key === key)?.percent ?? 0
+}
+
+function segmentCount(key: StatusSegmentKey) {
+  return statusSegments.value.find((segment) => segment.key === key)?.count ?? 0
+}
 
 const filteredApplications = computed(() => {
   const normalizedKeyword = keyword.value.toLowerCase()

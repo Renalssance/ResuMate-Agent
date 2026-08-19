@@ -14,6 +14,7 @@ import type {
   JobApplicationPayload,
   JobApplicationRecord,
 } from '../types/application'
+import { buildApplicationStatusSegments } from '../utils/applicationChart'
 
 export const useApplicationStore = defineStore('application', () => {
   const applications = ref<JobApplicationRecord[]>([])
@@ -21,12 +22,11 @@ export const useApplicationStore = defineStore('application', () => {
   const saving = ref(false)
   const error = ref('')
 
+  const statusSegments = computed(() => buildApplicationStatusSegments(applications.value))
   const totalCount = computed(() => applications.value.length)
-  const activeCount = computed(() => applications.value.filter((item) => activeStatuses.has(item.status)).length)
-  const rejectedCount = computed(
-    () => applications.value.filter((item) => rejectedStatuses.has(item.status)).length,
-  )
-  const passedCount = computed(() => applications.value.filter((item) => item.status === 'passed' || item.status === 'offer').length)
+  const activeCount = computed(() => segmentCount(statusSegments.value, 'active'))
+  const rejectedCount = computed(() => segmentCount(statusSegments.value, 'rejected'))
+  const passedCount = computed(() => segmentCount(statusSegments.value, 'passed'))
 
   async function loadApplications() {
     loading.value = true
@@ -91,23 +91,9 @@ export const useApplicationStore = defineStore('application', () => {
   }
 })
 
-const activeStatuses = new Set<ApplicationStatus>([
-  'assessment',
-  'written_test',
-  'interviewing',
-  'first_interview',
-  'second_interview',
-  'third_interview',
-  'hr_interview',
-  'offer',
-])
-
-const rejectedStatuses = new Set<ApplicationStatus>([
-  'resume_rejected',
-  'assessment_rejected',
-  'written_test_rejected',
-  'interview_rejected',
-])
+function segmentCount(segments: ReturnType<typeof buildApplicationStatusSegments>, key: 'active' | 'rejected' | 'passed') {
+  return segments.find((item) => item.key === key)?.count || 0
+}
 
 export function toApplicationRecord(record: BackendJobApplicationRecord): JobApplicationRecord {
   return {

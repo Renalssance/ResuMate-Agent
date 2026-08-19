@@ -69,7 +69,13 @@
               <h3>{{ result.candidateName }}</h3>
               <p>{{ result.jdTitle }}</p>
             </div>
-            <strong :class="scoreTone(result.score)">{{ result.score }}</strong>
+            <div class="match-score" :aria-label="`匹配度 ${clampScorePercent(result.score)} 分`">
+              <strong :class="scoreTone(result.score)">{{ clampScorePercent(result.score) }}</strong>
+              <span>/100</span>
+            </div>
+          </div>
+          <div class="match-score-track" aria-hidden="true">
+            <span :class="scoreTone(result.score)" :style="{ width: `${clampScorePercent(result.score)}%` }"></span>
           </div>
           <p class="result-summary">{{ result.conclusion }}</p>
           <div class="compact-list">
@@ -108,25 +114,20 @@
           <EvidenceList :items="selectedResult.evidence" />
         </div>
       </div>
-      <div class="table-wrap">
-        <table class="data-table compact">
-          <thead>
-            <tr>
-              <th>标准</th>
-              <th>权重</th>
-              <th>得分</th>
-              <th>理由</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in selectedResult.criteria" :key="item.name">
-              <td>{{ item.name }}</td>
-              <td>{{ item.weight }}</td>
-              <td>{{ item.score }}</td>
-              <td>{{ item.reason }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="criteria-chart" aria-label="标准得分">
+        <article v-for="item in criterionRows" :key="item.name" class="criterion-row">
+          <div class="criterion-row-head">
+            <div>
+              <strong>{{ item.name }}</strong>
+              <span>权重 {{ item.weight }} · 加权贡献 {{ item.contribution }}</span>
+            </div>
+            <b>{{ item.score }}/5</b>
+          </div>
+          <div class="criterion-track" :aria-label="`${item.name} 得分 ${item.score} / 5`">
+            <span :class="item.tone" :style="{ width: `${item.scorePercent}%` }"></span>
+          </div>
+          <p>{{ item.reason }}</p>
+        </article>
       </div>
       <p class="analysis-note">{{ selectedResult.agentContent }}</p>
     </section>
@@ -144,6 +145,7 @@ import { useMatchStore } from '../stores/match'
 import type { MatchResult } from '../types/match'
 import { MATCH_STEPS } from '../types/task'
 import { createId } from '../utils/format'
+import { buildCriterionChartRows, clampScorePercent } from '../utils/matchChart'
 
 const documentStore = useDocumentStore()
 const matchStore = useMatchStore()
@@ -154,6 +156,9 @@ const selectedResumeIds = ref<string[]>([])
 const selectedResult = ref<MatchResult | null>(matchStore.results[0] || null)
 
 const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length))
+const criterionRows = computed(() => (
+  selectedResult.value ? buildCriterionChartRows(selectedResult.value.criteria) : []
+))
 
 onMounted(() => {
   documentStore.loadDocuments()

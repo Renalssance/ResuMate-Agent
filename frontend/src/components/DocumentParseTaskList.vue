@@ -30,8 +30,15 @@
           </div>
         </div>
 
-        <div class="progress-track" aria-label="文档解析总体进度">
-          <span :style="{ width: `${task.overallProgress}%` }"></span>
+        <div class="progress-track segmented" aria-label="文档解析总体进度">
+          <span
+            v-for="segment in progressSegments(task.steps)"
+            :key="segment.key"
+            :class="['progress-segment', segment.status]"
+            :title="segment.title"
+          >
+            <span :style="{ width: `${segment.fillPercent}%` }"></span>
+          </span>
         </div>
 
         <div class="parse-step-grid">
@@ -68,6 +75,7 @@
 <script setup lang="ts">
 import StatusTag from './StatusTag.vue'
 import type { ProgressStep } from '../types/task'
+import { buildProgressSegments } from '../utils/taskProgressChart'
 import type {
   DocumentParseTask,
   ParseStage,
@@ -101,5 +109,9 @@ function stepStatusText(step: ProgressStep) {
     return step.progress > 0 ? `进行中 ${step.progress}%` : '进行中'
   }
   return '等待中'
+}
+
+function progressSegments(steps: ProgressStep[]) {
+  return buildProgressSegments(steps)
 }
 </script>
