@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from backend.app import app
 from backend.auth.security import get_current_user
 from backend.db.database import Base, get_db
-from backend.db.models import Resume, User
+from backend.db.models import JobApplicationSchedule, Resume, User
 
 
 def _client(tmp_path):
@@ -164,4 +164,119 @@ def test_application_status_changes_are_recorded_with_timestamps(tmp_path):
     assert payload["status_events"][0]["changed_at"] == "2026-08-20T10:30:00Z"
     assert payload["status_events"][0]["note"] == "完成在线笔试"
     assert payload["status_events"][1]["status"] == "applied"
+    session.close()
+
+
+def test_application_schedules_are_created_for_current_users_application(tmp_path):
+    client, current_user, session = _client(tmp_path)
+    created = client.post(
+        "/api/applications",
+        json={
+            "company": "ByteDance",
+            "position": "后端开发",
+            "applied_date": "2026-08-18",
+        },
+    ).json()
+
+    response = client.post(
+        f"/api/applications/{created['id']}/schedules",
+        json={
+            "status": "written_test",
+            "title": "在线笔试",
+            "starts_at": "2099-08-23T10:00:00Z",
+            "ends_at": "2099-08-23T11:40:00Z",
+            "note": "提前 10 分钟登录",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "written_test"
+    assert payload["schedules"][0]["status"] == "written_test"
+    assert payload["schedules"][0]["title"] == "在线笔试"
+    assert payload["schedules"][0]["starts_at"] == "2099-08-23T10:00:00Z"
+    assert payload["schedules"][0]["ends_at"] == "2099-08-23T11:40:00Z"
+    assert payload["schedules"][0]["note"] == "提前 10 分钟登录"
+    assert payload["schedules"][0]["completed_event_id"] is None
+
+    current_user["id"] = 2
+    forbidden = client.post(
+        f"/api/applications/{created['id']}/schedules",
+        json={
+            "status": "first_interview",
+            "title": "一面",
+            "starts_at": "2099-08-24T14:00:00Z",
+            "ends_at": "2099-08-24T15:00:00Z",
+        },
+    )
+    assert forbidden.status_code == 404
+    session.close()
+
+
+def test_finished_application_schedules_are_written_to_timeline_once(tmp_path):
+    client, _current_user, session = _client(tmp_path)
+    created = client.post(
+        "/api/applications",
+        json={
+            "company": "Tencent",
+            "position": "平台开发",
+            "applied_date": "2026-08-18",
+        },
+    ).json()
+
+    scheduled = client.post(
+        f"/api/applications/{created['id']}/schedules",
+        json={
+            "status": "first_interview",
+            "title": "一面",
+            "starts_at": "2000-08-23T10:00:00Z",
+            "ends_at": "2000-08-23T11:40:00Z",
+            "note": "腾讯会议",
+        },
+    )
+    assert scheduled.status_code == 200
+
+    first_list = client.get("/api/applications").json()
+    second_list = client.get("/api/applications").json()
+
+    first_application = first_list[0]
+    second_application = second_list[0]
+    archived_events = [
+        event
+        for event in second_application["status_events"]
+        if event["note"] == "日程完成：一面（腾讯会议）"
+    ]
+    assert first_application["status"] == "first_interview"
+    assert first_application["schedules"][0]["completed_event_id"] == archived_events[0]["id"]
+    assert len(archived_events) == 1
+    assert archived_events[0]["changed_at"] == "2000-08-23T11:40:00Z"
+    session.close()
+
+
+def test_existing_schedules_mark_applied_applications_as_active(tmp_path):
+    client, _current_user, session = _client(tmp_path)
+    created = client.post(
+        "/api/applications",
+        json={
+            "company": "Geely",
+            "position": "AI 产品岗",
+            "applied_date": "2026-08-18",
+        },
+    ).json()
+    session.add(
+        JobApplicationSchedule(
+            application_id=created["id"],
+            status="assessment",
+            title="AI 面试",
+            starts_at=datetime(2099, 8, 22, 4, 0, tzinfo=timezone.utc),
+            ends_at=datetime(2099, 8, 22, 15, 30, tzinfo=timezone.utc),
+        )
+    )
+    session.commit()
+
+    listed = client.get("/api/applications")
+
+    assert listed.status_code == 200
+    payload = listed.json()[0]
+    assert payload["status"] == "assessment"
     session.close()

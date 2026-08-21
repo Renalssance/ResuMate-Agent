@@ -23,6 +23,19 @@ export interface ApplicationStatusEvent {
   createdAt: string
 }
 
+export interface ApplicationSchedule {
+  id: number
+  applicationId: number
+  status: ApplicationStatus
+  title: string
+  startsAt: string
+  endsAt: string
+  note: string
+  completedEventId: number | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface JobApplicationRecord {
   id: number
   resumeId: number | null
@@ -35,6 +48,7 @@ export interface JobApplicationRecord {
   source: string
   notes: string
   statusEvents: ApplicationStatusEvent[]
+  schedules: ApplicationSchedule[]
   createdAt: string
   updatedAt: string
 }
@@ -56,6 +70,14 @@ export interface ApplicationStatusEventPayload {
   note?: string
 }
 
+export interface ApplicationSchedulePayload {
+  status: ApplicationStatus
+  title: string
+  starts_at: string
+  ends_at: string
+  note?: string
+}
+
 export interface BackendJobApplicationRecord extends JobApplicationPayload {
   id: number
   resume_id: number | null
@@ -69,6 +91,18 @@ export interface BackendJobApplicationRecord extends JobApplicationPayload {
     changed_at: string
     note: string
     created_at: string
+  }>
+  schedules: Array<{
+    id: number
+    application_id: number
+    status: ApplicationStatus
+    title: string
+    starts_at: string
+    ends_at: string
+    note: string
+    completed_event_id: number | null
+    created_at: string
+    updated_at: string
   }>
   created_at: string
   updated_at: string

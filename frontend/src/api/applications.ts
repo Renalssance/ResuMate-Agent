@@ -1,5 +1,6 @@
 import { request } from '../services/request'
 import type {
+  ApplicationSchedulePayload,
   ApplicationStatusEventPayload,
   BackendJobApplicationRecord,
   JobApplicationPayload,
@@ -20,6 +21,13 @@ export function updateApplicationApi(id: number, payload: Partial<JobApplication
 export function createApplicationStatusEventApi(id: number, payload: ApplicationStatusEventPayload) {
   return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
     `/applications/${id}/status-events`,
+    payload,
+  )
+}
+
+export function createApplicationScheduleApi(id: number, payload: ApplicationSchedulePayload) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
+    `/applications/${id}/schedules`,
     payload,
   )
 }

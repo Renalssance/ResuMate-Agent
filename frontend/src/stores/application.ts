@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
   createApplicationApi,
+  createApplicationScheduleApi,
   createApplicationStatusEventApi,
   deleteApplicationApi,
   fetchApplicationsApi,
   updateApplicationApi,
 } from '../api/applications'
 import type {
+  ApplicationSchedulePayload,
   ApplicationStatus,
   ApplicationStatusEventPayload,
   BackendJobApplicationRecord,
@@ -63,6 +65,10 @@ export const useApplicationStore = defineStore('application', () => {
     upsertApplication(toApplicationRecord(await createApplicationStatusEventApi(id, payload)))
   }
 
+  async function createSchedule(id: number, payload: ApplicationSchedulePayload) {
+    upsertApplication(toApplicationRecord(await createApplicationScheduleApi(id, payload)))
+  }
+
   async function deleteApplication(id: number) {
     await deleteApplicationApi(id)
     applications.value = applications.value.filter((item) => item.id !== id)
@@ -87,6 +93,7 @@ export const useApplicationStore = defineStore('application', () => {
     updateApplication,
     updateStatus,
     createStatusEvent,
+    createSchedule,
     deleteApplication,
   }
 })
@@ -113,6 +120,18 @@ export function toApplicationRecord(record: BackendJobApplicationRecord): JobApp
       changedAt: event.changed_at,
       note: event.note,
       createdAt: event.created_at,
+    })),
+    schedules: (record.schedules || []).map((schedule) => ({
+      id: schedule.id,
+      applicationId: schedule.application_id,
+      status: schedule.status,
+      title: schedule.title,
+      startsAt: schedule.starts_at,
+      endsAt: schedule.ends_at,
+      note: schedule.note,
+      completedEventId: schedule.completed_event_id,
+      createdAt: schedule.created_at,
+      updatedAt: schedule.updated_at,
     })),
     createdAt: record.created_at,
     updatedAt: record.updated_at,

@@ -76,8 +76,12 @@ def test_ensure_sqlite_schema_upgrades_existing_application_tracker_tables(tmp_p
         event = connection.execute(
             text("SELECT application_id, status, changed_at FROM job_application_status_events")
         ).mappings().one()
+        schedule_columns = {
+            row[1] for row in connection.execute(text("PRAGMA table_info(job_application_schedules)"))
+        }
 
     assert "resume_id" in columns
+    assert {"application_id", "status", "title", "starts_at", "ends_at", "completed_event_id"}.issubset(schedule_columns)
     assert event["application_id"] == 7
     assert event["status"] == "applied"
     assert str(event["changed_at"]).startswith("2026-08-19")

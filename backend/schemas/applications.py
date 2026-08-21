@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 
 
 ApplicationStatus = Literal[
@@ -71,12 +71,48 @@ class ApplicationStatusEventRecord(BaseModel):
         return value.isoformat().replace("+00:00", "Z")
 
 
+class ApplicationScheduleCreate(BaseModel):
+    status: ApplicationStatus
+    title: str = Field(min_length=1, max_length=255)
+    starts_at: datetime
+    ends_at: datetime
+    note: str = ""
+
+    @model_validator(mode="after")
+    def _validate_time_range(self):
+        if self.ends_at <= self.starts_at:
+            raise ValueError("ends_at must be after starts_at")
+        return self
+
+
+class ApplicationScheduleRecord(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    application_id: int
+    status: ApplicationStatus
+    title: str
+    starts_at: datetime
+    ends_at: datetime
+    note: str
+    completed_event_id: int | None = None
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer("starts_at", "ends_at", "created_at", "updated_at")
+    def _serialize_datetime(self, value: datetime):
+        if value.tzinfo is None:
+            return value.isoformat() + "Z"
+        return value.isoformat().replace("+00:00", "Z")
+
+
 class ApplicationRecord(ApplicationBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     resume_filename: str = ""
     status_events: list[ApplicationStatusEventRecord] = Field(default_factory=list)
+    schedules: list[ApplicationScheduleRecord] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 

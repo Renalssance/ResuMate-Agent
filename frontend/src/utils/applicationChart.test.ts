@@ -17,6 +17,7 @@ const base = {
   source: '',
   notes: '',
   statusEvents: [],
+  schedules: [],
   createdAt: '',
   updatedAt: '',
 }

@@ -2370,6 +2370,22 @@ label > span {
   box-shadow: 0 7px 0 currentColor;
 }
 
+.icon-glyph.calendar::before {
+  inset: 3px 2px 2px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+.icon-glyph.calendar::after {
+  top: 6px;
+  left: 4px;
+  width: 6px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 currentColor;
+}
+
 .icon-glyph.delete::before {
   inset: 5px 3px 2px;
   border: 1.5px solid currentColor;
@@ -3582,8 +3598,27 @@ label > span {
   grid-column: span 4;
 }
 
-.application-entry-card {
-  padding: 22px 24px 24px;
+.application-entry-panel {
+  display: grid;
+  gap: 14px;
+  margin-bottom: var(--space-4);
+  padding: 14px;
+  background: rgba(244, 247, 245, 0.72);
+  border: 1px solid rgba(20, 35, 30, 0.08);
+  border-radius: 8px;
+  animation: panel-soft-in 180ms var(--ease-out) both;
+}
+
+.application-entry-panel .section-head {
+  margin-bottom: 0;
+}
+
+.application-entry-panel .section-head h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .application-submit {
@@ -3602,6 +3637,105 @@ label > span {
   grid-template-columns: minmax(160px, 220px) minmax(260px, 1fr);
   gap: 14px;
   margin-bottom: var(--space-4);
+}
+
+.application-schedule-card {
+  display: grid;
+  gap: 14px;
+}
+
+.schedule-today-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: linear-gradient(90deg, rgba(255, 243, 214, 0.9), rgba(238, 247, 243, 0.82));
+  border: 1px solid rgba(191, 121, 38, 0.22);
+  border-radius: 8px;
+}
+
+.schedule-today-item {
+  display: grid;
+  grid-template-columns: 14px minmax(180px, 1fr) minmax(170px, auto) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.schedule-today-item.completed {
+  opacity: 0.62;
+}
+
+.schedule-today-item strong,
+.schedule-today-item span {
+  display: block;
+}
+
+.schedule-today-item strong,
+.schedule-list-main strong {
+  font-size: 14px;
+  font-weight: 720;
+}
+
+.schedule-today-item div span,
+.schedule-list-main span,
+.schedule-list-item p,
+.schedule-list-item time,
+.schedule-today-item time {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.schedule-rail-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 5px rgba(191, 121, 38, 0.13);
+}
+
+.schedule-rail-dot.info {
+  background: var(--status-active);
+}
+
+.schedule-rail-dot.success {
+  background: var(--status-passed);
+}
+
+.schedule-list {
+  display: grid;
+  gap: 8px;
+}
+
+.schedule-list-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(170px, auto) auto minmax(160px, 0.8fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(20, 35, 30, 0.08);
+  border-radius: 8px;
+}
+
+.schedule-list-item.today {
+  background: rgba(255, 246, 224, 0.76);
+  border-color: rgba(191, 121, 38, 0.24);
+}
+
+.schedule-list-item.completed {
+  background: rgba(244, 247, 245, 0.62);
+}
+
+.schedule-list-main {
+  min-width: 0;
+}
+
+.schedule-list-main strong,
+.schedule-list-main span,
+.schedule-list-item p {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .application-status-pill {
@@ -3769,6 +3903,10 @@ label > span {
   animation: panel-soft-in 180ms var(--ease-out) both;
 }
 
+.schedule-event-form {
+  grid-template-columns: minmax(130px, 170px) minmax(160px, 1fr) minmax(190px, 230px) minmax(190px, 230px) minmax(220px, 1fr) auto auto;
+}
+
 .application-timeline {
   display: grid;
   gap: 12px;
@@ -3882,12 +4020,15 @@ label > span {
   }
 
   .status-event-form,
+  .schedule-event-form,
   .application-timeline-item {
     grid-template-columns: 1fr;
   }
 
   .application-record-main,
-  .application-record-meta {
+  .application-record-meta,
+  .schedule-today-item,
+  .schedule-list-item {
     grid-template-columns: 1fr;
   }
 

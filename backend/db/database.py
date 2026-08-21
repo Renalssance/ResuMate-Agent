@@ -112,6 +112,54 @@ def ensure_sqlite_schema(engine: Engine) -> None:
             )
             connection.execute(
                 text(
+                    "CREATE TABLE IF NOT EXISTS job_application_schedules ("
+                    "id INTEGER NOT NULL PRIMARY KEY, "
+                    "application_id INTEGER NOT NULL, "
+                    "status VARCHAR(40) NOT NULL, "
+                    "title VARCHAR(255) NOT NULL, "
+                    "starts_at DATETIME NOT NULL, "
+                    "ends_at DATETIME NOT NULL, "
+                    "note TEXT NOT NULL DEFAULT '', "
+                    "completed_event_id INTEGER, "
+                    "created_at DATETIME NOT NULL, "
+                    "updated_at DATETIME NOT NULL, "
+                    "FOREIGN KEY(application_id) REFERENCES job_applications (id) ON DELETE CASCADE, "
+                    "FOREIGN KEY(completed_event_id) REFERENCES job_application_status_events (id) ON DELETE SET NULL"
+                    ")"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_schedules_application_id "
+                    "ON job_application_schedules (application_id)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_schedules_status "
+                    "ON job_application_schedules (status)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_schedules_starts_at "
+                    "ON job_application_schedules (starts_at)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_schedules_ends_at "
+                    "ON job_application_schedules (ends_at)"
+                )
+            )
+            connection.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_job_application_schedules_completed_event_id "
+                    "ON job_application_schedules (completed_event_id)"
+                )
+            )
+            connection.execute(
+                text(
                     "INSERT INTO job_application_status_events "
                     "(application_id, status, changed_at, note, created_at) "
                     "SELECT app.id, app.status, app.updated_at, '', app.updated_at "

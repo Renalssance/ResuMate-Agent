@@ -52,6 +52,12 @@ class JobApplication(Base):
         cascade="all, delete-orphan",
         order_by="desc(JobApplicationStatusEvent.changed_at)",
     )
+    schedules = relationship(
+        "JobApplicationSchedule",
+        back_populates="application",
+        cascade="all, delete-orphan",
+        order_by="JobApplicationSchedule.starts_at",
+    )
 
 
 class JobApplicationStatusEvent(Base):
@@ -69,6 +75,30 @@ class JobApplicationStatusEvent(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
     application = relationship("JobApplication", back_populates="status_events")
+
+
+class JobApplicationSchedule(Base):
+    """投递关联的笔试、面试等日程。"""
+
+    __tablename__ = "job_application_schedules"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    application_id: Mapped[int] = mapped_column(
+        ForeignKey("job_applications.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    status: Mapped[str] = mapped_column(String(40), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    starts_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
+    ends_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
+    note: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    completed_event_id: Mapped[int | None] = mapped_column(
+        ForeignKey("job_application_status_events.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+    application = relationship("JobApplication", back_populates="schedules")
+    completed_event = relationship("JobApplicationStatusEvent")
 
 
 class ChatSession(Base):
