@@ -24,6 +24,11 @@ export interface ApplicationScheduleItem extends Omit<ScheduleSource, 'status'> 
   isCompleted: boolean
 }
 
+export interface ScheduleNotePart {
+  type: 'text' | 'link'
+  value: string
+}
+
 export function buildApplicationScheduleItems(applications: ApplicationSource[]): ApplicationScheduleItem[] {
   return applications
     .flatMap((application) =>
@@ -41,4 +46,20 @@ export function isScheduleToday(schedule: Pick<ApplicationScheduleItem, 'startsA
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
   return new Date(schedule.startsAt).getTime() < startOfTomorrow && new Date(schedule.endsAt).getTime() >= startOfToday
+}
+
+export function buildScheduleNoteParts(note: string): ScheduleNotePart[] {
+  const parts: ScheduleNotePart[] = []
+  const urlPattern = /https?:\/\/\S+/g
+  let cursor = 0
+
+  for (const match of note.matchAll(urlPattern)) {
+    const index = match.index ?? 0
+    if (index > cursor) parts.push({ type: 'text', value: note.slice(cursor, index) })
+    parts.push({ type: 'link', value: match[0] })
+    cursor = index + match[0].length
+  }
+
+  if (cursor < note.length) parts.push({ type: 'text', value: note.slice(cursor) })
+  return parts.length ? parts : [{ type: 'text', value: note }]
 }

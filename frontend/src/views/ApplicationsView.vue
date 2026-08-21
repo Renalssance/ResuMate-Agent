@@ -71,7 +71,7 @@
             <strong>{{ schedule.title }}</strong>
             <span>{{ schedule.applicationLabel }}</span>
           </div>
-          <time>{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
+          <time class="schedule-time">{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
           <span :class="['application-status-pill', statusTone(schedule.status)]">
             {{ applicationStatusLabel(schedule.status) }}
           </span>
@@ -93,11 +93,19 @@
             <strong>{{ schedule.title }}</strong>
             <span>{{ schedule.applicationLabel }}</span>
           </div>
-          <time>{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
+          <time class="schedule-time">{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
           <span :class="['application-status-pill', statusTone(schedule.status)]">
             {{ applicationStatusLabel(schedule.status) }}
           </span>
-          <p>{{ schedule.isCompleted ? '已写入时间线' : schedule.note || '未添加备注' }}</p>
+          <p class="schedule-note">
+            <template v-if="schedule.isCompleted">已写入时间线</template>
+            <template v-else>
+              <template v-for="(part, index) in scheduleNoteParts(schedule.note || '未添加备注')" :key="`${schedule.id}-${index}`">
+                <a v-if="part.type === 'link'" :href="part.value" target="_blank" rel="noreferrer">{{ part.value }}</a>
+                <span v-else>{{ part.value }}</span>
+              </template>
+            </template>
+          </p>
         </article>
       </div>
     </section>
@@ -352,7 +360,7 @@ import {
   type JobApplicationRecord,
 } from '../types/application'
 import { buildApplicationStatusSegments } from '../utils/applicationChart'
-import { buildApplicationScheduleItems, isScheduleToday, type ApplicationScheduleItem } from '../utils/applicationSchedule'
+import { buildApplicationScheduleItems, buildScheduleNoteParts, isScheduleToday, type ApplicationScheduleItem } from '../utils/applicationSchedule'
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
@@ -568,6 +576,10 @@ function scheduleTone(schedule: ApplicationScheduleItem | ApplicationSchedule) {
   if (schedule.completedEventId) return 'completed'
   if (isScheduleToday(schedule)) return 'today'
   return 'upcoming'
+}
+
+function scheduleNoteParts(note: string) {
+  return buildScheduleNoteParts(note)
 }
 
 function formatDay(value: string) {

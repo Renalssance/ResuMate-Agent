@@ -3494,23 +3494,24 @@ label > span {
   position: absolute;
   inset: 0 auto 0 0;
   width: 3px;
-  content: "";
+  content: none;
   background: var(--color-primary);
 }
 
 .application-metric::after {
-  content: none;
-}
-
-.application-metric.active::before {
+  content: "";
   background: var(--status-active);
 }
 
-.application-metric.rejected::before {
+.application-metric.rejected strong {
+  color: var(--status-rejected);
+}
+
+.application-metric.rejected::after {
   background: var(--status-rejected);
 }
 
-.application-metric.passed::before {
+.application-metric.passed::after {
   background: var(--status-passed);
 }
 
@@ -3678,10 +3679,30 @@ label > span {
 .schedule-today-item div span,
 .schedule-list-main span,
 .schedule-list-item p,
-.schedule-list-item time,
 .schedule-today-item time {
   color: var(--color-text-secondary);
   font-size: 13px;
+}
+
+.schedule-time {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 9px;
+  color: var(--color-primary);
+  background: rgba(237, 245, 242, 0.92);
+  border: 1px solid rgba(31, 95, 81, 0.14);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 720;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.schedule-today-item .schedule-time {
+  color: var(--color-primary);
+  font-weight: 720;
 }
 
 .schedule-rail-dot {
@@ -3736,6 +3757,18 @@ label > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.schedule-note a {
+  color: var(--color-primary);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.schedule-note a:hover {
+  color: var(--color-text);
 }
 
 .application-status-pill {

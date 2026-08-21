@@ -1,5 +1,5 @@
 // @ts-expect-error Node's strip-types runner imports the TypeScript source directly.
-const { buildApplicationScheduleItems, isScheduleToday } = await import('./applicationSchedule.ts')
+const { buildApplicationScheduleItems, buildScheduleNoteParts, isScheduleToday } = await import('./applicationSchedule.ts')
 
 export {}
 
@@ -84,4 +84,15 @@ assert(
 assert(
   isScheduleToday(items[1], new Date('2026-08-24T09:00:00+08:00')) === false,
   'schedule items should not stay highlighted after their local day',
+)
+
+const noteParts = buildScheduleNoteParts('入口 https://interview.antgroup.com/home/candidateExam?token=b978 提前登录')
+
+assert(
+  JSON.stringify(noteParts) === JSON.stringify([
+    { type: 'text', value: '入口 ' },
+    { type: 'link', value: 'https://interview.antgroup.com/home/candidateExam?token=b978' },
+    { type: 'text', value: ' 提前登录' },
+  ]),
+  'schedule notes should expose web links as clickable parts without losing surrounding text',
 )

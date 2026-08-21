@@ -1,15 +1,8 @@
 <template>
   <div class="profile-fields-page">
-    <section class="card profile-fields-rail">
-      <div class="section-head compact">
-        <div>
-          <h2>选择简历</h2>
-          <p>补充招聘表单常见字段，保存后插件会使用这些结构化资料。</p>
-        </div>
-      </div>
-
-      <label>
-        <span>已解析简历</span>
+    <section class="card profile-fields-toolbar">
+      <label class="resume-picker">
+        <span>选择简历</span>
         <select v-model="selectedResumeId" class="input">
           <option value="">请选择简历</option>
           <option v-for="resume in parsedResumes" :key="resume.id" :value="resume.id">
@@ -20,14 +13,7 @@
 
       <div class="coverage-card">
         <strong>{{ filledRequiredCount }} / {{ requiredFields.length }}</strong>
-        <span>常见招聘字段已填写</span>
-      </div>
-
-      <div class="coverage-list">
-        <div v-for="item in requiredFields" :key="item.path" :class="['coverage-row', { filled: hasValue(item.path) }]">
-          <span>{{ item.label }}</span>
-          <small>{{ hasValue(item.path) ? '已填写' : item.sensitive ? '建议保存，不默认自动填' : '待补充' }}</small>
-        </div>
+        <span>招聘字段已填写</span>
       </div>
     </section>
 
@@ -43,44 +29,48 @@
             <p>这些字段常出现在中国互联网招聘系统的基础信息、投递信息和补充资料里。</p>
           </div>
           <div class="editor-actions">
-            <button class="button-secondary" type="button" @click="resetDraft">还原</button>
-            <button class="button-primary" type="button" :disabled="saving" @click="saveDraft">
-              {{ saving ? '保存中...' : '保存' }}
-            </button>
+            <button v-if="!isEditing" class="button-primary" type="button" @click="startEditing">编辑</button>
+            <template v-else>
+              <button class="button-secondary" type="button" @click="resetDraft">还原</button>
+              <button class="button-primary" type="button" :disabled="saving" @click="saveDraft">
+                {{ saving ? '保存中...' : '保存' }}
+              </button>
+            </template>
           </div>
         </div>
 
         <div v-if="message" class="save-message">{{ message }}</div>
 
-        <div class="field-grid three">
-          <label><span>姓名</span><input v-model="draft.candidate_name" /></label>
-          <label><span>邮箱</span><input v-model="draft.contact.email" /></label>
-          <label><span>手机</span><input v-model="draft.contact.phone" /></label>
-          <label><span>当前城市</span><input v-model="draft.contact.location" /></label>
-          <label><span>微信</span><input v-model="draft.contact.wechat" /></label>
-          <label><span>性别</span><input v-model="draft.application.gender" /></label>
-          <label><span>出生日期</span><input v-model="draft.application.birth_date" placeholder="1999.01.01" /></label>
-          <label><span>国籍</span><input v-model="draft.application.nationality" /></label>
-          <label><span>政治面貌</span><input v-model="draft.application.political_status" /></label>
-          <label><span>籍贯</span><input v-model="draft.application.native_place" /></label>
-          <label><span>户口所在地</span><input v-model="draft.application.hukou_location" /></label>
-          <label><span>民族</span><input v-model="draft.application.ethnicity" /></label>
-          <label><span>内推码</span><input v-model="draft.application.referral_code" /></label>
-          <label><span>期望城市</span><input v-model="draft.application.expected_city" /></label>
-          <label><span>期望职位</span><input v-model="draft.application.expected_position" /></label>
-          <label><span>期望薪资</span><input v-model="draft.application.expected_salary" /></label>
-          <label><span>最早到岗时间</span><input v-model="draft.application.earliest_start_date" /></label>
-          <label><span>现居地址</span><input v-model="draft.application.current_address" /></label>
-          <label><span>个人主页 / 作品集</span><input v-model="draft.application.portfolio_url" /></label>
-          <label><span>GitHub / 代码仓库</span><input v-model="draft.application.github_url" /></label>
-          <label><span>LinkedIn / 领英</span><input v-model="draft.application.linkedin_url" /></label>
-          <label><span>紧急联系人</span><input v-model="draft.application.emergency_contact_name" /></label>
-          <label><span>紧急联系电话</span><input v-model="draft.application.emergency_contact_phone" /></label>
-          <label><span>证件类型</span><input v-model="draft.application.id_document_type" placeholder="如：中国 - 居民身份证" /></label>
-          <label><span>身份证号</span><input v-model="draft.application.id_number" /></label>
-        </div>
+        <fieldset class="profile-edit-body" :disabled="!isEditing || saving">
+          <div class="field-grid three">
+            <label><span>姓名 <code>candidate_name</code></span><input v-model="draft.candidate_name" /></label>
+            <label><span>邮箱 <code>contact.email</code></span><input v-model="draft.contact.email" /></label>
+            <label><span>手机 <code>contact.phone</code></span><input v-model="draft.contact.phone" /></label>
+            <label><span>当前城市 <code>contact.location</code></span><input v-model="draft.contact.location" /></label>
+            <label><span>微信 <code>contact.wechat</code></span><input v-model="draft.contact.wechat" /></label>
+            <label><span>性别 <code>application.gender</code></span><input v-model="draft.application.gender" /></label>
+            <label><span>出生日期 <code>application.birth_date</code></span><input v-model="draft.application.birth_date" placeholder="1999.01.01" /></label>
+            <label><span>国籍 <code>application.nationality</code></span><input v-model="draft.application.nationality" /></label>
+            <label><span>政治面貌 <code>application.political_status</code></span><input v-model="draft.application.political_status" /></label>
+            <label><span>籍贯 <code>application.native_place</code></span><input v-model="draft.application.native_place" /></label>
+            <label><span>户口所在地 <code>application.hukou_location</code></span><input v-model="draft.application.hukou_location" /></label>
+            <label><span>民族 <code>application.ethnicity</code></span><input v-model="draft.application.ethnicity" /></label>
+            <label><span>内推码 <code>application.referral_code</code></span><input v-model="draft.application.referral_code" /></label>
+            <label><span>期望城市 <code>application.expected_city</code></span><input v-model="draft.application.expected_city" /></label>
+            <label><span>期望职位 <code>application.expected_position</code></span><input v-model="draft.application.expected_position" /></label>
+            <label><span>期望薪资 <code>application.expected_salary</code></span><input v-model="draft.application.expected_salary" /></label>
+            <label><span>最早到岗时间 <code>application.earliest_start_date</code></span><input v-model="draft.application.earliest_start_date" /></label>
+            <label><span>现居地址 <code>application.current_address</code></span><input v-model="draft.application.current_address" /></label>
+            <label><span>个人主页 / 作品集 <code>application.portfolio_url</code></span><input v-model="draft.application.portfolio_url" /></label>
+            <label><span>GitHub / 代码仓库 <code>application.github_url</code></span><input v-model="draft.application.github_url" /></label>
+            <label><span>LinkedIn / 领英 <code>application.linkedin_url</code></span><input v-model="draft.application.linkedin_url" /></label>
+            <label><span>紧急联系人 <code>application.emergency_contact_name</code></span><input v-model="draft.application.emergency_contact_name" /></label>
+            <label><span>紧急联系电话 <code>application.emergency_contact_phone</code></span><input v-model="draft.application.emergency_contact_phone" /></label>
+            <label><span>证件类型 <code>application.id_document_type</code></span><input v-model="draft.application.id_document_type" placeholder="如：中国 - 居民身份证" /></label>
+            <label><span>身份证号 <code>application.id_number</code></span><input v-model="draft.application.id_number" /></label>
+          </div>
 
-        <details class="editor-section" open>
+          <details class="editor-section" open>
           <summary>教育经历</summary>
           <div v-for="(item, index) in draft.education" :key="index" class="repeat-card">
             <div class="repeat-head">
@@ -88,24 +78,24 @@
               <button class="link-button danger-text" type="button" @click="removeItem('education', index)">删除</button>
             </div>
             <div class="field-grid three">
-              <label><span>学校名称</span><input v-model="item.school" /></label>
-              <label><span>学院</span><input v-model="item.college" /></label>
-              <label><span>专业</span><input v-model="item.major" /></label>
+              <label><span>学校名称 <code>education.0.school</code></span><input v-model="item.school" /></label>
+              <label><span>学院 <code>education.0.college</code></span><input v-model="item.college" /></label>
+              <label><span>专业 <code>education.0.major</code></span><input v-model="item.major" /></label>
               <label><span>学历/学位</span><input v-model="item.degree" /></label>
-              <label><span>GPA</span><input v-model="item.gpa" /></label>
-              <label><span>成绩排名</span><input v-model="item.rank" /></label>
+              <label><span>GPA <code>education.0.gpa</code></span><input v-model="item.gpa" /></label>
+              <label><span>成绩排名 <code>education.0.rank</code></span><input v-model="item.rank" /></label>
               <label><span>入学时间</span><input v-model="item.start_date" placeholder="2024.09" /></label>
               <label><span>毕业时间</span><input v-model="item.end_date" placeholder="2027.06" /></label>
-              <label><span>实验室</span><input v-model="item.lab" /></label>
-              <label><span>领域方向</span><input v-model="item.research_direction" /></label>
-              <label><span>导师</span><input v-model="item.advisor" /></label>
-              <label class="span-two"><span>论文</span><input v-model="item.papers" /></label>
+              <label><span>实验室 <code>education.0.lab</code></span><input v-model="item.lab" /></label>
+              <label><span>领域方向 <code>education.0.research_direction</code></span><input v-model="item.research_direction" /></label>
+              <label><span>导师 <code>education.0.advisor</code></span><input v-model="item.advisor" /></label>
+              <label class="span-two"><span>论文 <code>education.0.papers</code></span><input v-model="item.papers" /></label>
             </div>
           </div>
           <button class="button-secondary" type="button" @click="addEducation">添加教育经历</button>
-        </details>
+          </details>
 
-        <details class="editor-section" open>
+          <details class="editor-section" open>
           <summary>工作 / 实习经历</summary>
           <div v-for="(item, index) in draft.work_experience" :key="index" class="repeat-card">
             <div class="repeat-head">
@@ -121,9 +111,9 @@
             </div>
           </div>
           <button class="button-secondary" type="button" @click="addWork">添加工作/实习经历</button>
-        </details>
+          </details>
 
-        <details class="editor-section" open>
+          <details class="editor-section" open>
           <summary>项目经历</summary>
           <div v-for="(item, index) in draft.projects" :key="index" class="repeat-card">
             <div class="repeat-head">
@@ -131,18 +121,18 @@
               <button class="link-button danger-text" type="button" @click="removeItem('projects', index)">删除</button>
             </div>
             <div class="field-grid two">
-              <label><span>项目名称</span><input v-model="item.name" /></label>
-              <label><span>项目角色</span><input v-model="item.role" /></label>
+              <label><span>项目名称 <code>projects.0.name</code></span><input v-model="item.name" /></label>
+              <label><span>项目角色 <code>projects.0.role</code></span><input v-model="item.role" /></label>
               <label><span>开始时间</span><input v-model="item.start_date" /></label>
               <label><span>结束时间</span><input v-model="item.end_date" /></label>
-              <label class="span-two"><span>项目链接</span><input v-model="item.url" /></label>
-              <label class="span-two"><span>描述</span><textarea v-model="item.description"></textarea></label>
+              <label class="span-two"><span>项目链接 <code>projects.0.url</code></span><input v-model="item.url" /></label>
+              <label class="span-two"><span>描述 <code>projects.0.description</code></span><textarea v-model="item.description"></textarea></label>
             </div>
           </div>
           <button class="button-secondary" type="button" @click="addProject">添加项目经历</button>
-        </details>
+          </details>
 
-        <details class="editor-section">
+          <details class="editor-section">
           <summary>技能与其他</summary>
           <div class="field-grid two">
             <label><span>技能，每行一个</span><textarea v-model="skillsText"></textarea></label>
@@ -150,20 +140,9 @@
             <label><span>证书，每行一个</span><textarea v-model="certificationsText"></textarea></label>
             <label><span>自我介绍</span><textarea v-model="draft.self_summary"></textarea></label>
           </div>
-        </details>
+          </details>
+        </fieldset>
       </section>
-
-      <aside class="card profile-fields-aside">
-        <h2>招聘字段对照</h2>
-        <p>根据字节招聘和常见互联网校招/社招表单整理。敏感信息保存后仍由插件安全策略控制。</p>
-        <div class="field-map">
-          <div v-for="item in requiredFields" :key="item.path">
-            <strong>{{ item.label }}</strong>
-            <code>{{ item.path }}</code>
-            <span>{{ valuePreview(item.path) || '未填写' }}</span>
-          </div>
-        </div>
-      </aside>
     </template>
   </div>
 </template>
@@ -172,60 +151,22 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import { useDocumentStore } from '../stores/document'
+import { countFilledProfileFields, profileRequiredFields } from '../utils/profileFields'
 
 type AnyRecord = Record<string, any>
 
 const store = useDocumentStore()
 const selectedResumeId = ref('')
 const draft = ref<AnyRecord>(emptyProfile())
+const isEditing = ref(false)
 const saving = ref(false)
 const message = ref('')
 
 const parsedResumes = computed(() => store.parsedResumes)
 const selectedResume = computed(() => parsedResumes.value.find((resume) => resume.id === selectedResumeId.value) || null)
 
-const requiredFields = [
-  { label: '姓名', path: 'candidate_name' },
-  { label: '邮箱', path: 'contact.email' },
-  { label: '手机', path: 'contact.phone' },
-  { label: '当前城市', path: 'contact.location' },
-  { label: '微信', path: 'contact.wechat' },
-  { label: '性别', path: 'application.gender' },
-  { label: '出生日期', path: 'application.birth_date' },
-  { label: '国籍', path: 'application.nationality' },
-  { label: '政治面貌', path: 'application.political_status' },
-  { label: '籍贯', path: 'application.native_place' },
-  { label: '户口所在地', path: 'application.hukou_location' },
-  { label: '民族', path: 'application.ethnicity' },
-  { label: '证件类型', path: 'application.id_document_type', sensitive: true },
-  { label: '身份证号', path: 'application.id_number', sensitive: true },
-  { label: '内推码', path: 'application.referral_code' },
-  { label: '期望城市', path: 'application.expected_city' },
-  { label: '期望职位', path: 'application.expected_position' },
-  { label: '期望薪资', path: 'application.expected_salary' },
-  { label: '最早到岗时间', path: 'application.earliest_start_date' },
-  { label: '现居地址', path: 'application.current_address' },
-  { label: '个人主页/作品集', path: 'application.portfolio_url' },
-  { label: 'GitHub/代码仓库', path: 'application.github_url' },
-  { label: 'LinkedIn/领英', path: 'application.linkedin_url' },
-  { label: '紧急联系人', path: 'application.emergency_contact_name', sensitive: true },
-  { label: '紧急联系电话', path: 'application.emergency_contact_phone', sensitive: true },
-  { label: '学校名称', path: 'education.0.school' },
-  { label: '学院', path: 'education.0.college' },
-  { label: '专业', path: 'education.0.major' },
-  { label: 'GPA', path: 'education.0.gpa' },
-  { label: '成绩排名', path: 'education.0.rank' },
-  { label: '实验室', path: 'education.0.lab' },
-  { label: '领域方向', path: 'education.0.research_direction' },
-  { label: '导师', path: 'education.0.advisor' },
-  { label: '论文', path: 'education.0.papers' },
-  { label: '项目名称', path: 'projects.0.name' },
-  { label: '项目角色', path: 'projects.0.role' },
-  { label: '项目链接', path: 'projects.0.url' },
-  { label: '项目描述', path: 'projects.0.description' },
-]
-
-const filledRequiredCount = computed(() => requiredFields.filter((item) => hasValue(item.path)).length)
+const requiredFields = profileRequiredFields
+const filledRequiredCount = computed(() => countFilledProfileFields(draft.value))
 
 const skillsText = computed({
   get: () => (draft.value.skills || []).map((item: any) => typeof item === 'string' ? item : item.name || '').filter(Boolean).join('\n'),
@@ -251,7 +192,10 @@ onMounted(async () => {
   if (!selectedResumeId.value && parsedResumes.value[0]) selectedResumeId.value = parsedResumes.value[0].id
 })
 
-watch(selectedResume, () => resetDraft(), { immediate: true })
+watch(selectedResume, () => {
+  resetDraft()
+  isEditing.value = false
+}, { immediate: true })
 
 function emptyProfile(): AnyRecord {
   return {
@@ -305,6 +249,11 @@ function resetDraft() {
   draft.value = normalizeProfile(selectedResume.value?.parsedContent || {})
 }
 
+function startEditing() {
+  message.value = ''
+  isEditing.value = true
+}
+
 function addEducation() {
   draft.value.education.push(emptyEducation())
 }
@@ -328,6 +277,7 @@ async function saveDraft() {
   try {
     await store.updateStructuredData(selectedResume.value.id, draft.value)
     message.value = '已保存，插件刷新简历后会使用最新字段。'
+    isEditing.value = false
   } catch (error) {
     message.value = error instanceof Error ? error.message : String(error)
   } finally {
@@ -339,42 +289,34 @@ function lines(value: string) {
   return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
 }
 
-function valueAt(path: string) {
-  return path.split('.').reduce<any>((target, part) => {
-    if (target === undefined || target === null) return undefined
-    return /^\d+$/.test(part) ? target[Number(part)] : target[part]
-  }, draft.value)
-}
-
-function hasValue(path: string) {
-  const value = valueAt(path)
-  return Array.isArray(value) ? value.length > 0 : String(value || '').trim().length > 0
-}
-
-function valuePreview(path: string) {
-  const value = valueAt(path)
-  if (Array.isArray(value)) return value.join(', ')
-  if (value && typeof value === 'object') return JSON.stringify(value)
-  return String(value || '')
-}
 </script>
 
 <style scoped>
 .profile-fields-page {
   display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr) minmax(260px, 320px);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
 }
 
-.profile-fields-rail,
-.profile-fields-aside {
-  position: sticky;
-  top: 96px;
+.profile-fields-toolbar {
+  display: grid;
+  grid-template-columns: minmax(260px, 520px) auto;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.resume-picker {
+  min-width: 0;
+}
+
+.profile-fields-toolbar .coverage-card {
+  min-width: 190px;
+  margin: 0;
+  padding: 12px 16px;
 }
 
 .profile-empty-card {
-  grid-column: span 2;
   min-height: 280px;
   display: grid;
   align-items: center;
@@ -385,6 +327,25 @@ function valuePreview(path: string) {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
+}
+
+.profile-edit-body {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.profile-edit-body:disabled {
+  opacity: 1;
+}
+
+.profile-edit-body:disabled input,
+.profile-edit-body:disabled textarea {
+  color: var(--color-text);
+  background: rgba(244, 247, 245, 0.54);
+  border-color: rgba(20, 35, 30, 0.08);
+  cursor: default;
 }
 
 .field-grid {
@@ -420,46 +381,28 @@ function valuePreview(path: string) {
   margin-bottom: var(--space-4);
 }
 
+.field-grid label > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+
+.field-grid code {
+  color: var(--color-analysis);
+  background: rgba(61, 111, 159, 0.09);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
 @media (min-width: 1281px) and (orientation: landscape) {
   .profile-fields-page {
-    height: calc(100vh - 136px);
-    align-items: stretch;
-    overflow: hidden;
-  }
-
-  .profile-fields-rail,
-  .profile-fields-editor,
-  .profile-fields-aside,
-  .profile-empty-card {
-    max-height: 100%;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable;
-  }
-
-  .profile-fields-rail,
-  .profile-fields-aside {
-    position: static;
-  }
-
-  .coverage-list,
-  .field-map {
-    max-height: none;
-    overflow: visible;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 }
 
 @media (max-width: 1280px) {
-  .profile-fields-page {
-    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  }
-
-  .profile-fields-aside,
-  .profile-empty-card {
-    position: static;
-    grid-column: 1 / -1;
-  }
-
   .field-grid.three {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -467,13 +410,10 @@ function valuePreview(path: string) {
 
 @media (max-width: 760px) {
   .profile-fields-page,
+  .profile-fields-toolbar,
   .field-grid.three,
   .field-grid.two {
     grid-template-columns: 1fr;
-  }
-
-  .profile-fields-rail {
-    position: static;
   }
 
   .editor-actions {
