@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+import time
 from datetime import datetime
 
 from dotenv import load_dotenv
@@ -13,14 +14,11 @@ from backend.agent.interview_tools import create_interview_tools
 from backend.db.database import SessionLocal
 from backend.db.models import ChatMessage, ChatSession, User
 from backend.logging_config import log_llm_prompt, log_llm_response
+from backend.services.llm_settings import record_llm_usage, resolve_effective_llm_settings
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-
-API_KEY = os.getenv("ARK_API_KEY")
-MODEL = os.getenv("MODEL")
-BASE_URL = os.getenv("BASE_URL")
 
 MAX_CONTEXT_MESSAGES = 20
 
@@ -125,22 +123,23 @@ def _build_system_prompt() -> str:
 
 
 def create_agent_with_interview_tools(user_id: str):
-    logger.info("Creating interview agent | user_id=%s model=%s base_url=%s", user_id, MODEL, BASE_URL)
-    model = init_chat_model(
-        model=MODEL,
-        model_provider="openai",
-        api_key=API_KEY,
-        base_url=BASE_URL,
-        temperature=0.3,
-        stream_usage=True,
-    )
-
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.username == user_id).first()
         int_user_id = user.id if user else 0
+        settings = resolve_effective_llm_settings(int_user_id, db)
     finally:
         db.close()
+
+    logger.info("Creating interview agent | user_id=%s model=%s base_url=%s", user_id, settings.model, settings.base_url)
+    model = init_chat_model(
+        model=settings.model,
+        model_provider="openai",
+        api_key=settings.api_key,
+        base_url=settings.base_url or None,
+        temperature=0.3,
+        stream_usage=True,
+    )
 
     system_prompt = _build_system_prompt()
     agent = create_agent(
@@ -149,7 +148,7 @@ def create_agent_with_interview_tools(user_id: str):
         system_prompt=system_prompt,
     )
     logger.info("Interview agent created | user_id=%s int_user_id=%s", user_id, int_user_id)
-    return agent, model
+    return agent, model, int_user_id, settings
 
 
 storage = ConversationStorage()
@@ -177,10 +176,13 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
 
     output_queue = asyncio.Queue()
     full_response = ""
-    agent, _ = create_agent_with_interview_tools(user_id)
+    started = time.perf_counter()
+    usage_metadata = {}
+    stream_error_type = ""
+    agent, _, int_user_id, settings = create_agent_with_interview_tools(user_id)
 
     async def _agent_worker():
-        nonlocal full_response
+        nonlocal full_response, stream_error_type
         try:
             async for msg, _ in agent.astream(
                 {"messages": messages},
@@ -191,6 +193,8 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
                     continue
                 if getattr(msg, "tool_call_chunks", None):
                     continue
+                if getattr(msg, "usage_metadata", None):
+                    usage_metadata = msg.usage_metadata
 
                 content = ""
                 if isinstance(msg.content, str):
@@ -206,6 +210,7 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
                     full_response += content
                     await output_queue.put({"type": "content", "content": content})
         except Exception as exc:
+            stream_error_type = type(exc).__name__
             logger.exception("Agent stream failed")
             await output_queue.put({"type": "error", "content": str(exc)})
         finally:
@@ -242,6 +247,18 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
         "agent.chat_stream",
         full_response,
         {"user_id": user_id, "session_id": session_id, "response_chars": len(full_response)},
+    )
+    record_llm_usage(
+        user_id=int_user_id,
+        task="agent.chat_stream",
+        model=settings.model,
+        base_url=settings.base_url,
+        prompt_tokens=int(usage_metadata.get("input_tokens") or 0),
+        completion_tokens=int(usage_metadata.get("output_tokens") or 0),
+        total_tokens=int(usage_metadata.get("total_tokens") or 0),
+        success=not stream_error_type,
+        error_type=stream_error_type,
+        elapsed_ms=int((time.perf_counter() - started) * 1000),
     )
     messages.append(AIMessage(content=full_response))
     storage.save(user_id, session_id, messages)

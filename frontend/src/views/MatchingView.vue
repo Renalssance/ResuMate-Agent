@@ -96,24 +96,27 @@
           <h2>{{ selectedResult.candidateName }} · 匹配详情</h2>
           <p>{{ selectedResult.summary }}</p>
         </div>
+        <button class="button-secondary" type="button" @click="collapseDetail">收起</button>
       </div>
       <div v-if="selectedResult.warnings.length" class="warning-list">
         <p v-for="warning in selectedResult.warnings" :key="warning">{{ warning }}</p>
       </div>
-      <div class="detail-columns">
-        <div>
-          <h3>优势、差距与风险</h3>
+      <div class="match-detail-groups" aria-label="优势、差距与风险">
+        <article v-for="group in detailGroups" :key="group.key" :class="['match-detail-group', group.key]">
+          <h3>{{ group.label }}</h3>
           <ul class="plain-list">
-            <li v-for="item in selectedResult.strengths" :key="item">优势：{{ item }}</li>
-            <li v-for="item in selectedResult.gaps" :key="item">差距：{{ item }}</li>
-            <li v-for="item in selectedResult.risks" :key="item">风险：{{ item }}</li>
+            <li v-for="item in group.items" :key="item">{{ item }}</li>
+            <li v-if="!group.items.length">暂无</li>
           </ul>
-        </div>
-        <div>
-          <h3>证据引用</h3>
+        </article>
+      </div>
+      <details class="match-evidence-panel">
+        <summary>证据引用（{{ selectedResult.evidence.length }}）</summary>
+        <div v-if="selectedResult.evidence.length">
           <EvidenceList :items="selectedResult.evidence" />
         </div>
-      </div>
+        <p v-else>暂无证据引用</p>
+      </details>
       <div class="criteria-chart" aria-label="标准得分">
         <article v-for="item in criterionRows" :key="item.name" class="criterion-row">
           <div class="criterion-row-head">
@@ -145,7 +148,7 @@ import { useMatchStore } from '../stores/match'
 import type { MatchResult } from '../types/match'
 import { MATCH_STEPS } from '../types/task'
 import { createId } from '../utils/format'
-import { buildCriterionChartRows, clampScorePercent } from '../utils/matchChart'
+import { buildCriterionChartRows, buildMatchDetailGroups, clampScorePercent } from '../utils/matchChart'
 
 const documentStore = useDocumentStore()
 const matchStore = useMatchStore()
@@ -158,6 +161,9 @@ const selectedResult = ref<MatchResult | null>(matchStore.results[0] || null)
 const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length))
 const criterionRows = computed(() => (
   selectedResult.value ? buildCriterionChartRows(selectedResult.value.criteria) : []
+))
+const detailGroups = computed(() => (
+  selectedResult.value ? buildMatchDetailGroups(selectedResult.value) : []
 ))
 
 onMounted(() => {
@@ -190,6 +196,10 @@ async function remove(id: string) {
   if (!confirmed) return
   await matchStore.deleteMatch(id)
   if (selectedResult.value?.id === id) selectedResult.value = matchStore.results[0] || null
+}
+
+function collapseDetail() {
+  selectedResult.value = null
 }
 
 function scoreTone(score: number) {

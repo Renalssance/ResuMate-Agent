@@ -6,9 +6,29 @@ export interface CriterionChartRow extends MatchCriterion {
   tone: 'strong' | 'good' | 'weak'
 }
 
+export interface MatchDetailGroupsSource {
+  strengths: string[]
+  gaps: string[]
+  risks: string[]
+}
+
+export interface MatchDetailGroup {
+  key: 'strengths' | 'gaps' | 'risks'
+  label: string
+  items: string[]
+}
+
 export function clampScorePercent(score: number) {
   if (!Number.isFinite(score)) return 0
   return Math.max(0, Math.min(100, Math.round(score)))
+}
+
+export function buildMatchDetailGroups(source: MatchDetailGroupsSource): MatchDetailGroup[] {
+  return [
+    { key: 'strengths', label: '优势', items: source.strengths },
+    { key: 'gaps', label: '差距', items: source.gaps },
+    { key: 'risks', label: '风险', items: source.risks },
+  ]
 }
 
 export function buildCriterionChartRows(criteria: MatchCriterion[]): CriterionChartRow[] {

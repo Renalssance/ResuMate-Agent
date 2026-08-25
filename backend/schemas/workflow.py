@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 Importance = Literal["must", "important", "bonus"]
@@ -107,6 +107,13 @@ class EducationItem(BaseModel):
     courses: list[str] = Field(default_factory=list)
     achievements: list[str] = Field(default_factory=list)
     source_refs: list[SourceRef] = Field(default_factory=list)
+
+    @field_validator("papers", mode="before")
+    @classmethod
+    def _accept_papers_text(cls, value):
+        if isinstance(value, str):
+            return [value] if value.strip() else []
+        return value
 
 
 class WorkItem(BaseModel):

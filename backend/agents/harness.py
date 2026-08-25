@@ -18,6 +18,13 @@ from backend.logging_config import (
     log_llm_response,
     log_llm_validation_error,
 )
+from backend.services.llm_settings import (
+    DEFAULT_LLM_MAX_TOKENS,
+    DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS,
+    record_llm_usage,
+    resolve_effective_llm_settings,
+    usage_from_response,
+)
 from backend.services.progress import progress_hub
 
 logger = logging.getLogger(__name__)
@@ -25,28 +32,23 @@ SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
 PROMPT_DIR = Path(__file__).resolve().parents[1] / "prompts"
 MAX_REFLECTIONS = 2
-DEFAULT_LLM_MAX_TOKENS = 8192
-DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS = 90.0
 
 
 class AgentHarness:
     """Single entry point for OpenAI-compatible structured LLM calls."""
 
-    def __init__(self) -> None:
-        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("ARK_API_KEY")
-        base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("BASE_URL") or None
-        self.model = os.getenv("LLM_MODEL") or os.getenv("MODEL")
-        self.base_url = base_url or ""
-        self.max_tokens = self._env_int("LLM_MAX_TOKENS", DEFAULT_LLM_MAX_TOKENS)
-        self.request_timeout = self._env_float(
-            "LLM_REQUEST_TIMEOUT_SECONDS",
-            DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS,
-        )
-        if not api_key:
+    def __init__(self, user_id: int | None = None) -> None:
+        self.user_id = user_id
+        settings = resolve_effective_llm_settings(user_id)
+        self.model = settings.model
+        self.base_url = settings.base_url
+        self.max_tokens = settings.max_tokens
+        self.request_timeout = settings.request_timeout_seconds
+        if not settings.api_key:
             raise RuntimeError("OPENAI_API_KEY is required for AgentHarness")
         if not self.model:
             raise RuntimeError("LLM_MODEL is required for AgentHarness")
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
+        self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None, max_retries=0)
         self.progress_hub = progress_hub
 
     @staticmethod
@@ -141,6 +143,7 @@ class AgentHarness:
 
                     if not fallback_succeeded:
                         elapsed_ms = int((time.perf_counter() - started) * 1000)
+                        self._record_usage_error(task, exc, elapsed_ms)
                         attempt_metadata = {**metadata, "attempt": attempt, "elapsed_ms": elapsed_ms}
                         if attempt > MAX_REFLECTIONS:
                             self._publish_agent_progress(
@@ -186,6 +189,7 @@ class AgentHarness:
                         continue
                 content = response.choices[0].message.content or ""
                 elapsed_ms = int((time.perf_counter() - started) * 1000)
+                self._record_usage_response(task, response, elapsed_ms)
                 attempt_metadata = {**metadata, "attempt": attempt, "elapsed_ms": elapsed_ms}
                 log_llm_response(task, content, attempt_metadata)
                 self._publish_agent_progress(
@@ -372,6 +376,29 @@ class AgentHarness:
             },
         )
         return self.client.chat.completions.create(**request_kwargs)
+
+    def _record_usage_response(self, task: str, response, elapsed_ms: int) -> None:
+        usage = usage_from_response(response)
+        record_llm_usage(
+            user_id=getattr(self, "user_id", None),
+            task=task,
+            model=getattr(self, "model", ""),
+            base_url=getattr(self, "base_url", ""),
+            elapsed_ms=elapsed_ms,
+            success=True,
+            **usage,
+        )
+
+    def _record_usage_error(self, task: str, exc: Exception, elapsed_ms: int) -> None:
+        record_llm_usage(
+            user_id=getattr(self, "user_id", None),
+            task=task,
+            model=getattr(self, "model", ""),
+            base_url=getattr(self, "base_url", ""),
+            success=False,
+            error_type=type(exc).__name__,
+            elapsed_ms=elapsed_ms,
+        )
 
     def _should_disable_thinking(self, task: str) -> bool:
         return self._is_deepseek() and task in {"document.parse_jd", "document.parse_resume"}

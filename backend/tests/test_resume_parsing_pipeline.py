@@ -254,6 +254,21 @@ def test_resume_profile_schema_accepts_legacy_and_structured_fields():
     assert structured.skills[0].evidence_level == "demonstrated"
 
 
+def test_resume_profile_schema_accepts_string_education_papers():
+    profile = ResumeProfile.model_validate(
+        {
+            "candidate_name": "小文",
+            "education": [
+                {"school": "A", "papers": "Robust Information Bottleneck"},
+                {"school": "B", "papers": ""},
+            ],
+        }
+    )
+
+    assert profile.education[0].papers == ["Robust Information Bottleneck"]
+    assert profile.education[1].papers == []
+
+
 def test_candidate_match_prompt_receives_resume_profile_and_ambiguities():
     calls = {}
 

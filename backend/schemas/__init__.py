@@ -9,6 +9,11 @@ from backend.schemas.auth import (
 from backend.schemas.chat import (
     ChatRequest,
 )
+from backend.schemas.settings import (
+    LlmSettingsResponse,
+    LlmSettingsUpdate,
+    LlmUsageDashboard,
+)
 
 __all__ = [
     # auth
@@ -18,4 +23,8 @@ __all__ = [
     "RegisterRequest",
     # chat
     "ChatRequest",
+    # settings
+    "LlmSettingsResponse",
+    "LlmSettingsUpdate",
+    "LlmUsageDashboard",
 ]

@@ -1,5 +1,5 @@
 // @ts-expect-error Node's strip-types runner imports the TypeScript source directly.
-const { buildCriterionChartRows, clampScorePercent } = await import('./matchChart.ts')
+const { buildCriterionChartRows, buildMatchDetailGroups, clampScorePercent } = await import('./matchChart.ts')
 
 export {}
 
@@ -24,3 +24,18 @@ assert(
 assert(rows[1].scorePercent === 80, 'criterion score should map from the 0-5 scale to percent width')
 assert(rows[2].scorePercent === 40, 'low criterion score should keep proportional width')
 assert(rows[0].contribution === 40, 'weighted contribution should match backend total-score formula')
+
+const detailGroups = buildMatchDetailGroups({
+  strengths: ['大模型测试经验'],
+  gaps: ['缺少性能测试证据'],
+  risks: ['项目周期偏短'],
+})
+
+assert(
+  detailGroups.map((item: { label: string }) => item.label).join(',') === '优势,差距,风险',
+  'match detail groups should keep strengths, gaps, and risks as separate columns',
+)
+assert(
+  detailGroups.map((item: { items: string[] }) => item.items[0]).join('|') === '大模型测试经验|缺少性能测试证据|项目周期偏短',
+  'match detail groups should preserve the matching detail content in each column',
+)

@@ -71,10 +71,7 @@ def ensure_sqlite_schema(engine: Engine) -> None:
                         "ADD COLUMN content_hash VARCHAR(64) NOT NULL DEFAULT ''"
                     )
                 )
-        application_columns = {
-            row[1]
-            for row in connection.execute(text("PRAGMA table_info(job_applications)"))
-        }
+        application_columns = {row[1] for row in connection.execute(text("PRAGMA table_info(job_applications)"))}
         if application_columns and "resume_id" not in application_columns:
             connection.execute(text("ALTER TABLE job_applications ADD COLUMN resume_id INTEGER"))
             connection.execute(text("CREATE INDEX IF NOT EXISTS ix_job_applications_resume_id ON job_applications (resume_id)"))
@@ -170,3 +167,43 @@ def ensure_sqlite_schema(engine: Engine) -> None:
                     ")"
                 )
             )
+        connection.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS user_llm_settings ("
+                "id INTEGER NOT NULL PRIMARY KEY, "
+                "user_id INTEGER NOT NULL UNIQUE, "
+                "api_key TEXT NOT NULL DEFAULT '', "
+                "base_url VARCHAR(1024) NOT NULL DEFAULT '', "
+                "model VARCHAR(255) NOT NULL DEFAULT '', "
+                "max_tokens INTEGER, "
+                "request_timeout_seconds FLOAT, "
+                "created_at DATETIME NOT NULL, "
+                "updated_at DATETIME NOT NULL, "
+                "FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE"
+                ")"
+            )
+        )
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_user_llm_settings_user_id ON user_llm_settings (user_id)"))
+        connection.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS llm_usage_events ("
+                "id INTEGER NOT NULL PRIMARY KEY, "
+                "user_id INTEGER NOT NULL, "
+                "task VARCHAR(120) NOT NULL DEFAULT '', "
+                "model VARCHAR(255) NOT NULL DEFAULT '', "
+                "base_url VARCHAR(1024) NOT NULL DEFAULT '', "
+                "prompt_tokens INTEGER NOT NULL DEFAULT 0, "
+                "completion_tokens INTEGER NOT NULL DEFAULT 0, "
+                "total_tokens INTEGER NOT NULL DEFAULT 0, "
+                "success BOOLEAN NOT NULL DEFAULT 1, "
+                "error_type VARCHAR(120) NOT NULL DEFAULT '', "
+                "elapsed_ms INTEGER NOT NULL DEFAULT 0, "
+                "called_at DATETIME NOT NULL, "
+                "FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE"
+                ")"
+            )
+        )
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_user_id ON llm_usage_events (user_id)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_task ON llm_usage_events (task)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_success ON llm_usage_events (success)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_called_at ON llm_usage_events (called_at)"))

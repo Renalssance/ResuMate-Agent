@@ -47,22 +47,6 @@
         >
           {{ llmModel || '未配置LLM_MODEL' }}
         </span>
-
-        <form v-if="!auth.isAuthenticated" class="auth-form" @submit.prevent="submitAuth('login')">
-          <input v-model="username" type="text" autocomplete="username" placeholder="用户名" aria-label="用户名" />
-          <input v-model="password" type="password" autocomplete="current-password" placeholder="密码" aria-label="密码" />
-          <button class="button-primary" type="submit" :disabled="auth.loading">登录</button>
-          <button class="button-secondary" type="button" :disabled="auth.loading" @click="submitAuth('register')">
-            注册
-          </button>
-          <span v-if="auth.error" class="auth-error">{{ auth.error }}</span>
-        </form>
-
-        <div v-else class="auth-user">
-          <span class="status-dot"></span>
-          <span>{{ auth.username }}</span>
-          <button class="button-secondary" type="button" @click="auth.logout()">退出</button>
-        </div>
       </header>
       <div class="content-wrap">
         <RouterView />
@@ -72,20 +56,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { fetchLlmSettingsApi } from '../api/settings'
 import { useAgentStatus } from '../composables/useAgentStatus'
 import { useAuthStore } from '../stores/auth'
 import AgentStatusPanel from './AgentStatusPanel.vue'
-
-type AuthMode = 'login' | 'register'
 
 const route = useRoute()
 const auth = useAuthStore()
 const agentStatus = useAgentStatus()
 const drawerOpen = ref(false)
-const username = ref('')
-const password = ref('')
 const llmModel = ref<string | null>(null)
 
 const navItems = [
@@ -95,20 +76,36 @@ const navItems = [
   { path: '/questions', label: '试题生成', icon: 'questions' },
   { path: '/applications', label: '投递记录', icon: 'applications' },
   { path: '/extension', label: '浏览器插件', icon: 'extension' },
+  { path: '/settings', label: '设置', icon: 'settings' },
 ]
 
-async function submitAuth(mode: AuthMode) {
-  await auth.submit(mode, { username: username.value, password: password.value })
-  password.value = ''
-}
-
-onMounted(async () => {
+async function refreshLlmModel() {
   try {
-    const response = await fetch('/api/config')
-    const config = await response.json()
-    llmModel.value = String(config.llm_model || '').trim()
+    if (auth.isAuthenticated) {
+      const config = await fetchLlmSettingsApi()
+      llmModel.value = String(config.model || '').trim()
+    } else {
+      const response = await fetch('/api/config')
+      const config = await response.json()
+      llmModel.value = String(config.llm_model || '').trim()
+    }
   } catch {
     llmModel.value = ''
   }
+}
+
+function handleLlmSettingsUpdated() {
+  void refreshLlmModel()
+}
+
+watch(() => auth.token, refreshLlmModel)
+
+onMounted(async () => {
+  window.addEventListener('llm-settings-updated', handleLlmSettingsUpdated)
+  await refreshLlmModel()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('llm-settings-updated', handleLlmSettingsUpdated)
 })
 </script>

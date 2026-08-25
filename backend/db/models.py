@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 
-from sqlalchemy import JSON, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, JSON, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.db.database import Base
@@ -24,6 +24,47 @@ class User(Base):
     job_descriptions = relationship("JobDescription", back_populates="user", cascade="all, delete-orphan")
     analysis_jobs = relationship("AnalysisJob", back_populates="user", cascade="all, delete-orphan")
     applications = relationship("JobApplication", back_populates="user", cascade="all, delete-orphan")
+    llm_settings = relationship("UserLlmSettings", back_populates="user", cascade="all, delete-orphan", uselist=False)
+    llm_usage_events = relationship("LlmUsageEvent", back_populates="user", cascade="all, delete-orphan")
+
+
+class UserLlmSettings(Base):
+    """OpenAI-compatible model settings saved per user."""
+
+    __tablename__ = "user_llm_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False, index=True)
+    api_key: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    base_url: Mapped[str] = mapped_column(String(1024), default="", nullable=False)
+    model: Mapped[str] = mapped_column(String(255), default="", nullable=False)
+    max_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    request_timeout_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+    user = relationship("User", back_populates="llm_settings")
+
+
+class LlmUsageEvent(Base):
+    """Per-user model call usage for the settings dashboard."""
+
+    __tablename__ = "llm_usage_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    task: Mapped[str] = mapped_column(String(120), default="", nullable=False, index=True)
+    model: Mapped[str] = mapped_column(String(255), default="", nullable=False)
+    base_url: Mapped[str] = mapped_column(String(1024), default="", nullable=False)
+    prompt_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    completion_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_tokens: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    success: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
+    error_type: Mapped[str] = mapped_column(String(120), default="", nullable=False)
+    elapsed_ms: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    called_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False, index=True)
+
+    user = relationship("User", back_populates="llm_usage_events")
 
 
 class JobApplication(Base):

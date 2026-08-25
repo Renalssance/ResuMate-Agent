@@ -72,8 +72,8 @@ def _find_document(db: Session, user_id: int, document_id: str):
     return kind, row
 
 
-def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks, task_id: str = ""):
-    harness = AgentHarness()
+def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks, task_id: str = "", user_id: int | None = None):
+    harness = AgentHarness(user_id=user_id)
     if kind == "jd":
         if detect_multiple_positions(raw_text):
             raise ValueError("MULTIPLE_POSITIONS_DETECTED: please split the JD before parsing")
@@ -215,7 +215,7 @@ def upload_documents(
                 data={"document_id": f"{document_type}:{row.id}", "cached": bool(cached_structured_data)},
             )
             row.structured_data = cached_structured_data or _parse_profile(
-                document_type, stored.filename, raw_text, chunks, task_id
+                document_type, stored.filename, raw_text, chunks, task_id, current_user.id
             )
             if document_type == "jd":
                 row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
@@ -356,7 +356,7 @@ def reparse_document(
             filename=row.filename,
             message=f"Re-structuring {kind} with LLM",
         )
-        row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id)
+        row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id, current_user.id)
         rag_store = ChromaRagStore()
         progress_hub.publish(
             task_id,
@@ -437,7 +437,7 @@ followup_router = APIRouter(prefix="/api", tags=["followups"])
 @followup_router.post("/followups/analyze", response_model=FollowUpAnalysisResponse)
 async def analyze_followup(request: FollowUpAnalysisRequest, current_user: User = Depends(get_current_user)):
     try:
-        return AgentHarness().run_schema(
+        return AgentHarness(user_id=current_user.id).run_schema(
             task="followup.analyze_answer", prompt_name="generate_followup",
             schema=FollowUpAnalysisResponse, variables=request.model_dump(mode="json"),
         )

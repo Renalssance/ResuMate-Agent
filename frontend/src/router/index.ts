@@ -5,6 +5,7 @@ import ExtensionView from '../views/ExtensionView.vue'
 import MatchingView from '../views/MatchingView.vue'
 import ProfileFieldsView from '../views/ProfileFieldsView.vue'
 import QuestionsView from '../views/QuestionsView.vue'
+import SettingsView from '../views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -45,6 +46,12 @@ const router = createRouter({
       name: 'extension',
       component: ExtensionView,
       meta: { title: '浏览器插件', description: '下载并安装 ResuMate Autofill，辅助填写招聘表单' },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: { title: '设置', description: '管理账号、模型参数和调用统计' },
     },
   ],
 })

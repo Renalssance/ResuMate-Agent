@@ -65,6 +65,26 @@ def test_run_schema_injects_schema_and_retries_validation_failure(monkeypatch):
     assert "job_profile" in retry_message
 
 
+def test_harness_defaults_avoid_duplicate_long_llm_requests(monkeypatch):
+    created_kwargs = {}
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            created_kwargs.update(kwargs)
+
+    monkeypatch.setattr("backend.agents.harness.OpenAI", FakeOpenAI)
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("LLM_MODEL", "compatible-model")
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("BASE_URL", raising=False)
+    monkeypatch.delenv("LLM_REQUEST_TIMEOUT_SECONDS", raising=False)
+
+    harness = AgentHarness()
+
+    assert harness.request_timeout == 300.0
+    assert created_kwargs["max_retries"] == 0
+
+
 def test_run_schema_publishes_agent_lifecycle_events(monkeypatch):
     monkeypatch.setattr(AgentHarness, "load_prompt", staticmethod(lambda name: "Parse {{jd_text}}"))
     completions = FakeCompletions()

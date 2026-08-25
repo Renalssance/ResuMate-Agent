@@ -53,11 +53,16 @@ class AnalysisService:
         rag_store: ChromaRagStore | None = None,
     ) -> None:
         self.db = db
-        self.harness = harness or AgentHarness()
+        self.harness = harness
         self.rag_store = rag_store or ChromaRagStore()
         self.repository = SqlAlchemyRunRepository(db)
-        self.graph = CandidateAnalysisGraph(
-            harness=self.harness,
+
+    def _harness_for_user(self, user_id: int) -> AgentHarness:
+        return self.harness or AgentHarness(user_id=user_id)
+
+    def _graph_for_user(self, user_id: int) -> CandidateAnalysisGraph:
+        return CandidateAnalysisGraph(
+            harness=self._harness_for_user(user_id),
             rag_store=self.rag_store,
             repository=self.repository,
         )
@@ -98,10 +103,11 @@ class AnalysisService:
             data={"jd_document_id": jd_document_id, "resume_count": len(resume_ids)},
         )
         job = self.repository.create_run(user_id=user_id, jd=jd, resumes=[by_id[item] for item in resume_ids])
+        graph = self._graph_for_user(user_id)
         for candidate in job.candidates:
             resume = candidate.resume
             try:
-                report = self.graph.run(
+                report = graph.run(
                     {
                         "user_id": user_id,
                         "run_id": job.id,
@@ -199,10 +205,11 @@ class AnalysisService:
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         try:
+            harness = self._harness_for_user(user_id)
             # Split question generation into blueprint -> two batches -> follow-ups.
             # Smaller schema-constrained calls are more stable than asking the LLM
             # to produce the full interview pack in one long JSON response.
-            blueprint = self.harness.run_schema(
+            blueprint = harness.run_schema(
                 task="plan_question_blueprint",
                 prompt_name="plan_question_blueprint",
                 schema=QuestionBlueprint,
@@ -215,7 +222,7 @@ class AnalysisService:
                     "question_type_distribution": _question_type_distribution(question_count),
                 },
             )
-            batch_1 = self.harness.run_schema(
+            batch_1 = harness.run_schema(
                 task="generate_question_batch",
                 prompt_name="generate_question_batch",
                 schema=QuestionBatch,
@@ -234,7 +241,7 @@ class AnalysisService:
             batches = [batch_1]
             if blueprint.formal_questions[5:]:
                 batches.append(
-                    self.harness.run_schema(
+                    harness.run_schema(
                         task="generate_question_batch",
                         prompt_name="generate_question_batch",
                         schema=QuestionBatch,
@@ -254,7 +261,7 @@ class AnalysisService:
                         },
                     )
                 )
-            followups = self.harness.run_schema(
+            followups = harness.run_schema(
                 task="generate_ambiguity_followups",
                 prompt_name="generate_ambiguity_followups",
                 schema=AmbiguityFollowupSet,
