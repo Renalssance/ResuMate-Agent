@@ -15,6 +15,7 @@ export function reportToMatch(runId: string, candidate: CandidateSummary, report
     jdId: runId,
     jdTitle: jobProfile?.job_title || extractJobTitle(report.summary),
     resumeId: String(candidate.candidate_id),
+    resumeFilename: candidate.filename,
     candidateName: candidate.candidate_name,
     score: candidate.total_score,
     conclusion: recommendationText(candidate.recommendation),

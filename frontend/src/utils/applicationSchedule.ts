@@ -39,7 +39,7 @@ export function buildApplicationScheduleItems(applications: ApplicationSource[])
         isCompleted: Boolean(schedule.completedEventId),
       })),
     )
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime() || a.id - b.id)
+    .sort((a, b) => new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime() || b.id - a.id)
 }
 
 export function isScheduleToday(schedule: Pick<ApplicationScheduleItem, 'startsAt' | 'endsAt'>, now = new Date()) {

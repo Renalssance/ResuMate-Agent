@@ -66,23 +66,23 @@ const applications = [
 const items = buildApplicationScheduleItems(applications)
 
 assert(
-  items.map((item: { id: number }) => item.id).join(',') === '21,11',
-  'schedule items should be sorted by start time across applications',
+  items.map((item: { id: number }) => item.id).join(',') === '11,21',
+  'schedule items should be sorted by newest start time across applications',
 )
 assert(
-  items[1].applicationLabel === 'ByteDance · 后端开发',
+  items[0].applicationLabel === 'ByteDance · 后端开发',
   'schedule items should carry the linked application label',
 )
 assert(
-  items[0].isCompleted === true && items[1].isCompleted === false,
+  items[0].isCompleted === false && items[1].isCompleted === true,
   'schedule items should expose whether they have been written to the timeline',
 )
 assert(
-  isScheduleToday(items[1], new Date('2026-08-23T09:00:00+08:00')) === true,
+  isScheduleToday(items[0], new Date('2026-08-23T09:00:00+08:00')) === true,
   'schedule items should be treated as today in the viewer local day',
 )
 assert(
-  isScheduleToday(items[1], new Date('2026-08-24T09:00:00+08:00')) === false,
+  isScheduleToday(items[0], new Date('2026-08-24T09:00:00+08:00')) === false,
   'schedule items should not stay highlighted after their local day',
 )
 

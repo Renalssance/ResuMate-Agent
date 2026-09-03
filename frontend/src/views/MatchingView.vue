@@ -24,13 +24,13 @@
             <span>候选人简历</span>
             <select v-model="selectedResumeIds" multiple>
               <option v-for="resume in documentStore.parsedResumes" :key="resume.id" :value="resume.id">
-                {{ resume.parsedContent?.name || resume.filename }}
+                {{ formatResumeLabel(resume) }}
               </option>
             </select>
           </label>
         </div>
 
-        <div class="workflow-action-panel">
+        <div class="workflow-action-panel glass-live">
           <strong>{{ selectedResumeIds.length || 0 }}</strong>
           <span>已选择候选人</span>
           <button class="button-primary" type="button" :disabled="!canRun" @click="runMatch">开始匹配</button>
@@ -62,12 +62,13 @@
         <article
           v-for="result in matchStore.results"
           :key="result.id"
-          :class="['result-card', { active: selectedResult?.id === result.id }]"
+          :class="['result-card', { active: selectedResult?.id === result.id, 'glass-surface-strong': selectedResult?.id === result.id }]"
         >
           <div class="result-card-head">
             <div>
               <h3>{{ result.candidateName }}</h3>
               <p>{{ result.jdTitle }}</p>
+              <p>{{ result.resumeFilename }}</p>
             </div>
             <div class="match-score" :aria-label="`匹配度 ${clampScorePercent(result.score)} 分`">
               <strong :class="scoreTone(result.score)">{{ clampScorePercent(result.score) }}</strong>
@@ -83,20 +84,29 @@
             <span>差距：{{ result.gaps[0] }}</span>
           </div>
           <div class="card-actions">
-            <button type="button" @click="selectedResult = result">查看详情</button>
-            <button type="button" class="danger-text" @click="remove(result.id)">删除</button>
+            <button type="button" @click="showDetail(result)">
+              <span class="icon-glyph view" aria-hidden="true"></span>
+              <span>查看详情</span>
+            </button>
+            <button type="button" class="danger-text" @click="remove(result.id)">
+              <span class="icon-glyph delete" aria-hidden="true"></span>
+              <span>删除</span>
+            </button>
           </div>
         </article>
       </div>
     </section>
 
-    <section v-if="selectedResult" class="card workflow-card matching-detail-card">
+    <section v-if="selectedResult" ref="detailSection" class="card workflow-card matching-detail-card">
       <div class="section-head">
         <div>
           <h2>{{ selectedResult.candidateName }} · 匹配详情</h2>
           <p>{{ selectedResult.summary }}</p>
         </div>
-        <button class="button-secondary" type="button" @click="collapseDetail">收起</button>
+        <button class="button-secondary glass-action" type="button" @click="collapseDetail">
+          <span class="icon-glyph close" aria-hidden="true"></span>
+          <span>收起</span>
+        </button>
       </div>
       <div v-if="selectedResult.warnings.length" class="warning-list">
         <p v-for="warning in selectedResult.warnings" :key="warning">{{ warning }}</p>
@@ -138,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import EvidenceList from '../components/EvidenceList.vue'
 import TaskProgress from '../components/TaskProgress.vue'
@@ -147,7 +157,7 @@ import { useDocumentStore } from '../stores/document'
 import { useMatchStore } from '../stores/match'
 import type { MatchResult } from '../types/match'
 import { MATCH_STEPS } from '../types/task'
-import { createId } from '../utils/format'
+import { createId, formatResumeLabel } from '../utils/format'
 import { buildCriterionChartRows, buildMatchDetailGroups, clampScorePercent } from '../utils/matchChart'
 
 const documentStore = useDocumentStore()
@@ -157,6 +167,7 @@ const task = useTaskSse(MATCH_STEPS)
 const selectedJdId = ref('')
 const selectedResumeIds = ref<string[]>([])
 const selectedResult = ref<MatchResult | null>(matchStore.results[0] || null)
+const detailSection = ref<HTMLElement | null>(null)
 
 const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length))
 const criterionRows = computed(() => (
@@ -196,6 +207,17 @@ async function remove(id: string) {
   if (!confirmed) return
   await matchStore.deleteMatch(id)
   if (selectedResult.value?.id === id) selectedResult.value = matchStore.results[0] || null
+}
+
+async function showDetail(result: MatchResult) {
+  selectedResult.value = result
+  await nextTick()
+  const detailTop = detailSection.value?.getBoundingClientRect().top
+  if (detailTop == null) return
+  window.scrollTo({
+    top: Math.max(0, window.scrollY + detailTop - window.innerHeight / 2),
+    behavior: 'smooth',
+  })
 }
 
 function collapseDetail() {

@@ -37,6 +37,20 @@ def _find_resume(db: Session, user_id: int, resume_id: int | None) -> Resume | N
     return row
 
 
+def _find_schedule(db: Session, application: JobApplication, schedule_id: int) -> JobApplicationSchedule:
+    row = (
+        db.query(JobApplicationSchedule)
+        .filter(
+            JobApplicationSchedule.id == schedule_id,
+            JobApplicationSchedule.application_id == application.id,
+        )
+        .first()
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="schedule not found")
+    return row
+
+
 def _record(row: JobApplication) -> ApplicationRecord:
     status_events = sorted(row.status_events, key=lambda event: _as_utc(event.changed_at), reverse=True)
     schedules = sorted(row.schedules, key=lambda schedule: _as_utc(schedule.starts_at))
@@ -80,6 +94,31 @@ def _append_status_event(
     db.add(JobApplicationStatusEvent(application_id=row.id, status=status, changed_at=changed_at, note=note))
 
 
+def _schedule_completion_note(schedule: JobApplicationSchedule) -> str:
+    note = f"日程完成：{schedule.title}"
+    if schedule.note:
+        note = f"{note}（{schedule.note}）"
+    return note
+
+
+def _complete_schedule(db: Session, schedule: JobApplicationSchedule, changed_at: datetime) -> bool:
+    if schedule.completed_event_id is not None:
+        return False
+    event = JobApplicationStatusEvent(
+        application_id=schedule.application_id,
+        status=schedule.status,
+        changed_at=changed_at,
+        note=_schedule_completion_note(schedule),
+    )
+    schedule.application.status = schedule.status
+    schedule.application.updated_at = datetime.now(timezone.utc)
+    schedule.updated_at = datetime.now(timezone.utc)
+    db.add(event)
+    db.flush()
+    schedule.completed_event_id = event.id
+    return True
+
+
 def _archive_finished_schedules(db: Session, user_id: int, now: datetime) -> bool:
     schedules = (
         db.query(JobApplicationSchedule)
@@ -95,22 +134,7 @@ def _archive_finished_schedules(db: Session, user_id: int, now: datetime) -> boo
     for schedule in schedules:
         if _as_utc(schedule.ends_at) > now:
             continue
-        note = f"日程完成：{schedule.title}"
-        if schedule.note:
-            note = f"{note}（{schedule.note}）"
-        event = JobApplicationStatusEvent(
-            application_id=schedule.application_id,
-            status=schedule.status,
-            changed_at=schedule.ends_at,
-            note=note,
-        )
-        schedule.application.status = schedule.status
-        schedule.application.updated_at = now
-        schedule.updated_at = now
-        db.add(event)
-        db.flush()
-        schedule.completed_event_id = event.id
-        changed = True
+        changed = _complete_schedule(db, schedule, schedule.ends_at) or changed
     return changed
 
 
@@ -230,6 +254,21 @@ def create_schedule(
     db.add(row)
     db.commit()
     db.refresh(row)
+    return _record(row)
+
+
+@router.post("/{application_id}/schedules/{schedule_id}/complete", response_model=ApplicationRecord)
+def complete_schedule(
+    application_id: int,
+    schedule_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    row = _find_application(db, current_user.id, application_id)
+    schedule = _find_schedule(db, row, schedule_id)
+    if _complete_schedule(db, schedule, datetime.now(timezone.utc)):
+        db.commit()
+        db.refresh(row)
     return _record(row)
 
 

@@ -1,5 +1,5 @@
 // @ts-expect-error Node's strip-types runner imports the TypeScript source directly.
-const { buildApplicationStatusSegments } = await import('./applicationChart.ts')
+const { applicationStatusFilterOptions, applicationMatchesStatusFilter, buildApplicationStatusSegments } = await import('./applicationChart.ts')
 
 export {}
 
@@ -45,3 +45,24 @@ assert(
 
 const empty = buildApplicationStatusSegments([])
 assert(empty.every((item: { count: number; percent: number }) => item.count === 0 && item.percent === 0), 'empty status segments should render as zeroes')
+
+assert(
+  applicationStatusFilterOptions.map((item: { label: string }) => item.label).join(',') === '全部,流程中,已挂,通过',
+  'application filters should use dashboard-level categories',
+)
+assert(
+  applicationMatchesStatusFilter({ status: 'first_interview' }, 'active') === true,
+  'active filter should include in-progress statuses',
+)
+assert(
+  applicationMatchesStatusFilter({ status: 'written_test_rejected' }, 'rejected') === true,
+  'rejected filter should include rejection statuses',
+)
+assert(
+  applicationMatchesStatusFilter({ status: 'offer' }, 'passed') === true,
+  'passed filter should include offer statuses',
+)
+assert(
+  applicationMatchesStatusFilter({ status: 'withdrawn' }, 'active') === false,
+  'category filters should not include unrelated statuses',
+)

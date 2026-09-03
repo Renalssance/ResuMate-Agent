@@ -10,6 +10,7 @@ export interface MatchResult {
   jdId: string
   jdTitle: string
   resumeId: string
+  resumeFilename: string
   candidateName: string
   score: number
   conclusion: string

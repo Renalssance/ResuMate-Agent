@@ -8,6 +8,8 @@ export interface ApplicationStatusSegment {
   tone: 'info' | 'danger' | 'success' | 'muted'
 }
 
+export type ApplicationStatusFilter = 'all' | 'active' | 'rejected' | 'passed'
+
 const statusGroups: Array<Omit<ApplicationStatusSegment, 'count' | 'percent'> & { statuses: ApplicationStatus[] }> = [
   {
     key: 'active',
@@ -29,10 +31,17 @@ const statusGroups: Array<Omit<ApplicationStatusSegment, 'count' | 'percent'> & 
   },
   {
     key: 'other',
-    label: '待推进 / 放弃',
+    label: '其他',
     tone: 'muted',
     statuses: ['applied', 'withdrawn'],
   },
+]
+
+export const applicationStatusFilterOptions: Array<{ value: ApplicationStatusFilter; label: string }> = [
+  { value: 'all', label: '全部' },
+  { value: 'active', label: '流程中' },
+  { value: 'rejected', label: '已挂' },
+  { value: 'passed', label: '通过' },
 ]
 
 export function buildApplicationStatusSegments(applications: JobApplicationRecord[]): ApplicationStatusSegment[] {
@@ -47,4 +56,9 @@ export function buildApplicationStatusSegments(applications: JobApplicationRecor
       percent: total ? Math.round(count / total * 100) : 0,
     }
   })
+}
+
+export function applicationMatchesStatusFilter(application: Pick<JobApplicationRecord, 'status'>, filter: ApplicationStatusFilter) {
+  if (filter === 'all') return true
+  return Boolean(statusGroups.find((group) => group.key === filter)?.statuses.includes(application.status))
 }

@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <article class="parse-task-card" style="margin-top: 20px;">
+    <article class="parse-task-card task-progress-card">
       <div class="parse-task-head">
         <div class="parse-task-title">
           <strong>{{ currentStep || '等待任务状态' }}</strong>

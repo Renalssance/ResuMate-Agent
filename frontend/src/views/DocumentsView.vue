@@ -1,19 +1,19 @@
 <template>
   <div class="page-stack">
     <section class="stats-grid">
-      <article class="metric-card">
+      <article class="metric-card glass-surface">
         <span>JD 数量</span>
         <strong>{{ jdCount }}</strong>
       </article>
-      <article class="metric-card">
+      <article class="metric-card glass-surface">
         <span>简历数量</span>
         <strong>{{ resumeCount }}</strong>
       </article>
-      <article class="metric-card">
+      <article class="metric-card glass-surface">
         <span>已解析</span>
         <strong>{{ parsedCount }}</strong>
       </article>
-      <article class="metric-card">
+      <article class="metric-card glass-surface">
         <span>处理中</span>
         <strong>{{ runningCount }}</strong>
       </article>
@@ -36,7 +36,7 @@
               <strong>上传 JD</strong>
               <span>支持 PDF、DOC、DOCX、TXT、MD</span>
             </label>
-            <button class="button-secondary" type="button" @click="openTextUpload('jd')">
+            <button class="button-secondary glass-action" type="button" @click="openTextUpload('jd')">
               <span class="icon-glyph text" aria-hidden="true"></span>
               <span>输入 JD 文本</span>
             </button>
@@ -48,7 +48,7 @@
               <strong>上传简历</strong>
               <span>可一次选择多份简历文件</span>
             </label>
-            <button class="button-secondary" type="button" @click="openTextUpload('resume')">
+            <button class="button-secondary glass-action" type="button" @click="openTextUpload('resume')">
               <span class="icon-glyph text" aria-hidden="true"></span>
               <span>输入简历文本</span>
             </button>
@@ -69,7 +69,7 @@
             <span class="icon-glyph upload" aria-hidden="true"></span>
             <span>上传文本</span>
           </button>
-          <button class="button-secondary" type="button" @click="activeTextType = null">
+          <button class="button-secondary glass-action" type="button" @click="activeTextType = null">
             <span class="icon-glyph close" aria-hidden="true"></span>
             <span>取消</span>
           </button>
@@ -86,8 +86,8 @@
         </button>
       </div>
 
-      <div class="filter-panel document-filter-panel">
-        <label>
+      <div class="form-filter-panel filter-panel">
+        <label class="form-field">
           <span>类型</span>
           <select v-model="typeFilter" class="input">
             <option value="all">全部</option>
@@ -95,7 +95,7 @@
             <option value="resume">简历</option>
           </select>
         </label>
-        <label>
+        <label class="form-field">
           <span>状态</span>
           <select v-model="statusFilter" class="input">
             <option value="all">全部</option>
@@ -105,7 +105,7 @@
             <option value="failed">失败</option>
           </select>
         </label>
-        <label class="filter-search">
+        <label class="form-field filter-search">
           <span>搜索</span>
           <input v-model="keyword" class="input" type="search" placeholder="文件名或解析内容" />
         </label>

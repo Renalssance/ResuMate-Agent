@@ -1,7 +1,7 @@
 <template>
   <div class="profile-fields-page">
     <section class="card profile-fields-toolbar">
-      <label class="resume-picker">
+      <label class="form-field">
         <span>选择简历</span>
         <select v-model="selectedResumeId" class="input">
           <option value="">请选择简历</option>
@@ -11,7 +11,7 @@
         </select>
       </label>
 
-      <div class="coverage-card">
+      <div class="coverage-card glass-surface-strong">
         <strong>{{ filledRequiredCount }} / {{ requiredFields.length }}</strong>
         <span>招聘字段已填写</span>
       </div>
@@ -29,11 +29,18 @@
             <p>这些字段常出现在中国互联网招聘系统的基础信息、投递信息和补充资料里。</p>
           </div>
           <div class="editor-actions">
-            <button v-if="!isEditing" class="button-primary" type="button" @click="startEditing">编辑</button>
+            <button v-if="!isEditing" class="button-primary" type="button" @click="startEditing">
+              <span class="icon-glyph edit" aria-hidden="true"></span>
+              <span>编辑</span>
+            </button>
             <template v-else>
-              <button class="button-secondary" type="button" @click="resetDraft">还原</button>
+              <button class="button-secondary glass-action" type="button" @click="resetDraft">
+                <span class="icon-glyph refresh" aria-hidden="true"></span>
+                <span>还原</span>
+              </button>
               <button class="button-primary" type="button" :disabled="saving" @click="saveDraft">
-                {{ saving ? '保存中...' : '保存' }}
+                <span class="icon-glyph save" aria-hidden="true"></span>
+                <span>{{ saving ? '保存中...' : '保存' }}</span>
               </button>
             </template>
           </div>
@@ -75,7 +82,10 @@
           <div v-for="(item, index) in draft.education" :key="index" class="repeat-card">
             <div class="repeat-head">
               <strong>教育 {{ index + 1 }}</strong>
-              <button class="link-button danger-text" type="button" @click="removeItem('education', index)">删除</button>
+              <button class="link-button danger-text" type="button" @click="removeItem('education', index)">
+                <span class="icon-glyph delete" aria-hidden="true"></span>
+                <span>删除</span>
+              </button>
             </div>
             <div class="field-grid three">
               <label><span>学校名称 <code>education.0.school</code></span><input v-model="item.school" /></label>
@@ -92,7 +102,10 @@
               <label class="span-two"><span>论文 <code>education.0.papers</code></span><input v-model="item.papers" /></label>
             </div>
           </div>
-          <button class="button-secondary" type="button" @click="addEducation">添加教育经历</button>
+          <button class="button-secondary glass-action" type="button" @click="addEducation">
+            <span class="icon-glyph add" aria-hidden="true"></span>
+            <span>添加教育经历</span>
+          </button>
           </details>
 
           <details class="editor-section" open>
@@ -100,7 +113,10 @@
           <div v-for="(item, index) in draft.work_experience" :key="index" class="repeat-card">
             <div class="repeat-head">
               <strong>经历 {{ index + 1 }}</strong>
-              <button class="link-button danger-text" type="button" @click="removeItem('work_experience', index)">删除</button>
+              <button class="link-button danger-text" type="button" @click="removeItem('work_experience', index)">
+                <span class="icon-glyph delete" aria-hidden="true"></span>
+                <span>删除</span>
+              </button>
             </div>
             <div class="field-grid two">
               <label><span>公司名称</span><input v-model="item.company" /></label>
@@ -110,7 +126,10 @@
               <label class="span-two"><span>描述</span><textarea v-model="item.description"></textarea></label>
             </div>
           </div>
-          <button class="button-secondary" type="button" @click="addWork">添加工作/实习经历</button>
+          <button class="button-secondary glass-action" type="button" @click="addWork">
+            <span class="icon-glyph add" aria-hidden="true"></span>
+            <span>添加工作/实习经历</span>
+          </button>
           </details>
 
           <details class="editor-section" open>
@@ -118,7 +137,10 @@
           <div v-for="(item, index) in draft.projects" :key="index" class="repeat-card">
             <div class="repeat-head">
               <strong>项目 {{ index + 1 }}</strong>
-              <button class="link-button danger-text" type="button" @click="removeItem('projects', index)">删除</button>
+              <button class="link-button danger-text" type="button" @click="removeItem('projects', index)">
+                <span class="icon-glyph delete" aria-hidden="true"></span>
+                <span>删除</span>
+              </button>
             </div>
             <div class="field-grid two">
               <label><span>项目名称 <code>projects.0.name</code></span><input v-model="item.name" /></label>
@@ -129,7 +151,10 @@
               <label class="span-two"><span>描述 <code>projects.0.description</code></span><textarea v-model="item.description"></textarea></label>
             </div>
           </div>
-          <button class="button-secondary" type="button" @click="addProject">添加项目经历</button>
+          <button class="button-secondary glass-action" type="button" @click="addProject">
+            <span class="icon-glyph add" aria-hidden="true"></span>
+            <span>添加项目经历</span>
+          </button>
           </details>
 
           <details class="editor-section">
@@ -290,138 +315,3 @@ function lines(value: string) {
 }
 
 </script>
-
-<style scoped>
-.profile-fields-page {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-  align-items: start;
-}
-
-.profile-fields-toolbar {
-  display: grid;
-  grid-template-columns: minmax(260px, 520px) auto;
-  gap: var(--space-4);
-  align-items: end;
-}
-
-.resume-picker {
-  min-width: 0;
-}
-
-.profile-fields-toolbar .coverage-card {
-  min-width: 190px;
-  margin: 0;
-  padding: 12px 16px;
-}
-
-.profile-empty-card {
-  min-height: 280px;
-  display: grid;
-  align-items: center;
-}
-
-.editor-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-
-.profile-edit-body {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.profile-edit-body:disabled {
-  opacity: 1;
-}
-
-.profile-edit-body:disabled input,
-.profile-edit-body:disabled textarea {
-  color: var(--color-text);
-  background: rgba(244, 247, 245, 0.54);
-  border-color: rgba(20, 35, 30, 0.08);
-  cursor: default;
-}
-
-.field-grid {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.field-grid.three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.field-grid.two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.span-two {
-  grid-column: 1 / -1;
-}
-
-.editor-section {
-  margin-top: var(--space-5);
-}
-
-.editor-section summary {
-  margin-bottom: var(--space-4);
-}
-
-.repeat-card {
-  margin-bottom: var(--space-4);
-}
-
-.save-message {
-  margin-bottom: var(--space-4);
-}
-
-.field-grid label > span {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 5px;
-}
-
-.field-grid code {
-  color: var(--color-analysis);
-  background: rgba(61, 111, 159, 0.09);
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 650;
-}
-
-@media (min-width: 1281px) and (orientation: landscape) {
-  .profile-fields-page {
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 1280px) {
-  .field-grid.three {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 760px) {
-  .profile-fields-page,
-  .profile-fields-toolbar,
-  .field-grid.three,
-  .field-grid.two {
-    grid-template-columns: 1fr;
-  }
-
-  .editor-actions {
-    justify-content: stretch;
-  }
-
-  .editor-actions button {
-    flex: 1 1 160px;
-  }
-}
-</style>

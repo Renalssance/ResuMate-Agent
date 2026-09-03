@@ -1,41 +1,68 @@
 <template>
   <div class="extension-page page-stack">
-    <section class="card extension-hero">
-      <div>
-        <span class="eyebrow">ResuMate Autofill</span>
-        <h2>把已保存的简历资料填进招聘表单</h2>
-        <p>
-          插件会读取 ResuMate 中已解析的简历和结构字段，扫描当前招聘页面，先展示匹配结果，再由你选择要填充的项目。
-        </p>
+    <section class="card extension-tool-card">
+      <div class="section-head compact">
+        <div>
+          <h2>插件工具</h2>
+          <p>下载、连接后端，并在招聘表单页打开侧边栏完成填充。</p>
+        </div>
+        <a class="button-primary download-button" :href="extensionDownload.href" :download="extensionDownload.filename">
+          <span class="icon-glyph document" aria-hidden="true"></span>
+          <span>{{ extensionDownload.label }}</span>
+        </a>
       </div>
-      <a class="button-primary download-button" :href="extensionDownload.href" :download="extensionDownload.filename">
-        {{ extensionDownload.label }}
-      </a>
+
+      <div class="extension-summary-grid">
+        <article>
+          <span>插件</span>
+          <strong>{{ extensionMeta.name }}</strong>
+          <small>{{ extensionMeta.manifest }} · v{{ extensionMeta.version }}</small>
+        </article>
+        <article>
+          <span>后端地址</span>
+          <strong>{{ extensionMeta.backend }}</strong>
+          <small>{{ extensionMeta.profilesApi }}</small>
+        </article>
+        <article>
+          <span>侧边栏入口</span>
+          <strong>{{ extensionMeta.sidePanel }}</strong>
+          <small>点击浏览器插件图标打开</small>
+        </article>
+      </div>
     </section>
 
     <section class="extension-grid">
       <div class="card">
         <div class="section-head compact">
           <div>
-            <h2>安装插件</h2>
-            <p>下载后按浏览器开发者模式加载本地扩展。</p>
+            <h2>安装检查</h2>
+            <p>按顺序完成后即可在浏览器侧边栏使用。</p>
           </div>
         </div>
-        <ol class="step-list">
-          <li v-for="step in installSteps" :key="step">{{ step }}</li>
-        </ol>
+        <div class="extension-check-list">
+          <span v-for="step in installSteps" :key="step">
+            <i aria-hidden="true"></i>
+            {{ step }}
+          </span>
+        </div>
       </div>
 
       <div class="card">
         <div class="section-head compact">
           <div>
-            <h2>使用流程</h2>
-            <p>从选择简历到填充字段，所有动作都需要你确认。</p>
+            <h2>填表工作台</h2>
+            <p>插件内的关键动作保持手动确认。</p>
           </div>
         </div>
-        <ol class="step-list">
-          <li v-for="step in usageSteps" :key="step">{{ step }}</li>
-        </ol>
+        <div class="extension-workflow">
+          <article v-for="step in extensionWorkflow" :key="step.title">
+            <span>{{ step.label }}</span>
+            <div>
+              <strong>{{ step.title }}</strong>
+              <small>{{ step.description }}</small>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -54,83 +81,5 @@
 </template>
 
 <script setup lang="ts">
-import { extensionDownload, installSteps, safetyNotes, usageSteps } from './extensionContent'
+import { extensionDownload, extensionMeta, extensionWorkflow, installSteps, safetyNotes } from './extensionContent'
 </script>
-
-<style scoped>
-.extension-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-6);
-  align-items: center;
-}
-
-.eyebrow {
-  color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.extension-hero h2 {
-  margin: var(--space-2) 0;
-  font-size: 28px;
-  line-height: 1.2;
-}
-
-.extension-hero p {
-  max-width: 760px;
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-.download-button {
-  min-width: 128px;
-  text-decoration: none;
-}
-
-.extension-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
-}
-
-.step-list {
-  display: grid;
-  gap: var(--space-3);
-  margin: 0;
-  padding-left: 20px;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-}
-
-.step-list li::marker {
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.safety-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
-.safety-list span {
-  padding: var(--space-2) var(--space-3);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-subtle);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-}
-
-@media (max-width: 900px) {
-  .extension-hero,
-  .extension-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .download-button {
-    justify-self: start;
-  }
-}
-</style>

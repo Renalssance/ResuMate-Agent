@@ -32,6 +32,12 @@ export function createApplicationScheduleApi(id: number, payload: ApplicationSch
   )
 }
 
+export function completeApplicationScheduleApi(id: number, scheduleId: number) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
+    `/applications/${id}/schedules/${scheduleId}/complete`,
+  )
+}
+
 export function deleteApplicationApi(id: number) {
   return request.delete<{ id: number }, { id: number }>(`/applications/${id}`)
 }

@@ -148,6 +148,7 @@ def upload_documents(
     for file in files:
         stored = None
         row = None
+        row_committed = False
         rag_store = None
         try:
             stored = anyio.from_thread.run(store_upload, file)
@@ -197,6 +198,8 @@ def upload_documents(
                 )
             db.add(row)
             db.flush()
+            db.commit()
+            row_committed = True
             chunks = chunk_pages(
                 pages=pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
             )
@@ -273,6 +276,12 @@ def upload_documents(
                     rag_store.delete_document(user_id=current_user.id, document_type=document_type, document_id=row.id)
                 except Exception:
                     pass
+            if row_committed and row is not None:
+                try:
+                    db.delete(row)
+                    db.commit()
+                except Exception:
+                    db.rollback()
             if stored:
                 delete_stored_file(stored.path)
             progress_hub.publish(

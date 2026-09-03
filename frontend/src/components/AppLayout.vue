@@ -1,5 +1,7 @@
 <template>
-  <div class="app-shell">
+  <div :class="['app-shell', isGlassTheme ? 'is-glass-theme' : 'is-simple-theme']">
+    <div id="box" class="fluid-bg" aria-hidden="true"></div>
+
     <aside :class="['app-sidebar', { open: drawerOpen }]">
       <div class="brand">
         <div class="brand-mark">R</div>
@@ -41,12 +43,25 @@
           <p>{{ route.meta.description }}</p>
         </div>
 
-        <span
-          v-if="llmModel !== null"
-          :class="['llm-model-status', { 'is-missing': !llmModel }]"
-        >
-          {{ llmModel || '未配置LLM_MODEL' }}
-        </span>
+        <div class="topbar-actions">
+          <span
+            v-if="llmModel !== null"
+            :class="['llm-model-status', { 'is-missing': !llmModel }]"
+          >
+            {{ llmModel || '未配置LLM_MODEL' }}
+          </span>
+          <label class="appearance-switch">
+            <span>玻璃效果</span>
+            <input
+              type="checkbox"
+              role="switch"
+              :checked="isGlassTheme"
+              :aria-checked="isGlassTheme"
+              @change="toggleAppearance"
+            >
+            <i aria-hidden="true"></i>
+          </label>
+        </div>
       </header>
       <div class="content-wrap">
         <RouterView />
@@ -56,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+import { AestheticFluidBg } from 'color4bg'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchLlmSettingsApi } from '../api/settings'
@@ -68,6 +84,10 @@ const auth = useAuthStore()
 const agentStatus = useAgentStatus()
 const drawerOpen = ref(false)
 const llmModel = ref<string | null>(null)
+const APPEARANCE_STORAGE_KEY = 'resumate:appearance-style'
+const isGlassTheme = ref(localStorage.getItem(APPEARANCE_STORAGE_KEY) === 'glass')
+const fluidBackgroundColors = ["#1D4600", "#4F9900", "#82C23A", "#D7E356", "#A5C940", "#1D4600"]
+let colorbg: AestheticFluidBg | null = null
 
 const navItems = [
   { path: '/documents', label: '文档管理', icon: 'documents' },
@@ -98,14 +118,44 @@ function handleLlmSettingsUpdated() {
   void refreshLlmModel()
 }
 
+function toggleAppearance(event: Event) {
+  isGlassTheme.value = (event.target as HTMLInputElement).checked
+  localStorage.setItem(APPEARANCE_STORAGE_KEY, isGlassTheme.value ? 'glass' : 'simple')
+}
+
+function startFluidBackground() {
+  if (colorbg) return
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  colorbg = new AestheticFluidBg({
+    dom: 'box',
+    colors: fluidBackgroundColors,
+    loop: !prefersReducedMotion,
+  })
+  colorbg.update('scale', 0.03)
+}
+
+function stopFluidBackground() {
+  colorbg?.destroy()
+  colorbg = null
+}
+
 watch(() => auth.token, refreshLlmModel)
+watch(isGlassTheme, (enabled) => {
+  if (enabled) {
+    startFluidBackground()
+  } else {
+    stopFluidBackground()
+  }
+})
 
 onMounted(async () => {
   window.addEventListener('llm-settings-updated', handleLlmSettingsUpdated)
+  if (isGlassTheme.value) startFluidBackground()
   await refreshLlmModel()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('llm-settings-updated', handleLlmSettingsUpdated)
+  stopFluidBackground()
 })
 </script>

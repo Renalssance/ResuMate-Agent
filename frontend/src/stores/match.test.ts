@@ -42,3 +42,4 @@ const match = reportToMatch('1', candidate, report as any)
 
 assert(match.evidence.length === 0, 'missing evaluation evidence should be treated as an empty evidence list')
 assert(match.warnings.length === 1, 'backend warnings should be exposed on the frontend match')
+assert(match.resumeFilename === 'ada.pdf', 'match result should preserve the source resume filename')

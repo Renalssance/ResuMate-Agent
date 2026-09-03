@@ -253,6 +253,50 @@ def test_finished_application_schedules_are_written_to_timeline_once(tmp_path):
     session.close()
 
 
+def test_application_schedule_can_be_completed_manually_once(tmp_path):
+    client, current_user, session = _client(tmp_path)
+    created = client.post(
+        "/api/applications",
+        json={
+            "company": "Tencent",
+            "position": "平台开发",
+            "applied_date": "2026-08-18",
+        },
+    ).json()
+    scheduled = client.post(
+        f"/api/applications/{created['id']}/schedules",
+        json={
+            "status": "first_interview",
+            "title": "一面",
+            "starts_at": "2099-08-23T10:00:00Z",
+            "ends_at": "2099-08-23T11:40:00Z",
+            "note": "腾讯会议",
+        },
+    ).json()
+    schedule_id = scheduled["schedules"][0]["id"]
+
+    completed = client.post(f"/api/applications/{created['id']}/schedules/{schedule_id}/complete")
+    repeated = client.post(f"/api/applications/{created['id']}/schedules/{schedule_id}/complete")
+
+    assert completed.status_code == 200
+    assert repeated.status_code == 200
+    payload = repeated.json()
+    completed_schedule = payload["schedules"][0]
+    complete_events = [
+        event
+        for event in payload["status_events"]
+        if event["note"] == "日程完成：一面（腾讯会议）"
+    ]
+    assert payload["status"] == "first_interview"
+    assert completed_schedule["completed_event_id"] == complete_events[0]["id"]
+    assert len(complete_events) == 1
+
+    current_user["id"] = 2
+    forbidden = client.post(f"/api/applications/{created['id']}/schedules/{schedule_id}/complete")
+    assert forbidden.status_code == 404
+    session.close()
+
+
 def test_existing_schedules_mark_applied_applications_as_active(tmp_path):
     client, _current_user, session = _client(tmp_path)
     created = client.post(

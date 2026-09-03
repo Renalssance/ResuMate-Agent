@@ -4,11 +4,20 @@ export const extensionDownload = {
   filename: 'resumate-autofill-extension.zip',
 }
 
+export const extensionMeta = {
+  name: 'ResuMate Autofill',
+  version: '0.1.0',
+  manifest: 'Manifest V3',
+  backend: 'http://127.0.0.1:8000',
+  profilesApi: '/api/autofill/profiles',
+  sidePanel: 'sidepanel/sidepanel.html',
+}
+
 export const installSteps = [
-  '打开 Chrome 或 Edge，进入 chrome://extensions。',
-  '打开右上角开发者模式，点击“加载已解压的扩展程序”。',
-  '解压下载包，选择解压后的文件夹完成安装。',
-  '打开招聘申请页面，点击 ResuMate Autofill 插件图标。',
+  '解压下载包',
+  '打开 chrome://extensions',
+  '开启开发者模式',
+  '加载解压后的插件目录',
 ]
 
 export const usageSteps = [
@@ -19,9 +28,32 @@ export const usageSteps = [
   '点击填充选中项，回到网页确认后手动提交。',
 ]
 
+export const extensionWorkflow = [
+  {
+    title: '连接账号',
+    label: 'Settings',
+    description: '填写后端地址并登录 ResuMate 账号。',
+  },
+  {
+    title: '刷新简历',
+    label: 'Refresh',
+    description: '读取当前账号已解析并保存的结构资料。',
+  },
+  {
+    title: '扫描页面',
+    label: 'Scan page',
+    description: '在招聘表单页识别可填字段并预览匹配结果。',
+  },
+  {
+    title: '填充选中项',
+    label: 'Fill selected',
+    description: '只写入勾选字段，提交仍由你手动完成。',
+  },
+]
+
 export const safetyNotes = [
-  '只填充你勾选的字段。',
-  '不会自动提交招聘申请。',
-  '密码、验证码、文件上传等敏感字段会跳过。',
-  '页面、简历或设置变化后，需要重新扫描再填充。',
+  '只填充勾选字段',
+  '不会自动提交',
+  '跳过密码、验证码和文件上传',
+  '页面或简历变化后重新扫描',
 ]

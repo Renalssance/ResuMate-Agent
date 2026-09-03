@@ -4,6 +4,7 @@ import {
   createApplicationApi,
   createApplicationScheduleApi,
   createApplicationStatusEventApi,
+  completeApplicationScheduleApi,
   deleteApplicationApi,
   fetchApplicationsApi,
   updateApplicationApi,
@@ -69,6 +70,10 @@ export const useApplicationStore = defineStore('application', () => {
     upsertApplication(toApplicationRecord(await createApplicationScheduleApi(id, payload)))
   }
 
+  async function completeSchedule(id: number, scheduleId: number) {
+    upsertApplication(toApplicationRecord(await completeApplicationScheduleApi(id, scheduleId)))
+  }
+
   async function deleteApplication(id: number) {
     await deleteApplicationApi(id)
     applications.value = applications.value.filter((item) => item.id !== id)
@@ -94,6 +99,7 @@ export const useApplicationStore = defineStore('application', () => {
     updateStatus,
     createStatusEvent,
     createSchedule,
+    completeSchedule,
     deleteApplication,
   }
 })

@@ -16,3 +16,10 @@ export function formatSize(size: number) {
 export function createId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`
 }
+
+export function formatResumeLabel(resume: { filename: string; parsedContent?: Record<string, unknown> }) {
+  const name = resume.parsedContent?.candidate_name || resume.parsedContent?.name
+  return typeof name === 'string' && name.trim()
+    ? `${name.trim()}（${resume.filename}）`
+    : resume.filename
+}

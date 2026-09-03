@@ -7,15 +7,15 @@
           <p>基于一份 JD 与一份简历生成正式面试题，不包含在线编辑和拖拽排序。</p>
         </div>
       </div>
-      <div class="question-flow-grid">
-        <label class="workflow-field">
+      <div class="question-flow-grid glass-live">
+        <label class="form-field workflow-field">
           <span>JD</span>
           <select v-model="selectedJdId">
             <option value="">请选择 JD</option>
             <option v-for="jd in documentStore.parsedJds" :key="jd.id" :value="jd.id">{{ jd.parsedContent?.title || jd.filename }}</option>
           </select>
         </label>
-        <label class="workflow-field">
+        <label class="form-field workflow-field">
           <span>候选人</span>
           <select v-model="selectedResumeId">
             <option value="">请选择简历</option>
@@ -24,7 +24,7 @@
             </option>
           </select>
         </label>
-        <label class="workflow-field">
+        <label class="form-field workflow-field">
           <span>匹配结果（必选）</span>
           <select v-model="selectedMatchId">
             <option value="">请选择匹配结果</option>
@@ -33,12 +33,15 @@
             </option>
           </select>
         </label>
-        <label class="workflow-field question-count-field">
+        <label class="form-field workflow-field question-count-field">
           <span>题目数量</span>
           <input v-model.number="questionCount" type="number" min="1" max="10" />
         </label>
         <div class="question-action-panel">
-          <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">开始生成</button>
+          <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">
+            <span class="icon-glyph add" aria-hidden="true"></span>
+            <span>开始生成</span>
+          </button>
         </div>
       </div>
     </section>
@@ -60,7 +63,10 @@
           <h2>历史试题集</h2>
           <p>每道题默认展示题目和考察点，评分标准与参考回答可展开查看。</p>
         </div>
-        <button class="button-secondary" type="button" :disabled="matchStore.loading || questionStore.loading" @click="refreshQuestionSets">刷新</button>
+        <button class="button-secondary glass-action" type="button" :disabled="matchStore.loading || questionStore.loading" @click="refreshQuestionSets">
+          <span class="icon-glyph refresh" aria-hidden="true"></span>
+          <span>刷新</span>
+        </button>
       </div>
       <div v-if="questionStore.loading" class="loading-state">正在加载试题集...</div>
       <EmptyState v-else-if="!questionStore.questionSets.length" title="暂无试题集" description="生成完成后会在这里展示历史记录。" />
@@ -83,7 +89,10 @@
               <h3>{{ selectedSet.candidateName }} · {{ selectedSet.jdTitle }}</h3>
               <p>{{ formatDate(selectedSet.createdAt) }}</p>
             </div>
-            <button class="danger-text" type="button" @click="remove(selectedSet.id)">删除试题集</button>
+            <button class="danger-text" type="button" @click="remove(selectedSet.id)">
+              <span class="icon-glyph delete" aria-hidden="true"></span>
+              <span>删除试题集</span>
+            </button>
           </div>
           <details v-for="question in selectedSet.questions" :key="question.id" class="question-card">
             <summary>

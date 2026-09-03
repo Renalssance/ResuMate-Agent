@@ -154,7 +154,7 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
             continue
         number = index + 1
         prefix = f"work_experience.{index}"
-        description = _join_lines(_text(item.get("description")), _bullet_text(item.get("bullets") or []))
+        description = _text(item.get("description")) or _bullet_text(item.get("bullets") or [])
         work_fields.extend(
             [
                 _field(f"{prefix}.company", f"Company {number}", _text(item.get("company")), ["company", "employer", "公司"], "work"),
@@ -173,7 +173,7 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
             continue
         number = index + 1
         prefix = f"projects.{index}"
-        description = _join_lines(_text(item.get("description")), _bullet_text(item.get("bullets") or []))
+        description = _text(item.get("description")) or _bullet_text(item.get("bullets") or [])
         duration = _text(item.get("duration") or _date_range(_text(item.get("start_date")), _text(item.get("end_date"))))
         project_fields.extend(
             [

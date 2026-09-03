@@ -179,12 +179,12 @@ def test_build_application_profile_maps_resume_profile_fields():
     assert fields["education.0.papers"] == "Graph RAG for Recruiting"
     assert fields["work_experience.0.start_date"] == "2024.01"
     assert fields["work_experience.0.end_date"] == "2026.02"
-    assert fields["work_experience.0.description"] == "Built FastAPI services.\nReduced latency by 30%."
+    assert fields["work_experience.0.description"] == "Built FastAPI services."
     assert fields["projects.0.url"] == "https://github.com/ada/resume-agent"
     assert fields["projects.0.duration"] == "2025.01 - 2025.06"
     assert fields["projects.0.start_date"] == "2025.01"
     assert fields["projects.0.end_date"] == "2025.06"
-    assert fields["projects.0.description"] == "Built document parsing workflow.\nAdded OCR fallback."
+    assert fields["projects.0.description"] == "Built document parsing workflow."
     assert fields["skills"] == "Python, FastAPI"
 
 
@@ -235,3 +235,25 @@ def test_build_application_profile_accepts_legacy_experience_key():
     assert fields["work_experience.0.title"] == "Computer Scientist"
     assert fields["work_experience.0.duration"] == "1944-1986"
     assert fields["work_experience.0.description"] == "Built compiler systems."
+
+
+def test_build_application_profile_uses_bullets_when_description_is_empty():
+    resume = Resume(
+        id=10,
+        user_id=1,
+        filename="lin.pdf",
+        raw_text="",
+        structured_data={
+            "candidate_name": "Lin",
+            "work_experience": [{"description": "", "bullets": [{"raw_text": "Owned model serving."}]}],
+            "projects": [{"description": "", "bullets": [{"raw_text": "Built edge inference."}]}],
+        },
+        created_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 8, 4, tzinfo=timezone.utc),
+    )
+
+    profile = build_application_profile(resume)
+    fields = {field.key: field.value for field in flatten_application_fields(profile)}
+
+    assert fields["work_experience.0.description"] == "Owned model serving."
+    assert fields["projects.0.description"] == "Built edge inference."

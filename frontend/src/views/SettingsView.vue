@@ -12,7 +12,7 @@
           </div>
           <div class="settings-auth-actions">
             <button class="button-primary" type="submit" :disabled="auth.loading">登录</button>
-            <button class="button-secondary" type="button" :disabled="auth.loading" @click="submitAuth('register')">
+            <button class="button-secondary glass-action" type="button" :disabled="auth.loading" @click="submitAuth('register')">
               注册
             </button>
           </div>
@@ -20,7 +20,10 @@
         <div v-else class="settings-account-state">
           <span>{{ auth.username }}</span>
           <small>{{ auth.role || 'user' }}</small>
-          <button class="button-secondary" type="button" @click="logout">退出账号</button>
+          <button class="button-secondary glass-action" type="button" @click="logout">
+            <span class="icon-glyph close" aria-hidden="true"></span>
+            <span>退出账号</span>
+          </button>
         </div>
       </div>
 
@@ -33,8 +36,7 @@
           <h2>模型参数</h2>
         </div>
         <div class="settings-head-actions">
-          <span v-if="!editingSettings && settingsIncomplete" class="settings-mini-warning">未配置</span>
-          <button v-if="!editingSettings" class="button-secondary" type="button" :disabled="!auth.isAuthenticated" @click="startEditSettings">
+          <button v-if="!editingSettings" class="button-secondary glass-action" type="button" :disabled="!auth.isAuthenticated" @click="startEditSettings">
             <span class="icon-glyph edit" aria-hidden="true"></span>
             <span>编辑</span>
           </button>
@@ -42,8 +44,11 @@
       </div>
 
       <div v-if="!editingSettings" class="settings-model-read">
-        <div class="settings-model-hero">
-          <span>当前模型</span>
+        <div class="settings-model-hero glass-surface-strong">
+          <span>
+            当前模型
+            <small v-if="settingsIncomplete" class="settings-mini-warning">未配置</small>
+          </span>
           <strong>{{ settings?.model || '未配置 model' }}</strong>
         </div>
       </div>
@@ -77,10 +82,12 @@
         </label>
         <div class="settings-button-row span-two">
           <button class="button-primary" type="submit" :disabled="saving || !auth.isAuthenticated">
-            {{ saving ? '保存中...' : '保存' }}
+            <span class="icon-glyph save" aria-hidden="true"></span>
+            <span>{{ saving ? '保存中...' : '保存' }}</span>
           </button>
-          <button class="button-secondary" type="button" :disabled="saving" @click="cancelEditSettings">
-            取消
+          <button class="button-secondary glass-action" type="button" :disabled="saving" @click="cancelEditSettings">
+            <span class="icon-glyph close" aria-hidden="true"></span>
+            <span>取消</span>
           </button>
         </div>
       </form>
@@ -94,23 +101,24 @@
           <h2>Token 看板</h2>
           <p>统计当前账号的调用次数、token 消耗和调用时间。</p>
         </div>
-        <button class="button-secondary" type="button" :disabled="loading || !auth.isAuthenticated" @click="loadAll">
-          刷新
+        <button class="button-secondary glass-action" type="button" :disabled="loading || !auth.isAuthenticated" @click="loadAll">
+          <span class="icon-glyph refresh" aria-hidden="true"></span>
+          <span>刷新</span>
         </button>
       </div>
 
       <div class="settings-overview-grid">
-        <article class="metric-card settings-metric">
+        <article class="metric-card glass-surface settings-metric">
           <span>调用次数</span>
           <strong>{{ usage?.total_calls ?? 0 }}</strong>
           <small>成功 {{ usage?.successful_calls ?? 0 }} / 失败 {{ usage?.failed_calls ?? 0 }}</small>
         </article>
-        <article class="metric-card settings-metric">
+        <article class="metric-card glass-surface settings-metric">
           <span>消耗 Token</span>
           <strong>{{ formatNumber(usage?.total_tokens ?? 0) }}</strong>
           <small>输入 {{ formatNumber(usage?.prompt_tokens ?? 0) }} / 输出 {{ formatNumber(usage?.completion_tokens ?? 0) }}</small>
         </article>
-        <article class="metric-card settings-metric">
+        <article class="metric-card glass-surface settings-metric">
           <span>最近调用</span>
           <strong>{{ usage?.last_called_at ? formatShortDate(usage.last_called_at) : '-' }}</strong>
           <small>成功率 {{ usage?.success_rate ?? 0 }}%</small>

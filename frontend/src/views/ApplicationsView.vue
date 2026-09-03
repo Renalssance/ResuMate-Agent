@@ -1,12 +1,11 @@
 <template>
   <div class="page-stack applications-page">
     <section class="stats-grid">
-      <article class="metric-card application-metric total">
+      <article class="metric-card glass-surface application-metric total">
         <span>总投递</span>
         <strong>{{ store.totalCount }}</strong>
         <div class="metric-card-foot">
           <small>状态构成</small>
-          <small>待推进 / 放弃 {{ segmentCount('other') }} 个</small>
         </div>
         <div class="metric-stack" aria-label="投递状态构成">
           <span
@@ -17,7 +16,7 @@
           ></span>
         </div>
       </article>
-      <article class="metric-card application-metric active">
+      <article class="metric-card glass-surface application-metric active">
         <span>流程中</span>
         <strong>{{ store.activeCount }}</strong>
         <div class="metric-card-foot">
@@ -28,7 +27,7 @@
           <span :style="{ width: `${segmentPercent('active')}%` }"></span>
         </div>
       </article>
-      <article class="metric-card application-metric rejected">
+      <article class="metric-card glass-surface application-metric rejected">
         <span>已挂</span>
         <strong>{{ store.rejectedCount }}</strong>
         <div class="metric-card-foot">
@@ -39,7 +38,7 @@
           <span :style="{ width: `${segmentPercent('rejected')}%` }"></span>
         </div>
       </article>
-      <article class="metric-card application-metric passed">
+      <article class="metric-card glass-surface application-metric passed">
         <span>Offer / 通过</span>
         <strong>{{ store.passedCount }}</strong>
         <div class="metric-card-foot">
@@ -60,7 +59,7 @@
         </div>
       </div>
 
-      <div v-if="todayScheduleItems.length" class="schedule-today-panel">
+      <div v-if="todayScheduleItems.length" class="schedule-today-panel glass-live">
         <article
           v-for="schedule in todayScheduleItems"
           :key="schedule.id"
@@ -75,6 +74,15 @@
           <span :class="['application-status-pill', statusTone(schedule.status)]">
             {{ applicationStatusLabel(schedule.status) }}
           </span>
+          <button
+            class="button-secondary glass-action schedule-complete-button"
+            type="button"
+            :disabled="isCompletingSchedule(schedule.id)"
+            @click="completeSchedule(schedule)"
+          >
+            <span class="icon-glyph save" aria-hidden="true"></span>
+            <span>{{ isCompletingSchedule(schedule.id) ? '完成中' : '完成' }}</span>
+          </button>
         </article>
       </div>
 
@@ -85,7 +93,7 @@
       />
       <div v-else class="schedule-list" aria-label="全部日程">
         <article
-          v-for="schedule in scheduleItems"
+          v-for="schedule in activeScheduleItems"
           :key="schedule.id"
           :class="['schedule-list-item', scheduleTone(schedule)]"
         >
@@ -106,7 +114,42 @@
               </template>
             </template>
           </p>
+          <button
+            v-if="!schedule.isCompleted"
+            class="button-secondary glass-action schedule-complete-button"
+            type="button"
+            :disabled="isCompletingSchedule(schedule.id)"
+            @click="completeSchedule(schedule)"
+          >
+            <span class="icon-glyph save" aria-hidden="true"></span>
+            <span>{{ isCompletingSchedule(schedule.id) ? '完成中' : '完成' }}</span>
+          </button>
         </article>
+
+        <div v-if="completedScheduleItems.length" class="completed-schedule-panel">
+          <button class="completed-schedule-toggle" type="button" @click="showCompletedSchedules = !showCompletedSchedules">
+            <span>已完成日程 {{ completedScheduleItems.length }} 个</span>
+            <span>{{ showCompletedSchedules ? '收起' : '展开' }}</span>
+          </button>
+
+          <template v-if="showCompletedSchedules">
+            <article
+              v-for="schedule in completedScheduleItems"
+              :key="schedule.id"
+              :class="['schedule-list-item', scheduleTone(schedule)]"
+            >
+              <div class="schedule-list-main">
+                <strong>{{ schedule.title }}</strong>
+                <span>{{ schedule.applicationLabel }}</span>
+              </div>
+              <time class="schedule-time">{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
+              <span :class="['application-status-pill', statusTone(schedule.status)]">
+                {{ applicationStatusLabel(schedule.status) }}
+              </span>
+              <p class="schedule-note">已写入时间线</p>
+            </article>
+          </template>
+        </div>
       </div>
     </section>
 
@@ -116,46 +159,42 @@
           <h2>投递记录</h2>
           <p>用“记录状态”追加测评、笔试、面试和结果节点。</p>
         </div>
-        <button v-if="!editingId" class="button-secondary" type="button" @click="toggleApplicationForm">
+        <button v-if="!editingId" class="button-secondary glass-action" type="button" @click="toggleApplicationForm">
           <span :class="['icon-glyph', showApplicationForm ? 'close' : 'add']" aria-hidden="true"></span>
           <span>{{ showApplicationForm ? '收起新增' : '新增投递' }}</span>
         </button>
       </div>
 
-      <div v-if="showApplicationForm || editingId" class="application-entry-panel">
+      <div v-if="showApplicationForm" class="application-entry-panel">
         <div class="section-head compact">
           <div>
-            <h3>{{ editingId ? '编辑投递' : '新增投递' }}</h3>
+            <h3>新增投递</h3>
             <p>记录公司、岗位、投递日期、关联简历和当前进展。</p>
           </div>
-          <button v-if="editingId" class="button-secondary" type="button" @click="resetForm">
-            <span class="icon-glyph close" aria-hidden="true"></span>
-            <span>取消编辑</span>
-          </button>
         </div>
 
         <form class="application-form" @submit.prevent="submitApplication">
-          <label class="application-field application-company">
+          <label class="form-field application-field application-company">
             <span>公司</span>
             <input v-model.trim="form.company" required placeholder="例如：字节跳动" />
           </label>
-          <label class="application-field application-position">
+          <label class="form-field application-field application-position">
             <span>岗位</span>
             <input v-model.trim="form.position" required placeholder="例如：后端开发工程师" />
           </label>
-          <label class="application-field application-date">
+          <label class="form-field application-field application-date">
             <span>投递日期</span>
             <input v-model="form.applied_date" required type="date" />
           </label>
-          <label class="application-field application-status">
-            <span>{{ editingId ? '当前状态' : '初始状态' }}</span>
-            <select v-model="form.status" :disabled="Boolean(editingId)">
+          <label class="form-field application-field application-status">
+            <span>初始状态</span>
+            <select v-model="form.status">
               <option v-for="item in applicationStatusOptions" :key="item.value" :value="item.value">
                 {{ item.label }}
               </option>
             </select>
           </label>
-          <label class="application-field application-resume">
+          <label class="form-field application-field application-resume">
             <span>关联简历</span>
             <select v-model="form.resume_id">
               <option :value="null">不关联</option>
@@ -164,22 +203,22 @@
               </option>
             </select>
           </label>
-          <label class="application-field application-link">
+          <label class="form-field application-field application-link">
             <span>投递链接</span>
             <input v-model.trim="form.job_url" type="url" placeholder="https://..." />
           </label>
-          <label class="application-field application-source">
+          <label class="form-field application-field application-source">
             <span>来源</span>
             <input v-model.trim="form.source" placeholder="官网 / Boss / 内推 / 猎头" />
           </label>
-          <label class="application-field application-notes">
+          <label class="form-field application-field application-notes">
             <span>备注</span>
             <input v-model.trim="form.notes" placeholder="简历版本、联系人、下一步动作等" />
           </label>
           <div class="application-field application-submit">
             <button class="button-primary" type="submit" :disabled="store.saving">
-              <span :class="['icon-glyph', editingId ? 'save' : 'add']" aria-hidden="true"></span>
-              <span>{{ store.saving ? '保存中...' : editingId ? '保存编辑' : '添加记录' }}</span>
+              <span class="icon-glyph add" aria-hidden="true"></span>
+              <span>{{ store.saving ? '保存中...' : '添加记录' }}</span>
             </button>
           </div>
         </form>
@@ -187,17 +226,16 @@
         <p v-if="store.error" class="error-note">{{ store.error }}</p>
       </div>
 
-      <div class="application-filters">
-        <label>
+      <div class="form-filter-panel application-filters">
+        <label class="form-field">
           <span>状态</span>
           <select v-model="statusFilter">
-            <option value="all">全部</option>
-            <option v-for="item in applicationStatusOptions" :key="item.value" :value="item.value">
+            <option v-for="item in applicationStatusFilterOptions" :key="item.value" :value="item.value">
               {{ item.label }}
             </option>
           </select>
         </label>
-        <label>
+        <label class="form-field">
           <span>搜索</span>
           <input v-model.trim="keyword" type="search" placeholder="公司、岗位、来源、备注或简历" />
         </label>
@@ -253,7 +291,7 @@
               </button>
               <button type="button" @click="toggleTimeline(application.id)">
                 <span class="icon-glyph timeline" aria-hidden="true"></span>
-                {{ expandedIds.has(application.id) ? '收起' : '时间线' }}
+                <span>{{ expandedIds.has(application.id) ? '收起' : '时间线' }}</span>
               </button>
               <button type="button" class="danger-text" @click="removeApplication(application.id)">
                 <span class="icon-glyph delete" aria-hidden="true"></span>
@@ -262,9 +300,66 @@
             </div>
           </div>
 
+          <div v-if="editingId === application.id" class="inline-form-panel application-entry-panel">
+            <div class="section-head compact">
+              <div>
+                <h3>编辑投递</h3>
+                <p>记录公司、岗位、投递日期、关联简历和当前进展。</p>
+              </div>
+            </div>
+
+            <form class="application-form application-edit-form" @submit.prevent="submitApplication">
+              <label class="form-field application-field application-company">
+                <span>公司</span>
+                <input v-model.trim="form.company" required placeholder="例如：字节跳动" />
+              </label>
+              <label class="form-field application-field application-position">
+                <span>岗位</span>
+                <input v-model.trim="form.position" required placeholder="例如：后端开发工程师" />
+              </label>
+              <label class="form-field application-field application-date">
+                <span>投递日期</span>
+                <input v-model="form.applied_date" required type="date" />
+              </label>
+              <label class="form-field application-field application-resume">
+                <span>关联简历</span>
+                <select v-model="form.resume_id">
+                  <option :value="null">不关联</option>
+                  <option v-for="resume in parsedResumes" :key="resume.id" :value="resumeNumericId(resume.id)">
+                    {{ resume.filename }}
+                  </option>
+                </select>
+              </label>
+              <label class="form-field application-field application-link">
+                <span>投递链接</span>
+                <input v-model.trim="form.job_url" type="url" placeholder="https://..." />
+              </label>
+              <label class="form-field application-field application-source">
+                <span>来源</span>
+                <input v-model.trim="form.source" placeholder="官网 / Boss / 内推 / 猎头" />
+              </label>
+              <label class="form-field application-field application-notes">
+                <span>备注</span>
+                <input v-model.trim="form.notes" placeholder="简历版本、联系人、下一步动作等" />
+              </label>
+              <div class="application-field application-submit application-edit-actions">
+                <button class="button-primary" type="submit" :disabled="store.saving">
+                  <span class="icon-glyph save" aria-hidden="true"></span>
+                  <span>{{ store.saving ? '保存中...' : '保存' }}</span>
+                </button>
+                <button class="button-secondary glass-action" type="button" @click="resetForm">
+                  <span class="icon-glyph close" aria-hidden="true"></span>
+                  <span>取消</span>
+                </button>
+              </div>
+            </form>
+
+            <p v-if="store.error" class="error-note">{{ store.error }}</p>
+          </div>
+
           <form
             v-if="statusDraft.applicationId === application.id"
-            class="status-event-form"
+            class="inline-form-panel status-event-form"
             @submit.prevent="submitStatusEvent(application.id)"
           >
             <label>
@@ -285,9 +380,9 @@
             </label>
             <button class="button-primary" type="submit">
               <span class="icon-glyph save" aria-hidden="true"></span>
-              <span>保存状态</span>
+              <span>保存</span>
             </button>
-            <button class="button-secondary" type="button" @click="clearStatusDraft">
+            <button class="button-secondary glass-action" type="button" @click="clearStatusDraft">
               <span class="icon-glyph close" aria-hidden="true"></span>
               <span>取消</span>
             </button>
@@ -295,7 +390,7 @@
 
           <form
             v-if="scheduleDraft.applicationId === application.id"
-            class="status-event-form schedule-event-form"
+            class="inline-form-panel status-event-form schedule-event-form"
             @submit.prevent="submitSchedule(application.id)"
           >
             <label>
@@ -324,9 +419,9 @@
             </label>
             <button class="button-primary" type="submit">
               <span class="icon-glyph save" aria-hidden="true"></span>
-              <span>保存日程</span>
+              <span>保存</span>
             </button>
-            <button class="button-secondary" type="button" @click="clearScheduleDraft">
+            <button class="button-secondary glass-action" type="button" @click="clearScheduleDraft">
               <span class="icon-glyph close" aria-hidden="true"></span>
               <span>取消</span>
             </button>
@@ -359,16 +454,18 @@ import {
   type JobApplicationPayload,
   type JobApplicationRecord,
 } from '../types/application'
-import { buildApplicationStatusSegments } from '../utils/applicationChart'
+import { applicationMatchesStatusFilter, applicationStatusFilterOptions, buildApplicationStatusSegments, type ApplicationStatusFilter } from '../utils/applicationChart'
 import { buildApplicationScheduleItems, buildScheduleNoteParts, isScheduleToday, type ApplicationScheduleItem } from '../utils/applicationSchedule'
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
-const statusFilter = ref<ApplicationStatus | 'all'>('all')
+const statusFilter = ref<ApplicationStatusFilter>('all')
 const keyword = ref('')
 const editingId = ref<number | null>(null)
 const showApplicationForm = ref(false)
+const showCompletedSchedules = ref(false)
 const expandedIds = ref<Set<number>>(new Set())
+const completingScheduleIds = ref<Set<number>>(new Set())
 const form = reactive<JobApplicationPayload>(emptyForm())
 const statusDraft = reactive({
   applicationId: null as number | null,
@@ -388,25 +485,23 @@ const scheduleDraft = reactive({
 const parsedResumes = computed(() => documentStore.parsedResumes)
 const statusSegments = computed(() => buildApplicationStatusSegments(store.applications))
 const scheduleItems = computed(() => buildApplicationScheduleItems(store.applications))
+const activeScheduleItems = computed(() => scheduleItems.value.filter((schedule) => !schedule.isCompleted))
+const completedScheduleItems = computed(() => scheduleItems.value.filter((schedule) => schedule.isCompleted))
 const todayScheduleItems = computed(() => scheduleItems.value.filter((schedule) => isScheduleToday(schedule) && !schedule.isCompleted))
 const scheduleStatusOptions = applicationStatusOptions.filter((item) =>
   ['assessment', 'written_test', 'interviewing', 'first_interview', 'second_interview', 'third_interview', 'hr_interview'].includes(item.value),
 )
 
-type StatusSegmentKey = 'active' | 'rejected' | 'passed' | 'other'
+type StatusSegmentKey = 'active' | 'rejected' | 'passed'
 
 function segmentPercent(key: StatusSegmentKey) {
   return statusSegments.value.find((segment) => segment.key === key)?.percent ?? 0
 }
 
-function segmentCount(key: StatusSegmentKey) {
-  return statusSegments.value.find((segment) => segment.key === key)?.count ?? 0
-}
-
 const filteredApplications = computed(() => {
   const normalizedKeyword = keyword.value.toLowerCase()
   return store.applications.filter((application) => {
-    const statusMatched = statusFilter.value === 'all' || application.status === statusFilter.value
+    const statusMatched = applicationMatchesStatusFilter(application, statusFilter.value)
     const keywordMatched =
       !normalizedKeyword ||
       [
@@ -437,7 +532,7 @@ async function submitApplication() {
 
 function startEdit(application: JobApplicationRecord) {
   editingId.value = application.id
-  showApplicationForm.value = true
+  showApplicationForm.value = false
   Object.assign(form, {
     company: application.company,
     position: application.position,
@@ -514,6 +609,23 @@ async function submitSchedule(applicationId: number) {
     note: scheduleDraft.note,
   })
   clearScheduleDraft()
+}
+
+async function completeSchedule(schedule: ApplicationScheduleItem) {
+  if (isCompletingSchedule(schedule.id) || schedule.isCompleted) return
+  completingScheduleIds.value = new Set(completingScheduleIds.value).add(schedule.id)
+  try {
+    await store.completeSchedule(schedule.applicationId, schedule.id)
+    expandTimeline(schedule.applicationId)
+  } finally {
+    const next = new Set(completingScheduleIds.value)
+    next.delete(schedule.id)
+    completingScheduleIds.value = next
+  }
+}
+
+function isCompletingSchedule(scheduleId: number) {
+  return completingScheduleIds.value.has(scheduleId)
 }
 
 function clearScheduleDraft() {
