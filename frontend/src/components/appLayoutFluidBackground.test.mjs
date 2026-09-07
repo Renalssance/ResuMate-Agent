@@ -20,6 +20,10 @@ assert(
   'app layout should use color4bg aesthetic fluid background',
 )
 assert(
+  layout.includes('nextTick') && layout.includes('await nextTick()'),
+  'glass background should initialize after the hidden background layer becomes visible',
+)
+assert(
   layout.includes('id="box"') && layout.includes('fluid-bg'),
   'app layout should expose a stable full-screen background mount',
 )
@@ -51,6 +55,10 @@ assert(
 assert(
   css.includes('.fluid-bg') && css.includes('position: fixed') && css.includes('pointer-events: none'),
   'fluid background should be fixed behind the app without blocking interaction',
+)
+assert(
+  !css.includes('z-index: -1'),
+  'fluid background should stay inside the app stacking context instead of falling behind the root page',
 )
 assert(
   css.includes('.is-simple-theme .fluid-bg') && css.includes('display: none'),

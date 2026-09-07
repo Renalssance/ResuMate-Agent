@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { AestheticFluidBg } from 'color4bg'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchLlmSettingsApi } from '../api/settings'
 import { useAgentStatus } from '../composables/useAgentStatus'
@@ -140,9 +140,10 @@ function stopFluidBackground() {
 }
 
 watch(() => auth.token, refreshLlmModel)
-watch(isGlassTheme, (enabled) => {
+watch(isGlassTheme, async (enabled) => {
   if (enabled) {
-    startFluidBackground()
+    await nextTick()
+    if (isGlassTheme.value) startFluidBackground()
   } else {
     stopFluidBackground()
   }
@@ -150,7 +151,10 @@ watch(isGlassTheme, (enabled) => {
 
 onMounted(async () => {
   window.addEventListener('llm-settings-updated', handleLlmSettingsUpdated)
-  if (isGlassTheme.value) startFluidBackground()
+  if (isGlassTheme.value) {
+    await nextTick()
+    startFluidBackground()
+  }
   await refreshLlmModel()
 })
 
