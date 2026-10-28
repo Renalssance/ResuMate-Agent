@@ -1,7 +1,6 @@
 """面试工具模块 — 简历解析、JD 分析、匹配评估、模拟面试。"""
 import json
 import logging
-import os
 import time
 
 from langchain_core.tools import tool
@@ -10,26 +9,24 @@ from langchain.chat_models import init_chat_model
 from backend.db.database import SessionLocal
 from backend.db.models import Resume, JobDescription
 from backend.logging_config import log_llm_error, log_llm_prompt, log_llm_response
+from backend.services.llm_settings import resolve_effective_llm_settings
 
 logger = logging.getLogger(__name__)
 
-API_KEY = os.getenv("ARK_API_KEY")
-MODEL = os.getenv("MODEL")
-BASE_URL = os.getenv("BASE_URL")
-
 # ---------- LLM 辅助函数 ----------
 
-def _get_llm(temperature: float = 0.1):
+def _get_llm(temperature: float = 0.1, *, user_id: int | None = None):
     """获取 LLM 实例（延迟初始化）。"""
-    if not API_KEY or not MODEL:
-        logger.warning("LLM is not configured: ARK_API_KEY or MODEL is missing")
+    settings = resolve_effective_llm_settings(user_id)
+    if not settings.api_key or not settings.model or (user_id and not settings.base_url):
+        logger.warning("LLM is not configured: model credentials, model name or account base URL is missing")
         return None
-    logger.info("Creating LLM client | model=%s base_url=%s temperature=%s", MODEL, BASE_URL, temperature)
+    logger.info("Creating LLM client | model=%s base_url=%s temperature=%s", settings.model, settings.base_url, temperature)
     return init_chat_model(
-        model=MODEL,
+        model=settings.model,
         model_provider="openai",
-        api_key=API_KEY,
-        base_url=BASE_URL,
+        api_key=settings.api_key,
+        base_url=settings.base_url or None,
         temperature=temperature,
     )
 
@@ -40,7 +37,7 @@ def _llm_content(response) -> str:
 
 def _invoke_llm(llm, prompt: str, task: str, metadata: dict | None = None) -> str:
     metadata = dict(metadata or {})
-    metadata.update({"model": MODEL, "prompt_chars": len(prompt)})
+    metadata.update({"model": getattr(llm, "model_name", ""), "prompt_chars": len(prompt)})
     logger.info("LLM call start | task=%s prompt_chars=%s", task, len(prompt))
     log_llm_prompt(task, prompt, metadata)
     start_time = time.perf_counter()
@@ -263,7 +260,7 @@ def create_interview_tools(user_id: int):
             raw_text: The full text content of the resume
             filename: The original filename of the resume
         """
-        llm = _get_llm()
+        llm = _get_llm(user_id=user_id)
         if not llm:
             return "错误：LLM 服务未配置"
 
@@ -335,7 +332,7 @@ def create_interview_tools(user_id: int):
             title: Job title (optional, will be extracted if not provided)
             company: Company name (optional, will be extracted if not provided)
         """
-        llm = _get_llm()
+        llm = _get_llm(user_id=user_id)
         if not llm:
             return "错误：LLM 服务未配置"
 
@@ -410,7 +407,7 @@ def create_interview_tools(user_id: int):
             resume_id: The resume ID (from analyze_resume)
             jd_id: The job description ID (from analyze_jd)
         """
-        llm = _get_llm(temperature=0.2)
+        llm = _get_llm(temperature=0.2, user_id=user_id)
         if not llm:
             return "错误：LLM 服务未配置"
 
@@ -515,7 +512,7 @@ def create_interview_tools(user_id: int):
             question_text: The interview question being answered (required when mode="evaluate")
             key_points: Key points to evaluate against (optional, for mode="evaluate")
         """
-        llm = _get_llm(temperature=0.3)
+        llm = _get_llm(temperature=0.3, user_id=user_id)
         if not llm:
             return "错误：LLM 服务未配置"
 

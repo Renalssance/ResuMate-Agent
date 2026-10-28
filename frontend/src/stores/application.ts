@@ -37,7 +37,6 @@ export const useApplicationStore = defineStore('application', () => {
       applications.value = (await fetchApplicationsApi()).map(toApplicationRecord)
       error.value = ''
     } catch (err) {
-      applications.value = []
       error.value = err instanceof Error ? err.message : String(err)
     } finally {
       loading.value = false
@@ -49,13 +48,25 @@ export const useApplicationStore = defineStore('application', () => {
     try {
       upsertApplication(toApplicationRecord(await createApplicationApi(payload)))
       error.value = ''
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
+      throw err
     } finally {
       saving.value = false
     }
   }
 
   async function updateApplication(id: number, payload: Partial<JobApplicationPayload>) {
-    upsertApplication(toApplicationRecord(await updateApplicationApi(id, payload)))
+    saving.value = true
+    error.value = ''
+    try {
+      upsertApplication(toApplicationRecord(await updateApplicationApi(id, payload)))
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
+      throw err
+    } finally {
+      saving.value = false
+    }
   }
 
   async function updateStatus(id: number, status: ApplicationStatus) {
@@ -63,11 +74,29 @@ export const useApplicationStore = defineStore('application', () => {
   }
 
   async function createStatusEvent(id: number, payload: ApplicationStatusEventPayload) {
-    upsertApplication(toApplicationRecord(await createApplicationStatusEventApi(id, payload)))
+    saving.value = true
+    error.value = ''
+    try {
+      upsertApplication(toApplicationRecord(await createApplicationStatusEventApi(id, payload)))
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
+      throw err
+    } finally {
+      saving.value = false
+    }
   }
 
   async function createSchedule(id: number, payload: ApplicationSchedulePayload) {
-    upsertApplication(toApplicationRecord(await createApplicationScheduleApi(id, payload)))
+    saving.value = true
+    error.value = ''
+    try {
+      upsertApplication(toApplicationRecord(await createApplicationScheduleApi(id, payload)))
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
+      throw err
+    } finally {
+      saving.value = false
+    }
   }
 
   async function completeSchedule(id: number, scheduleId: number) {

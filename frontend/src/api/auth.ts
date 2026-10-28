@@ -18,12 +18,18 @@ export interface CurrentUserResponse {
 }
 
 async function postAuth(endpoint: '/auth/login' | '/auth/register', payload: AuthRequest) {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  const data = await response.json()
+  let response: Response
+  let data: AuthResponse & { detail?: string }
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    data = await response.json()
+  } catch {
+    throw new Error('暂时无法连接账号服务，请稍后重试。')
+  }
   if (!response.ok) throw new Error(data.detail || '认证请求失败')
   return data as AuthResponse
 }

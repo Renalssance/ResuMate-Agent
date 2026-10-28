@@ -28,8 +28,8 @@ assert(
   'app layout should expose a stable full-screen background mount',
 )
 assert(
-  layout.includes('["#1D4600", "#4F9900", "#82C23A", "#D7E356", "#A5C940", "#1D4600"]'),
-  'fluid background should use the selected green palette',
+  layout.includes('["#FAF7F2", "#EFE2CC", "#D9E8F0", "#B9CFDC", "#DCC8BA", "#FAF7F2"]'),
+  'fluid background should use the approved cream, oat, and mist-blue palette',
 )
 assert(
   layout.includes('loop: !prefersReducedMotion'),

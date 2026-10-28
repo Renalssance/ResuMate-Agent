@@ -4,10 +4,11 @@
       <div class="section-head">
         <div>
           <h2>生成配置</h2>
-          <p>基于一份 JD 与一份简历生成正式面试题，不包含在线编辑和拖拽排序。</p>
+          <p>选择岗位、候选人与匹配结果，生成面试题和补充追问。</p>
         </div>
       </div>
-      <div class="question-flow-grid glass-live">
+      <p v-if="documentStore.error" class="error-note" role="alert">{{ documentStore.error }}</p>
+      <div class="question-flow-grid">
         <label class="form-field workflow-field">
           <span>JD</span>
           <select v-model="selectedJdId">
@@ -39,7 +40,7 @@
         </label>
         <div class="question-action-panel">
           <button class="button-primary" type="button" :disabled="!canGenerate" @click="generate">
-            <span class="icon-glyph add" aria-hidden="true"></span>
+            <Plus class="app-icon" aria-hidden="true" />
             <span>开始生成</span>
           </button>
         </div>
@@ -63,19 +64,22 @@
           <h2>历史试题集</h2>
           <p>每道题默认展示题目和考察点，评分标准与参考回答可展开查看。</p>
         </div>
-        <button class="button-secondary glass-action" type="button" :disabled="matchStore.loading || questionStore.loading" @click="refreshQuestionSets">
-          <span class="icon-glyph refresh" aria-hidden="true"></span>
+        <button class="button-secondary" type="button" :disabled="matchStore.loading || questionStore.loading" @click="refreshQuestionSets">
+          <RefreshCw class="app-icon" aria-hidden="true" />
           <span>刷新</span>
         </button>
       </div>
-      <div v-if="questionStore.loading" class="loading-state">正在加载试题集...</div>
-      <EmptyState v-else-if="!questionStore.questionSets.length" title="暂无试题集" description="生成完成后会在这里展示历史记录。" />
-      <div v-else class="question-layout">
+      <p v-if="matchStore.error || questionStore.error" class="error-note" role="alert">{{ matchStore.error || questionStore.error }}</p>
+      <div v-if="(matchStore.loading || questionStore.loading) && !questionStore.questionSets.length" class="loading-state">正在加载试题集...</div>
+      <EmptyState v-else-if="!questionStore.questionSets.length && !matchStore.error && !questionStore.error" title="暂无试题集" description="生成完成后会在这里展示历史记录。" />
+      <div v-else-if="questionStore.questionSets.length" class="question-layout" :aria-busy="matchStore.loading || questionStore.loading">
         <aside class="history-list">
           <button
             v-for="set in questionStore.questionSets"
             :key="set.id"
             :class="{ active: selectedSet?.id === set.id }"
+            :aria-pressed="selectedSet?.id === set.id"
+            :title="`${set.candidateName} · ${set.jdTitle} · ${set.questionCount} 题`"
             type="button"
             @click="selectedSet = set"
           >
@@ -90,7 +94,7 @@
               <p>{{ formatDate(selectedSet.createdAt) }}</p>
             </div>
             <button class="danger-text" type="button" @click="remove(selectedSet.id)">
-              <span class="icon-glyph delete" aria-hidden="true"></span>
+              <Trash2 class="app-icon" aria-hidden="true" />
               <span>删除试题集</span>
             </button>
           </div>
@@ -110,14 +114,14 @@
           <div class="question-section-title">
             <div>
               <h4>追问模拟</h4>
-              <p>来自 generate_ambiguity_followups，与正式面试题分开展示。</p>
+              <p>针对经历中需要进一步确认的信息，提供补充追问。</p>
             </div>
             <span>{{ selectedSet.followUpCount }} 题</span>
           </div>
           <EmptyState
             v-if="!selectedSet.followUpQuestions.length"
             title="暂无追问模拟题"
-            description="生成完成后，LLM 的 ambiguity follow-ups 会显示在这里。"
+            description="分析中发现需要进一步确认的信息时，补充追问会显示在这里。"
           />
           <details v-for="question in selectedSet.followUpQuestions" v-else :key="question.id" class="question-card followup-question-card">
             <summary>
@@ -139,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import { Plus, RefreshCw, Trash2 } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import TaskProgress from '../components/TaskProgress.vue'
@@ -171,7 +176,7 @@ const questionCount = ref(10)
 const selectedSet = ref<QuestionSet | null>(questionStore.questionSets[0] || null)
 const restoredQuestionTask = ref<ActiveQuestionTask | null>(null)
 
-const canGenerate = computed(() => Boolean(selectedJdId.value && selectedResumeId.value && selectedMatchId.value && questionCount.value > 0))
+const canGenerate = computed(() => Boolean(selectedJdId.value && selectedResumeId.value && selectedMatchId.value && questionCount.value >= 1 && questionCount.value <= 10 && Number.isInteger(questionCount.value) && !questionStore.loading && !matchStore.loading && task.status.value !== 'running'))
 
 onMounted(async () => {
   await Promise.all([documentStore.loadDocuments(), matchStore.loadMatches()])
@@ -187,7 +192,7 @@ onMounted(async () => {
 async function refreshQuestionSets() {
   const selectedId = selectedSet.value?.id
   await matchStore.loadMatches()
-  refreshLoadedQuestionSets(selectedId)
+  if (!matchStore.error) refreshLoadedQuestionSets(selectedId)
 }
 
 function refreshLoadedQuestionSets(selectedId = selectedSet.value?.id) {
@@ -204,6 +209,7 @@ watch(task.status, async (status) => {
 })
 
 async function generate() {
+  if (!canGenerate.value) return
   const jd = documentStore.parsedJds.find((item) => item.id === selectedJdId.value)
   const resume = documentStore.parsedResumes.find((item) => item.id === selectedResumeId.value)
   const match = matchStore.results.find((item) => item.id === selectedMatchId.value)

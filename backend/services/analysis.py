@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 from collections import Counter
+from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Session
 
 from backend.agents.harness import AgentHarness
 from backend.db.models import JobDescription, Resume
 from backend.graph.candidate_workflow import CandidateAnalysisGraph
-from backend.rag.chroma import ChromaRagStore
+from backend.rag import get_rag_store
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     AmbiguityFollowupSet,
@@ -22,6 +23,10 @@ from backend.schemas.workflow import (
 )
 from backend.services.llm_validation import question_primary_evidence_limit, validate_question_set
 from backend.services.progress import progress_hub
+
+if TYPE_CHECKING:
+    from backend.rag.chroma import ChromaRagStore
+    from backend.rag.mysql import MySQLRagStore
 
 QUESTION_TYPE_SEQUENCE = [
     "resume_experience",
@@ -50,11 +55,11 @@ class AnalysisService:
         *,
         db: Session,
         harness: AgentHarness | None = None,
-        rag_store: ChromaRagStore | None = None,
+        rag_store: ChromaRagStore | MySQLRagStore | None = None,
     ) -> None:
         self.db = db
         self.harness = harness
-        self.rag_store = rag_store or ChromaRagStore()
+        self.rag_store = rag_store if rag_store is not None else get_rag_store()
         self.repository = SqlAlchemyRunRepository(db)
 
     def _harness_for_user(self, user_id: int) -> AgentHarness:
@@ -99,7 +104,7 @@ class AnalysisService:
             stage="load_jd",
             status="running",
             progress=5,
-            message="Creating SQLite analysis run",
+            message="Creating analysis run",
             data={"jd_document_id": jd_document_id, "resume_count": len(resume_ids)},
         )
         job = self.repository.create_run(user_id=user_id, jd=jd, resumes=[by_id[item] for item in resume_ids])
@@ -162,7 +167,7 @@ class AnalysisService:
             stage="load_context",
             status="running",
             progress=15,
-            message="Loading persisted match report from SQLite",
+            message="Loading persisted match report",
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         report = self.repository.get_candidate_report(
@@ -323,7 +328,7 @@ class AnalysisService:
             stage="save",
             status="running",
             progress=94,
-            message="Saving generated questions to SQLite",
+            message="Saving generated questions",
             data={"run_id": run_id, "candidate_id": candidate_id},
         )
         progress_hub.publish(

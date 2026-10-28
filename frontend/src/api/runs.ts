@@ -1,4 +1,5 @@
 import { request } from '../services/request'
+import { waitForTaskResult, type AcceptedTask } from '../services/taskResult'
 import type { CandidateReport, EvidenceSearchResponse, RunSummary } from '../types/run'
 
 export interface CreateRunPayload {
@@ -7,8 +8,11 @@ export interface CreateRunPayload {
   taskId?: string
 }
 
-export function createRunApi(payload: CreateRunPayload) {
-  return request.post<RunSummary, RunSummary>('/runs', payload)
+export async function createRunApi(payload: CreateRunPayload) {
+  const accepted = await request.post<AcceptedTask, AcceptedTask>('/runs', payload, {
+    headers: { Prefer: 'respond-async' },
+  })
+  return waitForTaskResult(accepted.taskId, (data) => data as unknown as RunSummary)
 }
 
 export function fetchRunsApi() {
@@ -19,10 +23,13 @@ export function fetchCandidateReportApi(runId: string | number, candidateId: str
   return request.get<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}`)
 }
 
-export function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '', questionCount = 10) {
+export async function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '', questionCount = 10) {
   const params = new URLSearchParams({ question_count: String(questionCount) })
   if (taskId) params.set('task_id', taskId)
-  return request.post<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}/questions?${params.toString()}`)
+  const accepted = await request.post<AcceptedTask, AcceptedTask>(`/runs/${runId}/candidates/${candidateId}/questions?${params.toString()}`, undefined, {
+    headers: { Prefer: 'respond-async' },
+  })
+  return waitForTaskResult(accepted.taskId, (data) => data as unknown as CandidateReport)
 }
 
 export function deleteCandidateReportApi(runId: string | number, candidateId: string | number) {

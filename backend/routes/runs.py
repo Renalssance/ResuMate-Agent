@@ -1,19 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
-from backend.rag.chroma import ChromaRagStore
+from backend.rag import get_rag_store
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import AnalyzeRequest, AnalyzeResponse, CandidateReport, EvidenceSearchRequest, EvidenceSearchResponse, RunSummary
 from backend.services.analysis import AnalysisService
+from backend.services.background_tasks import submit_task
+from backend.services.progress import progress_hub
 
 router = APIRouter(prefix="/api/runs", tags=["runs"])
 
 
 @router.post("", response_model=AnalyzeResponse)
-def create_run(request: AnalyzeRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_run(
+    request: AnalyzeRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    prefer: str = Header(""),
+    background_tasks: BackgroundTasks = None,
+):
+    if prefer == "respond-async":
+        task_id = request.task_id or progress_hub.create_task("task_match")
+        return submit_task(
+            background_tasks, task_id, current_user.id, create_run,
+            request=request.model_copy(update={"task_id": task_id}),
+        )
     try:
         return AnalysisService(db=db).analyze_document_ids(
             user_id=current_user.id,
@@ -54,7 +68,15 @@ def generate_candidate_questions(
     question_count: int = Query(10, ge=1, le=10),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    prefer: str = Header(""),
+    background_tasks: BackgroundTasks = None,
 ):
+    if prefer == "respond-async":
+        task_id = task_id or progress_hub.create_task("task_questions")
+        return submit_task(
+            background_tasks, task_id, current_user.id, generate_candidate_questions,
+            run_id=run_id, candidate_id=candidate_id, task_id=task_id, question_count=question_count,
+        )
     try:
         return AnalysisService(db=db).generate_questions(
             user_id=current_user.id,
@@ -89,7 +111,7 @@ async def search_candidate_evidence(run_id: int, candidate_id: int, request: Evi
     )
     if resume_id is None:
         raise HTTPException(status_code=404, detail="candidate resume not found")
-    results = ChromaRagStore().search_resume_evidence(
+    results = get_rag_store().search_resume_evidence(
         user_id=current_user.id,
         document_id=resume_id,
         query=request.query,

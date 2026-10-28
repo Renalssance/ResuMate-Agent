@@ -57,7 +57,7 @@ def test_upload_reuses_structured_data_for_same_file_hash(tmp_path, monkeypatch)
         lambda *_args, **_kwargs: [PageText(page_number=1, text="Candidate resume text with enough content.")],
     )
     monkeypatch.setattr(document_routes, "_parse_profile", fake_parse_profile)
-    monkeypatch.setattr(document_routes, "ChromaRagStore", lambda: FakeRagStore())
+    monkeypatch.setattr(document_routes, "get_rag_store", lambda: FakeRagStore())
 
     with Session(engine) as db:
         user = User(username="parse-cache-user", password_hash="hash")
@@ -135,7 +135,7 @@ def test_upload_releases_sqlite_write_lock_before_llm_usage_recording(tmp_path, 
         lambda *_args, **_kwargs: [PageText(page_number=1, text="Backend Engineer JD with enough content.")],
     )
     monkeypatch.setattr(document_routes, "_parse_profile", fake_parse_profile)
-    monkeypatch.setattr(document_routes, "ChromaRagStore", lambda: FakeRagStore())
+    monkeypatch.setattr(document_routes, "get_rag_store", lambda: FakeRagStore())
 
     with Session(engine) as db:
         user = User(username="parse-lock-user", password_hash="hash")

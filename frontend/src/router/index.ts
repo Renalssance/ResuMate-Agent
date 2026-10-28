@@ -6,11 +6,21 @@ import MatchingView from '../views/MatchingView.vue'
 import ProfileFieldsView from '../views/ProfileFieldsView.vue'
 import QuestionsView from '../views/QuestionsView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import HomeView from '../views/HomeView.vue'
+import AuthView from '../views/AuthView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.meta.publicLayout || from.meta.publicLayout) {
+      return to.hash ? { el: to.hash } : { top: 0 }
+    }
+  },
   routes: [
-    { path: '/', redirect: '/documents' },
+    { path: '/', name: 'home', component: HomeView, meta: { title: '你的招聘好伙伴', publicLayout: true } },
+    { path: '/login', name: 'login', component: AuthView, meta: { title: '登录', publicLayout: true } },
+    { path: '/register', name: 'register', component: AuthView, meta: { title: '注册', publicLayout: true } },
     {
       path: '/documents',
       name: 'documents',
@@ -51,9 +61,13 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView,
-      meta: { title: '设置', description: '管理账号、模型参数和调用统计' },
+      meta: { title: '设置', description: '管理模型参数和调用统计' },
     },
   ],
+})
+
+router.afterEach((to) => {
+  document.title = `${to.meta.title || '你的招聘好伙伴'} · ResuMate`
 })
 
 export default router

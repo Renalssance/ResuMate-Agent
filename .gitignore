@@ -55,7 +55,8 @@ scripts/test_analysis_module.py
 
 # Runtime data and logs
 data/
-docs/
+docs/*
+!docs/design/
 log/
 logs/
 .superpowers/

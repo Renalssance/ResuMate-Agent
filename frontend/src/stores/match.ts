@@ -32,6 +32,8 @@ export const useMatchStore = defineStore('match', () => {
       }
       results.value = loaded
       error.value = ''
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
     } finally {
       loading.value = false
     }

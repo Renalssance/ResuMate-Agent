@@ -78,6 +78,7 @@ class SqlAlchemyRunRepository:
         result = candidate.match_result or MatchResult(
             job_id=job.id,
             candidate_id=candidate.id,
+            candidate=candidate,
             resume_id=candidate.resume_id,
             jd_id=job.jd_id,
         )

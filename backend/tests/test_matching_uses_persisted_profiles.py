@@ -56,12 +56,12 @@ def test_matching_loads_sqlite_profiles_without_parsing_or_rag_profile_reads():
     assert not hasattr(rag_store, "load_document_profile")
 
 
-def test_matching_requires_sqlite_profiles():
+def test_matching_requires_persisted_profiles():
     state = {
         "user_id": 7,
         "job": SimpleNamespace(jd=SimpleNamespace(structured_data=None)),
         "candidate": SimpleNamespace(resume=SimpleNamespace(structured_data=None)),
     }
 
-    with pytest.raises(ValueError, match="SQLite is missing"):
+    with pytest.raises(ValueError, match="structured JD or resume is missing"):
         _graph(RecordingRagStore()).load_structured_profiles(state)

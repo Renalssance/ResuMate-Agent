@@ -5,7 +5,7 @@
         <h2>{{ title }}</h2>
       </div>
       <span :class="['agent-status-pill', current?.level || 'info']">
-        {{ current ? levelText(current.level) : 'Waiting' }}
+        {{ current ? levelText(current.level) : '等待中' }}
       </span>
     </div>
 
@@ -58,7 +58,7 @@ onUnmounted(() => {
 
 function phaseText(phase: AgentProgressPhase) {
   const labels: Record<AgentProgressPhase, string> = {
-    prompt_uploading: '上传 prompt',
+    prompt_uploading: '整理分析资料',
     waiting_response: '等待模型回复',
     validating_response: '校验结构化回复',
     reflecting: '反思重试',
@@ -70,10 +70,10 @@ function phaseText(phase: AgentProgressPhase) {
 
 function levelText(level: AgentProgressLevel) {
   const labels: Record<AgentProgressLevel, string> = {
-    info: 'Running',
-    success: 'Done',
-    warning: 'Reflecting',
-    error: 'Error',
+    info: '处理中',
+    success: '已完成',
+    warning: '重试中',
+    error: '失败',
   }
   return labels[level]
 }

@@ -37,6 +37,10 @@ def create_app() -> FastAPI:
     logger.info("Creating FastAPI app")
     app = FastAPI(title="Resume Interview Engine API")
 
+    @app.get("/healthz", include_in_schema=False)
+    async def health():
+        return {"status": "ok"}
+
     @app.on_event("startup")
     async def _startup_init_db():
         logger.info("Startup: initializing database")

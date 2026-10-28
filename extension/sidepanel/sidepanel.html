@@ -64,10 +64,7 @@
       <details class="panel settings-card">
         <summary data-i18n="settings.summary">Settings</summary>
         <label for="apiBaseInput" data-i18n="settings.backend">Backend</label>
-        <div class="row">
-          <input id="apiBaseInput" type="url" />
-          <button id="saveSettingsBtn" class="secondary-btn" type="button" data-i18n="actions.save">Save</button>
-        </div>
+        <input id="apiBaseInput" type="url" />
         <div class="auth-head">
           <strong data-i18n="settings.account">Account</strong>
           <span id="authStatus" class="auth-status" data-i18n="auth.signedOut">Signed out</span>
@@ -79,6 +76,9 @@
         <div class="auth-actions">
           <button id="loginBtn" class="primary-btn" type="button" data-i18n="actions.login">Log in</button>
           <button id="logoutBtn" class="secondary-btn" type="button" data-i18n="actions.logout">Log out</button>
+        </div>
+        <div class="form-actions">
+          <button id="saveSettingsBtn" class="primary-btn" type="button" data-i18n="actions.save">Save</button>
         </div>
       </details>
 

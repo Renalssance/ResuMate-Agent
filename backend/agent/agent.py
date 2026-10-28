@@ -131,6 +131,9 @@ def create_agent_with_interview_tools(user_id: str):
     finally:
         db.close()
 
+    if int_user_id and (not settings.api_key or not settings.model or not settings.base_url):
+        raise RuntimeError("请先在模型设置中配置 API Key、Base URL 和模型名称")
+
     logger.info("Creating interview agent | user_id=%s model=%s base_url=%s", user_id, settings.model, settings.base_url)
     model = init_chat_model(
         model=settings.model,
@@ -155,6 +158,7 @@ storage = ConversationStorage()
 
 
 async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", session_id: str = "default_session"):
+    yield ": heartbeat\n\n"
     messages = storage.load(user_id, session_id)
     messages.append(HumanMessage(content=user_text))
     logger.info(
@@ -220,7 +224,11 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
 
     try:
         while True:
-            event = await output_queue.get()
+            try:
+                event = await asyncio.wait_for(output_queue.get(), timeout=15)
+            except TimeoutError:
+                yield ": heartbeat\n\n"
+                continue
             if event is None:
                 break
             yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"

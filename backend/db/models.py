@@ -1,9 +1,13 @@
 from datetime import date, datetime, timezone
 
-from sqlalchemy import Boolean, JSON, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, JSON, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint, text
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.db.database import Base
+
+# PDF extraction and generated chat content can exceed MySQL TEXT's 64 KiB.
+LARGE_TEXT = Text().with_variant(LONGTEXT, "mysql")
 
 
 def utcnow():
@@ -163,7 +167,7 @@ class ChatMessage(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     session_ref_id: Mapped[int] = mapped_column(ForeignKey("chat_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
     message_type: Mapped[str] = mapped_column(String(20), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(LARGE_TEXT, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
     session = relationship("ChatSession", back_populates="messages")
@@ -183,7 +187,7 @@ class Resume(Base):
     parse_status: Mapped[str] = mapped_column(
         String(40), default="pending", server_default="pending", nullable=False, index=True
     )
-    raw_text: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    raw_text: Mapped[str] = mapped_column(LARGE_TEXT, default="", nullable=False)
     structured_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
@@ -207,7 +211,7 @@ class JobDescription(Base):
     parse_status: Mapped[str] = mapped_column(
         String(40), default="pending", server_default="pending", nullable=False, index=True
     )
-    raw_text: Mapped[str] = mapped_column(Text, nullable=False)
+    raw_text: Mapped[str] = mapped_column(LARGE_TEXT, nullable=False)
     structured_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
@@ -278,7 +282,7 @@ class MatchResult(Base):
     missing_skills: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     strengths: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     gaps: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
-    report_json: Mapped[dict] = mapped_column(JSON, default=dict, server_default="{}", nullable=False)
+    report_json: Mapped[dict] = mapped_column(JSON, default=dict, server_default=text("('{}')"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 

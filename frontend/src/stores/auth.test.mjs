@@ -76,6 +76,13 @@ try {
 
   const documentStore = useDocumentStore()
   assert.equal(documentStore.documents[0]?.filename, 'resume.pdf', documentStore.error)
+  useAuthStore().logout()
+  assert.equal(useAuthStore().isAuthenticated, false)
+  assert.equal(storage.has('accessToken'), false)
+  assert.equal(storage.has('username'), false)
+  assert.equal(storage.has('role'), false)
+  assert.equal(documentStore.documents.length, 0)
+  console.log('Auth login and logout passed: token, account, and documents cleared.')
 } finally {
   await rm(tempDir, { recursive: true, force: true })
 }

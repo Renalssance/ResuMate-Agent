@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Any
@@ -25,7 +26,7 @@ def _build_file_handler(path: Path, level: int, formatter: logging.Formatter) ->
 
 
 def setup_logging() -> None:
-    """Configure backend logs under ./log."""
+    """Write application logs to stdout and rotating files under ./log."""
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 
     level_name = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -34,6 +35,13 @@ def setup_logging() -> None:
 
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
+
+    if not any(getattr(handler, "_resumate_console", False) for handler in root_logger.handlers):
+        console = logging.StreamHandler(sys.stdout)
+        console.setLevel(level)
+        console.setFormatter(formatter)
+        console._resumate_console = True  # type: ignore[attr-defined]
+        root_logger.addHandler(console)
 
     existing_paths = {
         str(getattr(handler, "baseFilename", ""))

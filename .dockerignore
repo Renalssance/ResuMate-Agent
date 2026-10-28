@@ -1,0 +1,18 @@
+# Allow only files consumed by the build; credentials and local data stay out.
+**
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!README.md
+!backend/
+!backend/**
+!frontend/
+!frontend/**
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/tests/
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/**/.DS_Store
+**/._*

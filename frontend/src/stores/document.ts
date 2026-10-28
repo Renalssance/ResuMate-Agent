@@ -32,7 +32,6 @@ export const useDocumentStore = defineStore('document', () => {
       documents.value = (await fetchDocumentsApi()).map(toDocumentRecord)
       error.value = ''
     } catch (err) {
-      documents.value = []
       error.value = err instanceof Error ? err.message : String(err)
     } finally {
       listLoading.value = false

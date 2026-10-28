@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from sqlalchemy import Engine, create_engine, event, text
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 
@@ -27,7 +28,12 @@ def build_engine(database_url: str) -> Engine:
             cursor.close()
 
         return engine
-    return create_engine(database_url, pool_pre_ping=True)
+    url = make_url(database_url)
+    if url.drivername == "mysql":
+        url = url.set(drivername="mysql+pymysql")
+    if url.get_backend_name() == "mysql" and "charset" not in url.query:
+        url = url.update_query_dict({"charset": "utf8mb4"})
+    return create_engine(url, pool_pre_ping=True)
 
 
 engine = build_engine(DATABASE_URL)
@@ -50,6 +56,13 @@ def get_db():
 
 def init_db() -> None:
     from backend.db import models  # noqa: F401
+    from backend.cloudbase import validate_runtime
+
+    validate_runtime(DATABASE_URL)
+    if os.getenv("CLOUDBASE_ENV_ID"):
+        with engine.connect() as connection:
+            connection.execute(text("SELECT id FROM users LIMIT 0"))
+        return
 
     Base.metadata.create_all(bind=engine)
     ensure_sqlite_schema(engine)

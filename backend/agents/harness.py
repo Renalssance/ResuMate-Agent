@@ -45,9 +45,11 @@ class AgentHarness:
         self.max_tokens = settings.max_tokens
         self.request_timeout = settings.request_timeout_seconds
         if not settings.api_key:
-            raise RuntimeError("OPENAI_API_KEY is required for AgentHarness")
+            raise RuntimeError("请先在模型设置中配置 API Key" if user_id else "OPENAI_API_KEY is required for AgentHarness")
         if not self.model:
-            raise RuntimeError("LLM_MODEL is required for AgentHarness")
+            raise RuntimeError("请先在模型设置中配置模型名称" if user_id else "LLM_MODEL is required for AgentHarness")
+        if user_id and not settings.base_url:
+            raise RuntimeError("请先在模型设置中配置 Base URL")
         self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None, max_retries=0)
         self.progress_hub = progress_hub
 
@@ -95,6 +97,7 @@ class AgentHarness:
         log_llm_prompt(task, f"{system_prompt}\n\n{prompt}", metadata)
         started = time.perf_counter()
         response_format = self._initial_response_format(task, schema.__name__, schema_json)
+        max_tokens = getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
         self._publish_agent_progress(
             task_id=task_id,
             stage=progress_stage,
@@ -121,7 +124,13 @@ class AgentHarness:
                     message=f"Waiting for LLM response, attempt {attempt}",
                 )
                 try:
-                    response = self._create_chat_completion(task, messages, response_format, attempt)
+                    response = self._create_chat_completion(
+                        task,
+                        messages,
+                        response_format,
+                        attempt,
+                        max_tokens=max_tokens,
+                    )
                 except Exception as exc:
                     fallback_succeeded = False
                     fallback_response_format = self._fallback_response_format(response_format, exc)
@@ -135,7 +144,13 @@ class AgentHarness:
                             exc,
                         )
                         try:
-                            response = self._create_chat_completion(task, messages, response_format, attempt)
+                            response = self._create_chat_completion(
+                                task,
+                                messages,
+                                response_format,
+                                attempt,
+                                max_tokens=max_tokens,
+                            )
                         except Exception as fallback_exc:
                             exc = fallback_exc
                         else:
@@ -188,10 +203,51 @@ class AgentHarness:
                         ]
                         continue
                 content = response.choices[0].message.content or ""
+                finish_reason = getattr(response.choices[0], "finish_reason", None)
                 elapsed_ms = int((time.perf_counter() - started) * 1000)
                 self._record_usage_response(task, response, elapsed_ms)
-                attempt_metadata = {**metadata, "attempt": attempt, "elapsed_ms": elapsed_ms}
+                attempt_metadata = {
+                    **metadata,
+                    "attempt": attempt,
+                    "elapsed_ms": elapsed_ms,
+                    "finish_reason": finish_reason,
+                }
                 log_llm_response(task, content, attempt_metadata)
+                if finish_reason == "length":
+                    if attempt > MAX_REFLECTIONS:
+                        raise RuntimeError(
+                            f"structured LLM response exceeded max_tokens={max_tokens}"
+                        )
+                    max_tokens *= 2
+                    logger.warning(
+                        "Structured LLM response was truncated; retrying with max_tokens=%s | "
+                        "task=%s schema=%s",
+                        max_tokens,
+                        task,
+                        schema.__name__,
+                    )
+                    self._publish_agent_progress(
+                        task_id=task_id,
+                        stage=progress_stage,
+                        progress=progress,
+                        task=task,
+                        schema_name=schema.__name__,
+                        phase="reflecting",
+                        attempt=attempt,
+                        level="warning",
+                        message=f"LLM response was truncated, retrying with max_tokens={max_tokens}",
+                    )
+                    messages = [
+                        *messages,
+                        {
+                            "role": "user",
+                            "content": (
+                                "The previous response was truncated by the output token limit. "
+                                "Return the complete JSON object in a compact form."
+                            ),
+                        },
+                    ]
+                    continue
                 self._publish_agent_progress(
                     task_id=task_id,
                     stage=progress_stage,
@@ -350,8 +406,10 @@ class AgentHarness:
         messages: list[dict[str, str]],
         response_format: dict[str, Any] | None,
         attempt: int,
+        *,
+        max_tokens: int | None = None,
     ):
-        max_tokens = getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
+        max_tokens = max_tokens or getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
         request_timeout = getattr(self, "request_timeout", DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS)
         request_kwargs: dict[str, Any] = {
             "model": self.model,

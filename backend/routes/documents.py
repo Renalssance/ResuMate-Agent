@@ -5,14 +5,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import anyio
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Header, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from backend.agents.harness import AgentHarness
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import JobDescription, Resume, User
-from backend.rag.chroma import ChromaRagStore
+from backend.rag import get_rag_store
 from backend.schemas.workflow import (
     DocumentParseResponse,
     DocumentParseResult,
@@ -24,11 +24,14 @@ from backend.schemas.workflow import (
     StructuredDataUpdate,
 )
 from backend.services.analysis import parse_document_id
+from backend.services.background_tasks import submit_task
 from backend.services.documents import (
     chunk_pages,
+    cleanup_upload_cache,
     delete_stored_file,
     detect_multiple_positions,
     extract_stored_pages,
+    persisted_upload_path,
     store_upload,
 )
 from backend.services.llm_validation import validate_resume_source_refs
@@ -140,160 +143,175 @@ def upload_documents(
     task_id: str = Form(""),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    prefer: str = Header(""),
+    background_tasks: BackgroundTasks = None,
 ):
     if len(files) != 1:
         raise HTTPException(status_code=422, detail="exactly one file is required per document parsing task")
     task_id = task_id or progress_hub.create_task("task_parse")
-    results = []
-    for file in files:
-        stored = None
-        row = None
-        row_committed = False
-        rag_store = None
-        try:
-            stored = anyio.from_thread.run(store_upload, file)
-            progress_hub.publish(
+    try:
+        # Finish reading UploadFile before FastAPI closes the request's files.
+        stored = anyio.from_thread.run(store_upload, files[0])
+    except Exception as exc:
+        progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message=str(exc))
+        raise HTTPException(status_code=400, detail=f"{files[0].filename}: {exc}") from exc
+    if prefer == "respond-async":
+        return submit_task(
+            background_tasks, task_id, current_user.id, _parse_saved_upload,
+            stored=stored, document_type=document_type, task_id=task_id,
+        )
+    return _parse_saved_upload(stored, document_type, task_id, current_user, db)
+
+
+def _parse_saved_upload(stored, document_type: DocumentType, task_id: str, current_user: User, db: Session):
+    row = None
+    row_committed = False
+    rag_store = None
+    try:
+        progress_hub.publish(
+            task_id,
+            stage="server_save",
+            status="running",
+            progress=12,
+            filename=stored.filename,
+            message=f"Saved {stored.filename} on server",
+            data={"filename": stored.filename, "size": stored.size},
+        )
+        pages = extract_stored_pages(
+            stored.path,
+            stored.filename,
+            progress_callback=lambda current, total: progress_hub.publish(
                 task_id,
-                stage="server_save",
+                stage="extract",
                 status="running",
-                progress=12,
-                filename=stored.filename,
-                message=f"Saved {stored.filename} on server",
-                data={"filename": stored.filename, "size": stored.size},
+                progress=12 + round((current / max(total, 1)) * 20),
+                stage_progress=round((current / max(total, 1)) * 100),
+                current=current,
+                total=total,
+                filename=stored.filename if stored else None,
+                message=f"Extracting text page {current}/{total}",
+            ),
+        )
+        raw_text = "\n".join(page.text for page in pages).strip()
+        if document_type == "resume":
+            cached_structured_data = _cached_structured_data(
+                db, Resume, user_id=current_user.id, content_hash=stored.content_hash
             )
-            pages = extract_stored_pages(
-                stored.path,
-                stored.filename,
-                progress_callback=lambda current, total: progress_hub.publish(
-                    task_id,
-                    stage="extract",
-                    status="running",
-                    progress=12 + round((current / max(total, 1)) * 20),
-                    stage_progress=round((current / max(total, 1)) * 100),
-                    current=current,
-                    total=total,
-                    filename=stored.filename if stored else None,
-                    message=f"Extracting text page {current}/{total}",
-                ),
+            row = Resume(
+                user_id=current_user.id, filename=stored.filename, file_path=persisted_upload_path(stored),
+                content_hash=stored.content_hash, raw_text=raw_text, structured_data={},
+                document_size=stored.size, parse_status="running",
             )
-            raw_text = "\n".join(page.text for page in pages).strip()
-            if document_type == "resume":
-                cached_structured_data = _cached_structured_data(
-                    db, Resume, user_id=current_user.id, content_hash=stored.content_hash
-                )
-                row = Resume(
-                    user_id=current_user.id, filename=stored.filename, file_path=str(stored.path),
-                    content_hash=stored.content_hash, raw_text=raw_text, structured_data={},
-                    document_size=stored.size, parse_status="running",
-                )
-            else:
-                cached_structured_data = _cached_structured_data(
-                    db, JobDescription, user_id=current_user.id, content_hash=stored.content_hash
-                )
-                row = JobDescription(
-                    user_id=current_user.id, title=Path(stored.filename).stem, company="",
-                    filename=stored.filename, file_path=str(stored.path), raw_text=raw_text,
-                    content_hash=stored.content_hash, structured_data={},
-                    document_size=stored.size, parse_status="running",
-                )
-            db.add(row)
-            db.flush()
-            db.commit()
-            row_committed = True
-            chunks = chunk_pages(
-                pages=pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
+        else:
+            cached_structured_data = _cached_structured_data(
+                db, JobDescription, user_id=current_user.id, content_hash=stored.content_hash
             )
-            progress_hub.publish(
-                task_id,
-                stage="llm_analyze",
-                status="running",
-                progress=45,
-                document_id=f"{document_type}:{row.id}",
-                filename=stored.filename,
-                message=(
-                    f"Reusing cached {document_type} structured data"
-                    if cached_structured_data
-                    else f"Structuring {document_type} with LLM"
-                ),
-                data={"document_id": f"{document_type}:{row.id}", "cached": bool(cached_structured_data)},
+            row = JobDescription(
+                user_id=current_user.id, title=Path(stored.filename).stem, company="",
+                filename=stored.filename, file_path=persisted_upload_path(stored), raw_text=raw_text,
+                content_hash=stored.content_hash, structured_data={},
+                document_size=stored.size, parse_status="running",
             )
-            row.structured_data = cached_structured_data or _parse_profile(
-                document_type, stored.filename, raw_text, chunks, task_id, current_user.id
-            )
-            if document_type == "jd":
-                row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
-            rag_store = ChromaRagStore()
-            progress_hub.publish(
-                task_id,
-                stage="embedding",
-                status="running",
-                progress=65,
-                document_id=f"{document_type}:{row.id}",
-                filename=stored.filename,
-                message=f"Generating embeddings for {stored.filename}",
-                data={"chunk_count": len(chunks)},
-            )
-            rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
-            progress_hub.publish(
-                task_id,
-                stage="chroma_save",
-                status="running",
-                progress=78,
-                document_id=f"{document_type}:{row.id}",
-                filename=stored.filename,
-                message=f"Saving {document_type} vectors to Chroma",
-                data={"document_id": f"{document_type}:{row.id}"},
-            )
-            row.parse_status = _parse_status(document_type, row.structured_data)
-            progress_hub.publish(
-                task_id,
-                stage="local_save",
-                status="running",
-                progress=92,
-                document_id=f"{document_type}:{row.id}",
-                filename=stored.filename,
-                message=f"Saving {document_type} record to SQLite",
-                data={"document_id": f"{document_type}:{row.id}"},
-            )
-            db.commit()
-            db.refresh(row)
-            result = _record(document_type, row)
-            results.append(result)
-            progress_hub.publish(
-                task_id,
-                stage="completed",
-                status="success",
-                progress=100,
-                document_id=result.id,
-                filename=result.filename,
-                message="Document parsing completed",
-                data={"documents": [result.model_dump(mode="json")]},
-            )
-        except Exception as exc:
-            db.rollback()
-            if rag_store is not None and row is not None and row.id is not None:
-                try:
-                    rag_store.delete_document(user_id=current_user.id, document_type=document_type, document_id=row.id)
-                except Exception:
-                    pass
-            if row_committed and row is not None:
-                try:
-                    db.delete(row)
-                    db.commit()
-                except Exception:
-                    db.rollback()
-            if stored:
-                delete_stored_file(stored.path)
-            progress_hub.publish(
-                task_id,
-                stage="failed",
-                status="failed",
-                progress=100,
-                filename=file.filename,
-                message=f"{file.filename}: {exc}",
-            )
-            raise HTTPException(status_code=400, detail=f"{file.filename}: {exc}") from exc
-    return DocumentParseResponse(documents=results, task_id=task_id)
+        db.add(row)
+        db.flush()
+        db.commit()
+        row_committed = True
+        chunks = chunk_pages(
+            pages=pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
+        )
+        progress_hub.publish(
+            task_id,
+            stage="llm_analyze",
+            status="running",
+            progress=45,
+            document_id=f"{document_type}:{row.id}",
+            filename=stored.filename,
+            message=(
+                f"Reusing cached {document_type} structured data"
+                if cached_structured_data
+                else f"Structuring {document_type} with LLM"
+            ),
+            data={"document_id": f"{document_type}:{row.id}", "cached": bool(cached_structured_data)},
+        )
+        row.structured_data = cached_structured_data or _parse_profile(
+            document_type, stored.filename, raw_text, chunks, task_id, current_user.id
+        )
+        if document_type == "jd":
+            row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
+        rag_store = get_rag_store()
+        progress_hub.publish(
+            task_id,
+            stage="embedding",
+            status="running",
+            progress=65,
+            document_id=f"{document_type}:{row.id}",
+            filename=stored.filename,
+            message=f"Generating embeddings for {stored.filename}",
+            data={"chunk_count": len(chunks)},
+        )
+        rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
+        progress_hub.publish(
+            task_id,
+            stage="chroma_save",
+            status="running",
+            progress=78,
+            document_id=f"{document_type}:{row.id}",
+            filename=stored.filename,
+            message=f"Saving {document_type} vectors to vector table",
+            data={"document_id": f"{document_type}:{row.id}"},
+        )
+        row.parse_status = _parse_status(document_type, row.structured_data)
+        progress_hub.publish(
+            task_id,
+            stage="local_save",
+            status="running",
+            progress=92,
+            document_id=f"{document_type}:{row.id}",
+            filename=stored.filename,
+            message=f"Saving {document_type} record to database",
+            data={"document_id": f"{document_type}:{row.id}"},
+        )
+        db.commit()
+        db.refresh(row)
+        result = _record(document_type, row)
+        progress_hub.publish(
+            task_id,
+            stage="completed",
+            status="success",
+            progress=100,
+            document_id=result.id,
+            filename=result.filename,
+            message="Document parsing completed",
+            data={"documents": [result.model_dump(mode="json")]},
+        )
+    except Exception as exc:
+        db.rollback()
+        if rag_store is not None and row is not None and row.id is not None:
+            try:
+                rag_store.delete_document(user_id=current_user.id, document_type=document_type, document_id=row.id)
+            except Exception:
+                pass
+        if row_committed and row is not None:
+            try:
+                db.delete(row)
+                db.commit()
+            except Exception:
+                db.rollback()
+        if stored:
+            delete_stored_file(persisted_upload_path(stored))
+        progress_hub.publish(
+            task_id,
+            stage="failed",
+            status="failed",
+            progress=100,
+            filename=stored.filename,
+            message=f"{stored.filename}: {exc}",
+        )
+        raise HTTPException(status_code=400, detail=f"{stored.filename}: {exc}") from exc
+    finally:
+        if stored:
+            cleanup_upload_cache(stored)
+    return DocumentParseResponse(documents=[result], task_id=task_id)
 
 
 @router.get("", response_model=list[DocumentParseResult])
@@ -334,12 +352,19 @@ def reparse_document(
     task_id: str = Query(""),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    prefer: str = Header(""),
+    background_tasks: BackgroundTasks = None,
 ):
     kind, row = _find_document(db, current_user.id, document_id)
     task_id = task_id or progress_hub.create_task("task_parse")
+    if prefer == "respond-async":
+        return submit_task(
+            background_tasks, task_id, current_user.id, reparse_document,
+            document_id=document_id, task_id=task_id,
+        )
     try:
         pages = extract_stored_pages(
-            Path(row.file_path),
+            row.file_path,
             row.filename,
             progress_callback=lambda current, total: progress_hub.publish(
                 task_id,
@@ -366,7 +391,7 @@ def reparse_document(
             message=f"Re-structuring {kind} with LLM",
         )
         row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id, current_user.id)
-        rag_store = ChromaRagStore()
+        rag_store = get_rag_store()
         progress_hub.publish(
             task_id,
             stage="embedding",
@@ -384,7 +409,7 @@ def reparse_document(
             progress=78,
             document_id=document_id,
             filename=row.filename,
-            message=f"Replacing {kind} vectors in Chroma",
+            message=f"Replacing {kind} vectors in vector table",
         )
         row.parse_status = _parse_status(kind, row.structured_data)
         progress_hub.publish(
@@ -394,7 +419,7 @@ def reparse_document(
             progress=92,
             document_id=document_id,
             filename=row.filename,
-            message=f"Saving {kind} record to SQLite",
+            message=f"Saving {kind} record to database",
         )
         db.commit()
         db.refresh(row)
@@ -433,7 +458,7 @@ def reparse_document(
 @router.delete("/{document_id}")
 async def delete_document(document_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     kind, row = _find_document(db, current_user.id, document_id)
-    ChromaRagStore().delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
+    get_rag_store().delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
     delete_stored_file(row.file_path)
     db.delete(row)
     db.commit()
@@ -444,11 +469,30 @@ followup_router = APIRouter(prefix="/api", tags=["followups"])
 
 
 @followup_router.post("/followups/analyze", response_model=FollowUpAnalysisResponse)
-async def analyze_followup(request: FollowUpAnalysisRequest, current_user: User = Depends(get_current_user)):
+def analyze_followup(
+    request: FollowUpAnalysisRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    task_id: str = Query(""),
+    prefer: str = Header(""),
+    background_tasks: BackgroundTasks = None,
+):
+    if prefer == "respond-async":
+        task_id = task_id or progress_hub.create_task("task_followup")
+        return submit_task(
+            background_tasks, task_id, current_user.id, analyze_followup,
+            request=request, task_id=task_id,
+        )
     try:
-        return AgentHarness(user_id=current_user.id).run_schema(
+        result = AgentHarness(user_id=current_user.id).run_schema(
             task="followup.analyze_answer", prompt_name="generate_followup",
             schema=FollowUpAnalysisResponse, variables=request.model_dump(mode="json"),
         )
+        if task_id:
+            progress_hub.publish(
+                task_id, stage="completed", status="success", progress=100,
+                message="Follow-up analysis completed", data=result.model_dump(mode="json"),
+            )
+        return result
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

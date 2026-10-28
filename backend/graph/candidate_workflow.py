@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from langgraph.graph import END, StateGraph
 
 from backend.agents.harness import AgentHarness
-from backend.rag.chroma import ChromaRagStore
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     CandidateReport,
@@ -18,6 +17,10 @@ from backend.schemas.workflow import (
 from backend.services.documents import DocumentChunk
 from backend.services.llm_validation import hydrate_match_evaluation
 from backend.services.progress import progress_hub
+
+if TYPE_CHECKING:
+    from backend.rag.chroma import ChromaRagStore
+    from backend.rag.mysql import MySQLRagStore
 
 
 class CandidateState(TypedDict, total=False):
@@ -57,7 +60,7 @@ def recommendation_for_score(score: float) -> Recommendation:
 
 
 class CandidateAnalysisGraph:
-    def __init__(self, *, harness: AgentHarness, rag_store: ChromaRagStore, repository: SqlAlchemyRunRepository) -> None:
+    def __init__(self, *, harness: AgentHarness, rag_store: ChromaRagStore | MySQLRagStore, repository: SqlAlchemyRunRepository) -> None:
         self.harness = harness
         self.rag_store = rag_store
         self.repository = repository
@@ -104,7 +107,7 @@ class CandidateAnalysisGraph:
         )
         resume_data = state["candidate"].resume.structured_data
         if not job_data or not resume_data:
-            raise ValueError("SQLite is missing a structured JD or resume; reparse the document")
+            raise ValueError("A structured JD or resume is missing; reparse the document")
         state["job_profile"] = JobProfile.model_validate(job_data)
         state["resume_profile"] = ResumeProfile.model_validate(resume_data)
         return state
@@ -115,7 +118,7 @@ class CandidateAnalysisGraph:
             stage="chroma_search",
             status="running",
             progress=35,
-            message="Searching resume evidence in Chroma",
+            message="Searching resume evidence",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         evidence_by_criterion: dict[str, list[dict[str, Any]]] = {}
@@ -182,7 +185,7 @@ class CandidateAnalysisGraph:
             stage="local_save",
             status="running",
             progress=84,
-            message="Preparing candidate report for SQLite",
+            message="Preparing candidate report",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         evaluations = state["evaluation"].evaluations
@@ -220,7 +223,7 @@ class CandidateAnalysisGraph:
             stage="chroma_save",
             status="running",
             progress=92,
-            message="Saving match report to SQLite",
+            message="Saving match report",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         return state

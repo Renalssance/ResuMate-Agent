@@ -49,10 +49,10 @@
             :title="step.message || step.label"
           >
             <span :class="['parse-step-icon', step.status]">
-              <span v-if="step.status === 'success'">✓</span>
-              <span v-else-if="step.status === 'failed'">!</span>
-              <span v-else-if="step.status === 'running'" class="mini-spinner"></span>
-              <span v-else>·</span>
+              <Check v-if="step.status === 'success'" class="app-icon" aria-hidden="true" />
+              <CircleAlert v-else-if="step.status === 'failed'" class="app-icon" aria-hidden="true" />
+              <LoaderCircle v-else-if="step.status === 'running'" class="app-icon mini-spinner" aria-hidden="true" />
+              <Minus v-else class="app-icon" aria-hidden="true" />
             </span>
 
             <div>
@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { Check, CircleAlert, LoaderCircle, Minus } from '@lucide/vue'
 import StatusTag from './StatusTag.vue'
 import type { ProgressStep } from '../types/task'
 import { buildProgressSegments } from '../utils/taskProgressChart'

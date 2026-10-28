@@ -118,3 +118,25 @@ def test_document_record_marks_naive_database_upload_time_as_utc():
     record = _record("resume", row)
 
     assert record.created_at == "2026-06-14T00:00:00Z"
+
+
+@pytest.mark.asyncio
+async def test_progress_hub_sends_periodic_heartbeat_while_work_is_quiet(monkeypatch):
+    from backend.services import progress
+
+    hub = TaskProgressHub()
+    stream = hub.stream("quiet-task")
+    assert await anext(stream) == ": heartbeat\n\n"
+    original_wait_for = progress.asyncio.wait_for
+    timeouts = []
+
+    async def short_wait(awaitable, *, timeout):
+        timeouts.append(timeout)
+        return await original_wait_for(awaitable, timeout=0.001)
+
+    monkeypatch.setattr(progress.asyncio, "wait_for", short_wait)
+    assert await original_wait_for(anext(stream), timeout=0.05) == ": heartbeat\n\n"
+    assert timeouts == [15]
+    hub.publish("quiet-task", stage="completed", status="success", progress=100, message="Done")
+    assert '"status":"success"' in await anext(stream)
+    await stream.aclose()

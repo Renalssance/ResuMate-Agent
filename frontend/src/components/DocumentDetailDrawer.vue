@@ -1,12 +1,12 @@
 <template>
-  <div v-if="document" class="drawer-layer" @click.self="$emit('close')">
-    <aside class="detail-drawer">
+  <dialog ref="dialog" class="detail-drawer" aria-labelledby="document-detail-title" @click.self="$emit('close')" @close="$emit('close')">
+    <div v-if="document" class="drawer-content">
       <header class="drawer-head">
         <div>
-          <h2>{{ document.filename }}</h2>
+          <h2 id="document-detail-title">{{ document.filename }}</h2>
           <p>{{ document.type === 'jd' ? 'JD 文档' : '简历文档' }} · {{ formatSize(document.size) }}</p>
         </div>
-        <button class="icon-button" type="button" aria-label="关闭详情" @click="$emit('close')">×</button>
+        <button class="icon-button" type="button" aria-label="关闭详情" @click="$emit('close')"><X class="app-icon" aria-hidden="true" /></button>
       </header>
 
       <div class="tab-bar">
@@ -73,12 +73,13 @@
           </div>
         </div>
       </section>
-    </aside>
-  </div>
+    </div>
+  </dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { X } from '@lucide/vue'
+import { computed, ref, watch } from 'vue'
 import type { DocumentRecord } from '../types/document'
 import { formatSize } from '../utils/format'
 import { formatStructuredEntries } from '../utils/structuredDisplay'
@@ -92,11 +93,21 @@ defineEmits<{
   close: []
 }>()
 
+const dialog = ref<HTMLDialogElement | null>(null)
+watch(() => props.document, (value) => {
+  if (value) {
+    activeTab.value = 'raw'
+    if (!dialog.value?.open) dialog.value?.showModal()
+  } else {
+    dialog.value?.close()
+  }
+}, { flush: 'post' })
+
 const activeTab = ref('raw')
 const tabs = [
   { key: 'raw', label: '原始内容' },
   { key: 'parsed', label: '结构化结果' },
-  { key: 'storage', label: '向量分块' },
+  { key: 'storage', label: '存储状态' },
 ]
 
 const parsedItems = computed(() => {

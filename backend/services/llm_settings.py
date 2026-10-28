@@ -35,21 +35,20 @@ def env_llm_settings() -> EffectiveLlmSettings:
 
 
 def resolve_effective_llm_settings(user_id: int | None, db: Session | None = None) -> EffectiveLlmSettings:
-    env = env_llm_settings()
     if not user_id:
-        return env
+        return env_llm_settings()
     close_db = db is None
     db = db or SessionLocal()
     try:
         saved = db.query(UserLlmSettings).filter(UserLlmSettings.user_id == user_id).first()
         if not saved:
-            return env
+            return EffectiveLlmSettings("", "", "", DEFAULT_LLM_MAX_TOKENS, DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS)
         return EffectiveLlmSettings(
-            api_key=(saved.api_key or env.api_key).strip(),
-            base_url=(saved.base_url or env.base_url).strip(),
-            model=(saved.model or env.model).strip(),
-            max_tokens=saved.max_tokens or env.max_tokens,
-            request_timeout_seconds=saved.request_timeout_seconds or env.request_timeout_seconds,
+            api_key=(saved.api_key or "").strip(),
+            base_url=(saved.base_url or "").strip(),
+            model=(saved.model or "").strip(),
+            max_tokens=saved.max_tokens or DEFAULT_LLM_MAX_TOKENS,
+            request_timeout_seconds=saved.request_timeout_seconds or DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS,
         )
     finally:
         if close_db:

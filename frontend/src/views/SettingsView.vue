@@ -1,98 +1,87 @@
 <template>
   <div class="page-stack settings-page">
-    <section class="card settings-section-card settings-account-card">
-      <div class="section-head compact">
-        <div>
-          <h2>账号管理</h2>
-        </div>
-        <form v-if="!auth.isAuthenticated" class="settings-auth-form" @submit.prevent="submitAuth('login')">
-          <div class="settings-auth-inputs">
-            <input v-model.trim="credentials.username" autocomplete="username" placeholder="用户名" aria-label="用户名" />
-            <input v-model="credentials.password" autocomplete="current-password" type="password" placeholder="密码" aria-label="密码" />
-          </div>
-          <div class="settings-auth-actions">
-            <button class="button-primary" type="submit" :disabled="auth.loading">登录</button>
-            <button class="button-secondary glass-action" type="button" :disabled="auth.loading" @click="submitAuth('register')">
-              注册
-            </button>
-          </div>
-        </form>
-        <div v-else class="settings-account-state">
-          <span>{{ auth.username }}</span>
-          <small>{{ auth.role || 'user' }}</small>
-          <button class="button-secondary glass-action" type="button" @click="logout">
-            <span class="icon-glyph close" aria-hidden="true"></span>
-            <span>退出账号</span>
-          </button>
-        </div>
-      </div>
-
-      <p v-if="auth.error && !isExpiredTokenMessage(auth.error)" class="settings-inline-error">{{ auth.error }}</p>
-    </section>
-
     <section class="card settings-section-card settings-config-card">
       <div class="section-head compact">
         <div>
           <h2>模型参数</h2>
         </div>
         <div class="settings-head-actions">
-          <button v-if="!editingSettings" class="button-secondary glass-action" type="button" :disabled="!auth.isAuthenticated" @click="startEditSettings">
-            <span class="icon-glyph edit" aria-hidden="true"></span>
-            <span>编辑</span>
+          <button v-if="!editingSettings" class="button-primary" type="button" :disabled="loading || !auth.isAuthenticated || !settings" @click="startEditSettings">
+            <Pencil class="app-icon" aria-hidden="true" />
+            <span>{{ needsConfiguration ? '配置模型' : '编辑' }}</span>
           </button>
         </div>
       </div>
 
-      <div v-if="!editingSettings" class="settings-model-read">
-        <div class="settings-model-hero glass-surface-strong">
-          <span>
-            当前模型
-            <small v-if="settingsIncomplete" class="settings-mini-warning">未配置</small>
+      <p v-if="needsConfiguration" class="settings-message">尚未完成模型配置。请选择厂商地址，并填写自己的 API Key 和模型名称后保存。</p>
+
+      <div v-if="!editingSettings" class="settings-parameter-grid" :aria-busy="loading">
+        <article v-for="item in parameterItems" :key="item.label" class="settings-parameter" :class="{ 'settings-parameter-wide': item.label === 'Base URL' }">
+          <span
+            :class="['settings-parameter-status', { missing: settings && !item.configured }]"
+            role="img"
+            :aria-label="!settings ? (loading ? '加载中' : error ? '加载失败' : '待加载') : item.configured ? '已配置' : '未配置'"
+          >
+            <span v-if="!settings" aria-hidden="true">—</span>
+            <Check v-else-if="item.configured" class="app-icon" aria-hidden="true" />
+            <X v-else class="app-icon" aria-hidden="true" />
           </span>
-          <strong>{{ settings?.model || '未配置 model' }}</strong>
-        </div>
+          <span class="settings-parameter-label">{{ item.label }}</span>
+          <strong :class="{ 'is-secret': item.secret }" :title="settings && item.configured && !item.secret ? item.value : undefined">{{ !settings ? '—' : item.configured ? item.value : '尚未设置' }}</strong>
+        </article>
       </div>
 
       <form v-else class="settings-config-form" @submit.prevent="saveSettings">
-        <label class="span-two">
-          <span>Model</span>
-          <input v-model.trim="form.model" placeholder="gpt-4.1-mini" />
-        </label>
-        <div class="settings-form-pair span-two">
-          <label class="span-two">
-            <span>API Key</span>
-            <input v-model.trim="form.api_key" type="password" autocomplete="off" placeholder="留空则保留原 Key" />
-          </label>
-          <label class="settings-checkbox">
-            <input v-model="form.clear_api_key" type="checkbox" />
-            <span>清空已保存 Key</span>
-          </label>
+        <div class="settings-provider-presets">
+          <span>快速填入厂商 Base URL</span>
+          <div class="settings-provider-buttons">
+            <button v-for="provider in modelProviders" :key="provider.name" class="button-secondary" type="button" @click="form.base_url = provider.baseUrl">{{ provider.name }}</button>
+          </div>
+          <small>仅填入地址，不会自动保存。请填写该厂商支持的模型名称；使用其他地区或代理服务时可手动修改地址。Claude 请使用工作区 API Key。</small>
         </div>
-        <label class="span-two">
-          <span>Base URL</span>
+        <div class="settings-key-field settings-field-half">
+          <div class="settings-key-heading">
+            <label for="settings-api-key"><span>API Key</span></label>
+            <label class="settings-checkbox">
+              <input v-model="form.clear_api_key" type="checkbox" :disabled="!settings?.has_api_key" />
+              <span>清空已保存 Key</span>
+            </label>
+          </div>
+          <input id="settings-api-key" v-model.trim="form.api_key" type="password" autocomplete="off" :placeholder="settings?.has_api_key ? '已配置，留空保留原密钥' : '请输入 API Key'" :disabled="form.clear_api_key" />
+        </div>
+        <label class="settings-field-half">
+          <span>API 地址 · Base URL</span>
           <input v-model.trim="form.base_url" placeholder="https://api.openai.com/v1" />
         </label>
         <label>
-          <span>Max tokens</span>
+          <span>模型名称 · Model</span>
+          <input v-model.trim="form.model" placeholder="请输入厂商提供的模型名称" />
+        </label>
+        <label>
+          <span>输出 Token 上限</span>
           <input v-model.number="form.max_tokens" min="1" type="number" />
         </label>
         <label>
-          <span>Timeout 秒</span>
+          <span>请求超时（秒）</span>
           <input v-model.number="form.request_timeout_seconds" min="1" type="number" />
         </label>
-        <div class="settings-button-row span-two">
-          <button class="button-primary" type="submit" :disabled="saving || !auth.isAuthenticated">
-            <span class="icon-glyph save" aria-hidden="true"></span>
-            <span>{{ saving ? '保存中...' : '保存' }}</span>
-          </button>
-          <button class="button-secondary glass-action" type="button" :disabled="saving" @click="cancelEditSettings">
-            <span class="icon-glyph close" aria-hidden="true"></span>
+        <div class="form-actions">
+          <button class="button-secondary" type="button" :disabled="saving" @click="cancelEditSettings">
+            <X class="app-icon" aria-hidden="true" />
             <span>取消</span>
+          </button>
+          <button class="button-primary" type="submit" :disabled="saving || !auth.isAuthenticated">
+            <Save class="app-icon" aria-hidden="true" />
+            <span>{{ saving ? '保存中...' : '保存' }}</span>
           </button>
         </div>
       </form>
       <p v-if="message" class="settings-message">{{ message }}</p>
-      <p v-if="error && editingSettings" class="settings-inline-error">{{ error }}</p>
+      <div v-if="error" class="settings-load-error" role="alert">
+        <p class="settings-inline-error">{{ error }}</p>
+        <button v-if="!editingSettings" class="button-secondary" type="button" :disabled="loading" @click="loadAll">重新加载</button>
+      </div>
+      <p v-if="!auth.isAuthenticated" class="settings-inline-error">请从首页登录后查看模型配置。</p>
     </section>
 
     <section class="card settings-section-card settings-dashboard-card">
@@ -101,24 +90,27 @@
           <h2>Token 看板</h2>
           <p>统计当前账号的调用次数、token 消耗和调用时间。</p>
         </div>
-        <button class="button-secondary glass-action" type="button" :disabled="loading || !auth.isAuthenticated" @click="loadAll">
-          <span class="icon-glyph refresh" aria-hidden="true"></span>
+        <button class="button-secondary" type="button" :disabled="loading || saving || editingSettings || !auth.isAuthenticated" @click="loadAll">
+          <RefreshCw class="app-icon" aria-hidden="true" />
           <span>刷新</span>
         </button>
       </div>
 
+      <p v-if="loading" class="loading-state" role="status">{{ usage ? '正在刷新统计…' : '正在加载统计…' }}</p>
+      <p v-if="!usage && error" class="error-note" role="alert">统计加载失败，请重新加载。</p>
+      <template v-if="usage">
       <div class="settings-overview-grid">
-        <article class="metric-card glass-surface settings-metric">
+        <article class="metric-card settings-metric">
           <span>调用次数</span>
           <strong>{{ usage?.total_calls ?? 0 }}</strong>
           <small>成功 {{ usage?.successful_calls ?? 0 }} / 失败 {{ usage?.failed_calls ?? 0 }}</small>
         </article>
-        <article class="metric-card glass-surface settings-metric">
+        <article class="metric-card settings-metric">
           <span>消耗 Token</span>
           <strong>{{ formatNumber(usage?.total_tokens ?? 0) }}</strong>
           <small>输入 {{ formatNumber(usage?.prompt_tokens ?? 0) }} / 输出 {{ formatNumber(usage?.completion_tokens ?? 0) }}</small>
         </article>
-        <article class="metric-card glass-surface settings-metric">
+        <article class="metric-card settings-metric">
           <span>最近调用</span>
           <strong>{{ usage?.last_called_at ? formatShortDate(usage.last_called_at) : '-' }}</strong>
           <small>成功率 {{ usage?.success_rate ?? 0 }}%</small>
@@ -203,21 +195,23 @@
         </div>
         <EmptyState v-else title="暂无调用记录" description="调用记录会按当前账号保存。" />
       </div>
+      </template>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Check, Pencil, RefreshCw, Save, X } from '@lucide/vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { fetchLlmSettingsApi, fetchLlmUsageApi, saveLlmSettingsApi } from '../api/settings'
 import EmptyState from '../components/EmptyState.vue'
 import { useAuthStore } from '../stores/auth'
 import type { LlmSettingsResponse, LlmUsageDashboard } from '../types/settings'
 import { buildUsageDailyBars, buildUsageTaskBars } from '../utils/usageChart'
 
-type AuthMode = 'login' | 'register'
-
 const auth = useAuthStore()
+const router = useRouter()
 const settings = ref<LlmSettingsResponse | null>(null)
 const usage = ref<LlmUsageDashboard | null>(null)
 const loading = ref(false)
@@ -225,7 +219,6 @@ const saving = ref(false)
 const editingSettings = ref(false)
 const error = ref('')
 const message = ref('')
-const credentials = reactive({ username: '', password: '' })
 const form = reactive({
   api_key: '',
   clear_api_key: false,
@@ -235,21 +228,35 @@ const form = reactive({
   request_timeout_seconds: 300,
 })
 
+const modelProviders = [
+  { name: 'OpenAI / ChatGPT', baseUrl: 'https://api.openai.com/v1' },
+  { name: 'Claude', baseUrl: 'https://api.anthropic.com/v1' },
+  { name: 'DeepSeek', baseUrl: 'https://api.deepseek.com' },
+  { name: 'Qwen / 通义千问', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+  { name: 'Kimi', baseUrl: 'https://api.moonshot.cn/v1' },
+]
+const needsConfiguration = computed(() => Boolean(settings.value && (
+  !settings.value.has_api_key || !settings.value.base_url || !settings.value.model
+)))
+
 const dailyBars = computed(() => buildUsageDailyBars(usage.value?.daily ?? []))
 const taskBars = computed(() => buildUsageTaskBars(usage.value?.by_task ?? []))
-const settingsIncomplete = computed(
-  () => !settings.value || !settings.value.model || !settings.value.base_url || !settings.value.has_api_key,
-)
+const parameterItems = computed(() => [
+  { label: '模型', configured: Boolean(settings.value?.model?.trim()), value: settings.value?.model, secret: false },
+  { label: 'API Key', configured: Boolean(settings.value?.has_api_key), value: '••••••••', secret: true },
+  { label: 'Token 上限', configured: Number(settings.value?.max_tokens) > 0, value: settings.value?.max_tokens?.toLocaleString(), secret: false },
+  { label: '超时', configured: Number(settings.value?.request_timeout_seconds) > 0, value: `${settings.value?.request_timeout_seconds} 秒`, secret: false },
+  { label: 'Base URL', configured: Boolean(settings.value?.base_url?.trim()), value: settings.value?.base_url, secret: false },
+])
 
 async function loadAll() {
   if (!auth.isAuthenticated) return
   loading.value = true
   error.value = ''
   try {
-    const [nextSettings, nextUsage] = await Promise.all([fetchLlmSettingsApi(), fetchLlmUsageApi()])
+    const nextSettings = await fetchLlmSettingsApi()
     settings.value = nextSettings
-    usage.value = nextUsage
-    Object.assign(form, {
+    if (!editingSettings.value) Object.assign(form, {
       api_key: '',
       clear_api_key: false,
       base_url: nextSettings.base_url,
@@ -257,19 +264,22 @@ async function loadAll() {
       max_tokens: nextSettings.max_tokens,
       request_timeout_seconds: nextSettings.request_timeout_seconds,
     })
+    if (needsConfiguration.value) editingSettings.value = true
+    usage.value = await fetchLlmUsageApi()
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     if (isExpiredTokenMessage(message)) {
       logout()
       return
     }
-    error.value = message
+    error.value = settings.value ? '刷新失败，已显示的配置可能不是最新。请检查服务连接后重试。' : '配置加载失败，请检查服务连接后重试。'
   } finally {
     loading.value = false
   }
 }
 
 async function saveSettings() {
+  if (saving.value) return
   saving.value = true
   error.value = ''
   message.value = ''
@@ -315,21 +325,12 @@ function cancelEditSettings() {
   })
 }
 
-async function submitAuth(mode: AuthMode) {
-  try {
-    await auth.submit(mode, credentials)
-    credentials.password = ''
-    await loadAll()
-  } catch {
-    credentials.password = ''
-  }
-}
-
 function logout() {
   auth.logout()
   settings.value = null
   usage.value = null
   editingSettings.value = false
+  void router.push('/')
 }
 
 function formatNumber(value: number) {

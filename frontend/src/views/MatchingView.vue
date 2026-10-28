@@ -4,10 +4,11 @@
       <div class="section-head">
         <div>
           <h2>匹配任务配置</h2>
-          <p>仅展示解析成功的 JD 和简历，匹配过程通过 SSE 进度面板反馈。</p>
+          <p>选择已解析的 JD 和简历，开始匹配后可在下方查看处理进度。</p>
         </div>
       </div>
 
+      <p v-if="documentStore.error" class="error-note" role="alert">{{ documentStore.error }}</p>
       <div class="matching-flow-grid">
         <div class="workflow-config-panel">
           <label class="workflow-row">
@@ -30,7 +31,7 @@
           </label>
         </div>
 
-        <div class="workflow-action-panel glass-live">
+        <div class="workflow-action-panel">
           <strong>{{ selectedResumeIds.length || 0 }}</strong>
           <span>已选择候选人</span>
           <button class="button-primary" type="button" :disabled="!canRun" @click="runMatch">开始匹配</button>
@@ -55,14 +56,16 @@
           <h2>匹配结果</h2>
           <p>结果仅删除匹配记录及对应向量，不影响 JD 和简历文档。</p>
         </div>
+        <button class="button-secondary" type="button" :disabled="matchStore.loading" @click="refreshMatches">{{ matchStore.loading ? '刷新中…' : '刷新' }}</button>
       </div>
-      <div v-if="matchStore.loading" class="loading-state">正在加载匹配结果...</div>
-      <EmptyState v-else-if="!matchStore.results.length" title="暂无匹配结果" description="选择 JD 与简历后开始一次匹配。" />
-      <div v-else class="result-grid">
+      <p v-if="matchStore.error" class="error-note" role="alert">{{ matchStore.error }}</p>
+      <div v-if="matchStore.loading && !matchStore.results.length" class="loading-state">正在加载匹配结果...</div>
+      <EmptyState v-else-if="!matchStore.results.length && !matchStore.error" title="暂无匹配结果" description="选择 JD 与简历后开始一次匹配。" />
+      <div v-else-if="matchStore.results.length" class="result-grid" :aria-busy="matchStore.loading">
         <article
           v-for="result in matchStore.results"
           :key="result.id"
-          :class="['result-card', { active: selectedResult?.id === result.id, 'glass-surface-strong': selectedResult?.id === result.id }]"
+          :class="['result-card', { active: selectedResult?.id === result.id }]"
         >
           <div class="result-card-head">
             <div>
@@ -85,11 +88,11 @@
           </div>
           <div class="card-actions">
             <button type="button" @click="showDetail(result)">
-              <span class="icon-glyph view" aria-hidden="true"></span>
+              <Eye class="app-icon" aria-hidden="true" />
               <span>查看详情</span>
             </button>
             <button type="button" class="danger-text" @click="remove(result.id)">
-              <span class="icon-glyph delete" aria-hidden="true"></span>
+              <Trash2 class="app-icon" aria-hidden="true" />
               <span>删除</span>
             </button>
           </div>
@@ -103,8 +106,8 @@
           <h2>{{ selectedResult.candidateName }} · 匹配详情</h2>
           <p>{{ selectedResult.summary }}</p>
         </div>
-        <button class="button-secondary glass-action" type="button" @click="collapseDetail">
-          <span class="icon-glyph close" aria-hidden="true"></span>
+        <button class="button-secondary" type="button" @click="collapseDetail">
+          <X class="app-icon" aria-hidden="true" />
           <span>收起</span>
         </button>
       </div>
@@ -148,6 +151,7 @@
 </template>
 
 <script setup lang="ts">
+import { Eye, Trash2, X } from '@lucide/vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import EvidenceList from '../components/EvidenceList.vue'
@@ -169,7 +173,7 @@ const selectedResumeIds = ref<string[]>([])
 const selectedResult = ref<MatchResult | null>(matchStore.results[0] || null)
 const detailSection = ref<HTMLElement | null>(null)
 
-const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length))
+const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length && !matchStore.loading && task.status.value !== 'running'))
 const criterionRows = computed(() => (
   selectedResult.value ? buildCriterionChartRows(selectedResult.value.criteria) : []
 ))
@@ -188,7 +192,14 @@ watch(task.status, async (status) => {
   selectedResult.value = matchStore.results[0] || null
 })
 
+async function refreshMatches() {
+  const selectedId = selectedResult.value?.id
+  await matchStore.loadMatches()
+  if (!matchStore.error && selectedId) selectedResult.value = matchStore.results.find(item => item.id === selectedId) || null
+}
+
 async function runMatch() {
+  if (!canRun.value) return
   const jd = documentStore.parsedJds.find((item) => item.id === selectedJdId.value)
   const resumes = documentStore.parsedResumes.filter((item) => selectedResumeIds.value.includes(item.id))
   if (!jd || !resumes.length) return

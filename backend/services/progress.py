@@ -73,7 +73,11 @@ class TaskProgressHub:
                 if event.status in TERMINAL_STATUSES:
                     return
             while True:
-                event = await queue.get()
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=15)
+                except asyncio.TimeoutError:
+                    yield ": heartbeat\n\n"
+                    continue
                 yield self._format(event)
                 if event.status in TERMINAL_STATUSES:
                     return

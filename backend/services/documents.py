@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import re
 import tempfile
@@ -7,12 +8,14 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
+from uuid import uuid4
 
 import fitz
 from fastapi import UploadFile
 from docx import Document
 
 from backend.services.pdf_ocr import NormalizedOcrText, extract_pdf_text_with_ocr, normalize_ocr_text
+from backend.services.cloud_storage import CloudBaseStorage
 
 
 DOCUMENT_DIR = Path(__file__).resolve().parents[2] / "data" / "documents"
@@ -56,6 +59,7 @@ class StoredDocument:
     size: int
     raw_text: str
     pages: list[PageText]
+    storage_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -64,6 +68,7 @@ class StoredUpload:
     path: Path
     size: int
     content_hash: str
+    storage_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -162,8 +167,11 @@ async def store_and_extract_upload(
             size=stored.size,
             raw_text=raw_text,
             pages=pages,
+            storage_path=stored.storage_path,
         )
     except Exception:
+        if stored.storage_path:
+            _best_effort_delete(stored.storage_path)
         _best_effort_delete(stored.path)
         raise
 
@@ -180,11 +188,16 @@ async def store_upload(
         path, stored_filename, stream = _open_exclusive_storage_file(directory, filename)
         with stream:
             size, content_hash = await _write_upload_chunks(file, stream, stored_filename)
+        storage_path = ""
+        if os.getenv("CLOUDBASE_ENV_ID"):
+            storage = CloudBaseStorage.from_env()
+            storage_path = await asyncio.to_thread(storage.upload, path, f"documents/{uuid4().hex}/{stored_filename}")
         return StoredUpload(
             filename=stored_filename,
             path=path,
             size=size,
             content_hash=content_hash,
+            storage_path=storage_path,
         )
     except Exception:
         _best_effort_delete(path)
@@ -196,8 +209,13 @@ def extract_stored_pages(
     filename: str,
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> list[PageText]:
-    document_path = Path(path)
     safe_filename = _safe_filename(filename)
+    if str(path).startswith("cloud://"):
+        with tempfile.TemporaryDirectory(prefix="resumate-document-") as directory:
+            local_path = Path(directory) / safe_filename
+            CloudBaseStorage.from_env().download(str(path), local_path)
+            return extract_stored_pages(local_path, safe_filename, progress_callback=progress_callback)
+    document_path = Path(path)
     ext = _extension(safe_filename)
     try:
         if ext == ".pdf":
@@ -220,13 +238,25 @@ def extract_stored_pages(
 def delete_stored_file(path: str | Path | None) -> None:
     if not path:
         return
-    Path(path).unlink(missing_ok=True)
+    if str(path).startswith("cloud://"):
+        CloudBaseStorage.from_env().delete(str(path))
+    else:
+        Path(path).unlink(missing_ok=True)
+
+
+def persisted_upload_path(stored: StoredUpload | StoredDocument) -> str:
+    return getattr(stored, "storage_path", "") or str(stored.path)
+
+
+def cleanup_upload_cache(stored: StoredUpload | StoredDocument) -> None:
+    if getattr(stored, "storage_path", ""):
+        stored.path.unlink(missing_ok=True)
 
 
 def _best_effort_delete(path: str | Path | None) -> None:
     try:
         delete_stored_file(path)
-    except OSError:
+    except Exception:
         pass
 
 

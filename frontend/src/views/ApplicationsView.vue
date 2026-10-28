@@ -1,11 +1,26 @@
 <template>
   <div class="page-stack applications-page">
-    <section class="stats-grid">
-      <article class="metric-card glass-surface application-metric total">
-        <span>总投递</span>
-        <strong>{{ store.totalCount }}</strong>
+    <section class="stats-grid application-stats-grid">
+      <button
+        class="metric-card application-metric total"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="application-metric-details"
+        @click="openMetricDetails('company', '投递公司')"
+      >
+        <span>投递公司</span>
+        <div class="application-metric-counts">
+          <div>
+            <strong>{{ applicationSummary.companyCount }}</strong>
+            <small>累计</small>
+          </div>
+          <div>
+            <strong>{{ applicationSummary.inProgress.companyCount }}</strong>
+            <small>流程中</small>
+          </div>
+        </div>
         <div class="metric-card-foot">
-          <small>状态构成</small>
+          <small>公司去重 · 共 {{ store.totalCount }} 条投递</small>
         </div>
         <div class="metric-stack" aria-label="投递状态构成">
           <span
@@ -15,89 +30,181 @@
             :style="{ flexBasis: `${segment.percent}%` }"
           ></span>
         </div>
-      </article>
-      <article class="metric-card glass-surface application-metric active">
-        <span>流程中</span>
-        <strong>{{ store.activeCount }}</strong>
+      </button>
+      <button
+        v-for="metric in stageMetrics"
+        :key="metric.label"
+        :class="['metric-card', 'glass-surface', 'application-metric', metric.tone]"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="application-metric-details"
+        @click="openMetricDetails(metric.key, metric.label)"
+      >
+        <span>{{ metric.label }}</span>
+        <div class="application-metric-counts">
+          <div>
+            <strong>{{ metric.count }}</strong>
+            <small>累计</small>
+          </div>
+          <div v-if="metric.activeCount !== undefined">
+            <strong>{{ metric.activeCount }}</strong>
+            <small>流程中</small>
+          </div>
+        </div>
         <div class="metric-card-foot">
-          <small>占总投递</small>
-          <small>{{ segmentPercent('active') }}%</small>
+          <small>累计占总投递</small>
+          <small>{{ metric.percent }}%</small>
         </div>
-        <div class="metric-mini-track active" aria-hidden="true">
-          <span :style="{ width: `${segmentPercent('active')}%` }"></span>
+        <div :class="['metric-mini-track', metric.tone]" aria-hidden="true">
+          <span :style="{ width: `${metric.percent}%` }"></span>
         </div>
-      </article>
-      <article class="metric-card glass-surface application-metric rejected">
-        <span>已挂</span>
-        <strong>{{ store.rejectedCount }}</strong>
-        <div class="metric-card-foot">
-          <small>占总投递</small>
-          <small>{{ segmentPercent('rejected') }}%</small>
-        </div>
-        <div class="metric-mini-track rejected" aria-hidden="true">
-          <span :style="{ width: `${segmentPercent('rejected')}%` }"></span>
-        </div>
-      </article>
-      <article class="metric-card glass-surface application-metric passed">
-        <span>Offer / 通过</span>
-        <strong>{{ store.passedCount }}</strong>
-        <div class="metric-card-foot">
-          <small>占总投递</small>
-          <small>{{ segmentPercent('passed') }}%</small>
-        </div>
-        <div class="metric-mini-track passed" aria-hidden="true">
-          <span :style="{ width: `${segmentPercent('passed')}%` }"></span>
-        </div>
-      </article>
+      </button>
     </section>
+
+    <dialog
+      id="application-metric-details"
+      ref="metricDialog"
+      class="application-metric-dialog"
+      aria-labelledby="application-metric-details-title"
+      @click.self="closeMetricDetails"
+      @close="selectedMetric = null"
+    >
+      <section class="application-metric-panel">
+        <header class="application-metric-panel-head">
+          <div>
+            <h2 id="application-metric-details-title">{{ selectedMetric?.label }} · 累计记录</h2>
+            <p>共 {{ metricCompanyGroups.length }} 家公司 · {{ metricDetailRecords.total.length }} 条投递</p>
+            <small class="application-metric-legend">红色表示有未完成的测评、笔试或面试日程</small>
+          </div>
+          <button class="icon-button" type="button" aria-label="关闭统计详情" @click="closeMetricDetails">
+            <X class="app-icon" aria-hidden="true" />
+          </button>
+        </header>
+        <div class="application-metric-panel-body">
+          <EmptyState
+            v-if="!metricCompanyGroups.length"
+            title="暂无累计记录"
+            description="该分类下还没有公司和岗位。"
+          />
+          <section v-for="group in metricCompanyGroups" :key="group.company" class="application-metric-company">
+            <h3 :class="{ 'is-in-progress': group.applications.some((item) => metricActiveIds.has(item.id)) }">
+              {{ group.company }}
+            </h3>
+            <ul>
+              <li
+                v-for="application in group.applications"
+                :key="application.id"
+                :class="{ 'is-in-progress': metricActiveIds.has(application.id) }"
+              >
+                <strong :title="application.position">{{ application.position }}</strong>
+                <span v-if="metricActiveIds.has(application.id)" class="application-metric-progress-label">流程中</span>
+                <span v-else>{{ applicationStatusLabel(application.status) }}</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </section>
+    </dialog>
 
     <section class="card application-schedule-card">
       <div class="section-head compact">
         <div>
-          <h2>日程栏</h2>
-          <p>集中查看笔试、面试和测评安排，今天的事项会优先提醒。</p>
+          <h2>日程日历</h2>
+          <p>按日期查看笔试、面试和测评安排。</p>
+        </div>
+        <div class="schedule-calendar-toolbar" aria-label="日历月份导航">
+          <button class="button-secondary" type="button" @click="goToCurrentMonth">今天</button>
+          <div class="schedule-calendar-pagination">
+            <button type="button" aria-label="上个月" @click="changeCalendarMonth(-1)"><ChevronLeft class="app-icon" aria-hidden="true" /></button>
+            <strong>{{ calendarMonthLabel }}</strong>
+            <button type="button" aria-label="下个月" @click="changeCalendarMonth(1)"><ChevronRight class="app-icon" aria-hidden="true" /></button>
+          </div>
         </div>
       </div>
 
-      <div v-if="todayScheduleItems.length" class="schedule-today-panel glass-live">
-        <article
-          v-for="schedule in todayScheduleItems"
-          :key="schedule.id"
-          :class="['schedule-today-item', { completed: schedule.isCompleted }]"
-        >
-          <span :class="['schedule-rail-dot', statusTone(schedule.status)]"></span>
-          <div>
-            <strong>{{ schedule.title }}</strong>
-            <span>{{ schedule.applicationLabel }}</span>
-          </div>
-          <time class="schedule-time">{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
-          <span :class="['application-status-pill', statusTone(schedule.status)]">
-            {{ applicationStatusLabel(schedule.status) }}
-          </span>
+      <div class="schedule-calendar">
+        <div class="schedule-calendar-weekdays" aria-hidden="true">
+          <span v-for="weekday in calendarWeekdays" :key="weekday">{{ weekday }}</span>
+        </div>
+        <div class="schedule-calendar-grid" :aria-label="calendarMonthLabel">
           <button
-            class="button-secondary glass-action schedule-complete-button"
+            v-for="day in calendarDays"
+            :key="day.key"
+            :class="[
+              'schedule-calendar-day',
+              {
+                outside: !day.isCurrentMonth,
+                today: day.isToday,
+                past: day.isPast,
+                selected: day.key === selectedDateKey,
+                'has-schedules': day.schedules.length,
+              },
+            ]"
             type="button"
-            :disabled="isCompletingSchedule(schedule.id)"
-            @click="completeSchedule(schedule)"
+            :aria-label="calendarDayAriaLabel(day)"
+            :aria-pressed="day.key === selectedDateKey"
+            @click="selectCalendarDay(day)"
           >
-            <span class="icon-glyph save" aria-hidden="true"></span>
-            <span>{{ isCompletingSchedule(schedule.id) ? '完成中' : '完成' }}</span>
+            <span class="schedule-calendar-day-head">
+              <span class="schedule-calendar-date">{{ day.dayNumber }}</span>
+              <span v-if="day.isToday" class="schedule-calendar-today-label">今天</span>
+            </span>
+            <span class="schedule-calendar-events">
+              <span
+                v-for="schedule in day.schedules.slice(0, 4)"
+                :key="schedule.id"
+                :class="[
+                  'schedule-calendar-event',
+                  `category-${getScheduleCalendarCategory(schedule.status).key}`,
+                  `position-${schedule.calendarPosition}`,
+                  { completed: schedule.isCompleted },
+                ]"
+                :title="`${schedule.applicationLabel} · ${schedule.title}`"
+              >
+                <template v-if="schedule.calendarPosition === 'middle'">
+                  <span class="schedule-calendar-event-company">{{ schedule.companyShortName }}</span>
+                </template>
+                <template v-else>
+                  <span
+                    v-if="schedule.calendarPosition === 'single'"
+                    class="schedule-calendar-event-dot"
+                    aria-hidden="true"
+                  ></span>
+                  <ArrowLeft v-if="schedule.calendarPosition === 'end'" class="app-icon schedule-calendar-event-arrow" aria-hidden="true" />
+                  <span v-if="schedule.calendarPosition !== 'single'" class="schedule-calendar-event-company">
+                    {{ schedule.companyShortName }}
+                  </span>
+                  <span class="schedule-calendar-event-title">{{ getScheduleCalendarCategory(schedule.status).label }}</span>
+                  <ArrowRight v-if="schedule.calendarPosition === 'start'" class="app-icon schedule-calendar-event-arrow" aria-hidden="true" />
+                </template>
+              </span>
+              <span v-if="day.schedules.length > 4" class="schedule-calendar-more">+{{ day.schedules.length - 4 }}</span>
+            </span>
           </button>
-        </article>
+        </div>
       </div>
 
-      <EmptyState
-        v-if="!scheduleItems.length"
-        title="暂无日程"
-        description="给投递记录添加笔试或面试时间后，这里会集中显示。"
-      />
-      <div v-else class="schedule-list" aria-label="全部日程">
+      <section class="schedule-calendar-agenda" aria-live="polite">
+        <header class="schedule-calendar-agenda-head">
+          <div>
+            <strong>{{ selectedDateLabel }}</strong>
+            <span>{{ selectedDateSchedules.length }} 项日程</span>
+          </div>
+        </header>
+
+        <p v-if="store.loading && !store.applications.length" class="loading-state" role="status">正在加载日程…</p>
+        <EmptyState
+          v-else-if="!selectedDateSchedules.length && !store.error"
+          title="当天暂无日程"
+          description="选择其他日期，或在投递记录中添加新的日程。"
+        />
         <article
-          v-for="schedule in activeScheduleItems"
+          v-for="schedule in selectedDateSchedules"
           :key="schedule.id"
-          :class="['schedule-list-item', scheduleTone(schedule)]"
+          :class="['schedule-agenda-item', scheduleTone(schedule)]"
         >
-          <div class="schedule-list-main">
+          <span :class="['schedule-agenda-rail', statusTone(schedule.status)]" aria-hidden="true"></span>
+          <div class="schedule-agenda-main">
             <strong>{{ schedule.title }}</strong>
             <span>{{ schedule.applicationLabel }}</span>
           </div>
@@ -116,41 +223,16 @@
           </p>
           <button
             v-if="!schedule.isCompleted"
-            class="button-secondary glass-action schedule-complete-button"
+            class="button-secondary schedule-complete-button"
             type="button"
             :disabled="isCompletingSchedule(schedule.id)"
             @click="completeSchedule(schedule)"
           >
-            <span class="icon-glyph save" aria-hidden="true"></span>
+            <Save class="app-icon" aria-hidden="true" />
             <span>{{ isCompletingSchedule(schedule.id) ? '完成中' : '完成' }}</span>
           </button>
         </article>
-
-        <div v-if="completedScheduleItems.length" class="completed-schedule-panel">
-          <button class="completed-schedule-toggle" type="button" @click="showCompletedSchedules = !showCompletedSchedules">
-            <span>已完成日程 {{ completedScheduleItems.length }} 个</span>
-            <span>{{ showCompletedSchedules ? '收起' : '展开' }}</span>
-          </button>
-
-          <template v-if="showCompletedSchedules">
-            <article
-              v-for="schedule in completedScheduleItems"
-              :key="schedule.id"
-              :class="['schedule-list-item', scheduleTone(schedule)]"
-            >
-              <div class="schedule-list-main">
-                <strong>{{ schedule.title }}</strong>
-                <span>{{ schedule.applicationLabel }}</span>
-              </div>
-              <time class="schedule-time">{{ formatDateTimeRange(schedule.startsAt, schedule.endsAt) }}</time>
-              <span :class="['application-status-pill', statusTone(schedule.status)]">
-                {{ applicationStatusLabel(schedule.status) }}
-              </span>
-              <p class="schedule-note">已写入时间线</p>
-            </article>
-          </template>
-        </div>
-      </div>
+      </section>
     </section>
 
     <section class="card application-list-card">
@@ -159,11 +241,24 @@
           <h2>投递记录</h2>
           <p>用“记录状态”追加测评、笔试、面试和结果节点。</p>
         </div>
-        <button v-if="!editingId" class="button-secondary glass-action" type="button" @click="toggleApplicationForm">
-          <span :class="['icon-glyph', showApplicationForm ? 'close' : 'add']" aria-hidden="true"></span>
-          <span>{{ showApplicationForm ? '收起新增' : '新增投递' }}</span>
-        </button>
+        <div class="application-list-actions">
+          <button
+            class="button-secondary"
+            type="button"
+            title="导出全部投递记录"
+            :disabled="store.loading || exporting || !store.applications.length"
+            @click="exportRecords"
+          >
+            <Save class="app-icon" aria-hidden="true" />
+            <span>{{ exporting ? '导出中...' : '导出记录' }}</span>
+          </button>
+          <button v-if="!editingId" class="button-secondary" type="button" @click="toggleApplicationForm">
+            <component :is="showApplicationForm ? X : Plus" class="app-icon" aria-hidden="true" />
+            <span>{{ showApplicationForm ? '收起新增' : '新增投递' }}</span>
+          </button>
+        </div>
       </div>
+      <p v-if="exportError" class="error-note" role="alert">{{ exportError }}</p>
 
       <div v-if="showApplicationForm" class="application-entry-panel">
         <div class="section-head compact">
@@ -215,9 +310,10 @@
             <span>备注</span>
             <input v-model.trim="form.notes" placeholder="简历版本、联系人、下一步动作等" />
           </label>
-          <div class="application-field application-submit">
+          <div class="form-actions application-submit">
+            <button class="button-secondary" type="button" :disabled="store.saving" @click="resetForm">取消</button>
             <button class="button-primary" type="submit" :disabled="store.saving">
-              <span class="icon-glyph add" aria-hidden="true"></span>
+              <Plus class="app-icon" aria-hidden="true" />
               <span>{{ store.saving ? '保存中...' : '添加记录' }}</span>
             </button>
           </div>
@@ -237,64 +333,71 @@
         </label>
         <label class="form-field">
           <span>搜索</span>
-          <input v-model.trim="keyword" type="search" placeholder="公司、岗位、来源、备注或简历" />
+          <input v-model.trim="keyword" type="search" placeholder="公司、岗位、来源、备注或简历（支持拼音/首字母）" />
         </label>
       </div>
 
-      <div v-if="store.loading" class="loading-state">正在加载投递记录...</div>
+      <p v-if="store.error" class="error-note" role="alert">{{ store.error }}</p>
+      <div v-if="store.loading && !store.applications.length" class="loading-state">正在加载投递记录...</div>
       <EmptyState
-        v-else-if="!filteredApplications.length"
-        title="暂无投递记录"
-        description="添加第一条投递后，这里会显示你的求职进展。"
+        v-else-if="!filteredApplications.length && !store.error"
+        :title="store.applications.length ? '没有符合筛选条件的记录' : '暂无投递记录'"
+        :description="store.applications.length ? '调整状态或搜索词后重试。' : '添加第一条投递，记录求职进展。'"
       />
-      <div v-else class="application-record-list">
-        <article v-for="application in filteredApplications" :key="application.id" class="application-record">
+      <div v-else-if="filteredApplications.length" class="application-record-list">
+        <section v-for="group in groupedApplications" :key="group.company" class="application-company-group">
+          <h3 class="application-company-group-title">{{ group.company }}</h3>
+          <article v-for="application in group.applications" :key="application.id" class="application-record">
           <div class="application-record-main">
             <div class="application-record-title">
-              <strong>{{ application.company }}</strong>
-              <span>{{ application.position }}</span>
+              <strong :title="application.position">{{ application.position }}</strong>
             </div>
-            <span :class="['application-status-pill', statusTone(application.status)]">
-              {{ applicationStatusLabel(application.status) }}
-            </span>
-            <dl class="application-record-meta">
-              <div>
-                <dt>投递</dt>
-                <dd>{{ formatDay(application.appliedDate) }}</dd>
-              </div>
-              <div>
-                <dt>简历</dt>
-                <dd>{{ application.resumeFilename || '未关联' }}</dd>
-              </div>
-              <div>
-                <dt>来源</dt>
-                <dd>{{ application.source || '未记录' }}</dd>
-              </div>
-            </dl>
-            <p class="application-latest">{{ latestEventText(application) }}</p>
+            <div class="application-record-details">
+              <span :class="['application-status-pill', statusTone(application.status)]" :title="latestEventText(application)">
+                {{ applicationStatusLabel(application.status) }}
+              </span>
+              <dl class="application-record-meta">
+                <div>
+                  <dt>投递</dt>
+                  <dd>{{ formatDay(application.appliedDate) }}</dd>
+                </div>
+                <div>
+                  <dt>简历</dt>
+                  <dd :title="application.resumeFilename || '未关联'">{{ application.resumeFilename || '未关联' }}</dd>
+                </div>
+                <div>
+                  <dt>来源</dt>
+                  <dd :title="application.source || '未记录'">{{ application.source || '未记录' }}</dd>
+                </div>
+              </dl>
+            </div>
             <div class="application-record-actions">
               <a v-if="application.jobUrl" class="action-button" :href="application.jobUrl" target="_blank" rel="noreferrer">
-                <span class="icon-glyph link" aria-hidden="true"></span>
+                <ExternalLink class="app-icon" aria-hidden="true" />
                 <span>打开</span>
               </a>
+              <button v-else class="action-button application-open-placeholder" type="button" disabled aria-hidden="true" tabindex="-1">
+                <ExternalLink class="app-icon" aria-hidden="true" />
+                <span>打开</span>
+              </button>
               <button class="action-button" type="button" @click="startEdit(application)">
-                <span class="icon-glyph edit" aria-hidden="true"></span>
+                <Pencil class="app-icon" aria-hidden="true" />
                 <span>编辑</span>
               </button>
               <button class="action-button" type="button" @click="startStatusEvent(application.id)">
-                <span class="icon-glyph status" aria-hidden="true"></span>
+                <CircleDot class="app-icon" aria-hidden="true" />
                 <span>记录</span>
               </button>
               <button class="action-button" type="button" @click="startSchedule(application)">
-                <span class="icon-glyph calendar" aria-hidden="true"></span>
+                <CalendarDays class="app-icon" aria-hidden="true" />
                 <span>日程</span>
               </button>
               <button type="button" @click="toggleTimeline(application.id)">
-                <span class="icon-glyph timeline" aria-hidden="true"></span>
+                <ListTree class="app-icon" aria-hidden="true" />
                 <span>{{ expandedIds.has(application.id) ? '收起' : '时间线' }}</span>
               </button>
               <button type="button" class="danger-text" @click="removeApplication(application.id)">
-                <span class="icon-glyph delete" aria-hidden="true"></span>
+                <Trash2 class="app-icon" aria-hidden="true" />
                 <span>删除</span>
               </button>
             </div>
@@ -342,14 +445,14 @@
                 <span>备注</span>
                 <input v-model.trim="form.notes" placeholder="简历版本、联系人、下一步动作等" />
               </label>
-              <div class="application-field application-submit application-edit-actions">
-                <button class="button-primary" type="submit" :disabled="store.saving">
-                  <span class="icon-glyph save" aria-hidden="true"></span>
-                  <span>{{ store.saving ? '保存中...' : '保存' }}</span>
-                </button>
-                <button class="button-secondary glass-action" type="button" @click="resetForm">
-                  <span class="icon-glyph close" aria-hidden="true"></span>
+              <div class="form-actions application-edit-actions">
+                <button class="button-secondary" type="button" :disabled="store.saving" @click="resetForm">
+                  <X class="app-icon" aria-hidden="true" />
                   <span>取消</span>
+                </button>
+                <button class="button-primary" type="submit" :disabled="store.saving">
+                  <Save class="app-icon" aria-hidden="true" />
+                  <span>{{ store.saving ? '保存中...' : '保存' }}</span>
                 </button>
               </div>
             </form>
@@ -374,18 +477,20 @@
               <span>发生时间</span>
               <input v-model="statusDraft.changed_at" type="datetime-local" />
             </label>
-            <label>
+            <label class="span-two">
               <span>记录</span>
               <input v-model.trim="statusDraft.note" placeholder="例如：一面已约 / 笔试完成" />
             </label>
-            <button class="button-primary" type="submit">
-              <span class="icon-glyph save" aria-hidden="true"></span>
-              <span>保存</span>
-            </button>
-            <button class="button-secondary glass-action" type="button" @click="clearStatusDraft">
-              <span class="icon-glyph close" aria-hidden="true"></span>
+            <div class="form-actions">
+              <button class="button-secondary" type="button" :disabled="store.saving" @click="clearStatusDraft">
+              <X class="app-icon" aria-hidden="true" />
               <span>取消</span>
             </button>
+              <button class="button-primary" type="submit" :disabled="store.saving">
+              <Save class="app-icon" aria-hidden="true" />
+              <span>保存</span>
+            </button>
+            </div>
           </form>
 
           <form
@@ -413,18 +518,20 @@
               <span>结束</span>
               <input v-model="scheduleDraft.ends_at" required type="datetime-local" />
             </label>
-            <label>
+            <label class="span-two">
               <span>备注</span>
               <input v-model.trim="scheduleDraft.note" placeholder="会议链接、准备事项等" />
             </label>
-            <button class="button-primary" type="submit">
-              <span class="icon-glyph save" aria-hidden="true"></span>
-              <span>保存</span>
-            </button>
-            <button class="button-secondary glass-action" type="button" @click="clearScheduleDraft">
-              <span class="icon-glyph close" aria-hidden="true"></span>
+            <div class="form-actions">
+              <button class="button-secondary" type="button" :disabled="store.saving" @click="clearScheduleDraft">
+              <X class="app-icon" aria-hidden="true" />
               <span>取消</span>
             </button>
+              <button class="button-primary" type="submit" :disabled="store.saving">
+              <Save class="app-icon" aria-hidden="true" />
+              <span>保存</span>
+            </button>
+            </div>
           </form>
 
           <div v-if="expandedIds.has(application.id)" class="application-timeline">
@@ -435,13 +542,16 @@
               <p>{{ event.note || '无备注' }}</p>
             </div>
           </div>
-        </article>
+          </article>
+        </section>
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { buildSearchIndex, matchesSearch } from '../utils/search'
+import { ArrowLeft, ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CircleDot, ExternalLink, ListTree, Pencil, Plus, Save, Trash2, X } from '@lucide/vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import { useApplicationStore } from '../stores/application'
@@ -450,22 +560,53 @@ import {
   applicationStatusLabel,
   applicationStatusOptions,
   type ApplicationStatus,
-  type ApplicationSchedule,
   type JobApplicationPayload,
   type JobApplicationRecord,
 } from '../types/application'
-import { applicationMatchesStatusFilter, applicationStatusFilterOptions, buildApplicationStatusSegments, type ApplicationStatusFilter } from '../utils/applicationChart'
-import { buildApplicationScheduleItems, buildScheduleNoteParts, isScheduleToday, type ApplicationScheduleItem } from '../utils/applicationSchedule'
+import { applicationMatchesStatusFilter, applicationStatusFilterOptions, buildApplicationStatusSegments, buildApplicationSummary, buildApplicationMetricRecords, type ApplicationStatusFilter, type ApplicationMetricKey } from '../utils/applicationChart'
+import { groupApplicationsByCompany } from '../utils/applicationGrouping'
+import {
+  buildApplicationScheduleItems,
+  buildScheduleCalendarDays,
+  buildScheduleNoteParts,
+  formatDateTimeRange,
+  formatLocalDateKey,
+  getScheduleCalendarCategory,
+  isScheduleToday,
+  type ScheduleCalendarDay,
+  type ApplicationScheduleItem,
+} from '../utils/applicationSchedule'
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
+const metricDialog = ref<HTMLDialogElement | null>(null)
+const selectedMetric = ref<{ key: ApplicationMetricKey; label: string } | null>(null)
+const metricDetailRecords = computed(() => selectedMetric.value
+  ? buildApplicationMetricRecords(store.applications)[selectedMetric.value.key]
+  : { total: [], inProgress: [] })
+const metricActiveIds = computed(() => new Set(metricDetailRecords.value.inProgress.map((item) => item.id)))
+const metricCompanyGroups = computed(() => groupApplicationsByCompany(metricDetailRecords.value.total, metricActiveIds.value))
+
+function openMetricDetails(key: ApplicationMetricKey, label: string) {
+  selectedMetric.value = { key, label }
+  metricDialog.value?.showModal()
+}
+
+function closeMetricDetails() {
+  metricDialog.value?.close()
+}
+
 const statusFilter = ref<ApplicationStatusFilter>('all')
 const keyword = ref('')
 const editingId = ref<number | null>(null)
 const showApplicationForm = ref(false)
-const showCompletedSchedules = ref(false)
+const exporting = ref(false)
+const exportError = ref('')
 const expandedIds = ref<Set<number>>(new Set())
 const completingScheduleIds = ref<Set<number>>(new Set())
+const initialCalendarDate = new Date()
+const calendarMonth = ref(new Date(initialCalendarDate.getFullYear(), initialCalendarDate.getMonth(), 1))
+const selectedDateKey = ref(formatLocalDateKey(initialCalendarDate))
 const form = reactive<JobApplicationPayload>(emptyForm())
 const statusDraft = reactive({
   applicationId: null as number | null,
@@ -484,53 +625,128 @@ const scheduleDraft = reactive({
 
 const parsedResumes = computed(() => documentStore.parsedResumes)
 const statusSegments = computed(() => buildApplicationStatusSegments(store.applications))
+const applicationSummary = computed(() => buildApplicationSummary(store.applications))
+const stageMetrics = computed(() => [
+  { key: 'assessment' as const, label: '测评', count: applicationSummary.value.assessmentCount, activeCount: applicationSummary.value.inProgress.assessmentCount, tone: 'active' },
+  { key: 'writtenTest' as const, label: '笔试', count: applicationSummary.value.writtenTestCount, activeCount: applicationSummary.value.inProgress.writtenTestCount, tone: 'active' },
+  { key: 'interview' as const, label: '面试', count: applicationSummary.value.interviewCount, activeCount: applicationSummary.value.inProgress.interviewCount, tone: 'active' },
+  { key: 'rejected' as const, label: '已挂', count: applicationSummary.value.rejectedCount, tone: 'rejected' },
+  { key: 'passed' as const, label: '通过', count: applicationSummary.value.passedCount, tone: 'passed' },
+].map((metric) => ({
+  ...metric,
+  percent: store.totalCount ? Math.round(metric.count / store.totalCount * 100) : 0,
+})))
 const scheduleItems = computed(() => buildApplicationScheduleItems(store.applications))
-const activeScheduleItems = computed(() => scheduleItems.value.filter((schedule) => !schedule.isCompleted))
-const completedScheduleItems = computed(() => scheduleItems.value.filter((schedule) => schedule.isCompleted))
-const todayScheduleItems = computed(() => scheduleItems.value.filter((schedule) => isScheduleToday(schedule) && !schedule.isCompleted))
+const calendarDays = computed(() => buildScheduleCalendarDays(scheduleItems.value, calendarMonth.value))
+const selectedCalendarDay = computed(() => calendarDays.value.find((day) => day.key === selectedDateKey.value))
+const selectedDateSchedules = computed(() => selectedCalendarDay.value?.schedules ?? [])
+const calendarMonthLabel = computed(() => new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+}).format(calendarMonth.value))
+const selectedDateLabel = computed(() => {
+  if (!selectedCalendarDay.value) return ''
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  }).format(selectedCalendarDay.value.date)
+})
+const calendarWeekdays = ['一', '二', '三', '四', '五', '六', '日']
 const scheduleStatusOptions = applicationStatusOptions.filter((item) =>
   ['assessment', 'written_test', 'interviewing', 'first_interview', 'second_interview', 'third_interview', 'hr_interview'].includes(item.value),
 )
 
-type StatusSegmentKey = 'active' | 'rejected' | 'passed'
-
-function segmentPercent(key: StatusSegmentKey) {
-  return statusSegments.value.find((segment) => segment.key === key)?.percent ?? 0
+function changeCalendarMonth(offset: number) {
+  const nextMonth = new Date(calendarMonth.value.getFullYear(), calendarMonth.value.getMonth() + offset, 1)
+  calendarMonth.value = nextMonth
+  const today = new Date()
+  selectedDateKey.value = today.getFullYear() === nextMonth.getFullYear() && today.getMonth() === nextMonth.getMonth()
+    ? formatLocalDateKey(today)
+    : formatLocalDateKey(nextMonth)
 }
 
+function goToCurrentMonth() {
+  const today = new Date()
+  calendarMonth.value = new Date(today.getFullYear(), today.getMonth(), 1)
+  selectedDateKey.value = formatLocalDateKey(today)
+}
+
+function selectCalendarDay(day: ScheduleCalendarDay) {
+  selectedDateKey.value = day.key
+  if (!day.isCurrentMonth) calendarMonth.value = new Date(day.date.getFullYear(), day.date.getMonth(), 1)
+}
+
+function calendarDayAriaLabel(day: ScheduleCalendarDay) {
+  const date = new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' }).format(day.date)
+  return `${date}，${day.schedules.length} 项日程`
+}
+
+const searchableApplications = computed(() => store.applications.map((application) => ({
+  application,
+  index: buildSearchIndex([
+    application.company,
+    application.position,
+    application.source,
+    application.notes,
+    application.resumeFilename,
+  ]),
+})))
+
 const filteredApplications = computed(() => {
-  const normalizedKeyword = keyword.value.toLowerCase()
-  return store.applications.filter((application) => {
+  return searchableApplications.value.filter(({ application, index }) => {
     const statusMatched = applicationMatchesStatusFilter(application, statusFilter.value)
-    const keywordMatched =
-      !normalizedKeyword ||
-      [
-        application.company,
-        application.position,
-        application.source,
-        application.notes,
-        application.resumeFilename,
-      ].some((value) => value.toLowerCase().includes(normalizedKeyword))
+    const keywordMatched = matchesSearch(index, keyword.value)
     return statusMatched && keywordMatched
-  })
+  }).map(({ application }) => application)
 })
+const groupedApplications = computed(() => groupApplicationsByCompany(filteredApplications.value))
+
+async function exportRecords() {
+  if (store.loading || exporting.value || !store.applications.length) return
+  exporting.value = true
+  exportError.value = ''
+  try {
+    const { createApplicationExportBlob } = await import('../utils/applicationExport')
+    const blob = await createApplicationExportBlob(store.applications)
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `投递记录-${formatLocalDateKey(new Date())}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    exportError.value = `导出失败：${err instanceof Error ? err.message : String(err)}`
+  } finally {
+    exporting.value = false
+  }
+}
 
 onMounted(async () => {
   await Promise.all([store.loadApplications(), documentStore.loadDocuments()])
 })
 
 async function submitApplication() {
-  if (editingId.value) {
-    const { status: _status, ...payload } = form
-    await store.updateApplication(editingId.value, payload)
+  if (store.saving) return
+  try {
+    if (editingId.value) {
+      const { status: _status, ...payload } = form
+      await store.updateApplication(editingId.value, payload)
+      resetForm()
+      return
+    }
+    await store.createApplication({ ...form })
     resetForm()
-    return
+  } catch {
+    // The store exposes the request error; keep this form open with its draft.
   }
-  await store.createApplication({ ...form })
-  resetForm()
 }
-
 function startEdit(application: JobApplicationRecord) {
+  if (store.saving) return
+  clearStatusDraft()
+  clearScheduleDraft()
   editingId.value = application.id
   showApplicationForm.value = false
   Object.assign(form, {
@@ -552,6 +768,9 @@ function resetForm() {
 }
 
 function toggleApplicationForm() {
+  if (store.saving) return
+  clearStatusDraft()
+  clearScheduleDraft()
   if (showApplicationForm.value) {
     resetForm()
     return
@@ -562,6 +781,9 @@ function toggleApplicationForm() {
 }
 
 function startStatusEvent(applicationId: number) {
+  if (store.saving) return
+  resetForm()
+  clearScheduleDraft()
   statusDraft.applicationId = applicationId
   statusDraft.status = 'assessment'
   statusDraft.changed_at = localDateTimeInput(new Date())
@@ -569,21 +791,28 @@ function startStatusEvent(applicationId: number) {
 }
 
 async function submitStatusEvent(applicationId: number) {
-  await store.createStatusEvent(applicationId, {
-    status: statusDraft.status,
-    changed_at: new Date(statusDraft.changed_at).toISOString(),
-    note: statusDraft.note,
-  })
-  clearStatusDraft()
-  expandTimeline(applicationId)
+  if (store.saving) return
+  try {
+    await store.createStatusEvent(applicationId, {
+      status: statusDraft.status,
+      changed_at: new Date(statusDraft.changed_at).toISOString(),
+      note: statusDraft.note,
+    })
+    clearStatusDraft()
+    expandTimeline(applicationId)
+  } catch {
+    // The store exposes the request error; keep this form open with its draft.
+  }
 }
-
 function clearStatusDraft() {
   statusDraft.applicationId = null
   statusDraft.note = ''
 }
 
 function startSchedule(application: JobApplicationRecord) {
+  if (store.saving) return
+  resetForm()
+  clearStatusDraft()
   const start = new Date(Date.now() + 60 * 60 * 1000)
   const end = new Date(start.getTime() + 60 * 60 * 1000)
   scheduleDraft.applicationId = application.id
@@ -595,28 +824,34 @@ function startSchedule(application: JobApplicationRecord) {
 }
 
 async function submitSchedule(applicationId: number) {
-  const startsAt = new Date(scheduleDraft.starts_at)
-  const endsAt = new Date(scheduleDraft.ends_at)
-  if (endsAt <= startsAt) {
-    window.alert('结束时间需要晚于开始时间')
-    return
+  if (store.saving) return
+  try {
+    const startsAt = new Date(scheduleDraft.starts_at)
+    const endsAt = new Date(scheduleDraft.ends_at)
+    if (endsAt <= startsAt) {
+      window.alert('结束时间需要晚于开始时间')
+      return
+    }
+    await store.createSchedule(applicationId, {
+      status: scheduleDraft.status,
+      title: scheduleDraft.title,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      note: scheduleDraft.note,
+    })
+    clearScheduleDraft()
+  } catch {
+    // The store exposes the request error; keep this form open with its draft.
   }
-  await store.createSchedule(applicationId, {
-    status: scheduleDraft.status,
-    title: scheduleDraft.title,
-    starts_at: startsAt.toISOString(),
-    ends_at: endsAt.toISOString(),
-    note: scheduleDraft.note,
-  })
-  clearScheduleDraft()
 }
-
 async function completeSchedule(schedule: ApplicationScheduleItem) {
   if (isCompletingSchedule(schedule.id) || schedule.isCompleted) return
   completingScheduleIds.value = new Set(completingScheduleIds.value).add(schedule.id)
   try {
     await store.completeSchedule(schedule.applicationId, schedule.id)
     expandTimeline(schedule.applicationId)
+  } catch (err) {
+    store.error = err instanceof Error ? err.message : String(err)
   } finally {
     const next = new Set(completingScheduleIds.value)
     next.delete(schedule.id)
@@ -684,7 +919,7 @@ function statusTone(status: ApplicationStatus) {
   return 'info'
 }
 
-function scheduleTone(schedule: ApplicationScheduleItem | ApplicationSchedule) {
+function scheduleTone(schedule: ApplicationScheduleItem) {
   if (schedule.completedEventId) return 'completed'
   if (isScheduleToday(schedule)) return 'today'
   return 'upcoming'
@@ -706,17 +941,6 @@ function formatDateTime(value: string) {
   return new Intl.DateTimeFormat('zh-CN', {
     month: '2-digit',
     day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value))
-}
-
-function formatDateTimeRange(start: string, end: string) {
-  return `${formatDateTime(start)} - ${formatTime(end)}`
-}
-
-function formatTime(value: string) {
-  return new Intl.DateTimeFormat('zh-CN', {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value))

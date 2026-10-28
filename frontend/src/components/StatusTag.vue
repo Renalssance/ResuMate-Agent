@@ -19,7 +19,7 @@ const label = computed(() => {
     pending: '待处理',
     running: '处理中',
     success: '已完成',
-    success_with_warnings: '已完成',
+    success_with_warnings: '已完成（有提示）',
     failed: '失败',
   }[props.status]
 })

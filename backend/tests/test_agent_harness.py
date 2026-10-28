@@ -167,6 +167,55 @@ def test_run_schema_allows_two_reflections_with_validation_feedback(monkeypatch)
     assert "Validation errors" in second_reflection
 
 
+class FakeLengthLimitedCompletions:
+    def __init__(self) -> None:
+        self.calls = []
+        self.truncated_content = '{"job_title": "Backend Engineer"'
+
+    def create(self, **kwargs):
+        self.calls.append(kwargs)
+        if len(self.calls) == 1:
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        finish_reason="length",
+                        message=SimpleNamespace(content=self.truncated_content),
+                    )
+                ]
+            )
+        return SimpleNamespace(
+            choices=[
+                SimpleNamespace(
+                    finish_reason="stop",
+                    message=SimpleNamespace(content=VALID_JOB_PROFILE),
+                )
+            ]
+        )
+
+
+def test_run_schema_retries_length_truncation_with_more_tokens(monkeypatch):
+    monkeypatch.setattr(AgentHarness, "load_prompt", staticmethod(lambda name: "Parse {{jd_text}}"))
+    completions = FakeLengthLimitedCompletions()
+    harness = AgentHarness.__new__(AgentHarness)
+    harness.model = "compatible-model"
+    harness.max_tokens = 8192
+    harness.client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+
+    result = harness.run_schema(
+        task="document.parse_jd",
+        prompt_name="parse_jd",
+        schema=JobProfile,
+        variables={"jd_text": "Backend Engineer JD"},
+    )
+
+    assert result.job_title == "Backend Engineer"
+    assert [call["max_tokens"] for call in completions.calls] == [8192, 16384]
+    assert all(
+        message["content"] != completions.truncated_content
+        for message in completions.calls[1]["messages"]
+    )
+
+
 class FakeUnsupportedResponseFormatCompletions:
     def __init__(self) -> None:
         self.calls = []

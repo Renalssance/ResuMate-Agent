@@ -2,41 +2,40 @@
   <div :class="['app-shell', isGlassTheme ? 'is-glass-theme' : 'is-simple-theme']">
     <div id="box" class="fluid-bg" aria-hidden="true"></div>
 
-    <aside :class="['app-sidebar', { open: drawerOpen }]">
-      <div class="brand">
-        <div class="brand-mark">R</div>
+    <dialog ref="navigation" class="app-sidebar" :open="!isCompact" :role="isCompact ? 'dialog' : 'complementary'" aria-label="主导航" :aria-modal="isCompact && drawerOpen || undefined" @close="drawerOpen = false" @click.self="closeNavigation">
+      <button v-if="isCompact" class="icon-button navigation-close" type="button" aria-label="关闭导航" @click="closeNavigation"><X class="app-icon" aria-hidden="true" /></button>
+      <RouterLink to="/" class="brand" style="color: inherit; text-decoration: none" aria-label="ResuMate 首页">
+        <div class="brand-mark" aria-hidden="true"><Cat class="app-icon" /></div>
         <div>
-          <strong>ResuMate Agent</strong>
-          <span>AI 招聘工作台</span>
+          <strong>ResuMate<span class="workspace-brand-dot">.</span></strong>
+          <span>你的招聘好伙伴</span>
         </div>
-      </div>
+      </RouterLink>
       <nav class="nav-list">
         <RouterLink
           v-for="item in navItems"
           :key="item.path"
           class="nav-item"
           :to="item.path"
-          @click="drawerOpen = false"
+          @click="closeNavigation"
         >
-          <span :class="['nav-icon', item.icon]" aria-hidden="true"></span>
+          <span class="nav-icon" aria-hidden="true"><component :is="item.icon" class="app-icon" /></span>
           <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
-      <AgentStatusPanel
-        class="sidebar-agent-status"
-        title="Agent 状态"
-        :task-id="agentStatus.taskId.value"
-        :current="agentStatus.current.value"
-        :events="agentStatus.events.value"
-      />
-    </aside>
+      <MiloStatusBubble :current="agentStatus.current.value" />
+      <div v-if="auth.isAuthenticated" class="workspace-account">
+        <span class="workspace-avatar" aria-hidden="true">{{ auth.username.slice(0, 1).toUpperCase() }}</span>
+        <div><strong>{{ auth.username }}</strong><span>{{ auth.role === 'admin' ? '管理员' : '我的账号' }}</span></div>
+        <button type="button" class="workspace-logout" @click="logout" aria-label="退出登录" title="退出登录"><LogOut :size="18" /><span>退出登录</span></button>
+      </div>
+    </dialog>
 
-    <div v-if="drawerOpen" class="drawer-mask" @click="drawerOpen = false"></div>
 
     <main class="app-main">
       <header class="topbar">
-        <button class="icon-button mobile-only" type="button" aria-label="打开导航" @click="drawerOpen = true">
-          <span class="icon-glyph menu" aria-hidden="true"></span>
+        <button class="icon-button mobile-only" type="button" aria-label="打开导航" :aria-expanded="drawerOpen" @click="openNavigation">
+          <Menu class="app-icon" aria-hidden="true" />
         </button>
         <div class="topbar-title">
           <h1>{{ route.meta.title }}</h1>
@@ -63,7 +62,7 @@
           </label>
         </div>
       </header>
-      <div class="content-wrap">
+      <div :class="['content-wrap', { 'content-reading': ['settings', 'profile-fields'].includes(String(route.name)) }]">
         <RouterView />
       </div>
     </main>
@@ -71,33 +70,66 @@
 </template>
 
 <script setup lang="ts">
+import { ChartNoAxesCombined, CircleHelp, ClipboardList, Cat, Files, LogOut, Menu, Puzzle, ScanSearch, Settings, X } from '@lucide/vue'
 import { AestheticFluidBg } from 'color4bg'
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchLlmSettingsApi } from '../api/settings'
+import { useResponsive } from '../composables/useResponsive'
 import { useAgentStatus } from '../composables/useAgentStatus'
 import { useAuthStore } from '../stores/auth'
-import AgentStatusPanel from './AgentStatusPanel.vue'
+import MiloStatusBubble from './MiloStatusBubble.vue'
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const agentStatus = useAgentStatus()
 const drawerOpen = ref(false)
+const navigation = ref<HTMLDialogElement | null>(null)
+const { width } = useResponsive()
+const isCompact = computed(() => width.value < 1200)
+
+function openNavigation() {
+  navigation.value?.showModal()
+  drawerOpen.value = true
+}
+
+function closeNavigation() {
+  if (isCompact.value) navigation.value?.close()
+  drawerOpen.value = false
+}
+
+watch(() => route.fullPath, closeNavigation)
+watch(isCompact, () => {
+  navigation.value?.close()
+  drawerOpen.value = false
+})
 const llmModel = ref<string | null>(null)
 const APPEARANCE_STORAGE_KEY = 'resumate:appearance-style'
 const isGlassTheme = ref(localStorage.getItem(APPEARANCE_STORAGE_KEY) === 'glass')
-const fluidBackgroundColors = ["#1D4600", "#4F9900", "#82C23A", "#D7E356", "#A5C940", "#1D4600"]
+const fluidBackgroundColors = ["#FAF7F2", "#EFE2CC", "#D9E8F0", "#B9CFDC", "#DCC8BA", "#FAF7F2"]
 let colorbg: AestheticFluidBg | null = null
+const motionPreferences = window.matchMedia('(prefers-reduced-motion: reduce), (prefers-reduced-transparency: reduce), (prefers-contrast: more)')
+function syncFluidPreferences() {
+  stopFluidBackground()
+  if (isGlassTheme.value) startFluidBackground()
+}
 
 const navItems = [
-  { path: '/documents', label: '文档管理', icon: 'documents' },
-  { path: '/matching', label: '岗位匹配', icon: 'matching' },
-  { path: '/profile-fields', label: '结构资料', icon: 'profile' },
-  { path: '/questions', label: '试题生成', icon: 'questions' },
-  { path: '/applications', label: '投递记录', icon: 'applications' },
-  { path: '/extension', label: '浏览器插件', icon: 'extension' },
-  { path: '/settings', label: '设置', icon: 'settings' },
+  { path: '/documents', label: '文档管理', icon: Files },
+  { path: '/matching', label: '岗位匹配', icon: ScanSearch },
+  { path: '/profile-fields', label: '结构资料', icon: ClipboardList },
+  { path: '/questions', label: '试题生成', icon: CircleHelp },
+  { path: '/applications', label: '投递记录', icon: ChartNoAxesCombined },
+  { path: '/extension', label: '浏览器插件', icon: Puzzle },
+  { path: '/settings', label: '设置', icon: Settings },
 ]
+
+function logout() {
+  auth.logout()
+  closeNavigation()
+  void router.push('/')
+}
 
 async function refreshLlmModel() {
   try {
@@ -126,6 +158,7 @@ function toggleAppearance(event: Event) {
 function startFluidBackground() {
   if (colorbg) return
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (prefersReducedMotion || window.matchMedia('(prefers-reduced-transparency: reduce), (prefers-contrast: more)').matches) return
   colorbg = new AestheticFluidBg({
     dom: 'box',
     colors: fluidBackgroundColors,
@@ -151,6 +184,7 @@ watch(isGlassTheme, async (enabled) => {
 
 onMounted(async () => {
   window.addEventListener('llm-settings-updated', handleLlmSettingsUpdated)
+  motionPreferences.addEventListener('change', syncFluidPreferences)
   if (isGlassTheme.value) {
     await nextTick()
     startFluidBackground()
@@ -160,6 +194,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('llm-settings-updated', handleLlmSettingsUpdated)
+  motionPreferences.removeEventListener('change', syncFluidPreferences)
   stopFluidBackground()
 })
 </script>

@@ -7,7 +7,7 @@
           <p>下载、连接后端，并在招聘表单页打开侧边栏完成填充。</p>
         </div>
         <a class="button-primary download-button" :href="extensionDownload.href" :download="extensionDownload.filename">
-          <span class="icon-glyph document" aria-hidden="true"></span>
+          <FileText class="app-icon" aria-hidden="true" />
           <span>{{ extensionDownload.label }}</span>
         </a>
       </div>
@@ -81,5 +81,6 @@
 </template>
 
 <script setup lang="ts">
+import { FileText } from '@lucide/vue'
 import { extensionDownload, extensionMeta, extensionWorkflow, installSteps, safetyNotes } from './extensionContent'
 </script>

@@ -39,7 +39,7 @@ export interface DocumentParseTask {
 interface QueueItem {
   type: DocumentType
   file: File
-  resolve: () => void
+  resolve: (succeeded: boolean) => void
 }
 
 interface UploadProgressLike {
@@ -78,10 +78,10 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   const reparse = deps.reparse
 
   async function enqueueFiles(type: DocumentType, files: File[]) {
-    await Promise.all(
+    return Promise.all(
       files.map(
         (file) =>
-          new Promise<void>((resolve) => {
+          new Promise<boolean>((resolve) => {
             queue.push({ type, file, resolve })
             drain()
           }),
@@ -94,9 +94,8 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
       const item = queue.shift()
       if (!item) return
       activeCount += 1
-      void runItem(item).finally(() => {
+      void runItem(item).then(item.resolve).finally(() => {
         activeCount -= 1
-        item.resolve()
         drain()
       })
     }
@@ -127,8 +126,10 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
 
     try {
       await upload(item.type, item.file, taskId, (event) => updateUploadProgress(task, event))
+      return true
     } catch (err) {
       failTask(task, err instanceof Error ? err.message : String(err))
+      return false
     }
   }
 
