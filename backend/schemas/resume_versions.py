@@ -9,11 +9,29 @@ class VersionStatus(StrEnum):
     CONFIRMED = 'confirmed'
 
 
-class ResumeVersionUpdate(BaseModel):
+class ResumeDecision(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+    id: str = Field(min_length=1)
+    status: Literal['pending', 'accepted', 'rejected', 'edited']
+    edited_text: str | None = Field(default=None, alias='editedText')
+
+    @model_validator(mode='after')
+    def valid_edit(self):
+        if self.status == 'edited':
+            if self.edited_text is None:
+                raise ValueError('本人编辑必须提供正文，可以明确清空字段')
+        elif 'edited_text' in self.model_fields_set:
+            raise ValueError('只有本人编辑可以提交 editedText')
+        return self
+
+
+class ResumeVersionConfirm(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid')
     expected_revision: int = Field(alias='expectedRevision', ge=1)
-    structured_content: dict[str, Any]
-    fact_refs: list[str]
+
+
+class ResumeVersionUpdate(ResumeVersionConfirm):
+    changes: list[ResumeDecision]
 
 
 class SourceModel(BaseModel):

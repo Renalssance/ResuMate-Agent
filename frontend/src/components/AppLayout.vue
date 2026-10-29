@@ -16,7 +16,7 @@
           v-for="item in navItems"
           :key="item.path"
           class="nav-item"
-          :class="{ 'router-link-active': route.path.startsWith(`${item.path}/`) }"
+          :class="{ 'router-link-active': route.path.startsWith(`${item.path}/`) || item.path === '/agent/tasks' && route.name === 'resume-editor' }"
           :to="item.path"
           @click="closeNavigation"
         >

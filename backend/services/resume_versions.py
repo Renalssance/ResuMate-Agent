@@ -1,16 +1,16 @@
-"""Pending, source-bound suggestions; never overwrite the applicant's fixed resume."""
+"""Source-bound suggestions and reviewed versions; never overwrite the main resume."""
 from copy import deepcopy
 from datetime import timezone
 import re
 from uuid import uuid4
 
 from pydantic import TypeAdapter, ValidationError
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from backend.db.agent_models import AgentAction, AgentRun, ToolOperation
 from backend.db.career_models import ProfileFact, ResumeVersion
-from backend.schemas.resume_versions import ResumeChange
+from backend.schemas.resume_versions import ResumeChange, ResumeVersionConfirm, ResumeVersionUpdate, VersionStatus
 from backend.services.agent_runs import RunError
 from backend.services.profile_facts import latest_statement
 from backend.services.run_events import append_event
@@ -111,8 +111,9 @@ def serialize_version(db: Session, user_id: int, version: ResumeVersion, *, inpu
               'jdId': version.jd_id, 'revision': version.revision, 'status': version.status,
               'structuredContent': version.structured_content, 'factRefs': version.fact_refs,
               'createdAt': version.created_at.replace(tzinfo=timezone.utc).isoformat(),
-              'basedOnOldInput': False, 'changedInputs': [], 'sources': []}
+              'basedOnOldInput': False, 'changedInputs': [], 'sources': [], 'reviewable': False}
     run = db.get(AgentRun, version.run_id) if version.run_id else None
+    result['reviewable'] = _reviewable(version, run)
     if run is None:
         return result
     from backend.agent_runtime.context import changed_inputs
@@ -143,8 +144,84 @@ def serialize_version(db: Session, user_id: int, version: ResumeVersion, *, inpu
     return result
 
 
-def get_version(db: Session, user_id: int, version_id: str) -> dict:
+def _owned_version(db: Session, user_id: int, version_id: str) -> ResumeVersion:
     version = db.scalar(select(ResumeVersion).where(ResumeVersion.id == version_id, ResumeVersion.user_id == user_id))
     if version is None:
         raise RunError(404, 'not_found', '简历版本不存在')
-    return serialize_version(db, user_id, version)
+    return version
+
+
+def get_version(db: Session, user_id: int, version_id: str) -> dict:
+    return serialize_version(db, user_id, _owned_version(db, user_id, version_id))
+
+
+def _reviewable(version: ResumeVersion, run: AgentRun | None) -> bool:
+    return bool(run is not None and 'contextSnapshot' in run.input_json
+                and {'resume', 'changes', 'inputVersions'} <= version.structured_content.keys())
+
+
+def _review_base(db: Session, version: ResumeVersion) -> dict:
+    run = db.get(AgentRun, version.run_id) if version.run_id else None
+    if not _reviewable(version, run):
+        raise RunError(409, 'legacy_read_only', '此历史草稿仅可查看，请重新准备材料以生成可逐条审阅的建议')
+    # Review owns this snapshot even after the original document changes or is deleted.
+    return deepcopy(run.input_json['contextSnapshot']['resume']['structured'] or {})
+
+
+def _check_revision(version: ResumeVersion, expected_revision: int) -> None:
+    if version.revision != expected_revision:
+        raise RunError(409, 'revision_conflict', '版本已被更新，请查看服务器最新版本后再保存')
+
+
+def _write_review(db: Session, user_id: int, version_id: str, expected_revision: int, **values) -> dict:
+    # A prior SELECT or FOR UPDATE alone cannot protect SQLite readers from lost updates.
+    result = db.execute(update(ResumeVersion).where(
+        ResumeVersion.id == version_id, ResumeVersion.user_id == user_id,
+        ResumeVersion.status == VersionStatus.DRAFT, ResumeVersion.revision == expected_revision,
+    ).values(**values, revision=expected_revision + 1).execution_options(synchronize_session=False))
+    if result.rowcount != 1:
+        db.rollback()
+        raise RunError(409, 'revision_conflict', '版本已被更新，请查看服务器最新版本后再保存')
+    db.commit()
+    db.expire_all()
+    return get_version(db, user_id, version_id)
+
+
+def update_version(db: Session, user_id: int, version_id: str, request: ResumeVersionUpdate) -> dict:
+    version = _owned_version(db, user_id, version_id)
+    _check_revision(version, request.expected_revision)
+    if version.status == VersionStatus.CONFIRMED:
+        raise RunError(409, 'version_confirmed', '已确认版本不可修改')
+    base = _review_base(db, version)
+    content = deepcopy(version.structured_content)
+    originals = content['changes']
+    decisions = {decision.id: decision for decision in request.changes}
+    if len(decisions) != len(request.changes) or set(decisions) != {change['id'] for change in originals}:
+        raise RunError(422, 'invalid_decisions', '必须对每条建议提交且仅提交一次决定')
+    for change in originals:
+        decision = decisions[change['id']]
+        if decision.status == 'accepted' and change['requires_input']:
+            raise RunError(422, 'invalid_decisions', '待补充信息不能直接接受，请本人编辑或拒绝')
+        change['status'] = decision.status
+        change.pop('editedText', None)
+        if decision.status == 'edited':
+            change['editedText'] = decision.edited_text
+        if decision.status in ('accepted', 'edited'):
+            parent_path, field = change['section'].rsplit('/', 1)
+            parent = _section(base, parent_path)[0] if parent_path else base
+            parent[field] = change['after'] if decision.status == 'accepted' else decision.edited_text
+    content['resume'] = base
+    return _write_review(db, user_id, version_id, request.expected_revision, structured_content=content)
+
+
+def confirm_version(db: Session, user_id: int, version_id: str, request: ResumeVersionConfirm) -> dict:
+    version = _owned_version(db, user_id, version_id)
+    _check_revision(version, request.expected_revision)
+    _review_base(db, version)
+    if version.status == VersionStatus.CONFIRMED:
+        return serialize_version(db, user_id, version)
+    if any(change['status'] == 'pending' or
+           (change['status'] == 'accepted' and change['requires_input'])
+           for change in version.structured_content['changes']):
+        raise RunError(422, 'review_incomplete', '请先审阅并保存全部建议后再确认')
+    return _write_review(db, user_id, version_id, request.expected_revision, status=VersionStatus.CONFIRMED)

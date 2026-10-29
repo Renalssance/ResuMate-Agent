@@ -1,0 +1,13 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/resume/ResumePreview.spec.ts src/stores/resumeEditor.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  00:49:52
+   Duration  722ms (transform 148ms, setup 0ms, import 248ms, tests 22ms, environment 1.03s)
+

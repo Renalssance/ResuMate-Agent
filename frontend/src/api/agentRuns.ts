@@ -11,14 +11,16 @@ export type ArtifactReference =
   | { kind: 'profile_fact'; factId: string; revision: number }
   | { kind: 'applicant_answer'; actionId: string }
 export interface ArtifactSource { reference: ArtifactReference; label: string; content: unknown }
+export type ReviewStatus = 'pending' | 'accepted' | 'rejected' | 'edited'
+export interface ReviewDecision { id: string; status: ReviewStatus; editedText?: string }
 export interface TailoringChange {
   id: string; section: string; before: string; after: string | null; reason: string
-  fact_refs: ArtifactReference[]; requires_input: boolean; status: 'pending'
+  fact_refs: ArtifactReference[]; requires_input: boolean; status: ReviewStatus; editedText?: string
 }
 export interface RunArtifact {
   id: string; runId: string; resumeId: number; jdId: number; revision: number; status: string
   structuredContent: Record<string, unknown>; factRefs: unknown[]; createdAt: string
-  sources?: ArtifactSource[]; basedOnOldInput?: boolean; changedInputs?: string[]
+  reviewable?: boolean; sources?: ArtifactSource[]; basedOnOldInput?: boolean; changedInputs?: string[]
 }
 export interface CreateAgentRun { kind: 'tailoring'; jdId: number; resumeId: number; requestId: string }
 export interface ActionAnswer { decision: 'submit' | 'approve' | 'reject'; answers: Record<string, string>; expectedRevision: number }

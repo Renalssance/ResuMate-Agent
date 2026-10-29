@@ -1,0 +1,15 @@
+
+> test:e2e
+> playwright test resume-review.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-dozanI
+
+Running 3 tests using 1 worker
+
+(node:99649) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/resume-review.spec.ts:36:1 › 逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历 (5.9s)
+  ✓  2 [chromium] › tests/e2e/resume-review.spec.ts:78:1 › 两个页面冲突后保留本地输入，只重放本人改过的条目 (6.0s)
+  ✓  3 [chromium] › tests/e2e/resume-review.spec.ts:104:1 › 不存在的简历版本显示可恢复加载错误 (527ms)
+
+  3 passed (19.7s)

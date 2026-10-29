@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import type { RunArtifact } from '../../api/agentRuns'
 import ArtifactCard from './ArtifactCard.vue'
@@ -26,7 +26,7 @@ function artifact(): RunArtifact {
 
 describe('evidence-based tailoring material', () => {
   it('shows the original and proposed field separately with its reason and only referenced sources', () => {
-    const wrapper = mount(ArtifactCard, { props: { artifact: artifact() } })
+    const wrapper = mount(ArtifactCard, { global: { stubs: { RouterLink: RouterLinkStub } }, props: { artifact: artifact() } })
     const change = wrapper.get('[aria-label="工作经历 1 · 经历说明建议"]')
     expect(change.get('[data-change-before]').text()).toBe('开发订单 API。')
     expect(change.get('[data-change-after]').text()).toBe('负责订单 API 与数据库设计。')
@@ -44,7 +44,7 @@ describe('evidence-based tailoring material', () => {
   it('keeps missing information visibly pending instead of rendering a fabricated replacement', () => {
     const value = artifact()
     value.structuredContent.changes = [{ id: 'missing', section: '/self_summary', before: '负责服务端开发。', after: null, reason: '需要补充项目中的具体职责。', fact_refs: [], requires_input: true, status: 'pending' }]
-    const wrapper = mount(ArtifactCard, { props: { artifact: value } })
+    const wrapper = mount(ArtifactCard, { global: { stubs: { RouterLink: RouterLinkStub } }, props: { artifact: value } })
     const change = wrapper.get('[aria-label="个人简介建议"]')
     expect(change.text()).toContain('需补充信息')
     expect(change.get('[data-change-after]').text()).toContain('补充事实后再形成建议')
@@ -57,7 +57,7 @@ describe('evidence-based tailoring material', () => {
     Object.assign(value, { basedOnOldInput: true, changedInputs: ['resume', 'jd', 'facts'] })
     value.structuredContent.changes = [{ id: 'answer-change', section: '/self_summary', before: '负责服务端开发。', after: '参与数据库设计。', reason: '根据本次补充回答。', fact_refs: [answerRef], requires_input: false, status: 'pending' }]
     Object.assign(value, { sources: [{ reference: answerRef, label: '本次补充回答', content: { question: '具体职责？', answers: { answer: '<img src=x>参与数据库设计。' } } }] })
-    const wrapper = mount(ArtifactCard, { props: { artifact: value } })
+    const wrapper = mount(ArtifactCard, { global: { stubs: { RouterLink: RouterLinkStub } }, props: { artifact: value } })
     const notice = wrapper.get('[role="note"]')
     expect(notice.text()).toContain('简历、岗位、已确认事实')
     expect(notice.text()).toContain('旧资料')
@@ -70,10 +70,23 @@ describe('evidence-based tailoring material', () => {
   it('reads historical material without interpreting an unrelated changes field as new suggestions', () => {
     const value = artifact()
     value.structuredContent = { summary: '历史简介。', changes: ['历史修改备注'] }
-    const wrapper = mount(ArtifactCard, { props: { artifact: value } })
+    const wrapper = mount(ArtifactCard, { global: { stubs: { RouterLink: RouterLinkStub } }, props: { artifact: value } })
     expect(wrapper.text()).toContain('历史简介。')
     expect(wrapper.text()).toContain('历史修改备注')
     expect(wrapper.find('[aria-label="字段建议"]').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('条已确认事实')
+  })
+})
+
+
+describe('review entry links', () => {
+  it('links to editable or confirmed versions while rendering reviewed suggestion shapes', () => {
+    const value = artifact()
+    ;(value.structuredContent.changes as Record<string, unknown>[])[0]!.status = 'edited'
+    ;(value.structuredContent.changes as Record<string, unknown>[])[0]!.editedText = '本人输入'
+    const wrapper = mount(ArtifactCard, { global: { stubs: { RouterLink: RouterLinkStub } }, props: { artifact: value } })
+    expect(wrapper.getComponent(RouterLinkStub).props('to')).toBe('/resume-versions/draft-1')
+    expect(wrapper.get('[data-review-link]').text()).toContain('审阅与编辑')
+    expect(wrapper.find('[aria-label="字段建议"]').exists()).toBe(true)
   })
 })

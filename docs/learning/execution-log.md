@@ -51,3 +51,9 @@ T07 已提交 `9b4ea1f`。T08 从真实代码核对补充了粘贴文本解析�
 T08 已提交 `948ae8a`。按[局部计划](../superpowers/plans/2026-10-30-t09-evidence-based-tailoring.md)固定完整输入，限制建议为真实字段和可追溯来源；业务服务、上下文和只读材料展示并行，整合后检查真实 worker、截图与语义边界。
 
 T09 最终完整后端 508 passed / 2 skipped，前端 67 passed + 实际文案定向 7 passed，构建通过。完整浏览器 11 passed / 1 截图脚本失败，定位修复后该场景最终 1 passed / 11.8s；最终桌面手机图已逐张查看。审查 P2 旧格式草稿缺旧输入提示已修复；列表共享一次当前输入比较保持固定查询数量。详见[第九课](09-evidence-based-tailoring.md)与[T09 测试记录](test-records/2026-10-30-t09.md)。
+
+## T10：逐项审阅与确认（完成确定性验收）
+
+T09 已提交 `c4327de`。按[局部合同](../superpowers/plans/2026-10-30-t10-resume-review.md)实现独立版本的接受/拒绝/本人编辑、revision 冲突与确认冻结。用户要求实际截图继续适用，双页面冲突必须真实联调。
+
+T10 完整后端 552 passed / 2 expected skipped，前端 87 passed、原有测试与构建通过，完整真实浏览器 15 passed / 1.1m。六张桌面/手机/冲突/错误截图已逐张查看；预览遗漏与明确清空恢复旧要点已修复并回归。详见[第十课](10-resume-review-and-conflicts.md)与[T10 测试记录](test-records/2026-10-30-t10.md)。接续 T11，PDF 依赖与中文字体必须在本单元的真实 Linux worker 验证，不推迟到发布阶段。

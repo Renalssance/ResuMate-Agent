@@ -1,0 +1,79 @@
+
+> test:e2e
+> playwright test resume-review.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-emctUS
+
+Running 3 tests using 1 worker
+
+(node:98195) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/resume-review.spec.ts:36:1 › 逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历 (45.1s)
+(node:98657) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/resume-review.spec.ts:78:1 › 两个页面冲突后保留本地输入，只重放本人改过的条目 (45.1s)
+(node:98886) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/e2e/resume-review.spec.ts:104:1 › 不存在的简历版本显示可恢复加载错误 (230ms)
+
+
+  1) [chromium] › tests/e2e/resume-review.spec.ts:36:1 › 逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历 ──────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.fill: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByLabel('编辑工作经历 1 · 经历说明', { exact: true })
+
+
+      47 |   await expect(work.getByRole('button', { name: '接受建议', exact: true })).toBeDisabled()
+      48 |   await work.getByRole('button', { name: '编辑内容', exact: true }).click()
+    > 49 |   await page.getByLabel('编辑工作经历 1 · 经历说明', { exact: true }).fill(editedWork)
+         |                                                             ^
+      50 |   page.once('dialog', dialog => dialog.dismiss())
+      51 |   await page.getByRole('link', { name: '返回材料准备', exact: true }).click()
+      52 |   await expect(page).toHaveURL(`/resume-versions/${versionId}`)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/resume-review.spec.ts:49:61
+
+    Error Context: test-results/resume-review-逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/resume-review-逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/resume-review-逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/resume-review.spec.ts:78:1 › 两个页面冲突后保留本地输入，只重放本人改过的条目 ──────────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.fill: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByLabel('编辑工作经历 1 · 经历说明', { exact: true })
+
+
+      85 |   const work = page.getByRole('region', { name: workName, exact: true })
+      86 |   await work.getByRole('button', { name: '编辑内容', exact: true }).click()
+    > 87 |   await page.getByRole('textbox', { name: /^编辑工作经历 1 · 经历说明/ }).fill('这页补充 API 联调职责，另一页的拒绝决定必须保留。')
+         |                                                             ^
+      88 |   await other.getByRole('region', { name: summaryName, exact: true }).getByRole('button', { name: '拒绝建议', exact: true }).click()
+      89 |   await save(other, versionId)
+      90 |   await save(page, versionId, 409)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/resume-review.spec.ts:87:61
+
+    Error Context: test-results/resume-review-两个页面冲突后保留本地输入，只重放本人改过的条目-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/resume-review-两个页面冲突后保留本地输入，只重放本人改过的条目-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/resume-review-两个页面冲突后保留本地输入，只重放本人改过的条目-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/resume-review.spec.ts:36:1 › 逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历 ───────────────
+    [chromium] › tests/e2e/resume-review.spec.ts:78:1 › 两个页面冲突后保留本地输入，只重放本人改过的条目 ───────────────────
+  1 passed (1.7m)

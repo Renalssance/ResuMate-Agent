@@ -47,6 +47,7 @@ def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db
     assert result['factRefs'] == change['fact_refs']
     assert result['sources'][0]['content'] == 'Built reliable APIs'
     assert result['basedOnOldInput'] is False and result['changedInputs'] == []
+    assert result['reviewable'] is True
     assert run_client.get('/api/resume-versions/' + version_id, headers=headers('bob')).status_code == 404
     assert run_client.get('/api/resume-versions/' + version_id).status_code == 401
     artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
@@ -173,6 +174,7 @@ def test_legacy_draft_reports_changed_input_without_inventing_sources(career_db,
     career_db.commit()
     original = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
     assert original['sources'] == [] and original['changedInputs'] == []
+    assert original['reviewable'] is False
     resume = career_db.get(Resume, 1)
     resume.structured_data = {'self_summary': 'Changed after the historical draft'}
     resume.updated_at += timedelta(seconds=2)

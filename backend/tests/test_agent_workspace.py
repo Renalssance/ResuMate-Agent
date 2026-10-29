@@ -120,7 +120,7 @@ def test_artifacts_include_owned_drafts_before_run_finishes(workspace_client, ca
         'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
         'status': 'draft', 'structuredContent': {'summary': 'API development'},
         'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00',
-        'basedOnOldInput': False, 'changedInputs': [], 'sources': [],
+        'basedOnOldInput': False, 'changedInputs': [], 'sources': [], 'reviewable': False,
     }]
     career_db.execute(delete(Resume).where(Resume.id == 1))
     career_db.execute(delete(JobDescription).where(JobDescription.id == 1))

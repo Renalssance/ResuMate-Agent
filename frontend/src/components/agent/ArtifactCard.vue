@@ -1,15 +1,15 @@
 <template>
   <article class="artifact-card">
-    <div class="section-head"><h3>投递材料草稿</h3><span>第 {{ artifact.revision }} 版 · 待你核对</span></div>
+    <div class="section-head"><h3>{{ artifact.status === 'confirmed' ? '已确认的投递材料' : '投递材料草稿' }}</h3><span>第 {{ artifact.revision }} 版 · {{ artifact.status === 'confirmed' ? '已确认' : '待你核对' }}</span></div>
     <p v-if="artifact.basedOnOldInput" class="input-notice" role="note">
       <strong>这份草稿依据旧资料生成。</strong>
       {{ changedInputNames }}已更新，以下仍保留生成时的原文与来源。
     </p>
     <template v-if="changes">
-      <p class="muted-note">逐条核对表述与依据。以下建议尚未写入简历。</p>
+      <p class="muted-note">{{ artifact.status === 'confirmed' ? '本版本已确认，原始建议与来源保留供你核对。' : '逐条核对表述与依据，决定本版本采用的内容。' }}</p>
       <div class="change-list" aria-label="字段建议">
         <section v-for="change in changes" :key="change.id" class="change-card" :aria-label="`${sectionLabel(change.section)}建议`">
-          <div class="change-head"><h4>{{ sectionLabel(change.section) }}</h4><span class="change-status" :class="{ 'needs-input': change.requires_input }">{{ change.requires_input ? '需补充信息' : '待审阅' }}</span></div>
+          <div class="change-head"><h4>{{ sectionLabel(change.section) }}</h4><span class="change-status" :class="{ 'needs-input': change.requires_input }">{{ change.status === 'pending' && change.requires_input ? '需补充信息' : reviewLabels[change.status] }}</span></div>
           <dl class="change-comparison">
             <div><dt>原文</dt><dd data-change-before>{{ change.before || '原文未填写' }}</dd></div>
             <div class="proposed-text"><dt>建议</dt><dd data-change-after :class="{ 'muted-note': change.requires_input }">{{ change.requires_input ? '补充事实后再形成建议' : change.after }}</dd></div>
@@ -34,29 +34,24 @@
       </dl>
       <p class="muted-note">已记录 {{ artifact.factRefs.length }} 条来源引用</p>
     </template>
+    <RouterLink data-review-link class="button-secondary review-link" :to="`/resume-versions/${artifact.id}`">{{ artifact.status === 'confirmed' ? '查看已确认版本' : changes ? '审阅与编辑' : '查看历史材料' }}</RouterLink>
   </article>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { reviewChanges, reviewLabels } from '../../utils/resumeReview'
 import type { ArtifactReference, RunArtifact, TailoringChange } from '../../api/agentRuns'
 import FactReference from '../resume/FactReference.vue'
 import { formatStructuredEntries } from '../../utils/structuredDisplay'
 const props = defineProps<{ artifact: RunArtifact }>()
-const changes = computed(() => {
-  const content = props.artifact.structuredContent
-  if (!isRecord(content.resume) || !isRecord(content.inputVersions) || !Array.isArray(content.changes)) return null
-  return content.changes.every(change => isRecord(change) && typeof change.id === 'string' && typeof change.section === 'string'
-    && typeof change.before === 'string' && (typeof change.after === 'string' || change.after === null)
-    && typeof change.reason === 'string' && Array.isArray(change.fact_refs) && typeof change.requires_input === 'boolean'
-    && change.status === 'pending') ? content.changes as TailoringChange[] : null
-})
+const changes = computed(() => reviewChanges(props.artifact))
 const entries = computed(() => formatStructuredEntries(props.artifact.structuredContent).map(entry => ({ ...entry, groups: entry.groups.map((group, index) => ({ ...group, title: group.title ? `${labels[entry.key] || entry.label} ${index + 1}` : '' })) })))
 const inputLabels: Record<string, string> = { resume: '简历', jd: '岗位', facts: '已确认事实' }
 const changedInputNames = computed(() => (props.artifact.changedInputs || []).map(key => inputLabels[key] || key).join('、') || '相关资料')
 const labels: Record<string, string> = { self_summary: '个人简介', summary: '个人简介', content: '材料内容', answer: '补充经历', experience: '相关经历', work_experience: '工作经历', projects: '项目经历', bullets: '经历要点', target_role: '目标岗位', company: '公司', role: '岗位名称', description: '经历说明', period: '时间', highlights: '经历要点' }
 function displayLabel(value: string) { return labels[value.replace(/ /g, '_')] || value }
-function isRecord(value: unknown): value is Record<string, unknown> { return Boolean(value) && !Array.isArray(value) && typeof value === 'object' }
 function sectionLabel(section: string) {
   if (section === '/summary' || section === '/self_summary') return '个人简介'
   const match = /^\/(work_experience|projects)\/(\d+)\/description$/.exec(section)
@@ -76,6 +71,7 @@ function sourcesFor(change: TailoringChange) {
 <style scoped>
 .artifact-card { display: grid; gap: 16px; min-width: 0; padding: 24px; border: 1px solid var(--color-primary-border); border-radius: var(--radius-sm); background: var(--surface-panel); overflow-wrap: anywhere; }
 .section-head { margin-bottom: 0; }
+.review-link { justify-self: start; text-decoration: none; }
 h3, h4, h5, p { margin: 0; }
 h3 { font-size: 18px; line-height: 1.5; }
 .section-head span, .muted-note { color: var(--color-text-secondary); font-size: 13px; line-height: 1.7; }

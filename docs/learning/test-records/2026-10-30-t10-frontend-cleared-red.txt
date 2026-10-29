@@ -1,0 +1,36 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/resume/ResumePreview.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/resume/ResumePreview.spec.ts (3 tests | 2 failed) 13ms
+   × keeps an explicitly cleared draft description empty instead of reviving its original bullets 3ms
+   × keeps an explicitly cleared confirmed description empty instead of reviving its original bullets 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/resume/ResumePreview.spec.ts > keeps an explicitly cleared draft description empty instead of reviving its original bullets
+ FAIL  src/components/resume/ResumePreview.spec.ts > keeps an explicitly cleared confirmed description empty instead of reviving its original bullets
+AssertionError: expected '简历预览当前表述工作经历小店已清空的旧经历要点' not to contain '已清空的旧经历要点'
+
+Expected: "已清空的旧经历要点"
+Received: "简历预览当前表述工作经历小店已清空的旧经历要点"
+
+ ❯ src/components/resume/ResumePreview.spec.ts:22:69
+     20|  const preview = projectResume(artifact, { work: { id: 'work', status:…
+     21|  const wrapper = mount(ResumePreview, { props: { resume: preview } })
+     22|  expect(wrapper.text()).toContain('小店'); expect(wrapper.text()).not.to…
+       |                                                                     ^
+     23|  expect((artifact.structuredContent.resume as { work_experience: { bul…
+     24| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  00:49:40
+   Duration  654ms (transform 50ms, setup 0ms, import 93ms, tests 13ms, environment 477ms)
+

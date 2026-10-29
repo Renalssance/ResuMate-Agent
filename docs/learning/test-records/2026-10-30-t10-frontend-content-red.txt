@@ -1,0 +1,29 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/resume/ResumePreview.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/resume/ResumePreview.spec.ts (4 tests | 1 failed) 14ms
+   × keeps supported education advisers and independent experience bullets beside unedited descriptions 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/resume/ResumePreview.spec.ts > keeps supported education advisers and independent experience bullets beside unedited descriptions
+AssertionError: expected '简历预览当前表述教育经历示例大学工作经历示例团队开发接口服务。项目经历简历…' to contain '导师：图灵教授'
+
+Expected: "导师：图灵教授"
+Received: "简历预览当前表述教育经历示例大学工作经历示例团队开发接口服务。项目经历简历助手开发文档解析流程。"
+
+ ❯ src/components/resume/ResumePreview.spec.ts:29:25
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  00:51:54
+   Duration  617ms (transform 52ms, setup 0ms, import 93ms, tests 14ms, environment 443ms)
+

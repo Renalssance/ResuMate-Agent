@@ -1,0 +1,1902 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                             [100%]
+=================================== FAILURES ===================================
+______ test_accept_reject_edit_and_undo_rebuild_original_snapshot[sqlite] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:07.993738+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:07.942884', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x110eb2d20>
+run_client = <starlette.testclient.TestClient object at 0x111656ed0>
+
+    def test_accept_reject_edit_and_undo_rebuild_original_snapshot(review_draft, career_db, run_client):
+        original = deepcopy(career_db.get(Resume, 1).structured_data)
+        result = save(run_client, review_draft, decisions(review_draft))
+>       assert result.status_code == 200, result.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:48: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,003 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 client=testclient
+2026-10-30 00:43:08,006 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 status=200 duration_ms=3
+2026-10-30 00:43:08,007 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,008 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 client=testclient
+2026-10-30 00:43:08,008 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 status=405 duration_ms=0
+2026-10-30 00:43:08,008 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/054db083-1d0c-41c7-8801-e67d3cb1b4d3 "HTTP/1.1 405 Method Not Allowed"
+______ test_accept_reject_edit_and_undo_rebuild_original_snapshot[mysql] _______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:08+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:08', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x110edacf0>
+run_client = <starlette.testclient.TestClient object at 0x1143e3c50>
+
+    def test_accept_reject_edit_and_undo_rebuild_original_snapshot(review_draft, career_db, run_client):
+        original = deepcopy(career_db.get(Resume, 1).structured_data)
+        result = save(run_client, review_draft, decisions(review_draft))
+>       assert result.status_code == 200, result.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:48: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,327 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 client=testclient
+2026-10-30 00:43:08,329 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 status=200 duration_ms=2
+2026-10-30 00:43:08,330 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,331 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 client=testclient
+2026-10-30 00:43:08,331 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 status=405 duration_ms=0
+2026-10-30 00:43:08,331 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/7cd736a0-2149-4edf-a322-6cf9ae8b9125 "HTTP/1.1 405 Method Not Allowed"
+______ test_saving_after_original_changes_still_uses_run_snapshot[sqlite] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:08.392648+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:08.383503', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x11170cd70>
+run_client = <starlette.testclient.TestClient object at 0x1144e7170>
+
+    def test_saving_after_original_changes_still_uses_run_snapshot(review_draft, career_db, run_client):
+        resume = career_db.get(Resume, 1)
+        resume.structured_data = {'self_summary': 'New main resume', 'projects': []}
+        resume.updated_at += timedelta(seconds=2)
+        career_db.commit()
+        response = save(run_client, review_draft, decisions(review_draft))
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:83: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,393 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d client=testclient
+2026-10-30 00:43:08,395 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d status=200 duration_ms=2
+2026-10-30 00:43:08,396 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,397 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d client=testclient
+2026-10-30 00:43:08,397 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d status=405 duration_ms=0
+2026-10-30 00:43:08,397 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/ed1372ba-9830-464b-abff-7b92ebc7d97d "HTTP/1.1 405 Method Not Allowed"
+______ test_saving_after_original_changes_still_uses_run_snapshot[mysql] _______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:09', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1116c22d0>
+run_client = <starlette.testclient.TestClient object at 0x11453fef0>
+
+    def test_saving_after_original_changes_still_uses_run_snapshot(review_draft, career_db, run_client):
+        resume = career_db.get(Resume, 1)
+        resume.structured_data = {'self_summary': 'New main resume', 'projects': []}
+        resume.updated_at += timedelta(seconds=2)
+        career_db.commit()
+        response = save(run_client, review_draft, decisions(review_draft))
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:83: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,627 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a client=testclient
+2026-10-30 00:43:08,630 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a status=200 duration_ms=2
+2026-10-30 00:43:08,630 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,633 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a client=testclient
+2026-10-30 00:43:08,634 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a status=405 duration_ms=0
+2026-10-30 00:43:08,634 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/b9a72a6d-f358-4bae-8131-643367ba766a "HTTP/1.1 405 Method Not Allowed"
+________ test_saving_after_original_deleted_keeps_frozen_resume[sqlite] ________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:08.696425+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:08.688071', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x11449b170>
+run_client = <starlette.testclient.TestClient object at 0x1145fbe00>
+
+    def test_saving_after_original_deleted_keeps_frozen_resume(review_draft, career_db, run_client):
+        career_db.delete(career_db.get(Resume, 1))
+        career_db.commit()
+        response = save(run_client, review_draft, decisions(review_draft))
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:96: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,697 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 client=testclient
+2026-10-30 00:43:08,699 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 status=200 duration_ms=2
+2026-10-30 00:43:08,699 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,701 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 client=testclient
+2026-10-30 00:43:08,701 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 status=405 duration_ms=0
+2026-10-30 00:43:08,701 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/d5f96074-31cc-4185-bf1a-07007d7577b2 "HTTP/1.1 405 Method Not Allowed"
+________ test_saving_after_original_deleted_keeps_frozen_resume[mysql] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:09', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1145f9490>
+run_client = <starlette.testclient.TestClient object at 0x11469f7a0>
+
+    def test_saving_after_original_deleted_keeps_frozen_resume(review_draft, career_db, run_client):
+        career_db.delete(career_db.get(Resume, 1))
+        career_db.commit()
+        response = save(run_client, review_draft, decisions(review_draft))
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:96: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,926 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb client=testclient
+2026-10-30 00:43:08,928 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb status=200 duration_ms=2
+2026-10-30 00:43:08,929 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:08,931 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb client=testclient
+2026-10-30 00:43:08,931 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb status=405 duration_ms=0
+2026-10-30 00:43:08,931 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/011c93c7-1f6e-4479-97ff-ed4e5a6f5fbb "HTTP/1.1 405 Method Not Allowed"
+_________ test_invalid_decisions_do_not_write_any_part[sqlite-missing] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:08.995997+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:08.986910', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1146f5fd0>
+run_client = <starlette.testclient.TestClient object at 0x114760350>
+invalid = 'missing'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:08,997 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 client=testclient
+2026-10-30 00:43:08,999 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 status=200 duration_ms=2
+2026-10-30 00:43:08,999 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,000 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 client=testclient
+2026-10-30 00:43:09,000 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 status=405 duration_ms=0
+2026-10-30 00:43:09,000 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/e21ab266-b5e7-4dec-b95f-ac8c48fc4305 "HTTP/1.1 405 Method Not Allowed"
+________ test_invalid_decisions_do_not_write_any_part[sqlite-duplicate] ________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.026333+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.016666', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114703110>
+run_client = <starlette.testclient.TestClient object at 0x11480c9b0>
+invalid = 'duplicate'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,027 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 client=testclient
+2026-10-30 00:43:09,029 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 status=200 duration_ms=1
+2026-10-30 00:43:09,029 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,030 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 client=testclient
+2026-10-30 00:43:09,030 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 status=405 duration_ms=0
+2026-10-30 00:43:09,030 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/a8d4e295-f02b-442f-9d49-451dbab89659 "HTTP/1.1 405 Method Not Allowed"
+_________ test_invalid_decisions_do_not_write_any_part[sqlite-unknown] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.056970+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.047258', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1147f4950>
+run_client = <starlette.testclient.TestClient object at 0x1148ac920>
+invalid = 'unknown'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,057 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 client=testclient
+2026-10-30 00:43:09,060 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 status=200 duration_ms=2
+2026-10-30 00:43:09,060 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,061 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 client=testclient
+2026-10-30 00:43:09,061 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 status=405 duration_ms=0
+2026-10-30 00:43:09,061 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/21075b56-790f-4c74-b3cd-7ec2320e6195 "HTTP/1.1 405 Method Not Allowed"
+____ test_invalid_decisions_do_not_write_any_part[sqlite-unreviewed_input] _____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.086660+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.077820', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x11478b8f0>
+run_client = <starlette.testclient.TestClient object at 0x1148ac950>
+invalid = 'unreviewed_input'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,087 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 client=testclient
+2026-10-30 00:43:09,089 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 status=200 duration_ms=2
+2026-10-30 00:43:09,090 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,091 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 client=testclient
+2026-10-30 00:43:09,091 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 status=405 duration_ms=0
+2026-10-30 00:43:09,091 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/e4ee4a1d-deb6-4594-9853-2aa3b43c6d79 "HTTP/1.1 405 Method Not Allowed"
+___ test_invalid_decisions_do_not_write_any_part[sqlite-edited_missing_text] ___
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.116436+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.107921', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1148ba8a0>
+run_client = <starlette.testclient.TestClient object at 0x1149f71d0>
+invalid = 'edited_missing_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,117 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 client=testclient
+2026-10-30 00:43:09,119 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 status=200 duration_ms=2
+2026-10-30 00:43:09,120 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,120 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 client=testclient
+2026-10-30 00:43:09,121 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 status=405 duration_ms=0
+2026-10-30 00:43:09,121 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/89364f63-29d2-4067-acfe-023a72105fb2 "HTTP/1.1 405 Method Not Allowed"
+_______ test_invalid_decisions_do_not_write_any_part[sqlite-edited_null] _______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.148000+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.139359', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114964590>
+run_client = <starlette.testclient.TestClient object at 0x114a9f650>
+invalid = 'edited_null'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,149 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 client=testclient
+2026-10-30 00:43:09,150 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 status=200 duration_ms=1
+2026-10-30 00:43:09,151 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,152 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 client=testclient
+2026-10-30 00:43:09,152 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 status=405 duration_ms=0
+2026-10-30 00:43:09,152 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/3c9778aa-27ba-49ab-b199-e6f030485f18 "HTTP/1.1 405 Method Not Allowed"
+___ test_invalid_decisions_do_not_write_any_part[sqlite-accepted_with_text] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.238273+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.171332', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1149decc0>
+run_client = <starlette.testclient.TestClient object at 0x114a44d10>
+invalid = 'accepted_with_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,239 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a client=testclient
+2026-10-30 00:43:09,248 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a status=200 duration_ms=9
+2026-10-30 00:43:09,249 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a status=200 duration_ms=9
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,249 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a client=testclient
+2026-10-30 00:43:09,250 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a status=405 duration_ms=0
+2026-10-30 00:43:09,250 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/ff870021-de29-426d-a6f6-a51b8eee2d3a "HTTP/1.1 405 Method Not Allowed"
+____ test_invalid_decisions_do_not_write_any_part[sqlite-pending_with_text] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.283655+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.274699', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114b266f0>
+run_client = <starlette.testclient.TestClient object at 0x114a71430>
+invalid = 'pending_with_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,284 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 client=testclient
+2026-10-30 00:43:09,286 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 status=200 duration_ms=2
+2026-10-30 00:43:09,287 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,288 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 client=testclient
+2026-10-30 00:43:09,288 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 status=405 duration_ms=0
+2026-10-30 00:43:09,288 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/c08fa19d-6ef5-4422-b63f-b80e92823302 "HTTP/1.1 405 Method Not Allowed"
+_____ test_invalid_decisions_do_not_write_any_part[sqlite-unknown_status] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.316301+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.307339', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114b26000>
+run_client = <starlette.testclient.TestClient object at 0x114869580>
+invalid = 'unknown_status'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,317 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 client=testclient
+2026-10-30 00:43:09,319 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 status=200 duration_ms=2
+2026-10-30 00:43:09,320 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,320 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 client=testclient
+2026-10-30 00:43:09,320 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 status=405 duration_ms=0
+2026-10-30 00:43:09,321 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/1da8baa1-0cd8-44db-b269-4553e22d23c0 "HTTP/1.1 405 Method Not Allowed"
+_____ test_invalid_decisions_do_not_write_any_part[sqlite-changed_source] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:09.348749+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:09.340257', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1148ba240>
+run_client = <starlette.testclient.TestClient object at 0x1147899a0>
+invalid = 'changed_source'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,349 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 client=testclient
+2026-10-30 00:43:09,352 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 status=200 duration_ms=2
+2026-10-30 00:43:09,352 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,353 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 client=testclient
+2026-10-30 00:43:09,353 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 status=405 duration_ms=0
+2026-10-30 00:43:09,353 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/986efca0-eefd-4c46-ae53-cb1bb4500dc7 "HTTP/1.1 405 Method Not Allowed"
+_________ test_invalid_decisions_do_not_write_any_part[mysql-missing] __________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:10+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:10', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114af21e0>
+run_client = <starlette.testclient.TestClient object at 0x11469cbf0>
+invalid = 'missing'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,577 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb client=testclient
+2026-10-30 00:43:09,580 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb status=200 duration_ms=3
+2026-10-30 00:43:09,580 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,581 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb client=testclient
+2026-10-30 00:43:09,581 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb status=405 duration_ms=0
+2026-10-30 00:43:09,582 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/f7eeff14-32a3-40a6-b8fa-055d2a8e60cb "HTTP/1.1 405 Method Not Allowed"
+________ test_invalid_decisions_do_not_write_any_part[mysql-duplicate] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:10+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:10', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114562f00>
+run_client = <starlette.testclient.TestClient object at 0x11453c680>
+invalid = 'duplicate'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:09,859 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea client=testclient
+2026-10-30 00:43:09,863 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea status=200 duration_ms=3
+2026-10-30 00:43:09,863 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:09,864 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea client=testclient
+2026-10-30 00:43:09,864 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea status=405 duration_ms=0
+2026-10-30 00:43:09,864 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/69ffcc58-a253-47bf-9fab-ca6fde110dea "HTTP/1.1 405 Method Not Allowed"
+_________ test_invalid_decisions_do_not_write_any_part[mysql-unknown] __________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:10+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:10', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1144d10d0>
+run_client = <starlette.testclient.TestClient object at 0x114440230>
+invalid = 'unknown'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:10,140 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 client=testclient
+2026-10-30 00:43:10,143 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 status=200 duration_ms=3
+2026-10-30 00:43:10,144 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:10,144 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 client=testclient
+2026-10-30 00:43:10,144 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 status=405 duration_ms=0
+2026-10-30 00:43:10,145 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/455da96d-03b9-4b0d-839c-f8f4eddeedc2 "HTTP/1.1 405 Method Not Allowed"
+_____ test_invalid_decisions_do_not_write_any_part[mysql-unreviewed_input] _____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:10+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:10', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1142fc1a0>
+run_client = <starlette.testclient.TestClient object at 0x11441cc20>
+invalid = 'unreviewed_input'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:10,426 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 client=testclient
+2026-10-30 00:43:10,429 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 status=200 duration_ms=3
+2026-10-30 00:43:10,430 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:10,431 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 client=testclient
+2026-10-30 00:43:10,431 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 status=405 duration_ms=0
+2026-10-30 00:43:10,431 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/e59f51bc-2f2b-4c3e-b628-b2a228572649 "HTTP/1.1 405 Method Not Allowed"
+___ test_invalid_decisions_do_not_write_any_part[mysql-edited_missing_text] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:11+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:11', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x110eb3a10>
+run_client = <starlette.testclient.TestClient object at 0x114c2e9f0>
+invalid = 'edited_missing_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:10,704 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 client=testclient
+2026-10-30 00:43:10,707 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 status=200 duration_ms=3
+2026-10-30 00:43:10,708 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:10,709 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 client=testclient
+2026-10-30 00:43:10,709 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 status=405 duration_ms=0
+2026-10-30 00:43:10,709 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/3100d9f1-8ad2-4c34-8aec-0fe5454499f2 "HTTP/1.1 405 Method Not Allowed"
+_______ test_invalid_decisions_do_not_write_any_part[mysql-edited_null] ________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:11+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:11', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114c2d940>
+run_client = <starlette.testclient.TestClient object at 0x114ccf410>
+invalid = 'edited_null'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:10,985 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 client=testclient
+2026-10-30 00:43:10,988 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 status=200 duration_ms=3
+2026-10-30 00:43:10,989 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:10,989 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 client=testclient
+2026-10-30 00:43:10,990 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 status=405 duration_ms=0
+2026-10-30 00:43:10,990 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/365d5f6b-f3cb-4eef-b1a1-99bc217e6f37 "HTTP/1.1 405 Method Not Allowed"
+____ test_invalid_decisions_do_not_write_any_part[mysql-accepted_with_text] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:11+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:11', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1116c16d0>
+run_client = <starlette.testclient.TestClient object at 0x114d635f0>
+invalid = 'accepted_with_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:11,282 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b client=testclient
+2026-10-30 00:43:11,285 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b status=200 duration_ms=3
+2026-10-30 00:43:11,286 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:11,286 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b client=testclient
+2026-10-30 00:43:11,287 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b status=405 duration_ms=0
+2026-10-30 00:43:11,287 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/2fba5809-c85d-4053-b8bf-248434b7d27b "HTTP/1.1 405 Method Not Allowed"
+____ test_invalid_decisions_do_not_write_any_part[mysql-pending_with_text] _____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:12', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114d14260>
+run_client = <starlette.testclient.TestClient object at 0x114e0ff20>
+invalid = 'pending_with_text'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:11,555 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 client=testclient
+2026-10-30 00:43:11,558 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 status=200 duration_ms=3
+2026-10-30 00:43:11,559 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:11,559 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 client=testclient
+2026-10-30 00:43:11,560 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 status=405 duration_ms=0
+2026-10-30 00:43:11,560 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/392773f9-8016-4cc2-9a0e-191400731029 "HTTP/1.1 405 Method Not Allowed"
+______ test_invalid_decisions_do_not_write_any_part[mysql-unknown_status] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:12', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x1116748f0>
+run_client = <starlette.testclient.TestClient object at 0x114f02bd0>
+invalid = 'unknown_status'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:11,831 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 client=testclient
+2026-10-30 00:43:11,834 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 status=200 duration_ms=3
+2026-10-30 00:43:11,835 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:11,836 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 client=testclient
+2026-10-30 00:43:11,836 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 status=405 duration_ms=0
+2026-10-30 00:43:11,836 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/35817790-a873-49fa-ae21-d1b22baaf132 "HTTP/1.1 405 Method Not Allowed"
+______ test_invalid_decisions_do_not_write_any_part[mysql-changed_source] ______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:12', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_db = <sqlalchemy.orm.session.Session object at 0x114f39970>
+run_client = <starlette.testclient.TestClient object at 0x114f8fce0>
+invalid = 'changed_source'
+
+    @pytest.mark.parametrize('invalid', ['missing', 'duplicate', 'unknown', 'unreviewed_input', 'edited_missing_text',
+                                        'edited_null', 'accepted_with_text', 'pending_with_text', 'unknown_status', 'changed_source'])
+    def test_invalid_decisions_do_not_write_any_part(review_draft, career_db, run_client, invalid):
+        changed = decisions(review_draft)
+        if invalid == 'missing':
+            changed.pop()
+        elif invalid == 'duplicate':
+            changed[1] = deepcopy(changed[0])
+        elif invalid == 'unknown':
+            changed[1]['id'] = 'unknown-change'
+        elif invalid == 'unreviewed_input':
+            changed[1]['status'] = 'accepted'
+        elif invalid == 'edited_missing_text':
+            changed[1]['status'] = 'edited'
+        elif invalid == 'edited_null':
+            changed[1].update(status='edited', editedText=None)
+        elif invalid == 'accepted_with_text':
+            changed[0]['editedText'] = 'Unmarked own claim'
+        elif invalid == 'pending_with_text':
+            changed[0].update(status='pending', editedText='Unmarked own claim')
+        elif invalid == 'unknown_status':
+            changed[0]['status'] = 'confirmed'
+        else:
+            changed[0]['fact_refs'] = []
+        response = save(run_client, review_draft, changed)
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:126: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:12,112 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 client=testclient
+2026-10-30 00:43:12,115 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 status=200 duration_ms=3
+2026-10-30 00:43:12,115 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,116 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 client=testclient
+2026-10-30 00:43:12,116 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 status=405 duration_ms=0
+2026-10-30 00:43:12,117 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/d23d5c0a-4d72-4637-a8bf-0ebc3bd0efe4 "HTTP/1.1 405 Method Not Allowed"
+________ test_whole_resume_and_sources_cannot_bypass_decisions[sqlite] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12.182821+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:12.173852', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x115064410>
+
+    def test_whole_resume_and_sources_cannot_bypass_decisions(review_draft, run_client):
+        response = run_client.patch('/api/resume-versions/' + review_draft['id'], headers=headers(), json={
+            'expectedRevision': 1, 'structured_content': {'self_summary': 'Invented'}, 'fact_refs': []})
+>       assert response.status_code == 422
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:134: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:12,183 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c client=testclient
+2026-10-30 00:43:12,186 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c status=200 duration_ms=2
+2026-10-30 00:43:12,186 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,187 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c client=testclient
+2026-10-30 00:43:12,187 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c status=405 duration_ms=0
+2026-10-30 00:43:12,187 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/3767ae12-44b4-430c-9d09-00bf1bb7b99c "HTTP/1.1 405 Method Not Allowed"
+_________ test_whole_resume_and_sources_cannot_bypass_decisions[mysql] _________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:12', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x114f8e090>
+
+    def test_whole_resume_and_sources_cannot_bypass_decisions(review_draft, run_client):
+        response = run_client.patch('/api/resume-versions/' + review_draft['id'], headers=headers(), json={
+            'expectedRevision': 1, 'structured_content': {'self_summary': 'Invented'}, 'fact_refs': []})
+>       assert response.status_code == 422
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:134: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:12,481 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 client=testclient
+2026-10-30 00:43:12,484 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 status=200 duration_ms=2
+2026-10-30 00:43:12,484 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,485 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 client=testclient
+2026-10-30 00:43:12,485 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 status=405 duration_ms=0
+2026-10-30 00:43:12,485 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/fe3e693f-b674-463f-980d-f87afa9deea9 "HTTP/1.1 405 Method Not Allowed"
+____ test_pending_cannot_confirm_and_confirmed_version_is_immutable[sqlite] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:12.554734+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:12.544717', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x114f3b590>
+career_db = <sqlalchemy.orm.session.Session object at 0x114f7c8f0>
+
+    def test_pending_cannot_confirm_and_confirmed_version_is_immutable(review_draft, run_client, career_db):
+        pending = confirm(run_client, review_draft)
+>       assert pending.status_code == 422, pending.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:140: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:12,555 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 client=testclient
+2026-10-30 00:43:12,558 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 status=200 duration_ms=2
+2026-10-30 00:43:12,558 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,559 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm client=testclient
+2026-10-30 00:43:12,559 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm status=405 duration_ms=0
+2026-10-30 00:43:12,559 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/331f2a3e-02f2-4f07-ae9c-9ce8ae4cb668/confirm "HTTP/1.1 405 Method Not Allowed"
+____ test_pending_cannot_confirm_and_confirmed_version_is_immutable[mysql] _____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:13+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:13', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x114d8b440>
+career_db = <sqlalchemy.orm.session.Session object at 0x114e325d0>
+
+    def test_pending_cannot_confirm_and_confirmed_version_is_immutable(review_draft, run_client, career_db):
+        pending = confirm(run_client, review_draft)
+>       assert pending.status_code == 422, pending.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 422
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:140: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:12,794 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 client=testclient
+2026-10-30 00:43:12,796 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 status=200 duration_ms=2
+2026-10-30 00:43:12,797 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,798 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm client=testclient
+2026-10-30 00:43:12,798 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm status=405 duration_ms=0
+2026-10-30 00:43:12,798 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/1805476b-2b4e-413c-8113-e66f1ae84e78/confirm "HTTP/1.1 405 Method Not Allowed"
+_____________ test_empty_suggestions_can_confirm_directly[sqlite] ______________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+run_client = <starlette.testclient.TestClient object at 0x114ca2150>
+
+    def test_empty_suggestions_can_confirm_directly(proposal, run_client):
+        tools, run, epoch, _ = proposal
+        version_id = tools.save_draft(run.id, epoch, [])
+        response = confirm(run_client, {'id': version_id, 'revision': 1})
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:12,864 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm client=testclient
+2026-10-30 00:43:12,864 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm status=405 duration_ms=0
+2026-10-30 00:43:12,865 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/ead12cf0-3b6b-47f4-9751-998a0a353e98/confirm "HTTP/1.1 405 Method Not Allowed"
+______________ test_empty_suggestions_can_confirm_directly[mysql] ______________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+run_client = <starlette.testclient.TestClient object at 0x114be68a0>
+
+    def test_empty_suggestions_can_confirm_directly(proposal, run_client):
+        tools, run, epoch, _ = proposal
+        version_id = tools.save_draft(run.id, epoch, [])
+        response = confirm(run_client, {'id': version_id, 'revision': 1})
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,094 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm client=testclient
+2026-10-30 00:43:13,095 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm status=405 duration_ms=0
+2026-10-30 00:43:13,095 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/0b0b188b-3cff-45ad-8c3b-3519892610f4/confirm "HTTP/1.1 405 Method Not Allowed"
+______ test_legacy_drafts_are_readable_but_cannot_save_or_confirm[sqlite] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x11170e960>
+run_client = <starlette.testclient.TestClient object at 0x11169ee70>
+
+    def test_legacy_drafts_are_readable_but_cannot_save_or_confirm(career_db, run_client):
+        version_id = str(uuid4())
+        career_db.add(ResumeVersion(id=version_id, user_id=1, resume_id=1, jd_id=1,
+                                   structured_content={'summary': 'Historical draft'}, fact_refs=[]))
+        career_db.commit()
+        draft = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+>       assert draft['reviewable'] is False
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'reviewable'
+
+backend/tests/test_resume_review.py:177: KeyError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,153 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c client=testclient
+2026-10-30 00:43:13,154 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c status=200 duration_ms=1
+2026-10-30 00:43:13,155 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/f10866c3-8bbe-4f2e-b06f-51ac363c861c "HTTP/1.1 200 OK"
+______ test_legacy_drafts_are_readable_but_cannot_save_or_confirm[mysql] _______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x114be6b70>
+run_client = <starlette.testclient.TestClient object at 0x1116d88f0>
+
+    def test_legacy_drafts_are_readable_but_cannot_save_or_confirm(career_db, run_client):
+        version_id = str(uuid4())
+        career_db.add(ResumeVersion(id=version_id, user_id=1, resume_id=1, jd_id=1,
+                                   structured_content={'summary': 'Historical draft'}, fact_refs=[]))
+        career_db.commit()
+        draft = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+>       assert draft['reviewable'] is False
+               ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'reviewable'
+
+backend/tests/test_resume_review.py:177: KeyError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,389 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 client=testclient
+2026-10-30 00:43:13,391 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 status=200 duration_ms=1
+2026-10-30 00:43:13,391 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e0ed7bca-3645-4bd2-8611-b7e23aec4b31 "HTTP/1.1 200 OK"
+_______ test_review_requires_ownership_and_authentication[sqlite-PATCH-] _______
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:13.455467+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:13.446258', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x11466cb60>
+method = 'PATCH', suffix = ''
+
+    @pytest.mark.parametrize('method,suffix', [('PATCH', ''), ('POST', '/confirm')])
+    def test_review_requires_ownership_and_authentication(review_draft, run_client, method, suffix):
+        body = {'expectedRevision': 1}
+        if method == 'PATCH':
+            body['changes'] = decisions(review_draft)
+        path = '/api/resume-versions/' + review_draft['id'] + suffix
+>       assert run_client.request(method, path, json=body, headers=headers('bob')).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = request('PATCH', '/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356', json={'changes': [{'id': '77b07d8b-2208-423d-aa65-6460fe2cf693', 'status': 'accepted'}, {'id': '44c34bc0-031f-422e-a38f-31b609f8274f', 'status': 'rejected'}], 'expectedRevision': 1}, headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'})
+E        +      where request = <starlette.testclient.TestClient object at 0x11466cb60>.request
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'} = headers('bob')
+
+backend/tests/test_resume_review.py:190: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:13,456 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 client=testclient
+2026-10-30 00:43:13,458 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 status=200 duration_ms=2
+2026-10-30 00:43:13,459 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,459 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 client=testclient
+2026-10-30 00:43:13,460 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 status=405 duration_ms=0
+2026-10-30 00:43:13,460 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/d9e19b74-89f7-4230-aa41-699577fa5356 "HTTP/1.1 405 Method Not Allowed"
+___ test_review_requires_ownership_and_authentication[sqlite-POST-/confirm] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:13.491921+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:13.480652', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x1147814c0>
+method = 'POST', suffix = '/confirm'
+
+    @pytest.mark.parametrize('method,suffix', [('PATCH', ''), ('POST', '/confirm')])
+    def test_review_requires_ownership_and_authentication(review_draft, run_client, method, suffix):
+        body = {'expectedRevision': 1}
+        if method == 'PATCH':
+            body['changes'] = decisions(review_draft)
+        path = '/api/resume-versions/' + review_draft['id'] + suffix
+>       assert run_client.request(method, path, json=body, headers=headers('bob')).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = request('POST', '/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm', json={'expectedRevision': 1}, headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'})
+E        +      where request = <starlette.testclient.TestClient object at 0x1147814c0>.request
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'} = headers('bob')
+
+backend/tests/test_resume_review.py:190: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:13,493 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c client=testclient
+2026-10-30 00:43:13,497 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c status=200 duration_ms=4
+2026-10-30 00:43:13,498 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,499 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm client=testclient
+2026-10-30 00:43:13,500 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm status=405 duration_ms=0
+2026-10-30 00:43:13,501 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/429b9322-28f9-4b4a-a644-68eded44887c/confirm "HTTP/1.1 405 Method Not Allowed"
+_______ test_review_requires_ownership_and_authentication[mysql-PATCH-] ________
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:14', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x1143e2d50>
+method = 'PATCH', suffix = ''
+
+    @pytest.mark.parametrize('method,suffix', [('PATCH', ''), ('POST', '/confirm')])
+    def test_review_requires_ownership_and_authentication(review_draft, run_client, method, suffix):
+        body = {'expectedRevision': 1}
+        if method == 'PATCH':
+            body['changes'] = decisions(review_draft)
+        path = '/api/resume-versions/' + review_draft['id'] + suffix
+>       assert run_client.request(method, path, json=body, headers=headers('bob')).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = request('PATCH', '/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655', json={'changes': [{'id': '527188b0-b7f2-4e1e-8d28-73128c3f7d59', 'status': 'accepted'}, {'id': '8979c074-3368-4f64-a271-c424e462fa54', 'status': 'rejected'}], 'expectedRevision': 1}, headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'})
+E        +      where request = <starlette.testclient.TestClient object at 0x1143e2d50>.request
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5M30.3XMgRljCjauceIG07-h2jmUQce4rfg3RXhSUm-CGgpE'} = headers('bob')
+
+backend/tests/test_resume_review.py:190: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:13,747 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 client=testclient
+2026-10-30 00:43:13,750 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 status=200 duration_ms=2
+2026-10-30 00:43:13,750 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:13,751 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 client=testclient
+2026-10-30 00:43:13,751 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 status=405 duration_ms=0
+2026-10-30 00:43:13,752 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/68c83d2a-777c-4f60-89eb-e26dfc2ab655 "HTTP/1.1 405 Method Not Allowed"
+____ test_review_requires_ownership_and_authentication[mysql-POST-/confirm] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:14', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+run_client = <starlette.testclient.TestClient object at 0x1149dc710>
+method = 'POST', suffix = '/confirm'
+
+    @pytest.mark.parametrize('method,suffix', [('PATCH', ''), ('POST', '/confirm')])
+    def test_review_requires_ownership_and_authentication(review_draft, run_client, method, suffix):
+        body = {'expectedRevision': 1}
+        if method == 'PATCH':
+            body['changes'] = decisions(review_draft)
+        path = '/api/resume-versions/' + review_draft['id'] + suffix
+>       assert run_client.request(method, path, json=body, headers=headers('bob')).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = request('POST', '/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm', json={'expectedRevision': 1}, headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5NH0.HUQih37ZRZoocf6VQtxSxiEd2Gla1QiT_MgDJNjw394'})
+E        +      where request = <starlette.testclient.TestClient object at 0x1149dc710>.request
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3ODU5NH0.HUQih37ZRZoocf6VQtxSxiEd2Gla1QiT_MgDJNjw394'} = headers('bob')
+
+backend/tests/test_resume_review.py:190: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,027 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 client=testclient
+2026-10-30 00:43:14,029 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 status=200 duration_ms=2
+2026-10-30 00:43:14,030 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,031 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm client=testclient
+2026-10-30 00:43:14,031 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm status=405 duration_ms=0
+2026-10-30 00:43:14,031 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/adbed445-8df6-4561-9030-c0956b7df555/confirm "HTTP/1.1 405 Method Not Allowed"
+___ test_two_readers_at_same_revision_cannot_both_write[sqlite-operations0] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14.102251+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:14.089390', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-100/test_two_readers_at_same_revis0/career.db)
+run_client = <starlette.testclient.TestClient object at 0x11505aff0>
+operations = ('save', 'save')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,103 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db client=testclient
+2026-10-30 00:43:14,105 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db status=200 duration_ms=2
+2026-10-30 00:43:14,106 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,106 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db client=testclient
+2026-10-30 00:43:14,106 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db status=405 duration_ms=0
+2026-10-30 00:43:14,107 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/7972ada8-5404-41ab-8556-4d06808126db "HTTP/1.1 405 Method Not Allowed"
+___ test_two_readers_at_same_revision_cannot_both_write[sqlite-operations1] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14.134032+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:14.124701', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-100/test_two_readers_at_same_revis1/career.db)
+run_client = <starlette.testclient.TestClient object at 0x115109580>
+operations = ('save', 'confirm')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,135 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 client=testclient
+2026-10-30 00:43:14,137 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 status=200 duration_ms=2
+2026-10-30 00:43:14,138 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,138 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 client=testclient
+2026-10-30 00:43:14,138 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 status=405 duration_ms=0
+2026-10-30 00:43:14,139 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/7ec6cb49-a23a-4a13-a797-48c2c4b916e7 "HTTP/1.1 405 Method Not Allowed"
+___ test_two_readers_at_same_revision_cannot_both_write[sqlite-operations2] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14.166289+00:00', 'factRefs': [{'inputV...'2026-10-29T16:43:14.157287', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-100/test_two_readers_at_same_revis2/career.db)
+run_client = <starlette.testclient.TestClient object at 0x11521e7e0>
+operations = ('confirm', 'confirm')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,167 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe client=testclient
+2026-10-30 00:43:14,169 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe status=200 duration_ms=2
+2026-10-30 00:43:14,170 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,170 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe client=testclient
+2026-10-30 00:43:14,170 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe status=405 duration_ms=0
+2026-10-30 00:43:14,171 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/6a6c84a2-6cf7-414c-9d14-92f98c719dfe "HTTP/1.1 405 Method Not Allowed"
+____ test_two_readers_at_same_revision_cannot_both_write[mysql-operations0] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:14+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:14', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(mysql+pymysql://root@/resumate_test_5628ed95086844df84e7a3a0f400865b?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x1152a7d70>
+operations = ('save', 'save')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,411 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b client=testclient
+2026-10-30 00:43:14,414 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b status=200 duration_ms=2
+2026-10-30 00:43:14,415 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,415 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b client=testclient
+2026-10-30 00:43:14,415 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b status=405 duration_ms=0
+2026-10-30 00:43:14,416 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/c6ce34f0-6f86-40d9-8690-5bdd32423c5b "HTTP/1.1 405 Method Not Allowed"
+____ test_two_readers_at_same_revision_cannot_both_write[mysql-operations1] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:15+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:15', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(mysql+pymysql://root@/resumate_test_437d931061dc410c98046a14c65f7324?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x115375df0>
+operations = ('save', 'confirm')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,688 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 client=testclient
+2026-10-30 00:43:14,690 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 status=200 duration_ms=2
+2026-10-30 00:43:14,691 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,692 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 client=testclient
+2026-10-30 00:43:14,692 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 status=405 duration_ms=0
+2026-10-30 00:43:14,692 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/3bf116fc-1722-4531-8ca1-b265c9d01de2 "HTTP/1.1 405 Method Not Allowed"
+____ test_two_readers_at_same_revision_cannot_both_write[mysql-operations2] ____
+
+review_draft = {'basedOnOldInput': False, 'changedInputs': [], 'createdAt': '2026-10-29T16:43:15+00:00', 'factRefs': [{'inputVersion': '2026-10-29T16:43:15', 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], ...}
+career_engine = Engine(mysql+pymysql://root@/resumate_test_1e1f5278c6884069a39a16a09442e229?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x1153e36e0>
+operations = ('confirm', 'confirm')
+
+    @pytest.mark.parametrize('operations', [('save', 'save'), ('save', 'confirm'), ('confirm', 'confirm')])
+    def test_two_readers_at_same_revision_cannot_both_write(review_draft, career_engine, run_client, operations):
+        saved_response = save(run_client, review_draft, decisions(review_draft))
+>       assert saved_response.status_code == 200, saved_response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_resume_review.py:197: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 00:43:14,988 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 client=testclient
+2026-10-30 00:43:14,991 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 status=200 duration_ms=2
+2026-10-30 00:43:14,992 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 "HTTP/1.1 200 OK"
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:43:14,992 | INFO | backend.app | Request start | method=PATCH path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 client=testclient
+2026-10-30 00:43:14,992 | INFO | backend.app | Request end | method=PATCH path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 status=405 duration_ms=0
+2026-10-30 00:43:14,993 | INFO | httpx | HTTP Request: PATCH http://testserver/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/resume-versions/7b27cf33-c5c9-471d-8aad-b658ffb57948 "HTTP/1.1 405 Method Not Allowed"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_review.py::test_accept_reject_edit_and_undo_rebuild_original_snapshot[sqlite]
+FAILED backend/tests/test_resume_review.py::test_accept_reject_edit_and_undo_rebuild_original_snapshot[mysql]
+FAILED backend/tests/test_resume_review.py::test_saving_after_original_changes_still_uses_run_snapshot[sqlite]
+FAILED backend/tests/test_resume_review.py::test_saving_after_original_changes_still_uses_run_snapshot[mysql]
+FAILED backend/tests/test_resume_review.py::test_saving_after_original_deleted_keeps_frozen_resume[sqlite]
+FAILED backend/tests/test_resume_review.py::test_saving_after_original_deleted_keeps_frozen_resume[mysql]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-missing]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-duplicate]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-unknown]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-unreviewed_input]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-edited_missing_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-edited_null]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-accepted_with_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-pending_with_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-unknown_status]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[sqlite-changed_source]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-missing]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-duplicate]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-unknown]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-unreviewed_input]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-edited_missing_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-edited_null]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-accepted_with_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-pending_with_text]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-unknown_status]
+FAILED backend/tests/test_resume_review.py::test_invalid_decisions_do_not_write_any_part[mysql-changed_source]
+FAILED backend/tests/test_resume_review.py::test_whole_resume_and_sources_cannot_bypass_decisions[sqlite]
+FAILED backend/tests/test_resume_review.py::test_whole_resume_and_sources_cannot_bypass_decisions[mysql]
+FAILED backend/tests/test_resume_review.py::test_pending_cannot_confirm_and_confirmed_version_is_immutable[sqlite]
+FAILED backend/tests/test_resume_review.py::test_pending_cannot_confirm_and_confirmed_version_is_immutable[mysql]
+FAILED backend/tests/test_resume_review.py::test_empty_suggestions_can_confirm_directly[sqlite]
+FAILED backend/tests/test_resume_review.py::test_empty_suggestions_can_confirm_directly[mysql]
+FAILED backend/tests/test_resume_review.py::test_legacy_drafts_are_readable_but_cannot_save_or_confirm[sqlite]
+FAILED backend/tests/test_resume_review.py::test_legacy_drafts_are_readable_but_cannot_save_or_confirm[mysql]
+FAILED backend/tests/test_resume_review.py::test_review_requires_ownership_and_authentication[sqlite-PATCH-]
+FAILED backend/tests/test_resume_review.py::test_review_requires_ownership_and_authentication[sqlite-POST-/confirm]
+FAILED backend/tests/test_resume_review.py::test_review_requires_ownership_and_authentication[mysql-PATCH-]
+FAILED backend/tests/test_resume_review.py::test_review_requires_ownership_and_authentication[mysql-POST-/confirm]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[sqlite-operations0]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[sqlite-operations1]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[sqlite-operations2]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[mysql-operations0]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[mysql-operations1]
+FAILED backend/tests/test_resume_review.py::test_two_readers_at_same_revision_cannot_both_write[mysql-operations2]
+44 failed, 7 warnings in 8.07s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
