@@ -63,3 +63,18 @@ T10 完整后端 552 passed / 2 expected skipped，前端 87 passed、原有测�
 T10 已提交 `de744e7`。按[实施合同](../superpowers/plans/2026-10-30-t11-export-and-submission.md)分为导出 Run、投递快照、前端入口与真实运行验收。PDF 使用已确认的冻结内容；主简历修改/删除不重写历史材料。运行依赖固定 Python Playwright 1.64.1、Jinja2 3.1.6、Debian Noto CJK 字体，依赖安装和真实渲染结果仍需记录。
 
 最终完整后端626 passed / 3 expected skipped，前端94 passed/原有测试/构建通过，完整真实浏览器17 passed / 1.4m；实际Linux worker PDF最终1 passed / 14.31s。最终两页1218字与逐页图实际查看，7张页面图检查，手机动作/本地日期/独立metrics真实缺口均修复。过程、原始日志和教学存于[第十一课](11-pdf-and-submission-snapshots.md)与[T11记录](test-records/2026-10-30-t11.md)。继续T12上下文与记忆；不以这些确定性结果替代真实模型评测。
+
+## T12：上下文预算与可维护记忆（完成确定性验收）
+
+T11 已提交 `1d7c211`，日志封存补充 `f3042d2`。按[局部合同](../superpowers/plans/2026-10-30-t12-context-and-memory.md)分离来源快照与工作上下文；新增显式容量、确认记忆及可恢复的副本清理。既有业务证据继续保留，删除记忆只阻断相关图会话并清其checkpoint，不阻断PDF。
+
+### T12 存储/设置的红绿证据（2026-10-30）
+
+新增 8 个双库用例先出现 8 项失败，分别暴露容量字段、部分更新校验、记忆/会话字段和旧库升级缺失。落盘模型、设置合并校验和 003 手工 SQL 后，8 项新用例与 6 项原设置回归共 14 项通过（2.02 秒）。旧容量保持 NULL；无效部分更新在改写 ORM 前拒绝，保留原配置。此时上下文与记忆执行链仍在开发，不能据此宣称 T12 整体完成。原始输出暂存 `/tmp/resumate-t12-models-{red,green}.txt`，归档时复制到测试记录目录。
+
+
+T12 最终后端 678 passed / 6 expected skipped / 121.97s；前端全组件 109 passed，审查修复后相关组件 26 passed，类型检查/构建通过；完整真实浏览器 20 passed / 1.6m。14 张最终桌面/手机截图均实际打开查看。MySQL 创建/删除锁序、历史失败 Session 失效入口、首次列表读取交错三项 P2 已复现、修复并限定复审通过。[第十二课](12-context-and-business-memory.md)与[T12记录](test-records/2026-10-30-t12.md)保留失败、原始结果、截图和限制。
+
+## T13：追踪与首批 12 案评测（实施中）
+
+按[局部合同](../superpowers/plans/2026-10-30-t13-tracing-and-core-evals.md)构建独立评测环境、纯验证器、真实调用限费及白名单观测。默认 stub；真实模型调用与 Langfuse 接收结果分别保留证据，不能由本地假模型代替。费用金额上限尚待可运行 harness 准备完成后确认，不提前发付费请求。

@@ -29,3 +29,11 @@ RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock uv run pytest back
 ```
 
 用例创建并删除独立测试库，验证去重、资源归属、分页、已有匹配、粘贴文本异步解析/失败重试以及主简历删除后关联置空。粘贴岗位复用既有 `JobProfile` 解析；匹配检索的是简历证据，因此不为粘贴 JD 额外调用 embedding。
+
+## T12：模型容量与业务记忆
+
+在已执行 001、002 的 MySQL 库中，一次执行 `003_context_and_memory.sql`。它增加可空模型上下文容量、Session 失效/清理时间和独立业务记忆表。旧模型容量保持 NULL，不根据模型名称猜测；旧会话状态保持 NULL。SQLite 沿用启动补表/补列，可重复启动。
+
+记忆正文及来源在用户删除时清空；Session 两个时间戳区分“已停止使用”和“工作副本已清除”。它们不替代业务版本历史。沿用上述备份与 DDL 部分执行恢复要求。
+
+定向验证 `backend/tests/test_memory_settings_models.py` 会先模拟 T11 结构，再执行 SQLite 启动升级或实际 MySQL SQL，验证旧行保留及新列空值；测试使用独立临时数据库。

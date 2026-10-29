@@ -18,6 +18,7 @@
     </section>
 
     <ProfileFacts :resume-id="selectedResumeId" :parsed-content="selectedResume?.parsedContent" />
+    <BusinessMemory />
 
     <section v-if="store.listLoading && !parsedResumes.length" class="card loading-state" role="status">正在加载简历资料…</section>
     <section v-else-if="store.error && !selectedResume" class="card" role="alert">
@@ -226,6 +227,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import CopyFieldButton from '../components/CopyFieldButton.vue'
 import ProfileFacts from '../components/ProfileFacts.vue'
+import BusinessMemory from '../components/BusinessMemory.vue'
 import { emptyProfile, emptyEducation, emptyWork, emptyProject, emptyPaper, emptyAward, normalizeProfile } from '../utils/profileDraft'
 import { useDocumentStore } from '../stores/document'
 import { countFilledProfileFields, profileRequiredFields } from '../utils/profileFields'

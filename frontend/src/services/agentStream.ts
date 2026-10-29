@@ -5,6 +5,7 @@ export type RunStatus = 'queued' | 'running' | 'waiting_input' | 'waiting_approv
 export interface RunSnapshot {
   runId: string
   sessionId: string
+  sessionInvalidated: boolean
   kind: string
   status: RunStatus
   input: Record<string, unknown>

@@ -1,0 +1,29 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/BusinessMemory.spec.ts -t keeps the draft
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/BusinessMemory.spec.ts (6 tests | 1 failed | 5 skipped) 24ms
+     × keeps the draft when saving loses its connection 24ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > keeps the draft when saving loses its connection
+AssertionError: expected 'Network Error' to contain '网络连接中断'
+
+Expected: "网络连接中断"
+Received: "Network Error"
+
+ ❯ src/components/BusinessMemory.spec.ts:29:168
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  01:32:03
+   Duration  1.15s (transform 69ms, setup 0ms, import 117ms, tests 24ms, environment 895ms)
+

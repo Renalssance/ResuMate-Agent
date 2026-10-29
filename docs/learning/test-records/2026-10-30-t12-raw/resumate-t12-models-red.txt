@@ -1,0 +1,338 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_____ test_unknown_capacity_is_not_guessed_and_setting_roundtrips[sqlite] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10c9692b0>
+
+    def test_unknown_capacity_is_not_guessed_and_setting_roundtrips(career_db):
+        initial = read_llm_settings(1, career_db)
+>       assert 'context_window_tokens' in initial.model_fields
+E       AssertionError: assert 'context_window_tokens' in {'api_key_hint': FieldInfo(annotation=str, required=True), 'base_url': FieldInfo(annotation=str, required=True), 'has_api_key': FieldInfo(annotation=bool, required=True), 'max_tokens': FieldInfo(annotation=int, required=True), ...}
+E        +  where {'api_key_hint': FieldInfo(annotation=str, required=True), 'base_url': FieldInfo(annotation=str, required=True), 'has_api_key': FieldInfo(annotation=bool, required=True), 'max_tokens': FieldInfo(annotation=int, required=True), ...} = LlmSettingsResponse(has_api_key=False, api_key_hint='', base_url='', model='', max_tokens=8192, request_timeout_seconds=300.0).model_fields
+
+backend/tests/test_memory_settings_models.py:18: AssertionError
+______ test_unknown_capacity_is_not_guessed_and_setting_roundtrips[mysql] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d7a4ad0>
+
+    def test_unknown_capacity_is_not_guessed_and_setting_roundtrips(career_db):
+        initial = read_llm_settings(1, career_db)
+>       assert 'context_window_tokens' in initial.model_fields
+E       AssertionError: assert 'context_window_tokens' in {'api_key_hint': FieldInfo(annotation=str, required=True), 'base_url': FieldInfo(annotation=str, required=True), 'has_api_key': FieldInfo(annotation=bool, required=True), 'max_tokens': FieldInfo(annotation=int, required=True), ...}
+E        +  where {'api_key_hint': FieldInfo(annotation=str, required=True), 'base_url': FieldInfo(annotation=str, required=True), 'has_api_key': FieldInfo(annotation=bool, required=True), 'max_tokens': FieldInfo(annotation=int, required=True), ...} = LlmSettingsResponse(has_api_key=False, api_key_hint='', base_url='', model='', max_tokens=8192, request_timeout_seconds=300.0).model_fields
+
+backend/tests/test_memory_settings_models.py:18: AssertionError
+_____ test_partial_settings_update_validates_merged_output_reserve[sqlite] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d9cc710>
+
+    def test_partial_settings_update_validates_merged_output_reserve(career_db):
+        save_llm_settings(1, LlmSettingsUpdate(context_window_tokens=16000, max_tokens=4096), career_db)
+>       with pytest.raises(HTTPException) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'fastapi.exceptions.HTTPException'>
+
+backend/tests/test_memory_settings_models.py:31: Failed
+_____ test_partial_settings_update_validates_merged_output_reserve[mysql] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10da940e0>
+
+    def test_partial_settings_update_validates_merged_output_reserve(career_db):
+        save_llm_settings(1, LlmSettingsUpdate(context_window_tokens=16000, max_tokens=4096), career_db)
+>       with pytest.raises(HTTPException) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'fastapi.exceptions.HTTPException'>
+
+backend/tests/test_memory_settings_models.py:31: Failed
+____________ test_memory_and_session_cleanup_state_persist[sqlite] _____________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10db46420>
+
+    def test_memory_and_session_cleanup_state_persist(career_db):
+        memory_type = getattr(career_models, 'BusinessMemory', None)
+>       assert memory_type is not None
+E       assert None is not None
+
+backend/tests/test_memory_settings_models.py:42: AssertionError
+_____________ test_memory_and_session_cleanup_state_persist[mysql] _____________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10db9bf20>
+
+    def test_memory_and_session_cleanup_state_persist(career_db):
+        memory_type = getattr(career_models, 'BusinessMemory', None)
+>       assert memory_type is not None
+E       assert None is not None
+
+backend/tests/test_memory_settings_models.py:42: AssertionError
+__________ test_supported_old_database_upgrade_preserves_rows[sqlite] __________
+
+self = <sqlalchemy.engine.base.Connection object at 0x10da96c30>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10dbd5fd0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10dc23860>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10dc23a70>
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10dbd5fd0>
+cursor = <sqlite3.Cursor object at 0x10cf53bc0>
+statement = 'SELECT model,context_window_tokens FROM user_llm_settings'
+parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10dc23860>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: context_window_tokens
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dbd59d0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-117/test_supported_old_database_up0/career.db)
+
+    def test_supported_old_database_upgrade_preserves_rows(career_db, career_engine):
+        career_db.add(UserLlmSettings(user_id=1, model='existing-model', max_tokens=4096))
+        career_db.add(AgentSession(id='existing-session', user_id=1, purpose='tailoring'))
+        career_db.commit(); career_db.close()
+        # Simulate the immediately preceding supported schema, not an invented database.
+        with career_engine.begin() as connection:
+            if 'business_memories' in inspect(connection).get_table_names():
+                connection.execute(text('DROP TABLE business_memories'))
+            if 'context_window_tokens' in {c['name'] for c in inspect(connection).get_columns('user_llm_settings')}:
+                connection.execute(text('ALTER TABLE user_llm_settings DROP COLUMN context_window_tokens'))
+            for name in ('context_invalidated_at', 'checkpoint_deleted_at'):
+                if name in {c['name'] for c in inspect(connection).get_columns('agent_sessions')}:
+                    connection.execute(text(f'ALTER TABLE agent_sessions DROP COLUMN {name}'))
+        if career_engine.dialect.name == 'sqlite':
+            database.Base.metadata.create_all(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+            sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/003_context_and_memory.sql').read_text()
+            with career_engine.begin() as connection:
+                for statement in sql.split(';'):
+                    if statement.strip(): connection.execute(text(statement))
+        with career_engine.connect() as connection:
+>           assert connection.execute(text('SELECT model,context_window_tokens FROM user_llm_settings')).one() == ('existing-model', None)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_memory_settings_models.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10dbd5fd0>
+cursor = <sqlite3.Cursor object at 0x10cf53bc0>
+statement = 'SELECT model,context_window_tokens FROM user_llm_settings'
+parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10dc23860>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: context_window_tokens
+E       [SQL: SELECT model,context_window_tokens FROM user_llm_settings]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+__________ test_supported_old_database_upgrade_preserves_rows[mysql] ___________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dc20f80>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_4bbac3f2b69646fa9db59e1e8292d53b?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_supported_old_database_upgrade_preserves_rows(career_db, career_engine):
+        career_db.add(UserLlmSettings(user_id=1, model='existing-model', max_tokens=4096))
+        career_db.add(AgentSession(id='existing-session', user_id=1, purpose='tailoring'))
+        career_db.commit(); career_db.close()
+        # Simulate the immediately preceding supported schema, not an invented database.
+        with career_engine.begin() as connection:
+            if 'business_memories' in inspect(connection).get_table_names():
+                connection.execute(text('DROP TABLE business_memories'))
+            if 'context_window_tokens' in {c['name'] for c in inspect(connection).get_columns('user_llm_settings')}:
+                connection.execute(text('ALTER TABLE user_llm_settings DROP COLUMN context_window_tokens'))
+            for name in ('context_invalidated_at', 'checkpoint_deleted_at'):
+                if name in {c['name'] for c in inspect(connection).get_columns('agent_sessions')}:
+                    connection.execute(text(f'ALTER TABLE agent_sessions DROP COLUMN {name}'))
+        if career_engine.dialect.name == 'sqlite':
+            database.Base.metadata.create_all(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+>           sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/003_context_and_memory.sql').read_text()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_memory_settings_models.py:73:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/003_context_and_memory.sql')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/003_context_and_memory.sql'
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=============================== warnings summary ===============================
+backend/tests/test_memory_settings_models.py::test_unknown_capacity_is_not_guessed_and_setting_roundtrips[sqlite]
+backend/tests/test_memory_settings_models.py::test_unknown_capacity_is_not_guessed_and_setting_roundtrips[mysql]
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_memory_settings_models.py:18: PydanticDeprecatedSince211: Accessing the 'model_fields' attribute on the instance is deprecated. Instead, you should access this attribute from the model class. Deprecated in Pydantic V2.11 to be removed in V3.0.
+    assert 'context_window_tokens' in initial.model_fields
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_memory_settings_models.py::test_unknown_capacity_is_not_guessed_and_setting_roundtrips[sqlite]
+FAILED backend/tests/test_memory_settings_models.py::test_unknown_capacity_is_not_guessed_and_setting_roundtrips[mysql]
+FAILED backend/tests/test_memory_settings_models.py::test_partial_settings_update_validates_merged_output_reserve[sqlite]
+FAILED backend/tests/test_memory_settings_models.py::test_partial_settings_update_validates_merged_output_reserve[mysql]
+FAILED backend/tests/test_memory_settings_models.py::test_memory_and_session_cleanup_state_persist[sqlite]
+FAILED backend/tests/test_memory_settings_models.py::test_memory_and_session_cleanup_state_persist[mysql]
+FAILED backend/tests/test_memory_settings_models.py::test_supported_old_database_upgrade_preserves_rows[sqlite]
+FAILED backend/tests/test_memory_settings_models.py::test_supported_old_database_upgrade_preserves_rows[mysql]
+8 failed, 2 warnings in 1.61s

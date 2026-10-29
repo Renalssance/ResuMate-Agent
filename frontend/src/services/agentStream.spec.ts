@@ -8,7 +8,7 @@ function snapshot(overrides: Partial<RunSnapshot> = {}): RunSnapshot {
   return {
     runId, sessionId: 'session-1', kind: 'tailoring', status: 'running',
     input: { jdId: 1, resumeId: 2 }, inputVersions: { resume: 'v1', jd: 'v1' },
-    attempt: 1, lastSeq: 0, errorCode: null, cancelRequested: false, outputRefs: [], actions: [],
+    attempt: 1, lastSeq: 0, errorCode: null, sessionInvalidated: false, cancelRequested: false, outputRefs: [], actions: [],
     ...overrides,
   }
 }

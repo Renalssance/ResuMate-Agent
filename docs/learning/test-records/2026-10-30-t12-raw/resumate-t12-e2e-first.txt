@@ -1,0 +1,31 @@
+
+> test:e2e
+> playwright test context-memory.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-2PqWYp
+
+Running 2 tests using 1 worker
+
+(node:10150) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/context-memory.spec.ts:21:1 › 真实设置保存区分容量与输出，缺配置和超预算给出可行动说明 (2.3s)
+  ✘  2 [chromium] › tests/e2e/context-memory.spec.ts:55:1 › 确认保存长记忆、刷新保留、删除清理和旧任务隔离 (45.1s)
+
+
+  1) [chromium] › tests/e2e/context-memory.spec.ts:55:1 › 确认保存长记忆、刷新保留、删除清理和旧任务隔离 ──────────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error Context: test-results/context-memory-确认保存长记忆、刷新保留、删除清理和旧任务隔离-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/context-memory-确认保存长记忆、刷新保留、删除清理和旧任务隔离-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/context-memory-确认保存长记忆、刷新保留、删除清理和旧任务隔离-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/context-memory.spec.ts:55:1 › 确认保存长记忆、刷新保留、删除清理和旧任务隔离 ───────────────────
+  1 passed (57.0s)

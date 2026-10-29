@@ -29,7 +29,16 @@ class BrowserDraftModel(DraftModel):
         return changes
 
 
-factory.model_for_user = lambda user_id: BrowserDraftModel()
+_configured_model = factory.model_for_user
+
+
+def browser_model_for_user(user_id):
+    # Constructing the real configured client validates settings without a request.
+    configured = _configured_model(user_id)
+    return BrowserDraftModel(profile=configured.profile, max_tokens=configured.max_tokens)
+
+
+factory.model_for_user = browser_model_for_user
 
 
 # PDF browser acceptance uses the real renderer; only the test process can

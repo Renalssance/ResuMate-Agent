@@ -1,0 +1,93 @@
+...............................F........................................ [ 10%]
+...........................................s............................ [ 21%]
+........................................................................ [ 31%]
+........................................................................ [ 42%]
+........................................................................ [ 53%]
+........................................................................ [ 63%]
+.............................................................s.......... [ 74%]
+........................................................................ [ 85%]
+........................................................................ [ 95%]
+.........s..................                                             [100%]
+=================================== FAILURES ===================================
+_______________ test_custom_model_endpoint_requests_stream_usage _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11566fc50>
+
+    def test_custom_model_endpoint_requests_stream_usage(monkeypatch):
+        from functools import partial
+        from types import SimpleNamespace
+        import httpx
+        from langchain_core.messages import HumanMessage
+        from backend.agent_runtime import factory
+        requested = []
+        def respond(request):
+            requested.append(json.loads(request.content))
+            chunks = [
+                {'id': 'completion-1', 'object': 'chat.completion.chunk', 'created': 0, 'model': 'compatible-model',
+                 'choices': [{'index': 0, 'delta': {'role': 'assistant', 'content': 'Hello'}, 'finish_reason': None}]},
+                {'id': 'completion-1', 'object': 'chat.completion.chunk', 'created': 0, 'model': 'compatible-model',
+                 'choices': [], 'usage': {'prompt_tokens': 4, 'completion_tokens': 1, 'total_tokens': 5}},
+            ]
+            stream = ''.join(f'data: {json.dumps(chunk)}\n\n' for chunk in chunks) + 'data: [DONE]\n\n'
+            return httpx.Response(200, headers={'content-type': 'text/event-stream'}, text=stream)
+        monkeypatch.setattr(factory, 'resolve_effective_llm_settings', lambda user_id: SimpleNamespace(
+            api_key='synthetic-key', base_url='https://model.invalid/v1', model='compatible-model',
+            max_tokens=100, request_timeout_seconds=30,
+        ))
+        with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+            monkeypatch.setattr(factory, 'ChatOpenAI', partial(factory.ChatOpenAI, http_client=client))
+>           chunks = list(factory.model_for_user(1).stream([HumanMessage(content='Hello')]))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_agent_events.py:226:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+user_id = 1
+
+    def model_for_user(user_id: int):
+        settings = resolve_effective_llm_settings(user_id)
+        if not all((settings.api_key, settings.base_url, settings.model)):
+            raise RunError(422, 'model_not_configured', '请先完成个人模型设置')
+>       if settings.context_window_tokens is None:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'context_window_tokens'
+
+backend/agent_runtime/factory.py:24: AttributeError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+backend/tests/test_conversation_storage.py::test_conversation_storage_round_trips_without_cache
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/agent.py:62: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_events.py::test_custom_model_endpoint_requests_stream_usage
+1 failed, 672 passed, 3 skipped, 8 warnings in 85.03s (0:01:25)

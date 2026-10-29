@@ -100,7 +100,8 @@ def main():
                            parse_status='success', raw_text='负责 API 和数据库设计。', structured_data={'title': 'API 工程师'}),
         ])
         db.add(UserLlmSettings(user_id=1, api_key='synthetic-browser-model-key',
-                               base_url='https://model-fixture.invalid/v1', model='browser-deterministic'))
+                               base_url='https://model-fixture.invalid/v1', model='browser-deterministic',
+                               context_window_tokens=64000, max_tokens=4096))
         db.commit()
     image = os.environ.get('RESUMATE_E2E_REDIS_IMAGE', 'public.ecr.aws/docker/library/redis:7.4-alpine')
     container_id = subprocess.check_output([
@@ -116,7 +117,7 @@ def main():
     wait_for(redis_ready, 'disposable Redis')
     start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', '127.0.0.1', '--port', '4174'], env, 'api')
     # Solo avoids macOS fork restrictions while exercising the actual Celery delivery/task.
-    start([PYTHON, '-m', 'celery', '-A', 'backend.tests.e2e_worker_fixture:app', 'worker',
+    worker = start([PYTHON, '-m', 'celery', '-A', 'backend.tests.e2e_worker_fixture:app', 'worker',
            '--pool=solo', '--concurrency=1', '--loglevel=WARNING', '--without-gossip', '--without-mingle'], env, 'worker')
     with httpx.Client(base_url=API, timeout=5) as client:
         def healthy():
@@ -135,7 +136,7 @@ def main():
         paused_id = response.json()['runId']
         wait_for(lambda: client.get('/api/agent/runs/' + paused_id).json()['status'] == 'waiting_input',
                  'real checkpoint-backed paused Run')
-    (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id}))
+    (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id, 'workerPid': worker.pid, 'redisUrl': env['REDIS_URL']}))
     start(['npm', '--prefix', 'frontend', 'run', 'dev', '--', '--host', '127.0.0.1',
            '--port', '4173', '--strictPort'], env, 'frontend')
     print(f'E2E services ready; isolated SQL/checkpoints/logs: {STATE}', flush=True)

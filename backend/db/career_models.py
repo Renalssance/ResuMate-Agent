@@ -86,3 +86,17 @@ class InterviewCommand(Base):
     type: Mapped[str] = mapped_column(String(40))
     result_ref: Mapped[str | None] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(Enum('accepted', 'succeeded', 'failed', native_enum=False, create_constraint=True, name='interview_command_status'), default='accepted')
+
+
+class BusinessMemory(Base):
+    """Explicitly confirmed preferences; never evidence of personal experience."""
+    __tablename__ = 'business_memories'
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    kind: Mapped[str] = mapped_column(Enum('preference', 'interview_feedback', native_enum=False,
+                                         create_constraint=True, name='business_memory_kind'))
+    content: Mapped[str] = mapped_column(LARGE_TEXT)
+    source_ref: Mapped[dict] = mapped_column(JSON, default=dict)
+    confirmed_at: Mapped[datetime] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime)

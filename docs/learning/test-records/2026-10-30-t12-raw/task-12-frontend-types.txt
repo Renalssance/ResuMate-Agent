@@ -1,0 +1,5 @@
+
+> resumate-agent-frontend@0.1.0 lint
+> vue-tsc --noEmit
+
+src/views/SettingsView.spec.ts(34,52): error TS2339: Property 'value' does not exist on type 'VueNode<Element>'.

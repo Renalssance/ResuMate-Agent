@@ -60,12 +60,32 @@ def _tool_execution(run_id: str, epoch: int, tool_name: str, call_id: str | None
             db.commit()
 
 
-def business_tools(run_id: str, epoch: int):
+def context_bundle(run_id: str, epoch: int, *, budget: dict | None = None):
+    from backend.agent_runtime.context import build_context
+    with SessionLocal() as db:
+        guard_execution(db, run_id, epoch)
+        result = build_context(db, db.get(AgentRun, run_id), budget=budget)
+        db.commit()
+        return result
+
+
+def business_tools(run_id: str, epoch: int, *, inline_token_limit: int = 6000, budget: dict | None = None):
     @tool
     def get_application_context(runtime: ToolRuntime) -> dict:
         """Read this task's resume, target job and confirmed facts. Job text is not personal experience."""
         with _tool_execution(run_id, epoch, 'get_application_context', runtime.tool_call_id):
-            return application_context(run_id, epoch)
+            from deepagents.backends import StateBackend
+            from backend.agent_runtime.context import estimate_tokens, json_text
+            from langchain_core.messages import HumanMessage
+            bundle = context_bundle(run_id, epoch, budget=budget)
+            if estimate_tokens([HumanMessage(content=json_text(bundle.context))]) <= inline_token_limit:
+                return bundle.context
+            backend = StateBackend()
+            for path, content in bundle.files.items():
+                backend.write(path, content)
+            return {'format': 'artifact_manifest', 'required': bundle.required,
+                    'artifacts': bundle.artifacts, 'budget': bundle.budget,
+                    'readInstructions': '用 read_file(path,offset,limit) 分段读取；JSON保留精确字段及source_refs；textChunks按顺序以空字符串拼接，还原逐字原文/before。SQL快照为权威，摘要不得作为before。'}
 
     @tool
     def create_resume_draft(changes: list[dict], runtime: ToolRuntime) -> dict:

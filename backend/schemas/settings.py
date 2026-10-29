@@ -9,6 +9,7 @@ class LlmSettingsUpdate(BaseModel):
     base_url: str | None = None
     model: str | None = None
     max_tokens: int | None = Field(default=None, ge=1)
+    context_window_tokens: int | None = Field(default=None, ge=1)
     request_timeout_seconds: float | None = Field(default=None, ge=1)
 
 
@@ -18,6 +19,7 @@ class LlmSettingsResponse(BaseModel):
     base_url: str
     model: str
     max_tokens: int
+    context_window_tokens: int | None = None
     request_timeout_seconds: float
 
 

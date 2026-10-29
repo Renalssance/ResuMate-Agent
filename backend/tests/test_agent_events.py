@@ -219,7 +219,7 @@ def test_custom_model_endpoint_requests_stream_usage(monkeypatch):
         return httpx.Response(200, headers={'content-type': 'text/event-stream'}, text=stream)
     monkeypatch.setattr(factory, 'resolve_effective_llm_settings', lambda user_id: SimpleNamespace(
         api_key='synthetic-key', base_url='https://model.invalid/v1', model='compatible-model',
-        max_tokens=100, request_timeout_seconds=30,
+        max_tokens=100, request_timeout_seconds=30, context_window_tokens=32000,
     ))
     with httpx.Client(transport=httpx.MockTransport(respond)) as client:
         monkeypatch.setattr(factory, 'ChatOpenAI', partial(factory.ChatOpenAI, http_client=client))

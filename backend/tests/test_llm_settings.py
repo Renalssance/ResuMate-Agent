@@ -13,6 +13,7 @@ def account(monkeypatch):
     monkeypatch.setenv('OPENAI_API_KEY', 'server-secret')
     monkeypatch.setenv('OPENAI_BASE_URL', 'https://server.example/v1')
     monkeypatch.setenv('LLM_MODEL', 'server-model')
+    monkeypatch.setenv('LLM_CONTEXT_WINDOW_TOKENS', '64000')
     engine = create_engine('sqlite://')
     Base.metadata.create_all(engine)
     with Session(engine) as db:
@@ -30,6 +31,7 @@ def test_new_account_starts_without_provider_configuration(account):
     assert settings.api_key_hint == ''
     assert settings.base_url == ''
     assert settings.model == ''
+    assert settings.context_window_tokens is None
     assert resolve_effective_llm_settings(user_id, db).api_key == ''
 
 
@@ -42,11 +44,13 @@ def test_saved_settings_and_cleared_key_do_not_inherit_server_values(account):
     assert not settings.has_api_key
     assert settings.base_url == ''
     assert settings.model == ''
+    assert settings.context_window_tokens is None
 
 
 def test_non_account_calls_keep_environment_configuration(account):
     db, _ = account
     assert resolve_effective_llm_settings(None, db).api_key == 'server-secret'
+    assert resolve_effective_llm_settings(None, db).context_window_tokens == 64000
 
 
 @pytest.mark.parametrize('caller', ['harness', 'chat', 'interview_tool'])

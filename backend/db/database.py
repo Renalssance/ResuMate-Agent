@@ -245,3 +245,14 @@ def ensure_sqlite_schema(engine: Engine) -> None:
                     connection.execute(text(f"ALTER TABLE job_applications ADD COLUMN {name} {ddl}"))
             for name in ("jd_id", "resume_version_id"):
                 connection.execute(text(f"CREATE INDEX IF NOT EXISTS ix_job_applications_{name} ON job_applications ({name})"))
+
+        # T12 keeps unknown model capacity explicit and records pending graph cleanup.
+        for table, additions in {
+            'user_llm_settings': {'context_window_tokens': 'INTEGER'},
+            'agent_sessions': {'context_invalidated_at': 'DATETIME', 'checkpoint_deleted_at': 'DATETIME'},
+        }.items():
+            columns = {row[1] for row in connection.execute(text(f'PRAGMA table_info({table})'))}
+            if columns:
+                for name, ddl in additions.items():
+                    if name not in columns:
+                        connection.execute(text(f'ALTER TABLE {table} ADD COLUMN {name} {ddl}'))

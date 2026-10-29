@@ -7,7 +7,7 @@ import { subscribeRun, type RunSnapshot, type RunSubscriptionOptions } from '../
 vi.mock('../api/agentRuns', () => ({ fetchAgentRuns: vi.fn(), fetchAgentRun: vi.fn(), fetchRunArtifacts: vi.fn(), createAgentRun: vi.fn(), answerRunAction: vi.fn(), cancelAgentRun: vi.fn(), retryAgentRun: vi.fn(), AgentRunError: class extends Error { constructor(public status: number, public code: string, message: string) { super(message) } } }))
 vi.mock('../services/agentStream', () => ({ subscribeRun: vi.fn() }))
 const action = { actionId: 'a1', kind: 'input' as const, payload: { question: '你负责什么工作？' }, revision: 1 }
-const snapshot = (overrides: Partial<RunSnapshot> = {}): RunSnapshot => ({ runId: 'r1', sessionId: 's1', kind: 'tailoring', status: 'waiting_input', input: { jdId: 1, resumeId: 2 }, inputVersions: {}, attempt: 1, lastSeq: 4, errorCode: null, cancelRequested: false, outputRefs: [], actions: [action], ...overrides })
+const snapshot = (overrides: Partial<RunSnapshot> = {}): RunSnapshot => ({ runId: 'r1', sessionId: 's1', kind: 'tailoring', status: 'waiting_input', input: { jdId: 1, resumeId: 2 }, inputVersions: {}, attempt: 1, lastSeq: 4, errorCode: null, sessionInvalidated: false, cancelRequested: false, outputRefs: [], actions: [action], ...overrides })
 let options: RunSubscriptionOptions
 let close: ReturnType<typeof vi.fn<() => void>>
 beforeEach(() => { setActivePinia(createPinia()); vi.resetAllMocks(); close = vi.fn(); vi.mocked(subscribeRun).mockImplementation((value) => { options = value; return { close, done: Promise.resolve() } }); vi.mocked(api.fetchRunArtifacts).mockResolvedValue([]); vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot()) })
@@ -57,4 +57,12 @@ describe('persistent task workspace', () => {
     await store.createRun('jd:1', 'resume:2'); await store.createRun('jd:1', 'resume:2')
     const calls = vi.mocked(api.createAgentRun).mock.calls; expect(calls[0][0]).toMatchObject({ jdId: 1, resumeId: 2 }); expect(calls[0][0].requestId).toBe(calls[1][0].requestId)
   })
+})
+
+it('refreshes an already open failed task when retry reports a session invalidated in another page', async () => {
+ const store = useAgentRunStore(); store.openRun('r1'); store.snapshot = snapshot({ status: 'failed', errorCode: 'model_timeout', actions: [] })
+ vi.mocked(api.retryAgentRun).mockRejectedValue(new api.AgentRunError(409, 'session_context_invalidated', '会话已失效'))
+ vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot({ status: 'failed', errorCode: 'model_timeout', sessionInvalidated: true, actions: [] }))
+ await store.changeRun('retry')
+ expect(store.snapshot?.sessionInvalidated).toBe(true); expect(store.snapshot?.status).toBe('failed'); expect(store.snapshot?.errorCode).toBe('model_timeout'); expect(store.notice).toContain('旧会话不能恢复'); expect(store.notice).toContain('重新准备材料'); expect(store.error).toBe('')
 })

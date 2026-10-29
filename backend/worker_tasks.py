@@ -8,7 +8,8 @@ from threading import Event, Thread
 
 from sqlalchemy import select
 from backend.db.database import SessionLocal
-from backend.db.agent_models import AgentRun
+from backend.db.agent_models import AgentRun, AgentSession
+from backend.db.models import utcnow
 from backend.schemas.agent_runs import RunStatus
 from backend.services import agent_runs
 from backend.services.run_delivery import publish_run
@@ -49,33 +50,67 @@ def _heartbeat(run_id, epoch, stopped):
             logger.warning('Heartbeat unavailable for Run %s', run_id)
 
 
+def cleanup_invalidated_sessions() -> None:
+    """Caller holds execution_lock: no graph can recreate a deleted thread."""
+    from langgraph.checkpoint.sqlite import SqliteSaver
+    with SessionLocal() as db:
+        sessions = list(db.scalars(select(AgentSession).where(
+            AgentSession.context_invalidated_at.is_not(None),
+            AgentSession.checkpoint_deleted_at.is_(None))))
+        if not sessions:
+            return
+        try:
+            with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
+                for session in sessions:
+                    try:
+                        # Holding the OS lock proves any old executor has stopped,
+                        # including a restart before the stale-heartbeat timeout.
+                        running = list(db.scalars(select(AgentRun).where(
+                            AgentRun.session_id == session.id, AgentRun.kind == 'tailoring',
+                            AgentRun.status == RunStatus.RUNNING)))
+                        for run in running:
+                            agent_runs.finish_run(db, run.id, run.execution_epoch, RunStatus.CANCELLED)
+                        saver.delete_thread(session.id)
+                        session.checkpoint_deleted_at = utcnow()
+                        db.commit()
+                    except Exception:
+                        db.rollback()
+                        logger.warning('Checkpoint cleanup pending for session %s', session.id)
+        except Exception:
+            db.rollback()
+            logger.warning('Checkpoint cleanup unavailable; pending sessions will retry')
+
+
 @app.task(name='resumate.execute_run')
 def execute_run(run_id: str) -> None:
     with execution_lock() as acquired:
         if not acquired:
             return  # SQL scanner will redispatch queued work.
-        with SessionLocal() as db:
-            epoch = agent_runs.claim_run(db, run_id)
-            kind = db.scalar(select(AgentRun.kind).where(AgentRun.id == run_id)) if epoch is not None else None
-        if epoch is None:
-            return
-        stopped = Event()
-        heartbeat = Thread(target=_heartbeat, args=(run_id, epoch, stopped), daemon=True)
-        heartbeat.start()
         try:
-            if kind == 'tailoring':
-                from backend.agent_runtime.runner import run_agent
-                run_agent(run_id, epoch)
-            elif kind == 'resume_export':
-                from backend.services.resume_export import run_resume_export
-                run_resume_export(run_id, epoch)
-            else:
-                with SessionLocal() as db:
-                    agent_runs.finish_run(db, run_id, epoch, RunStatus.FAILED,
-                                          error_code='unsupported_run_kind')
+            with SessionLocal() as db:
+                epoch = agent_runs.claim_run(db, run_id)
+                kind = db.scalar(select(AgentRun.kind).where(AgentRun.id == run_id)) if epoch is not None else None
+            if epoch is None:
+                return
+            stopped = Event()
+            heartbeat = Thread(target=_heartbeat, args=(run_id, epoch, stopped), daemon=True)
+            heartbeat.start()
+            try:
+                if kind == 'tailoring':
+                    from backend.agent_runtime.runner import run_agent
+                    run_agent(run_id, epoch)
+                elif kind == 'resume_export':
+                    from backend.services.resume_export import run_resume_export
+                    run_resume_export(run_id, epoch)
+                else:
+                    with SessionLocal() as db:
+                        agent_runs.finish_run(db, run_id, epoch, RunStatus.FAILED,
+                                              error_code='unsupported_run_kind')
+            finally:
+                stopped.set()
+                heartbeat.join(timeout=5)
         finally:
-            stopped.set()
-            heartbeat.join(timeout=5)
+            cleanup_invalidated_sessions()
 
 
 @app.task(name='resumate.recover_runs')
@@ -85,5 +120,7 @@ def recover_runs() -> int:
             return 0
         with SessionLocal() as db:
             agent_runs.recover_stale_runs(db)
+        cleanup_invalidated_sessions()
+        with SessionLocal() as db:
             queued = list(db.scalars(select(AgentRun.id).where(AgentRun.status == RunStatus.QUEUED)))
     return sum(publish_run(run_id) for run_id in queued)

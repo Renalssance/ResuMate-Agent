@@ -43,6 +43,7 @@ class UserLlmSettings(Base):
     base_url: Mapped[str] = mapped_column(String(1024), default="", nullable=False)
     model: Mapped[str] = mapped_column(String(255), default="", nullable=False)
     max_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    context_window_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
     request_timeout_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)

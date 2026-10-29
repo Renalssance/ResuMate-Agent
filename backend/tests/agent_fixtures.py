@@ -8,6 +8,8 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 
 class DraftModel(BaseChatModel):
     model_name: str = 'openai:resumate-contract'
+    profile: dict = {'max_input_tokens': 64000}
+    max_tokens: int = 1024
     ask: bool = False
     bad_fact: bool = False
     repeat: bool = False

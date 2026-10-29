@@ -122,7 +122,13 @@ export const useAgentRunStore = defineStore('agentRun', () => {
     if (busy.value || !selectedId) return
     const epoch = generation; busy.value = true; error.value = ''
     try { await (operation === 'cancel' ? cancelAgentRun(selectedId) : retryAgentRun(selectedId)); if (epoch !== generation) return; await refresh(); if (epoch === generation) connect(epoch) }
-    catch (cause) { if (epoch === generation) fail(cause) }
+    catch (cause) {
+      if (epoch !== generation) return
+      if (cause instanceof AgentRunError && cause.status === 409 && cause.code === 'session_context_invalidated') {
+        await refresh()
+        if (epoch === generation) notice.value = '这项任务使用的记忆已删除，旧会话不能恢复。请重新准备材料。'
+      } else fail(cause)
+    }
     finally { if (epoch === generation) busy.value = false }
   }
   return { runs, hasMore, listLoading, snapshot, events, artifacts, drafts, actionErrors, conflictedActions, error, notice, disconnected, loginRequired, loading, busy, loadRuns, openRun, refresh, disconnect, clear, createRun, submitAction, changeRun }

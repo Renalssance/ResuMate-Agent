@@ -1,0 +1,171 @@
+FFsFs                                                                    [100%]
+=================================== FAILURES ===================================
+_________________ test_custom_model_requires_explicit_capacity _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1096ac050>
+
+    def test_custom_model_requires_explicit_capacity(monkeypatch):
+        from backend.agent_runtime import factory
+        settings = SimpleNamespace(api_key='test-key', base_url='https://example.invalid/v1',
+            model='gpt-4o', max_tokens=1024, request_timeout_seconds=30, context_window_tokens=None)
+        monkeypatch.setattr(factory, 'resolve_effective_llm_settings', lambda _: settings)
+>       with pytest.raises(agent_runs.RunError) as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'backend.services.agent_runs.RunError'>
+
+backend/tests/test_agent_context.py:22: Failed
+_______ test_irreducible_system_and_tools_fail_before_model_call[sqlite] _______
+
+context_runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...Model(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3000}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10b599fa0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ae79850>
+
+    def test_irreducible_system_and_tools_fail_before_model_call(context_runtime, career_db, monkeypatch):
+        runner, model = context_runtime
+        def unexpected(*args, **kwargs):
+            pytest.fail('A known oversized system/tool request reached the provider')
+        monkeypatch.setattr(type(model), '_generate', unexpected)
+        run = new_run(career_db)
+>       runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+
+backend/tests/test_agent_context.py:53:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/agent_runtime/runner.py:60: in run_agent
+    for mode, data in agent.stream(graph_input, config, stream_mode=['messages', 'updates']):
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langgraph/pregel/main.py:3058: in stream
+    for _ in runner.tick(
+.venv/lib/python3.12/site-packages/langgraph/pregel/_runner.py:343: in tick
+    _panic_or_proceed(
+.venv/lib/python3.12/site-packages/langgraph/pregel/_runner.py:694: in _panic_or_proceed
+    raise exc
+.venv/lib/python3.12/site-packages/langgraph/pregel/_executor.py:88: in done
+    task.result()
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langgraph/pregel/_retry.py:617: in run_with_retry
+    return task.proc.invoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langgraph/_internal/_runnable.py:707: in invoke
+    input = context.run(step.invoke, input, config, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langgraph/_internal/_runnable.py:447: in invoke
+    ret = self.func(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:1543: in model_node
+    result = wrap_model_call_handler(request, _execute_model_sync)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:357: in composed
+    outer_result = outer(request, inner_handler)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/filesystem.py:3458: in wrap_model_call
+    response = handler(request)
+               ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:347: in inner_handler
+    inner_result = inner(req, handler)
+                   ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:357: in composed
+    outer_result = outer(request, inner_handler)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/_parent_notifier.py:59: in wrap_model_call
+    return handler(request)
+           ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:347: in inner_handler
+    inner_result = inner(req, handler)
+                   ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:357: in composed
+    outer_result = outer(request, inner_handler)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/summarization.py:1654: in wrap_model_call
+    response, replacements = self._call_with_budget(request.override(messages=truncated_messages), handler, error=overflow_error)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/summarization.py:1547: in _call_with_budget
+    return handler(request), replacements
+           ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:347: in inner_handler
+    inner_result = inner(req, handler)
+                   ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:357: in composed
+    outer_result = outer(request, inner_handler)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/_prompt_caching.py:75: in wrap_model_call
+    return handler(request)
+           ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:347: in inner_handler
+    inner_result = inner(req, handler)
+                   ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:357: in composed
+    outer_result = outer(request, inner_handler)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/unsupported_content.py:199: in wrap_model_call
+    return handler(self._filter_request(request))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:347: in inner_handler
+    inner_result = inner(req, handler)
+                   ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/deepagents/middleware/_tool_exclusion.py:62: in wrap_model_call
+    return handler(request)
+           ^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain/agents/factory.py:1506: in _execute_model_sync
+    output = model_.invoke(messages)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:529: in invoke
+    self.generate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1920: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1727: in generate
+    self._generate_with_cache(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2069: in _generate_with_cache
+    result = self._generate(messages, stop=stop, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': ...tent='请根据当前任务资料准备一份待审阅的简历草稿。', additional_kwargs={}, response_metadata={}, id='ee36a6d4-f795-4248-8c98-cd00db3911e5')])
+kwargs = {'stop': None}
+
+    def unexpected(*args, **kwargs):
+>       pytest.fail('A known oversized system/tool request reached the provider')
+E       Failed: A known oversized system/tool request reached the provider
+
+backend/tests/test_agent_context.py:50: Failed
+____ test_bundle_keeps_exact_facts_actions_and_artifact_references[sqlite] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x110f66b10>
+
+    def test_bundle_keeps_exact_facts_actions_and_artifact_references(career_db):
+        from backend.agent_runtime import context
+        from backend.db.agent_models import AgentAction
+        from backend.db.career_models import ProfileFact
+        from backend.db.models import utcnow
+        career_db.add(ProfileFact(id='fact-1', user_id=1, fact_key='api', kind='experience',
+            content={'text': '本人已确认：负责数据库设计。'}, source_document_id=1,
+            revision=1, confirmed_at=utcnow()))
+        career_db.commit()
+        run = new_run(career_db)
+        career_db.add_all([
+            AgentAction(id='pending-1', run_id=run.id, interrupt_id='pause-1', kind='input',
+                payload={'question': '请说明规模'}, status='pending'),
+            AgentAction(id='answer-1', run_id=run.id, interrupt_id='answer-pause', kind='input',
+                payload={'question': '你负责什么'}, status='answered',
+                response={'decision': 'submit', 'answers': {'role': '接口设计'}}, answered_at=utcnow()),
+            ResumeVersion(id='existing-draft', run_id=run.id, user_id=1, resume_id=1, jd_id=1,
+                structured_content={'resume': {'self_summary': 'API development'}}, fact_refs=[]),
+        ])
+        career_db.commit()
+>       bundle = context.build_context(career_db, run)
+                 ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.agent_runtime.context' has no attribute 'build_context'. Did you mean: 'read_context'?
+
+backend/tests/test_agent_context.py:80: AttributeError
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_context.py::test_custom_model_requires_explicit_capacity
+FAILED backend/tests/test_agent_context.py::test_irreducible_system_and_tools_fail_before_model_call[sqlite]
+FAILED backend/tests/test_agent_context.py::test_bundle_keeps_exact_facts_actions_and_artifact_references[sqlite]
+3 failed, 2 skipped in 1.23s

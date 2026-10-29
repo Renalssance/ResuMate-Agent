@@ -27,7 +27,7 @@
             <X v-else class="app-icon" aria-hidden="true" />
           </span>
           <span class="settings-parameter-label">{{ item.label }}</span>
-          <strong :class="{ 'is-secret': item.secret }" :title="settings && item.configured && !item.secret ? item.value : undefined">{{ !settings ? '—' : item.configured ? item.value : '尚未设置' }}</strong>
+          <strong :class="{ 'is-secret': item.secret }" :title="settings && item.configured && !item.secret ? item.value : undefined">{{ !settings ? '—' : item.configured ? item.value : item.label === '上下文容量' ? '未配置' : '尚未设置' }}</strong>
         </article>
       </div>
 
@@ -53,7 +53,7 @@
           <span>API 地址 · Base URL</span>
           <input v-model.trim="form.base_url" placeholder="https://api.openai.com/v1" />
         </label>
-        <label>
+        <label class="settings-model-field">
           <span>模型名称 · Model</span>
           <input v-model.trim="form.model" placeholder="请输入厂商提供的模型名称" />
         </label>
@@ -62,9 +62,14 @@
           <input v-model.number="form.max_tokens" min="1" type="number" />
         </label>
         <label>
+          <span>上下文容量（Token）</span>
+          <input id="settings-context-window" v-model.number="form.context_window_tokens" min="1" step="1" type="number" placeholder="未配置" aria-describedby="settings-context-hint" />
+        </label>
+        <label>
           <span>请求超时（秒）</span>
           <input v-model.number="form.request_timeout_seconds" min="1" type="number" />
         </label>
+        <p id="settings-context-hint" class="settings-context-hint">按厂商提供的实际模型容量填写，须大于输出 Token 上限。未知可留空，但准备投递材料前需要配置；不会根据模型名称猜测容量。</p>
         <div class="form-actions">
           <button class="button-secondary" type="button" :disabled="saving" @click="cancelEditSettings">
             <X class="app-icon" aria-hidden="true" />
@@ -225,6 +230,7 @@ const form = reactive({
   base_url: '',
   model: '',
   max_tokens: 8192,
+  context_window_tokens: '' as number | '',
   request_timeout_seconds: 300,
 })
 
@@ -244,9 +250,10 @@ const taskBars = computed(() => buildUsageTaskBars(usage.value?.by_task ?? []))
 const parameterItems = computed(() => [
   { label: '模型', configured: Boolean(settings.value?.model?.trim()), value: settings.value?.model, secret: false },
   { label: 'API Key', configured: Boolean(settings.value?.has_api_key), value: '••••••••', secret: true },
-  { label: 'Token 上限', configured: Number(settings.value?.max_tokens) > 0, value: settings.value?.max_tokens?.toLocaleString(), secret: false },
-  { label: '超时', configured: Number(settings.value?.request_timeout_seconds) > 0, value: `${settings.value?.request_timeout_seconds} 秒`, secret: false },
   { label: 'Base URL', configured: Boolean(settings.value?.base_url?.trim()), value: settings.value?.base_url, secret: false },
+  { label: '输出 Token 上限', configured: Number(settings.value?.max_tokens) > 0, value: settings.value?.max_tokens?.toLocaleString(), secret: false },
+  { label: '上下文容量', configured: Number(settings.value?.context_window_tokens) > 0, value: settings.value?.context_window_tokens?.toLocaleString(), secret: false },
+  { label: '超时', configured: Number(settings.value?.request_timeout_seconds) > 0, value: `${settings.value?.request_timeout_seconds} 秒`, secret: false },
 ])
 
 async function loadAll() {
@@ -262,6 +269,7 @@ async function loadAll() {
       base_url: nextSettings.base_url,
       model: nextSettings.model,
       max_tokens: nextSettings.max_tokens,
+      context_window_tokens: nextSettings.context_window_tokens ?? '',
       request_timeout_seconds: nextSettings.request_timeout_seconds,
     })
     if (needsConfiguration.value) editingSettings.value = true
@@ -290,6 +298,7 @@ async function saveSettings() {
       base_url: form.base_url,
       model: form.model,
       max_tokens: form.max_tokens,
+      context_window_tokens: form.context_window_tokens === '' ? null : form.context_window_tokens,
       request_timeout_seconds: form.request_timeout_seconds,
     })
     form.api_key = ''
@@ -321,6 +330,7 @@ function cancelEditSettings() {
     base_url: settings.value.base_url,
     model: settings.value.model,
     max_tokens: settings.value.max_tokens,
+    context_window_tokens: settings.value.context_window_tokens ?? '',
     request_timeout_seconds: settings.value.request_timeout_seconds,
   })
 }
@@ -360,3 +370,11 @@ function isExpiredTokenMessage(value: string) {
 watch(() => auth.token, loadAll)
 onMounted(loadAll)
 </script>
+
+<style scoped>
+.settings-parameter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.settings-parameter-wide { grid-column: auto; }
+.settings-config-form > .settings-model-field,.settings-context-hint { grid-column: 1 / -1; }
+.settings-context-hint { margin: 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.7; }
+@media (max-width: 767px) { .settings-parameter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

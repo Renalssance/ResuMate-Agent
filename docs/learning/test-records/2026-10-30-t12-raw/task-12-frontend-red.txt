@@ -1,0 +1,367 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/SettingsView.spec.ts src/components/BusinessMemory.spec.ts src/views/AgentTaskView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/BusinessMemory.spec.ts (6 tests | 6 failed) 22ms
+     × requires explicit confirmation and displays the saved content with its manual source 8ms
+     × keeps the draft when saving loses its connection 7ms
+     × removes deleted content immediately but keeps pending cleanup visible until refreshed 1ms
+     × does not resurrect a deleted memory when an older list request arrives late 1ms
+     × shows pending deletion returned after reopening without restoring its content 2ms
+     × clears private state on account change and ignores the old account response 2ms
+ ❯ src/views/SettingsView.spec.ts (4 tests | 3 failed) 63ms
+     × shows unknown capacity separately from the output limit without guessing from model name 44ms
+     × saves a blank context capacity as null while keeping the other settings 12ms
+     × retains entered capacity and server validation when saving fails 6ms
+ ❯ src/views/AgentTaskView.spec.ts (7 tests | 4 failed) 40ms
+   × links unconfigured capacity failures to model settings 4ms
+   × explains an exceeded context budget without silently losing materials 2ms
+   × offers a clean new task instead of retrying an invalidated failed session 2ms
+   × offers a clean new task instead of retrying an invalidated cancelled session 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > requires explicit confirmation and displays the saved content with its manual source
+AssertionError: expected '' to contain '记忆不能作为经历证据'
+
+- Expected
++ Received
+
+- 记忆不能作为经历证据
+
+ ❯ src/components/BusinessMemory.spec.ts:19:50
+     17| describe('user confirmed business memory', () => {
+     18|  it('requires explicit confirmation and displays the saved content wit…
+     19|   const w = await openMemory(); expect(w.text()).toContain('记忆不能作为经历证据…
+       |                                                  ^
+     20|   await w.get('textarea').setValue(memory.content); await w.get('form'…
+     21|   expect(fixtures.request.post).not.toHaveBeenCalled(); expect(button(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > keeps the draft when saving loses its connection
+Error: Unable to get select within: <section></section>
+ ❯ VueWrapper.get node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:7333:15
+ ❯ src/components/BusinessMemory.spec.ts:28:41
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > removes deleted content immediately but keeps pending cleanup visible until refreshed
+TypeError: Cannot read properties of undefined (reading 'trigger')
+ ❯ src/components/BusinessMemory.spec.ts:34:55
+     32|   fixtures.request.get.mockResolvedValueOnce({ items: [memory], pendin…
+     33|   fixtures.request.delete.mockResolvedValue({ memoryId: 'm1', cleanupS…
+     34|   const w = await openMemory(); await button(w, '删除记忆').trigger('click…
+       |                                                       ^
+     35|   expect(w.text()).not.toContain(memory.content); expect(w.get('.memor…
+     36|   await button(w, '刷新记忆状态').trigger('click'); await flushPromises(); e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > does not resurrect a deleted memory when an older list request arrives late
+TypeError: Cannot read properties of undefined (reading 'trigger')
+ ❯ src/components/BusinessMemory.spec.ts:41:57
+     39|   let resolveOld!: (value: unknown) => void
+     40|   fixtures.request.get.mockResolvedValueOnce({ items: [memory], pendin…
+     41|   const w = await openMemory(); await button(w, '刷新记忆状态').trigger('cli…
+       |                                                         ^
+     42|   resolveOld({ items: [memory], pendingDeletions: [] }); await flushPr…
+     43|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > shows pending deletion returned after reopening without restoring its content
+Error: Unable to get .memory-pending within: <section></section>
+ ❯ VueWrapper.get node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:7333:15
+ ❯ src/components/BusinessMemory.spec.ts:46:42
+     44|  it('shows pending deletion returned after reopening without restoring…
+     45|   fixtures.request.get.mockResolvedValue({ items: [], pendingDeletions…
+     46|   const w = await openMemory(); expect(w.get('.memory-pending').text()…
+       |                                          ^
+     47|  })
+     48|  it('clears private state on account change and ignores the old accoun…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > user confirmed business memory > clears private state on account change and ignores the old account response
+Error: Unable to get textarea within: <section></section>
+ ❯ VueWrapper.get node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:7333:15
+ ❯ src/components/BusinessMemory.spec.ts:51:41
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > links unconfigured capacity failures to model settings
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '尚未配置模型的上下文容量'
+
+Expected: "尚未配置模型的上下文容量"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务失败投递材料重试任务材料准备未完成。你可以重试任务，或检查设置后重新准备。处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:43:96
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > explains an exceeded context budget without silently losing materials
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '减少本次资料'
+
+Expected: "减少本次资料"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务失败投递材料重试任务材料准备未完成。你可以重试任务，或检查设置后重新准备。处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:46:91
+     44| })
+     45| it('explains an exceeded context budget without silently losing materi…
+     46|  const { wrapper } = await openFailure('context_budget_exceeded'); exp…
+       |                                                                                           ^
+     47| })
+     48| it.each(['failed', 'cancelled'])('offers a clean new task instead of r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > offers a clean new task instead of retrying an invalidated failed session
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '旧会话不能恢复'
+
+Expected: "旧会话不能恢复"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务失败投递材料重试任务材料准备未完成。你可以重试任务，或检查设置后重新准备。处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:50:25
+     48| it.each(['failed', 'cancelled'])('offers a clean new task instead of r…
+     49|  const { wrapper, router } = await openFailure('session_context_invali…
+     50|  expect(wrapper.text()).toContain('旧会话不能恢复'); expect(wrapper.text()).n…
+       |                         ^
+     51|  await wrapper.findAll('button').find(button => button.text() === '重新准…
+     52|  expect(fixtures.store.createRun).toHaveBeenCalledWith('jd:1', 'resume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > offers a clean new task instead of retrying an invalidated cancelled session
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '旧会话不能恢复'
+
+Expected: "旧会话不能恢复"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务已取消投递材料处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:50:25
+     48| it.each(['failed', 'cancelled'])('offers a clean new task instead of r…
+     49|  const { wrapper, router } = await openFailure('session_context_invali…
+     50|  expect(wrapper.text()).toContain('旧会话不能恢复'); expect(wrapper.text()).n…
+       |                         ^
+     51|  await wrapper.findAll('button').find(button => button.text() === '重新准…
+     52|  expect(fixtures.store.createRun).toHaveBeenCalledWith('jd:1', 'resume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  src/views/SettingsView.spec.ts > explicit model context capacity > shows unknown capacity separately from the output limit without guessing from model name
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ src/views/SettingsView.spec.ts:24:24
+     22|  it('shows unknown capacity separately from the output limit without g…
+     23|   const w = await openSettings(); const item = w.findAll('.settings-pa…
+     24|   expect(item?.text()).toContain('未配置'); expect(w.text()).toContain('输…
+       |                        ^
+     25|  })
+     26|  it('saves a blank context capacity as null while keeping the other se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  src/views/SettingsView.spec.ts > explicit model context capacity > saves a blank context capacity as null while keeping the other settings
+Error: Unable to get #settings-context-window within: <div class="page-stack settings-page">
+  <section class="card settings-section-card settings-config-card">
+    <div class="section-head compact">
+      <div>
+        <h2>模型参数</h2>
+      </div>
+      <div class="settings-head-actions">
+        <!--v-if-->
+      </div>
+    </div>
+    <!--v-if-->
+    <form class="settings-config-form">
+      <div class="settings-provider-presets"><span>快速填入厂商 Base URL</span>
+        <div class="settings-provider-buttons"><button class="button-secondary" type="button">OpenAI / ChatGPT</button><button class="button-secondary" type="button">Claude</button><button class="button-secondary" type="button">DeepSeek</button><button class="button-secondary" type="button">Qwen / 通义千问</button><button class="button-secondary" type="button">Kimi</button></div><small>仅填入地址，不会自动保存。请填写该厂商支持的模型名称；使用其他地区或代理服务时可手动修改地址。Claude 请使用工作区 API Key。</small>
+      </div>
+      <div class="settings-key-field settings-field-half">
+        <div class="settings-key-heading"><label for="settings-api-key"><span>API Key</span></label><label class="settings-checkbox"><input type="checkbox"><span>清空已保存 Key</span></label></div><input id="settings-api-key" type="password" autocomplete="off" placeholder="已配置，留空保留原密钥">
+      </div><label class="settings-field-half"><span>API 地址 · Base URL</span><input placeholder="https://api.openai.com/v1"></label><label><span>模型名称 · Model</span><input placeholder="请输入厂商提供的模型名称"></label><label><span>输出 Token 上限</span><input min="1" type="number"></label><label><span>请求超时（秒）</span><input min="1" type="number"></label>
+      <div class="form-actions"><button class="button-secondary" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x app-icon" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg><span>取消</span></button><button class="button-primary" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-save app-icon" aria-hidden="true">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"></path>
+          </svg><span>保存</span></button></div>
+    </form>
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+  </section>
+  <section class="card settings-section-card settings-dashboard-card">
+    <div class="section-head compact">
+      <div>
+        <h2>Token 看板</h2>
+        <p>统计当前账号的调用次数、token 消耗和调用时间。</p>
+      </div><button class="button-secondary" type="button" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw app-icon" aria-hidden="true">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+          <path d="M21 3v5h-5"></path>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+          <path d="M8 16H3v5"></path>
+        </svg><span>刷新</span></button>
+    </div>
+    <!--v-if-->
+    <!--v-if-->
+    <div class="settings-overview-grid">
+      <article class="metric-card settings-metric"><span>调用次数</span><strong>0</strong><small>成功 0 / 失败 0</small></article>
+      <article class="metric-card settings-metric"><span>消耗 Token</span><strong>0</strong><small>输入 0 / 输出 0</small></article>
+      <article class="metric-card settings-metric"><span>最近调用</span><strong>-</strong><small>成功率 0%</small></article>
+    </div>
+    <div class="settings-dashboard-grid">
+      <article class="settings-chart-panel">
+        <div class="section-head compact">
+          <div>
+            <h3>每日 Token</h3>
+            <p>按调用日期聚合。</p>
+          </div>
+        </div>
+        <div class="empty-state"><strong>暂无调用</strong>
+          <p>模型调用完成后，这里会出现每日消耗。</p>
+        </div>
+      </article>
+      <article class="settings-chart-panel">
+        <div class="section-head compact">
+          <div>
+            <h3>任务分布</h3>
+            <p>按任务类型聚合。</p>
+          </div>
+        </div>
+        <div class="empty-state"><strong>暂无任务</strong>
+          <p>完成文档解析、匹配或试题生成后会自动统计。</p>
+        </div>
+      </article>
+    </div>
+    <div class="settings-recent-panel">
+      <div class="section-head compact">
+        <div>
+          <h3>最近调用</h3>
+          <p>按时间倒序排列。</p>
+        </div>
+      </div>
+      <div class="empty-state"><strong>暂无调用记录</strong>
+        <p>调用记录会按当前账号保存。</p>
+      </div>
+    </div>
+  </section>
+</div>
+ ❯ VueWrapper.get node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:7333:15
+ ❯ src/views/SettingsView.spec.ts:27:83
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+ FAIL  src/views/SettingsView.spec.ts > explicit model context capacity > retains entered capacity and server validation when saving fails
+Error: Unable to get #settings-context-window within: <div class="page-stack settings-page">
+  <section class="card settings-section-card settings-config-card">
+    <div class="section-head compact">
+      <div>
+        <h2>模型参数</h2>
+      </div>
+      <div class="settings-head-actions">
+        <!--v-if-->
+      </div>
+    </div>
+    <!--v-if-->
+    <form class="settings-config-form">
+      <div class="settings-provider-presets"><span>快速填入厂商 Base URL</span>
+        <div class="settings-provider-buttons"><button class="button-secondary" type="button">OpenAI / ChatGPT</button><button class="button-secondary" type="button">Claude</button><button class="button-secondary" type="button">DeepSeek</button><button class="button-secondary" type="button">Qwen / 通义千问</button><button class="button-secondary" type="button">Kimi</button></div><small>仅填入地址，不会自动保存。请填写该厂商支持的模型名称；使用其他地区或代理服务时可手动修改地址。Claude 请使用工作区 API Key。</small>
+      </div>
+      <div class="settings-key-field settings-field-half">
+        <div class="settings-key-heading"><label for="settings-api-key"><span>API Key</span></label><label class="settings-checkbox"><input type="checkbox"><span>清空已保存 Key</span></label></div><input id="settings-api-key" type="password" autocomplete="off" placeholder="已配置，留空保留原密钥">
+      </div><label class="settings-field-half"><span>API 地址 · Base URL</span><input placeholder="https://api.openai.com/v1"></label><label><span>模型名称 · Model</span><input placeholder="请输入厂商提供的模型名称"></label><label><span>输出 Token 上限</span><input min="1" type="number"></label><label><span>请求超时（秒）</span><input min="1" type="number"></label>
+      <div class="form-actions"><button class="button-secondary" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x app-icon" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg><span>取消</span></button><button class="button-primary" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-save app-icon" aria-hidden="true">
+            <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
+            <path d="M7 3v4a1 1 0 0 0 1 1h7"></path>
+          </svg><span>保存</span></button></div>
+    </form>
+    <!--v-if-->
+    <!--v-if-->
+    <!--v-if-->
+  </section>
+  <section class="card settings-section-card settings-dashboard-card">
+    <div class="section-head compact">
+      <div>
+        <h2>Token 看板</h2>
+        <p>统计当前账号的调用次数、token 消耗和调用时间。</p>
+      </div><button class="button-secondary" type="button" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw app-icon" aria-hidden="true">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+          <path d="M21 3v5h-5"></path>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+          <path d="M8 16H3v5"></path>
+        </svg><span>刷新</span></button>
+    </div>
+    <!--v-if-->
+    <!--v-if-->
+    <div class="settings-overview-grid">
+      <article class="metric-card settings-metric"><span>调用次数</span><strong>0</strong><small>成功 0 / 失败 0</small></article>
+      <article class="metric-card settings-metric"><span>消耗 Token</span><strong>0</strong><small>输入 0 / 输出 0</small></article>
+      <article class="metric-card settings-metric"><span>最近调用</span><strong>-</strong><small>成功率 0%</small></article>
+    </div>
+    <div class="settings-dashboard-grid">
+      <article class="settings-chart-panel">
+        <div class="section-head compact">
+          <div>
+            <h3>每日 Token</h3>
+            <p>按调用日期聚合。</p>
+          </div>
+        </div>
+        <div class="empty-state"><strong>暂无调用</strong>
+          <p>模型调用完成后，这里会出现每日消耗。</p>
+        </div>
+      </article>
+      <article class="settings-chart-panel">
+        <div class="section-head compact">
+          <div>
+            <h3>任务分布</h3>
+            <p>按任务类型聚合。</p>
+          </div>
+        </div>
+        <div class="empty-state"><strong>暂无任务</strong>
+          <p>完成文档解析、匹配或试题生成后会自动统计。</p>
+        </div>
+      </article>
+    </div>
+    <div class="settings-recent-panel">
+      <div class="section-head compact">
+        <div>
+          <h3>最近调用</h3>
+          <p>按时间倒序排列。</p>
+        </div>
+      </div>
+      <div class="empty-state"><strong>暂无调用记录</strong>
+        <p>调用记录会按当前账号保存。</p>
+      </div>
+    </div>
+  </section>
+</div>
+ ❯ VueWrapper.get node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js:7333:15
+ ❯ src/views/SettingsView.spec.ts:33:83
+     31|  it('retains entered capacity and server validation when saving fails'…
+     32|   fixtures.request.put.mockRejectedValue(Object.assign(new Error('上下文容…
+     33|   const w = await openSettings(); await button(w, '编辑').trigger('click…
+       |                                                                                   ^
+     34|   expect(w.get('#settings-context-window').element.value).toBe('4096')…
+     35|  })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/13]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  13 failed | 4 passed (17)
+   Start at  01:25:46
+   Duration  988ms (transform 440ms, setup 0ms, import 734ms, tests 125ms, environment 1.62s)
+

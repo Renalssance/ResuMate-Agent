@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from backend.db.database import SessionLocal
@@ -22,6 +23,7 @@ class EffectiveLlmSettings:
     model: str
     max_tokens: int
     request_timeout_seconds: float
+    context_window_tokens: int | None = None
 
 
 def env_llm_settings() -> EffectiveLlmSettings:
@@ -29,6 +31,7 @@ def env_llm_settings() -> EffectiveLlmSettings:
         api_key=(os.getenv("OPENAI_API_KEY") or os.getenv("ARK_API_KEY") or "").strip(),
         base_url=(os.getenv("OPENAI_BASE_URL") or os.getenv("BASE_URL") or "").strip(),
         model=(os.getenv("LLM_MODEL") or os.getenv("MODEL") or "").strip(),
+        context_window_tokens=_env_int("LLM_CONTEXT_WINDOW_TOKENS", 0) or None,
         max_tokens=_env_int("LLM_MAX_TOKENS", DEFAULT_LLM_MAX_TOKENS),
         request_timeout_seconds=_env_float("LLM_REQUEST_TIMEOUT_SECONDS", DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS),
     )
@@ -47,6 +50,7 @@ def resolve_effective_llm_settings(user_id: int | None, db: Session | None = Non
             api_key=(saved.api_key or "").strip(),
             base_url=(saved.base_url or "").strip(),
             model=(saved.model or "").strip(),
+            context_window_tokens=saved.context_window_tokens,
             max_tokens=saved.max_tokens or DEFAULT_LLM_MAX_TOKENS,
             request_timeout_seconds=saved.request_timeout_seconds or DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS,
         )
@@ -63,12 +67,18 @@ def read_llm_settings(user_id: int, db: Session) -> LlmSettingsResponse:
         base_url=settings.base_url,
         model=settings.model,
         max_tokens=settings.max_tokens,
+        context_window_tokens=settings.context_window_tokens,
         request_timeout_seconds=settings.request_timeout_seconds,
     )
 
 
 def save_llm_settings(user_id: int, payload: LlmSettingsUpdate, db: Session) -> LlmSettingsResponse:
     row = db.query(UserLlmSettings).filter(UserLlmSettings.user_id == user_id).first()
+    capacity = (payload.context_window_tokens if 'context_window_tokens' in payload.model_fields_set
+                else row.context_window_tokens if row else None)
+    output_limit = payload.max_tokens or (row.max_tokens if row else None) or DEFAULT_LLM_MAX_TOKENS
+    if capacity is not None and capacity <= output_limit:
+        raise HTTPException(status_code=422, detail='上下文容量必须大于输出 Token 上限')
     now = datetime.now(timezone.utc)
     if not row:
         row = UserLlmSettings(user_id=user_id, created_at=now, updated_at=now)
@@ -82,6 +92,8 @@ def save_llm_settings(user_id: int, payload: LlmSettingsUpdate, db: Session) -> 
         row.base_url = payload.base_url.strip()
     if payload.model is not None:
         row.model = payload.model.strip()
+    if 'context_window_tokens' in payload.model_fields_set:
+        row.context_window_tokens = payload.context_window_tokens
     if payload.max_tokens is not None:
         row.max_tokens = payload.max_tokens
     if payload.request_timeout_seconds is not None:

@@ -4,6 +4,7 @@ export interface LlmSettingsResponse {
   base_url: string
   model: string
   max_tokens: number
+  context_window_tokens: number | null
   request_timeout_seconds: number
 }
 
@@ -13,6 +14,7 @@ export interface LlmSettingsPayload {
   base_url?: string
   model?: string
   max_tokens?: number
+  context_window_tokens?: number | null
   request_timeout_seconds?: number
 }
 

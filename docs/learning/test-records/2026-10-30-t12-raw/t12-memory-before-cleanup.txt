@@ -1,0 +1,264 @@
+....................FFFF                                                 [100%]
+=================================== FAILURES ===================================
+_____ test_worker_restart_cleans_all_checkpoint_history_and_writes[sqlite] _____
+
+run_client = <starlette.testclient.TestClient object at 0x11482f350>
+career_db = <sqlalchemy.orm.session.Session object at 0x114a6ce00>
+memory_worker = (<module 'backend.worker_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/...ers/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-126/test_worker_restart_cleans_all0/checkpoints.sqlite'))
+
+    def test_worker_restart_cleans_all_checkpoint_history_and_writes(run_client, career_db, memory_worker):
+        import sqlite3
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        worker, path = memory_worker
+        item = save(run_client)
+        first = run(career_db, 'older-task')
+        first.status = RunStatus.SUCCEEDED
+        career_db.get(AgentSession, first.session_id).active_run_id = None
+        career_db.commit()
+        second = run(career_db, 'newer-task', first.session_id)
+        second.status = RunStatus.RUNNING
+        second.execution_epoch = 1
+        second.heartbeat_at = utcnow() - timedelta(seconds=100)
+        career_db.commit()
+        checkpoint_history(path, first.session_id, 'deleted private memory')
+        checkpoint_history(path, 'unrelated-session', 'keep private memory')
+        with worker.execution_lock() as acquired:
+            assert acquired
+            deletion = run_client.delete('/api/memories/' + item['id'], headers=headers()).json()
+            assert deletion['cleanupStatus'] == 'pending'
+            assert sorted(deletion['affectedRunIds']) == sorted([first.id, second.id])
+            assert worker.recover_runs() == 0
+            with SqliteSaver.from_conn_string(str(path)) as saver:
+                assert len(list(saver.list({'configurable': {'thread_id': first.session_id}}))) == 3
+        # The next scanner represents a restarted worker; SQL retains cleanup intent.
+        assert worker.recover_runs() == 0
+        career_db.rollback()
+        assert career_db.get(AgentRun, second.id).status == RunStatus.CANCELLED
+        assert career_db.get(AgentRun, first.id).status == RunStatus.SUCCEEDED
+>       assert career_db.get(AgentSession, first.session_id).checkpoint_deleted_at is not None
+E       AssertionError: assert None is not None
+E        +  where None = <backend.db.agent_models.AgentSession object at 0x1145ec440>.checkpoint_deleted_at
+E        +    where <backend.db.agent_models.AgentSession object at 0x1145ec440> = get(AgentSession, '9ac4566e-5f41-4cd3-82c1-4db9bdddcb44')
+E        +      where get = <sqlalchemy.orm.session.Session object at 0x114a6ce00>.get
+E        +      and   '9ac4566e-5f41-4cd3-82c1-4db9bdddcb44' = <backend.db.agent_models.AgentRun object at 0x114717650>.session_id
+
+backend/tests/test_agent_memory.py:207: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:23:21,521 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:23:21,523 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=2
+2026-10-30 01:23:21,523 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:21,536 | INFO | backend.app | Request start | method=DELETE path=/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c client=testclient
+2026-10-30 01:23:21,541 | INFO | backend.app | Request end | method=DELETE path=/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c status=200 duration_ms=4
+2026-10-30 01:23:21,541 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/5ec2178b-3648-4701-8ed0-8042ed36df2c "HTTP/1.1 200 OK"
+_____ test_worker_restart_cleans_all_checkpoint_history_and_writes[mysql] ______
+
+run_client = <starlette.testclient.TestClient object at 0x114768890>
+career_db = <sqlalchemy.orm.session.Session object at 0x1147de5a0>
+memory_worker = (<module 'backend.worker_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/...ers/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-126/test_worker_restart_cleans_all1/checkpoints.sqlite'))
+
+    def test_worker_restart_cleans_all_checkpoint_history_and_writes(run_client, career_db, memory_worker):
+        import sqlite3
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        worker, path = memory_worker
+        item = save(run_client)
+        first = run(career_db, 'older-task')
+        first.status = RunStatus.SUCCEEDED
+        career_db.get(AgentSession, first.session_id).active_run_id = None
+        career_db.commit()
+        second = run(career_db, 'newer-task', first.session_id)
+        second.status = RunStatus.RUNNING
+        second.execution_epoch = 1
+        second.heartbeat_at = utcnow() - timedelta(seconds=100)
+        career_db.commit()
+        checkpoint_history(path, first.session_id, 'deleted private memory')
+        checkpoint_history(path, 'unrelated-session', 'keep private memory')
+        with worker.execution_lock() as acquired:
+            assert acquired
+            deletion = run_client.delete('/api/memories/' + item['id'], headers=headers()).json()
+            assert deletion['cleanupStatus'] == 'pending'
+            assert sorted(deletion['affectedRunIds']) == sorted([first.id, second.id])
+            assert worker.recover_runs() == 0
+            with SqliteSaver.from_conn_string(str(path)) as saver:
+                assert len(list(saver.list({'configurable': {'thread_id': first.session_id}}))) == 3
+        # The next scanner represents a restarted worker; SQL retains cleanup intent.
+        assert worker.recover_runs() == 0
+        career_db.rollback()
+        assert career_db.get(AgentRun, second.id).status == RunStatus.CANCELLED
+        assert career_db.get(AgentRun, first.id).status == RunStatus.SUCCEEDED
+>       assert career_db.get(AgentSession, first.session_id).checkpoint_deleted_at is not None
+E       AssertionError: assert None is not None
+E        +  where None = <backend.db.agent_models.AgentSession object at 0x1144a4f80>.checkpoint_deleted_at
+E        +    where <backend.db.agent_models.AgentSession object at 0x1144a4f80> = get(AgentSession, 'efb7c75a-c0a8-492a-b86d-39c101954a64')
+E        +      where get = <sqlalchemy.orm.session.Session object at 0x1147de5a0>.get
+E        +      and   'efb7c75a-c0a8-492a-b86d-39c101954a64' = <backend.db.agent_models.AgentRun object at 0x114543860>.session_id
+
+backend/tests/test_agent_memory.py:207: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:23:21,827 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:23:21,830 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=2
+2026-10-30 01:23:21,831 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:21,849 | INFO | backend.app | Request start | method=DELETE path=/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e client=testclient
+2026-10-30 01:23:21,857 | INFO | backend.app | Request end | method=DELETE path=/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e status=200 duration_ms=8
+2026-10-30 01:23:21,858 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e status=200 duration_ms=8
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/608d38ed-26b8-40eb-90bf-28ae9eb3419e "HTTP/1.1 200 OK"
+_________ test_cleanup_failure_remains_pending_until_next_scan[sqlite] _________
+
+run_client = <starlette.testclient.TestClient object at 0x110cf24e0>
+career_db = <sqlalchemy.orm.session.Session object at 0x114597710>
+memory_worker = (<module 'backend.worker_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/...ers/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-126/test_cleanup_failure_remains_p0/checkpoints.sqlite'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11443c950>
+
+    def test_cleanup_failure_remains_pending_until_next_scan(run_client, career_db, memory_worker, monkeypatch):
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        worker, path = memory_worker
+        item = save(run_client)
+        task = run(career_db, 'pending-retry')
+        checkpoint_history(path, task.session_id, 'retry deletion')
+        run_client.delete('/api/memories/' + item['id'], headers=headers())
+        original = SqliteSaver.delete_thread
+        def unavailable(self, thread_id):
+            raise OSError('disk unavailable')
+        monkeypatch.setattr(SqliteSaver, 'delete_thread', unavailable)
+        worker.recover_runs()
+        assert run_client.get('/api/memories', headers=headers()).json()['pendingDeletions']
+        monkeypatch.setattr(SqliteSaver, 'delete_thread', original)
+        worker.recover_runs()
+>       assert run_client.get('/api/memories', headers=headers()).json()['pendingDeletions'] == []
+E       AssertionError: assert [{'affectedRu...528a2ae5be2'}] == []
+E
+E         Left contains one more item: {'affectedRunIds': ['f39b5c88-c473-4281-8a42-3c9bddf16e84'], 'cleanupStatus': 'pending', 'memoryId': '264a9677-7f82-42c5-b75f-a528a2ae5be2'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_memory.py:232: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:23:21,926 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:23:21,929 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=2
+2026-10-30 01:23:21,929 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:21,937 | INFO | backend.app | Request start | method=DELETE path=/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 client=testclient
+2026-10-30 01:23:21,941 | INFO | backend.app | Request end | method=DELETE path=/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 status=200 duration_ms=3
+2026-10-30 01:23:21,941 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 "HTTP/1.1 200 OK"
+2026-10-30 01:23:21,942 | INFO | backend.app | Request start | method=GET path=/api/memories client=testclient
+2026-10-30 01:23:21,944 | INFO | backend.app | Request end | method=GET path=/api/memories status=200 duration_ms=1
+2026-10-30 01:23:21,944 | INFO | httpx | HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:21,945 | INFO | backend.app | Request start | method=GET path=/api/memories client=testclient
+2026-10-30 01:23:21,946 | INFO | backend.app | Request end | method=GET path=/api/memories status=200 duration_ms=1
+2026-10-30 01:23:21,947 | INFO | httpx | HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/264a9677-7f82-42c5-b75f-a528a2ae5be2 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/memories status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/memories status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+_________ test_cleanup_failure_remains_pending_until_next_scan[mysql] __________
+
+run_client = <starlette.testclient.TestClient object at 0x1145977d0>
+career_db = <sqlalchemy.orm.session.Session object at 0x111725bb0>
+memory_worker = (<module 'backend.worker_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/...ers/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-126/test_cleanup_failure_remains_p1/checkpoints.sqlite'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114d17ce0>
+
+    def test_cleanup_failure_remains_pending_until_next_scan(run_client, career_db, memory_worker, monkeypatch):
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        worker, path = memory_worker
+        item = save(run_client)
+        task = run(career_db, 'pending-retry')
+        checkpoint_history(path, task.session_id, 'retry deletion')
+        run_client.delete('/api/memories/' + item['id'], headers=headers())
+        original = SqliteSaver.delete_thread
+        def unavailable(self, thread_id):
+            raise OSError('disk unavailable')
+        monkeypatch.setattr(SqliteSaver, 'delete_thread', unavailable)
+        worker.recover_runs()
+        assert run_client.get('/api/memories', headers=headers()).json()['pendingDeletions']
+        monkeypatch.setattr(SqliteSaver, 'delete_thread', original)
+        worker.recover_runs()
+>       assert run_client.get('/api/memories', headers=headers()).json()['pendingDeletions'] == []
+E       AssertionError: assert [{'affectedRu...b2167a3a5ad'}] == []
+E
+E         Left contains one more item: {'affectedRunIds': ['2af5c6b4-1053-4f89-b072-5828d2e01f5a'], 'cleanupStatus': 'pending', 'memoryId': '6ca414df-4bd3-4328-bf0b-eb2167a3a5ad'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_memory.py:232: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:23:22,175 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:23:22,178 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=2
+2026-10-30 01:23:22,178 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:22,190 | INFO | backend.app | Request start | method=DELETE path=/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad client=testclient
+2026-10-30 01:23:22,200 | INFO | backend.app | Request end | method=DELETE path=/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad status=200 duration_ms=9
+2026-10-30 01:23:22,201 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad "HTTP/1.1 200 OK"
+2026-10-30 01:23:22,202 | INFO | backend.app | Request start | method=GET path=/api/memories client=testclient
+2026-10-30 01:23:22,204 | INFO | backend.app | Request end | method=GET path=/api/memories status=200 duration_ms=1
+2026-10-30 01:23:22,204 | INFO | httpx | HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:23:22,205 | INFO | backend.app | Request start | method=GET path=/api/memories client=testclient
+2026-10-30 01:23:22,207 | INFO | backend.app | Request end | method=GET path=/api/memories status=200 duration_ms=1
+2026-10-30 01:23:22,207 | INFO | httpx | HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad status=200 duration_ms=9
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/6ca414df-4bd3-4328-bf0b-eb2167a3a5ad "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/memories status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/memories status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/memories "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_memory.py::test_worker_restart_cleans_all_checkpoint_history_and_writes[sqlite]
+FAILED backend/tests/test_agent_memory.py::test_worker_restart_cleans_all_checkpoint_history_and_writes[mysql]
+FAILED backend/tests/test_agent_memory.py::test_cleanup_failure_remains_pending_until_next_scan[sqlite]
+FAILED backend/tests/test_agent_memory.py::test_cleanup_failure_remains_pending_until_next_scan[mysql]
+4 failed, 20 passed, 2 deselected, 7 warnings in 5.05s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

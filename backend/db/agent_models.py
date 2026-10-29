@@ -17,6 +17,8 @@ class AgentSession(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
     purpose: Mapped[str] = mapped_column(String(80))
+    context_invalidated_at: Mapped[datetime | None] = mapped_column(DateTime)
+    checkpoint_deleted_at: Mapped[datetime | None] = mapped_column(DateTime)
     # Claimed/released by conditional SQL updates in the Run service (T03).
     active_run_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)

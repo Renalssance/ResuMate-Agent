@@ -1,0 +1,134 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_snapshot_exposes_revoked_session_without_rewriting_failed_history[sqlite] _
+
+run_client = <starlette.testclient.TestClient object at 0x10d397080>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d397d40>
+
+    def test_snapshot_exposes_revoked_session_without_rewriting_failed_history(run_client, career_db):
+        from backend.db.agent_models import AgentRunEvent
+        from backend.schemas.resume_versions import VersionStatus
+        item = save(run_client)
+        failed = run(career_db, 'failed-before-delete')
+        failed.status = RunStatus.FAILED
+        failed.error_code = 'model_timeout'
+        career_db.get(AgentSession, failed.session_id).active_run_id = None
+        career_db.add(ResumeVersion(id='confirmed-before-delete', user_id=1, run_id=failed.id,
+            resume_id=1, jd_id=1, status=VersionStatus.CONFIRMED,
+            structured_content={'resume': {'self_summary': '保留的材料'}}))
+        career_db.commit()
+        export = agent_runs.create_run(career_db, 1, RunCreate(kind='resume_export',
+            resume_version_id='confirmed-before-delete', session_id=failed.session_id, request_id='pdf-snapshot'))
+        event_count = career_db.query(AgentRunEvent).filter_by(run_id=failed.id).count()
+        deletion = run_client.delete('/api/memories/' + item['id'], headers=headers())
+        assert deletion.status_code == 200
+        snapshot = run_client.get('/api/agent/runs/' + failed.id, headers=headers()).json()
+>       assert snapshot['sessionInvalidated'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'sessionInvalidated'
+
+backend/tests/test_agent_memory.py:410: KeyError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:38:28,007 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:38:28,011 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=3
+2026-10-30 01:38:28,012 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:38:28,027 | INFO | backend.app | Request start | method=DELETE path=/api/memories/6302260e-e464-4487-98c6-42fcfa908594 client=testclient
+2026-10-30 01:38:28,030 | INFO | backend.app | Request end | method=DELETE path=/api/memories/6302260e-e464-4487-98c6-42fcfa908594 status=200 duration_ms=3
+2026-10-30 01:38:28,031 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/6302260e-e464-4487-98c6-42fcfa908594 "HTTP/1.1 200 OK"
+2026-10-30 01:38:28,031 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 client=testclient
+2026-10-30 01:38:28,033 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 status=200 duration_ms=2
+2026-10-30 01:38:28,033 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/6302260e-e464-4487-98c6-42fcfa908594 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/6302260e-e464-4487-98c6-42fcfa908594 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/6302260e-e464-4487-98c6-42fcfa908594 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/c34c3895-74e3-4df3-a73c-3bf1ae7c5525 "HTTP/1.1 200 OK"
+_ test_snapshot_exposes_revoked_session_without_rewriting_failed_history[mysql] _
+
+run_client = <starlette.testclient.TestClient object at 0x10d4843b0>
+career_db = <sqlalchemy.orm.session.Session object at 0x1103daf30>
+
+    def test_snapshot_exposes_revoked_session_without_rewriting_failed_history(run_client, career_db):
+        from backend.db.agent_models import AgentRunEvent
+        from backend.schemas.resume_versions import VersionStatus
+        item = save(run_client)
+        failed = run(career_db, 'failed-before-delete')
+        failed.status = RunStatus.FAILED
+        failed.error_code = 'model_timeout'
+        career_db.get(AgentSession, failed.session_id).active_run_id = None
+        career_db.add(ResumeVersion(id='confirmed-before-delete', user_id=1, run_id=failed.id,
+            resume_id=1, jd_id=1, status=VersionStatus.CONFIRMED,
+            structured_content={'resume': {'self_summary': '保留的材料'}}))
+        career_db.commit()
+        export = agent_runs.create_run(career_db, 1, RunCreate(kind='resume_export',
+            resume_version_id='confirmed-before-delete', session_id=failed.session_id, request_id='pdf-snapshot'))
+        event_count = career_db.query(AgentRunEvent).filter_by(run_id=failed.id).count()
+        deletion = run_client.delete('/api/memories/' + item['id'], headers=headers())
+        assert deletion.status_code == 200
+        snapshot = run_client.get('/api/agent/runs/' + failed.id, headers=headers()).json()
+>       assert snapshot['sessionInvalidated'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'sessionInvalidated'
+
+backend/tests/test_agent_memory.py:410: KeyError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:38:28,335 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:38:28,339 | INFO | backend.app | Request end | method=POST path=/api/memories status=200 duration_ms=3
+2026-10-30 01:38:28,340 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+2026-10-30 01:38:28,353 | INFO | backend.app | Request start | method=DELETE path=/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 client=testclient
+2026-10-30 01:38:28,360 | INFO | backend.app | Request end | method=DELETE path=/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 status=200 duration_ms=7
+2026-10-30 01:38:28,361 | INFO | httpx | HTTP Request: DELETE http://testserver/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 "HTTP/1.1 200 OK"
+2026-10-30 01:38:28,362 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 client=testclient
+2026-10-30 01:38:28,364 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 status=200 duration_ms=2
+2026-10-30 01:38:28,364 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 status=200 duration_ms=7
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/memories/af9d9ad3-c16a-44ba-ad8f-69d73571f6e4 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/cb0be1e4-a059-438c-8bd7-29be81c18961 "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_memory.py::test_snapshot_exposes_revoked_session_without_rewriting_failed_history[sqlite]
+FAILED backend/tests/test_agent_memory.py::test_snapshot_exposes_revoked_session_without_rewriting_failed_history[mysql]
+2 failed, 32 deselected, 7 warnings in 1.30s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

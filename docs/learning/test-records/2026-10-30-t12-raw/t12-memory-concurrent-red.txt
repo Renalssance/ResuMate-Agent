@@ -1,0 +1,716 @@
+ssFF                                                                     [100%]
+=================================== FAILURES ===================================
+__ test_mysql_create_and_delete_memory_overlap_without_deadlock[mysql-False] ___
+
+self = <sqlalchemy.engine.base.Connection object at 0x111c53080>
+dialect = <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x111b8f320>
+context = <sqlalchemy.dialects.mysql.mysqldb.MySQLExecutionContext_mysqldb object at 0x111c76bd0>
+statement = <sqlalchemy.dialects.mysql.mysqldb.MySQLCompiler_mysqldb object at 0x111c74830>
+parameters = [{'kind_1': 'tailoring', 'user_id_1': 1}]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:170: in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:335: in _query
+    conn.query(q)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:581: in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:857: in _read_query_result
+    result.read()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1297: in read
+    self._read_result_packet(first_packet)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1373: in _read_result_packet
+    self._read_rowdata_packet()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1420: in _read_rowdata_packet
+    packet = self.connection._read_packet()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:810: in _read_packet
+    packet.raise_for_error()
+.venv/lib/python3.12/site-packages/pymysql/protocol.py:219: in raise_for_error
+    err.raise_mysql_exception(self._data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = b'\xff\xbd\x04#40001Deadlock found when trying to get lock; try restarting transaction'
+
+    def raise_mysql_exception(data):
+        errno = struct.unpack("<h", data[1:3])[0]
+        # https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html
+        # Error packet has optional sqlstate that is 5 bytes and starts with '#'.
+        sqlstate = None
+        if data[3] == 0x23:  # '#'
+            sqlstate = data[4:9].decode()
+            errval = data[9:].decode("utf-8", "replace")
+        else:
+            errval = data[3:].decode("utf-8", "replace")
+        errorclass = error_map.get(errno)
+        if errorclass is None:
+            errorclass = InternalError if errno < 1000 else OperationalError
+>       raise errorclass(errno, errval, sqlstate=sqlstate)
+E       pymysql.err.OperationalError: (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+
+.venv/lib/python3.12/site-packages/pymysql/err.py:154: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+career_db = <sqlalchemy.orm.session.Session object at 0x11125b650>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_d965de02a6604c7f839d40c8a6cf5c6a?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1118d8f50>
+reuse_session = False
+
+    @pytest.mark.parametrize('reuse_session', [False, True])
+    def test_mysql_create_and_delete_memory_overlap_without_deadlock(career_db, career_engine, monkeypatch, reuse_session):
+        """Two actual connections recreate the former Run -> Memory -> Run cycle."""
+        if career_engine.dialect.name != 'mysql':
+            pytest.skip('MySQL row/FK lock ordering; SQLite serializes writers')
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Event
+        from sqlalchemy import event
+        from sqlalchemy.orm import Session
+        from backend.db.career_models import BusinessMemory
+        from backend.schemas.memory import MemoryCreate
+        from backend.services import memory
+
+        item = memory.create_memory(career_db, 1,
+            MemoryCreate(kind='preference', content='并发删除记忆', confirmed=True))
+        previous = run(career_db, 'before-overlap')
+        previous_id, previous_session_id = previous.id, previous.session_id
+        previous.status = RunStatus.SUCCEEDED
+        career_db.get(AgentSession, previous.session_id).active_run_id = None
+        career_db.commit()
+        capture_entered, deletion_locked, capture_query_started = Event(), Event(), Event()
+        original_capture = memory.capture_memory_ids
+
+        def capture_after_delete_takes_memory(db, user_id):
+            capture_entered.set()
+            assert deletion_locked.wait(5), 'deletion did not acquire its memory row'
+            return original_capture(db, user_id)
+
+        monkeypatch.setattr(memory, 'capture_memory_ids', capture_after_delete_takes_memory)
+
+        def before_query(conn, cursor, statement, parameters, context, executemany):
+            if conn.info.get('memory_test_role') == 'creator' and 'business_memories' in statement:
+                capture_query_started.set()
+
+        def after_query(conn, cursor, statement, parameters, context, executemany):
+            if (conn.info.get('memory_test_role') == 'deleter'
+                    and statement.startswith('SELECT') and 'business_memories' in statement
+                    and 'FOR UPDATE' in statement):
+                deletion_locked.set()
+                assert capture_query_started.wait(5), 'creator did not attempt memory selection'
+
+        event.listen(career_engine, 'before_cursor_execute', before_query)
+        event.listen(career_engine, 'after_cursor_execute', after_query)
+
+        def create_overlapping():
+            with Session(career_engine, expire_on_commit=False, autoflush=False) as db:
+                db.connection().info['memory_test_role'] = 'creator'
+                try:
+                    created = run(db, 'overlapping-create', previous_session_id if reuse_session else None)
+                    return created.id
+                except agent_runs.RunError as error:
+                    return error.code
+                finally:
+                    db.connection().info.pop('memory_test_role', None)
+
+        def delete_overlapping():
+            assert capture_entered.wait(5), 'creator did not reach memory selection'
+            with Session(career_engine, expire_on_commit=False, autoflush=False) as db:
+                db.connection().info['memory_test_role'] = 'deleter'
+                try:
+                    return memory.delete_memory(db, 1, item['id'])
+                finally:
+                    db.connection().info.pop('memory_test_role', None)
+
+        try:
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                created = executor.submit(create_overlapping)
+                deleted = executor.submit(delete_overlapping)
+                creation_result = created.result(timeout=10)
+>               deletion_result = deleted.result(timeout=10)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_agent_memory.py:337:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_agent_memory.py:328: in delete_overlapping
+    return memory.delete_memory(db, 1, item['id'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/services/memory.py:89: in delete_memory
+    runs = list(db.scalars(select(AgentRun).where(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2459: in scalars
+    return self._execute_internal(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2249: in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:306: in orm_execute_statement
+    result = conn.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:170: in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:335: in _query
+    conn.query(q)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:581: in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:857: in _read_query_result
+    result.read()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1297: in read
+    self._read_result_packet(first_packet)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1373: in _read_result_packet
+    self._read_rowdata_packet()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1420: in _read_rowdata_packet
+    packet = self.connection._read_packet()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:810: in _read_packet
+    packet.raise_for_error()
+.venv/lib/python3.12/site-packages/pymysql/protocol.py:219: in raise_for_error
+    err.raise_mysql_exception(self._data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = b'\xff\xbd\x04#40001Deadlock found when trying to get lock; try restarting transaction'
+
+    def raise_mysql_exception(data):
+        errno = struct.unpack("<h", data[1:3])[0]
+        # https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html
+        # Error packet has optional sqlstate that is 5 bytes and starts with '#'.
+        sqlstate = None
+        if data[3] == 0x23:  # '#'
+            sqlstate = data[4:9].decode()
+            errval = data[9:].decode("utf-8", "replace")
+        else:
+            errval = data[3:].decode("utf-8", "replace")
+        errorclass = error_map.get(errno)
+        if errorclass is None:
+            errorclass = InternalError if errno < 1000 else OperationalError
+>       raise errorclass(errno, errval, sqlstate=sqlstate)
+E       sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+E       [SQL: SELECT agent_runs.id, agent_runs.user_id, agent_runs.session_id, agent_runs.request_id, agent_runs.kind, agent_runs.status, agent_runs.input_json, agent_runs.input_versions, agent_runs.attempt, agent_runs.execution_epoch, agent_runs.heartbeat_at, agent_runs.cancel_requested_at, agent_runs.error_code, agent_runs.output_refs, agent_runs.created_at, agent_runs.updated_at
+E       FROM agent_runs
+E       WHERE agent_runs.user_id = %(user_id_1)s AND agent_runs.kind = %(kind_1)s FOR UPDATE]
+E       [parameters: {'user_id_1': 1, 'kind_1': 'tailoring'}]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+.venv/lib/python3.12/site-packages/pymysql/err.py:154: OperationalError
+___ test_mysql_create_and_delete_memory_overlap_without_deadlock[mysql-True] ___
+
+self = <sqlalchemy.engine.base.Connection object at 0x114903950>
+dialect = <sqlalchemy.dialects.mysql.pymysql.MySQLDialect_pymysql object at 0x11484c1d0>
+context = <sqlalchemy.dialects.mysql.mysqldb.MySQLExecutionContext_mysqldb object at 0x1149036b0>
+statement = <sqlalchemy.dialects.mysql.mysqldb.MySQLCompiler_mysqldb object at 0x1148e8e90>
+parameters = [{'kind_1': 'tailoring', 'user_id_1': 1}]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:170: in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:335: in _query
+    conn.query(q)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:581: in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:857: in _read_query_result
+    result.read()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1297: in read
+    self._read_result_packet(first_packet)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1373: in _read_result_packet
+    self._read_rowdata_packet()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1420: in _read_rowdata_packet
+    packet = self.connection._read_packet()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:810: in _read_packet
+    packet.raise_for_error()
+.venv/lib/python3.12/site-packages/pymysql/protocol.py:219: in raise_for_error
+    err.raise_mysql_exception(self._data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = b'\xff\xbd\x04#40001Deadlock found when trying to get lock; try restarting transaction'
+
+    def raise_mysql_exception(data):
+        errno = struct.unpack("<h", data[1:3])[0]
+        # https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html
+        # Error packet has optional sqlstate that is 5 bytes and starts with '#'.
+        sqlstate = None
+        if data[3] == 0x23:  # '#'
+            sqlstate = data[4:9].decode()
+            errval = data[9:].decode("utf-8", "replace")
+        else:
+            errval = data[3:].decode("utf-8", "replace")
+        errorclass = error_map.get(errno)
+        if errorclass is None:
+            errorclass = InternalError if errno < 1000 else OperationalError
+>       raise errorclass(errno, errval, sqlstate=sqlstate)
+E       pymysql.err.OperationalError: (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+
+.venv/lib/python3.12/site-packages/pymysql/err.py:154: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+career_db = <sqlalchemy.orm.session.Session object at 0x111c52120>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_2a456af67c884ee8a3e044c9d9e03d94?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111c778c0>
+reuse_session = True
+
+    @pytest.mark.parametrize('reuse_session', [False, True])
+    def test_mysql_create_and_delete_memory_overlap_without_deadlock(career_db, career_engine, monkeypatch, reuse_session):
+        """Two actual connections recreate the former Run -> Memory -> Run cycle."""
+        if career_engine.dialect.name != 'mysql':
+            pytest.skip('MySQL row/FK lock ordering; SQLite serializes writers')
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Event
+        from sqlalchemy import event
+        from sqlalchemy.orm import Session
+        from backend.db.career_models import BusinessMemory
+        from backend.schemas.memory import MemoryCreate
+        from backend.services import memory
+
+        item = memory.create_memory(career_db, 1,
+            MemoryCreate(kind='preference', content='并发删除记忆', confirmed=True))
+        previous = run(career_db, 'before-overlap')
+        previous_id, previous_session_id = previous.id, previous.session_id
+        previous.status = RunStatus.SUCCEEDED
+        career_db.get(AgentSession, previous.session_id).active_run_id = None
+        career_db.commit()
+        capture_entered, deletion_locked, capture_query_started = Event(), Event(), Event()
+        original_capture = memory.capture_memory_ids
+
+        def capture_after_delete_takes_memory(db, user_id):
+            capture_entered.set()
+            assert deletion_locked.wait(5), 'deletion did not acquire its memory row'
+            return original_capture(db, user_id)
+
+        monkeypatch.setattr(memory, 'capture_memory_ids', capture_after_delete_takes_memory)
+
+        def before_query(conn, cursor, statement, parameters, context, executemany):
+            if conn.info.get('memory_test_role') == 'creator' and 'business_memories' in statement:
+                capture_query_started.set()
+
+        def after_query(conn, cursor, statement, parameters, context, executemany):
+            if (conn.info.get('memory_test_role') == 'deleter'
+                    and statement.startswith('SELECT') and 'business_memories' in statement
+                    and 'FOR UPDATE' in statement):
+                deletion_locked.set()
+                assert capture_query_started.wait(5), 'creator did not attempt memory selection'
+
+        event.listen(career_engine, 'before_cursor_execute', before_query)
+        event.listen(career_engine, 'after_cursor_execute', after_query)
+
+        def create_overlapping():
+            with Session(career_engine, expire_on_commit=False, autoflush=False) as db:
+                db.connection().info['memory_test_role'] = 'creator'
+                try:
+                    created = run(db, 'overlapping-create', previous_session_id if reuse_session else None)
+                    return created.id
+                except agent_runs.RunError as error:
+                    return error.code
+                finally:
+                    db.connection().info.pop('memory_test_role', None)
+
+        def delete_overlapping():
+            assert capture_entered.wait(5), 'creator did not reach memory selection'
+            with Session(career_engine, expire_on_commit=False, autoflush=False) as db:
+                db.connection().info['memory_test_role'] = 'deleter'
+                try:
+                    return memory.delete_memory(db, 1, item['id'])
+                finally:
+                    db.connection().info.pop('memory_test_role', None)
+
+        try:
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                created = executor.submit(create_overlapping)
+                deleted = executor.submit(delete_overlapping)
+                creation_result = created.result(timeout=10)
+>               deletion_result = deleted.result(timeout=10)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_agent_memory.py:337:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_agent_memory.py:328: in delete_overlapping
+    return memory.delete_memory(db, 1, item['id'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/services/memory.py:89: in delete_memory
+    runs = list(db.scalars(select(AgentRun).where(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2459: in scalars
+    return self._execute_internal(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2249: in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py:306: in orm_execute_statement
+    result = conn.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:170: in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/cursors.py:335: in _query
+    conn.query(q)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:581: in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:857: in _read_query_result
+    result.read()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1297: in read
+    self._read_result_packet(first_packet)
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1373: in _read_result_packet
+    self._read_rowdata_packet()
+.venv/lib/python3.12/site-packages/pymysql/connections.py:1420: in _read_rowdata_packet
+    packet = self.connection._read_packet()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pymysql/connections.py:810: in _read_packet
+    packet.raise_for_error()
+.venv/lib/python3.12/site-packages/pymysql/protocol.py:219: in raise_for_error
+    err.raise_mysql_exception(self._data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = b'\xff\xbd\x04#40001Deadlock found when trying to get lock; try restarting transaction'
+
+    def raise_mysql_exception(data):
+        errno = struct.unpack("<h", data[1:3])[0]
+        # https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html
+        # Error packet has optional sqlstate that is 5 bytes and starts with '#'.
+        sqlstate = None
+        if data[3] == 0x23:  # '#'
+            sqlstate = data[4:9].decode()
+            errval = data[9:].decode("utf-8", "replace")
+        else:
+            errval = data[3:].decode("utf-8", "replace")
+        errorclass = error_map.get(errno)
+        if errorclass is None:
+            errorclass = InternalError if errno < 1000 else OperationalError
+>       raise errorclass(errno, errval, sqlstate=sqlstate)
+E       sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+E       [SQL: SELECT agent_runs.id, agent_runs.user_id, agent_runs.session_id, agent_runs.request_id, agent_runs.kind, agent_runs.status, agent_runs.input_json, agent_runs.input_versions, agent_runs.attempt, agent_runs.execution_epoch, agent_runs.heartbeat_at, agent_runs.cancel_requested_at, agent_runs.error_code, agent_runs.output_refs, agent_runs.created_at, agent_runs.updated_at
+E       FROM agent_runs
+E       WHERE agent_runs.user_id = %(user_id_1)s AND agent_runs.kind = %(kind_1)s FOR UPDATE]
+E       [parameters: {'user_id_1': 1, 'kind_1': 'tailoring'}]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+.venv/lib/python3.12/site-packages/pymysql/err.py:154: OperationalError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_memory.py::test_mysql_create_and_delete_memory_overlap_without_deadlock[mysql-False]
+FAILED backend/tests/test_agent_memory.py::test_mysql_create_and_delete_memory_overlap_without_deadlock[mysql-True]
+2 failed, 2 skipped, 26 deselected, 7 warnings in 2.06s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

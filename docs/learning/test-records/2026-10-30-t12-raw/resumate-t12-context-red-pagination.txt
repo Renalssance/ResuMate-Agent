@@ -1,0 +1,23 @@
+Fs.s                                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_single_long_field_is_losslessly_paged[sqlite] ______________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a079ee0>
+
+    def test_single_long_field_is_losslessly_paged(career_db):
+        from backend.agent_runtime.context import build_context
+        paragraph = '负责接口、数据库和业务规则核验。' * 700
+        career_db.get(Resume, 1).raw_text = paragraph
+        career_db.get(Resume, 1).structured_data = {'self_summary': paragraph, 'source_refs': ['page:1']}
+        career_db.commit()
+        bundle = build_context(career_db, new_run(career_db))
+        artifact = bundle.artifacts[0]
+        encoded = json.loads(bundle.files[artifact['path']])['structured']['self_summary']
+>       assert ''.join(encoded['textChunks']) == paragraph
+                       ^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: string indices must be integers, not 'str'
+
+backend/tests/test_agent_context.py:233: TypeError
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_context.py::test_single_long_field_is_losslessly_paged[sqlite]
+1 failed, 1 passed, 2 skipped, 7 deselected in 2.26s

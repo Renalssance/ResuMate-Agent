@@ -1,0 +1,81 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/BusinessMemory.spec.ts src/views/AgentTaskView.spec.ts src/stores/agentRun.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/BusinessMemory.spec.ts (7 tests | 1 failed) 60ms
+   × waits for the initial list before saving so existing memories and pending cleanup stay visible 3ms
+ ❯ src/stores/agentRun.spec.ts (9 tests | 1 failed) 10ms
+   × refreshes an already open failed task when retry reports a session invalidated in another page 2ms
+ ❯ src/views/AgentTaskView.spec.ts (10 tests | 2 failed) 53ms
+   × uses the session invalidation flag while preserving the original failed error 4ms
+   × uses the session invalidation flag while preserving the original cancelled error 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/BusinessMemory.spec.ts > waits for the initial list before saving so existing memories and pending cleanup stay visible
+AssertionError: expected undefined to be defined
+ ❯ src/components/BusinessMemory.spec.ts:62:51
+     60|  const w = mount(BusinessMemory)
+     61|  await w.get('textarea').setValue('下一次想补充的偏好'); await w.get('input[dat…
+     62|  expect(button(w, '保存记忆').attributes('disabled')).toBeDefined()
+       |                                                   ^
+     63|  await w.get('form').trigger('submit'); await flushPromises(); expect(…
+     64|  resolveInitial({ items: [memory], pendingDeletions: [{ memoryId: 'del…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > uses the session invalidation flag while preserving the original failed error
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '旧会话不能恢复'
+
+Expected: "旧会话不能恢复"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务失败投递材料重试任务材料准备未完成。你可以重试任务，或检查设置后重新准备。处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:60:25
+     58| it.each(['failed', 'cancelled'])('uses the session invalidation flag w…
+     59|  const { wrapper, router } = await openFailure('model_timeout', status…
+     60|  expect(wrapper.text()).toContain('旧会话不能恢复'); expect(wrapper.text()).n…
+       |                         ^
+     61|  await wrapper.findAll('button').find(button => button.text() === '重新准…
+     62|  expect(fixtures.store.createRun).toHaveBeenCalledWith('jd:1', 'resume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > uses the session invalidation flag while preserving the original cancelled error
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '旧会话不能恢复'
+
+Expected: "旧会话不能恢复"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。任务已取消投递材料处理进度正在获取任务进度"
+
+ ❯ src/views/AgentTaskView.spec.ts:60:25
+     58| it.each(['failed', 'cancelled'])('uses the session invalidation flag w…
+     59|  const { wrapper, router } = await openFailure('model_timeout', status…
+     60|  expect(wrapper.text()).toContain('旧会话不能恢复'); expect(wrapper.text()).n…
+       |                         ^
+     61|  await wrapper.findAll('button').find(button => button.text() === '重新准…
+     62|  expect(fixtures.store.createRun).toHaveBeenCalledWith('jd:1', 'resume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/stores/agentRun.spec.ts > refreshes an already open failed task when retry reports a session invalidated in another page
+AssertionError: expected undefined to be true // Object.is equality
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ src/stores/agentRun.spec.ts:67:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  4 failed | 22 passed (26)
+   Start at  01:40:18
+   Duration  1.01s (transform 561ms, setup 0ms, import 811ms, tests 122ms, environment 1.67s)
+

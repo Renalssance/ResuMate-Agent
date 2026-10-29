@@ -1,0 +1,84 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________ test_memory_requires_confirmation_and_manual_source[sqlite] __________
+
+run_client = <starlette.testclient.TestClient object at 0x10cc7c440>
+
+    def test_memory_requires_confirmation_and_manual_source(run_client):
+        for body in [dict(confirmed=False), dict(confirmed='true'), dict(content=' '),
+                     dict(content='长' * 4001), dict(kind='experience'),
+                     dict(sourceRef={'kind': 'interview_turn', 'turnId': 1})]:
+            response = run_client.post('/api/memories', headers=headers(), json={
+                'kind': 'preference', 'content': '简洁中文', 'confirmed': True, **body})
+>           assert response.status_code == 422
+E           assert 405 == 422
+E            +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_agent_memory.py:35: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:18:25,951 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:18:25,956 | INFO | backend.app | Request end | method=POST path=/api/memories status=405 duration_ms=4
+2026-10-30 01:18:25,956 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=405 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 405 Method Not Allowed"
+__________ test_memory_requires_confirmation_and_manual_source[mysql] __________
+
+run_client = <starlette.testclient.TestClient object at 0x109cb1550>
+
+    def test_memory_requires_confirmation_and_manual_source(run_client):
+        for body in [dict(confirmed=False), dict(confirmed='true'), dict(content=' '),
+                     dict(content='长' * 4001), dict(kind='experience'),
+                     dict(sourceRef={'kind': 'interview_turn', 'turnId': 1})]:
+            response = run_client.post('/api/memories', headers=headers(), json={
+                'kind': 'preference', 'content': '简洁中文', 'confirmed': True, **body})
+>           assert response.status_code == 422
+E           assert 405 == 422
+E            +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_agent_memory.py:35: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:18:26,320 | INFO | backend.app | Request start | method=POST path=/api/memories client=testclient
+2026-10-30 01:18:26,320 | INFO | backend.app | Request end | method=POST path=/api/memories status=405 duration_ms=0
+2026-10-30 01:18:26,320 | INFO | httpx | HTTP Request: POST http://testserver/api/memories "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/memories client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/memories status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/memories "HTTP/1.1 405 Method Not Allowed"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_memory.py::test_memory_requires_confirmation_and_manual_source[sqlite]
+FAILED backend/tests/test_agent_memory.py::test_memory_requires_confirmation_and_manual_source[mysql]
+2 failed, 18 deselected, 7 warnings in 1.38s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

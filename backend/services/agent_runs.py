@@ -93,18 +93,29 @@ def _existing_request(db: Session, user_id: int, request: RunCreate) -> AgentRun
     return run
 
 
-def _claim_session(db: Session, user_id: int, session_id: str, run_id: str) -> None:
+def require_valid_session(db: Session, run: AgentRun) -> None:
+    if run.kind == 'tailoring' and db.scalar(select(AgentSession.id).where(
+            AgentSession.id == run.session_id, AgentSession.context_invalidated_at.is_not(None)).with_for_update()) is not None:
+        raise RunError(409, 'session_context_invalidated', '记忆已删除，请新建会话继续任务')
+
+
+def _claim_session(db: Session, user_id: int, session_id: str, run_id: str, *, kind: str) -> None:
     result = db.execute(update(AgentSession).where(
         AgentSession.id == session_id, AgentSession.user_id == user_id,
         AgentSession.active_run_id.is_(None),
+        True if kind != 'tailoring' else AgentSession.context_invalidated_at.is_(None),
     ).values(active_run_id=run_id))
     if result.rowcount != 1:
+        if kind == 'tailoring' and db.scalar(select(AgentSession.id).where(
+                AgentSession.id == session_id, AgentSession.context_invalidated_at.is_not(None)).with_for_update()):
+            raise RunError(409, 'session_context_invalidated', '记忆已删除，请新建会话继续任务')
         raise RunError(409, 'session_busy', '当前会话已有活动任务')
 
 
 def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
     existing = _existing_request(db, user_id, request)
     if existing is not None:
+        require_valid_session(db, existing)
         return existing
     inputs = _request_input(request)
     if request.kind == 'resume_export':
@@ -112,7 +123,10 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         version = read_confirmed_version(db, user_id, request.resume_version_id)
         versions = {'resumeVersion': version.revision}
     else:
+        from backend.services.memory import capture_memory_ids
+        memory_ids = capture_memory_ids(db, user_id)
         versions = _input_versions(db, user_id, request.jd_id, request.resume_id)
+        versions['memories'] = memory_ids
         from backend.services.profile_facts import latest_facts
         versions['facts'] = [{'factId': fact.id, 'revision': fact.revision} for fact in latest_facts(
             db, user_id, source_document_id=request.resume_id, confirmed_only=True)]
@@ -134,7 +148,7 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         db.flush()
         db.add(run)
         db.flush()
-        _claim_session(db, user_id, session.id, run.id)
+        _claim_session(db, user_id, session.id, run.id, kind=run.kind)
         append_event(db, run.id, 'run.status', {'status': run.status})
         db.commit()
     except IntegrityError:
@@ -142,6 +156,7 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         # Another request may have committed the same user/request key while we waited.
         existing = _existing_request(db, user_id, request)
         if existing is not None:
+            require_valid_session(db, existing)
             return existing
         raise
     except RunError:
@@ -177,6 +192,7 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
 
 def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
+    require_valid_session(db, run)
     if run.status != RunStatus.FAILED:
         raise RunError(409, 'invalid_state', '只有失败任务可以重试')
     if run.kind == 'resume_export':
@@ -186,7 +202,7 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     else:
         from backend.agent_runtime.context import read_context
         read_context(db, run)
-    _claim_session(db, user_id, run.session_id, run.id)
+    _claim_session(db, user_id, run.session_id, run.id, kind=run.kind)
     run.status = RunStatus.QUEUED
     run.attempt += 1
     run.error_code = None
@@ -202,19 +218,21 @@ def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
     # time, including SQLite's legacy SELECT transaction behavior.
     last_sequence = select(func.max(AgentRunEvent.seq)).where(
         AgentRunEvent.run_id == AgentRun.id).correlate(AgentRun).scalar_subquery()
-    rows = db.execute(select(AgentRun, last_sequence, AgentAction).outerjoin(
+    rows = db.execute(select(AgentRun, last_sequence, AgentAction, AgentSession.context_invalidated_at)
+        .join(AgentSession, AgentSession.id == AgentRun.session_id).outerjoin(
         AgentAction, and_(AgentAction.run_id == AgentRun.id, AgentAction.status == 'pending'),
     ).where(AgentRun.id == run_id, AgentRun.user_id == user_id)
         .execution_options(populate_existing=True)).all()
     if not rows:
         raise RunError(404, 'not_found', '任务不存在')
-    run, last_seq, _ = rows[0]
+    run, last_seq, _, invalidated_at = rows[0]
     last_seq = last_seq or 0
     actions = [row[2] for row in rows if row[2] is not None]
     return {
         'runId': run.id, 'sessionId': run.session_id, 'status': run.status,
         'kind': run.kind, 'input': _public_input(run), 'inputVersions': run.input_versions,
         'attempt': run.attempt, 'lastSeq': last_seq, 'errorCode': run.error_code,
+        'sessionInvalidated': run.kind == 'tailoring' and invalidated_at is not None,
         'cancelRequested': run.cancel_requested_at is not None,
         'outputRefs': run.output_refs,
         'actions': [{'actionId': a.id, 'kind': a.kind, 'payload': a.payload, 'revision': 1} for a in actions],
@@ -223,6 +241,7 @@ def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
 
 def answer_action(db: Session, user_id: int, run_id: str, action_id: str, response: ActionResponse) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
+    require_valid_session(db, run)
     action = db.scalar(select(AgentAction).where(AgentAction.id == action_id, AgentAction.run_id == run.id).with_for_update())
     if action is None:
         raise RunError(404, 'not_found', '待处理动作不存在')
@@ -273,6 +292,7 @@ def claim_run(db: Session, run_id: str) -> int | None:
     claimed = db.execute(update(AgentRun).where(
         AgentRun.id == run_id, AgentRun.status == RunStatus.QUEUED,
         AgentRun.cancel_requested_at.is_(None),
+        _valid_execution_session(),
     ).values(status=RunStatus.RUNNING, execution_epoch=AgentRun.execution_epoch + 1,
              heartbeat_at=utcnow()))
     if claimed.rowcount != 1:
@@ -284,13 +304,22 @@ def claim_run(db: Session, run_id: str) -> int | None:
     return epoch
 
 
+def _valid_execution_session():
+    return (AgentRun.kind != 'tailoring') | AgentRun.session_id.in_(
+        select(AgentSession.id).where(AgentSession.context_invalidated_at.is_(None)))
+
+
 def guard_execution(db: Session, run_id: str, epoch: int) -> None:
     """Acquire a write lock and fence cancellation/stale tools in THEIR transaction."""
     result = db.execute(update(AgentRun).where(
         AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
         AgentRun.execution_epoch == epoch, AgentRun.cancel_requested_at.is_(None),
+        _valid_execution_session(),
     ).values(heartbeat_at=utcnow()))
     if result.rowcount != 1:
+        run = db.get(AgentRun, run_id, populate_existing=True)
+        if run is not None:
+            require_valid_session(db, run)
         raise RunError(409, 'execution_lost', '任务已取消或失去运行权')
 
 
@@ -319,7 +348,8 @@ def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
         status = RunStatus.QUEUED
         run.attempt += 1
     run.status = RunStatus.CANCELLED if run.cancel_requested_at else status
-    run.error_code = error_code if run.status == RunStatus.FAILED else None
+    run.error_code = (error_code if run.status == RunStatus.FAILED else
+                      'session_context_invalidated' if run.error_code == 'session_context_invalidated' else None)
     if output_refs is not None and run.status != RunStatus.CANCELLED:
         run.output_refs = output_refs
     if run.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.CANCELLED):
@@ -347,7 +377,7 @@ def recover_stale_runs(db: Session, now=None) -> int:
         run = db.get(AgentRun, run_id, populate_existing=True)
         if run.cancel_requested_at or run.attempt >= 3:
             run.status = RunStatus.CANCELLED if run.cancel_requested_at else RunStatus.FAILED
-            run.error_code = None if run.cancel_requested_at else 'worker_lost'
+            run.error_code = (run.error_code if run.cancel_requested_at else 'worker_lost')
             db.execute(update(AgentSession).where(
                 AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
             ).values(active_run_id=None))
