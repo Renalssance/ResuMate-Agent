@@ -79,6 +79,9 @@ class JobApplication(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     resume_id: Mapped[int | None] = mapped_column(ForeignKey("resumes.id", ondelete="SET NULL"), nullable=True, index=True)
+    jd_id: Mapped[int | None] = mapped_column(ForeignKey("job_descriptions.id", ondelete="SET NULL"), index=True)
+    resume_version_id: Mapped[str | None] = mapped_column(ForeignKey("resume_versions.id", ondelete="SET NULL"), index=True)
+    submitted_snapshot: Mapped[dict | None] = mapped_column(JSON)
     company: Mapped[str] = mapped_column(String(255), nullable=False)
     position: Mapped[str] = mapped_column(String(255), nullable=False)
     applied_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
@@ -199,6 +202,13 @@ class JobDescription(Base):
     """职位描述表。"""
 
     __tablename__ = "job_descriptions"
+    __table_args__ = (UniqueConstraint("user_id", "source_site", "source_job_id", name="uq_job_source"),)
+
+    source_url: Mapped[str | None] = mapped_column(String(1024))
+    source_site: Mapped[str | None] = mapped_column(String(100))
+    source_job_id: Mapped[str | None] = mapped_column(String(255))
+    captured_at: Mapped[datetime | None] = mapped_column(DateTime)
+    status: Mapped[str] = mapped_column(String(40), default="saved", server_default="saved")
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -332,3 +342,6 @@ class FollowUpQuestionSet(Base):
     candidate = relationship("AnalysisCandidate", back_populates="follow_up_set")
     resume = relationship("Resume")
     jd = relationship("JobDescription")
+
+# Register new tables on the shared Base for existing create_all consumers.
+from backend.db import agent_models, career_models  # noqa: E402,F401

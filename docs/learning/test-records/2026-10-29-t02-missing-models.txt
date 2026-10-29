@@ -1,0 +1,33 @@
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting backend/tests/test_agent_models.py ______________
+ImportError while importing test module '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_agent_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_agent_models.py:5: in <module>
+    from backend.tests.career_fixtures import career_engine, career_db
+backend/tests/career_fixtures.py:12: in <module>
+    from backend.db import agent_models, career_models  # register all tables
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ImportError: cannot import name 'agent_models' from 'backend.db' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/db/__init__.py)
+_________ ERROR collecting backend/tests/test_resume_version_models.py _________
+ImportError while importing test module '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_resume_version_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_resume_version_models.py:9: in <module>
+    from backend.tests.career_fixtures import career_engine, career_db
+backend/tests/career_fixtures.py:12: in <module>
+    from backend.db import agent_models, career_models  # register all tables
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ImportError: cannot import name 'agent_models' from 'backend.db' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/db/__init__.py)
+=========================== short test summary info ============================
+ERROR backend/tests/test_agent_models.py
+ERROR backend/tests/test_resume_version_models.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.19s

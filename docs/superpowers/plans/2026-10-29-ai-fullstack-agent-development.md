@@ -251,10 +251,10 @@ def test_agent_can_continue_after_user_input(agent_fixture):
 **文件：** 新增 backend/db/agent_models.py、backend/db/career_models.py、backend/schemas/agent_runs.py、backend/schemas/resume_versions.py、backend/tests/test_agent_models.py、backend/tests/test_resume_version_models.py；修改 backend/db/database.py、backend/db/models.py；新增 deploy/schema/001_agent_and_versions.sql。
 **输入：** 第 4 节对象。**输出：** 数据表、唯一约束、状态类型；`RunStatus` 与 `RunEvent` 为后续唯一来源。
 
-- [ ] 实现表和枚举；ResumeVersion 保存引用与结构内容，不复制整个原始上传文件。
-- [ ] 为现有数据提供一次性增量建表/加列脚本，原字段不删除；不引入通用迁移框架。SQLite 开发初始化走现有模式，MySQL 演示使用显式脚本。
-- [ ] 加唯一操作键、Run 事件序号、用户过滤索引、版本关联；验证历史投递记录仍可读取。
-- [ ] 用 SQLite 与 MySQL 各跑模型约束测试；失败按具体方言修正，不宣称 SQLite 通过等于 MySQL 通过。
+- [x] 实现表和枚举；ResumeVersion 保存引用与结构内容，不复制整个原始上传文件。
+- [x] 为现有数据提供一次性增量建表/加列脚本，原字段不删除；不引入通用迁移框架。SQLite 开发初始化走现有模式，MySQL 演示使用显式脚本。
+- [x] 加唯一操作键、Run 事件序号、用户过滤索引、版本关联；验证历史投递记录仍可读取。
+- [x] 用 SQLite 与 MySQL 各跑模型约束测试；失败按具体方言修正，不宣称 SQLite 通过等于 MySQL 通过。
 
 ```python
 def test_duplicate_operation_is_rejected(db, operation_factory):
@@ -264,6 +264,8 @@ def test_duplicate_operation_is_rejected(db, operation_factory):
 ```
 
 **验证：** `uv run pytest backend/tests/test_agent_models.py backend/tests/test_resume_version_models.py -q`。验收：新旧记录可共存、归属与唯一约束生效、脚本失败不会删除旧数据。
+
+执行记录：[T02 双数据库实测](../../learning/test-records/2026-10-29-t02.md)。
 
 ### T03：Run API 与业务权限
 

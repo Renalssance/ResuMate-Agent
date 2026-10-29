@@ -55,7 +55,7 @@ def get_db():
 
 
 def init_db() -> None:
-    from backend.db import models  # noqa: F401
+    from backend.db import models, agent_models, career_models  # noqa: F401
     from backend.cloudbase import validate_runtime
 
     validate_runtime(DATABASE_URL)
@@ -220,3 +220,26 @@ def ensure_sqlite_schema(engine: Engine) -> None:
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_task ON llm_usage_events (task)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_success ON llm_usage_events (success)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_llm_usage_events_called_at ON llm_usage_events (called_at)"))
+
+        # T02 is an additive local upgrade. Existing rows retain null associations.
+        jd_columns = {row[1] for row in connection.execute(text("PRAGMA table_info(job_descriptions)"))}
+        if jd_columns:
+            for name, ddl in {
+                "source_url": "VARCHAR(1024)", "source_site": "VARCHAR(100)",
+                "source_job_id": "VARCHAR(255)", "captured_at": "DATETIME",
+                "status": "VARCHAR(40) NOT NULL DEFAULT 'saved'",
+            }.items():
+                if name not in jd_columns:
+                    connection.execute(text(f"ALTER TABLE job_descriptions ADD COLUMN {name} {ddl}"))
+            if "user_id" in jd_columns:
+                connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_job_source ON job_descriptions (user_id,source_site,source_job_id)"))
+        if application_columns:
+            for name, ddl in {
+                "jd_id": "INTEGER REFERENCES job_descriptions(id) ON DELETE SET NULL",
+                "resume_version_id": "VARCHAR(36) REFERENCES resume_versions(id) ON DELETE SET NULL",
+                "submitted_snapshot": "JSON",
+            }.items():
+                if name not in application_columns:
+                    connection.execute(text(f"ALTER TABLE job_applications ADD COLUMN {name} {ddl}"))
+            for name in ("jd_id", "resume_version_id"):
+                connection.execute(text(f"CREATE INDEX IF NOT EXISTS ix_job_applications_{name} ON job_applications ({name})"))
