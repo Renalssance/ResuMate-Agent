@@ -47,6 +47,17 @@ def create(request: RunCreate, user: User = Depends(get_current_user), db: Sessi
     return RunAccepted(run_id=run.id, status=run.status)
 
 
+@router.get('')
+def list_runs(limit: int = Query(default=20, ge=1, le=50), offset: int = Query(default=0, ge=0),
+              user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return agent_runs.list_runs(db, user.id, limit=limit, offset=offset)
+
+
+@router.get('/{run_id}/artifacts')
+def artifacts(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return agent_runs.run_artifacts(db, user.id, run_id)
+
+
 @router.get('/{run_id}')
 def snapshot(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return agent_runs.run_snapshot(db, user.id, run_id)

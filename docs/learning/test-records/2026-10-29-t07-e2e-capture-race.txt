@@ -1,0 +1,76 @@
+
+> test:e2e
+> playwright test
+
+
+Running 8 tests using 1 worker
+
+(node:85015) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/agent-run.spec.ts:25:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (45.1s)
+(node:85399) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › tests/e2e/agent-run.spec.ts:72:1 › 测试入口准备的真实暂停任务可从新页面继续 (2.2s)
+  ✘  3 [chromium] › tests/e2e/agent-run.spec.ts:82:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 (19.4s)
+(node:85552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [chromium] › tests/e2e/agent-run.spec.ts:110:1 › 提交后离开页面不会隐式取消 worker，返回可读取产物 (4.4s)
+  ✓  5 [chromium] › tests/e2e/agent-run.spec.ts:126:1 › 等待补问时可明确取消任务 (2.2s)
+  ✓  6 [chromium] › tests/e2e/agent-run.spec.ts:136:1 › worker 正在执行时明确取消，最终停止且不生成材料 (1.6s)
+  ✓  7 [chromium] › tests/e2e/agent-run.spec.ts:148:1 › 事件网络断线显示重连，任务保持等待并在恢复后继续 (5.4s)
+(node:85632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  8 [chromium] › tests/e2e/auth.spec.ts:3:1 › 注册密码不一致时保留输入并在浏览器阻止提交 (260ms)
+
+
+  1) [chromium] › tests/e2e/agent-run.spec.ts:25:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 ───────────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error Context: test-results/agent-run-页面发起、刷新补问并读取真实-worker-生成的材料-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/agent-run-页面发起、刷新补问并读取真实-worker-生成的材料-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/agent-run-页面发起、刷新补问并读取真实-worker-生成的材料-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/agent-run.spec.ts:82:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 ─────────────────────
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByText('任务状态已变化，其他页面可能已处理该问题。你的未提交回答已保留。', { exact: true })
+    Expected pattern: /已|变化|刷新/
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" getByText('任务状态已变化，其他页面可能已处理该问题。你的未提交回答已保留。', { exact: true }) with timeout 15000ms
+      - waiting for getByText('任务状态已变化，其他页面可能已处理该问题。你的未提交回答已保留。', { exact: true })
+
+
+      103 |   release()
+      104 |   expect((await conflict).status()).toBe(409)
+    > 105 |   await expect(other.getByText('任务状态已变化，其他页面可能已处理该问题。你的未提交回答已保留。', { exact: true })).toContainText(/已|变化|刷新/)
+          |                                                                                      ^
+      106 |   await expect(other.getByLabel(question, { exact: true })).toHaveValue('这份输入需要保留')
+      107 |   await other.close()
+      108 | })
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/agent-run.spec.ts:105:86
+
+    Error Context: test-results/agent-run-另一个标签页先回答时旧提交收到-409-并保留输入-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/agent-run-另一个标签页先回答时旧提交收到-409-并保留输入-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/agent-run-另一个标签页先回答时旧提交收到-409-并保留输入-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests/e2e/agent-run.spec.ts:25:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 ────────────────────
+    [chromium] › tests/e2e/agent-run.spec.ts:82:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 ──────────────────────
+  6 passed (1.5m)

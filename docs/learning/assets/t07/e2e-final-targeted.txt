@@ -1,0 +1,14 @@
+
+> test:e2e
+> playwright test --grep 页面发起|事件网络
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-2xOBKg
+
+Running 2 tests using 1 worker
+
+(node:86699) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/agent-run.spec.ts:26:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (5.6s)
+  ✓  2 [chromium] › tests/e2e/agent-run.spec.ts:151:1 › 事件网络断线显示重连，任务保持等待并在恢复后继续 (5.4s)
+
+  2 passed (17.9s)

@@ -35,6 +35,7 @@ export interface RunSubscriptionOptions {
   onEvent: (event: RunEvent) => void
   onSnapshot?: (snapshot: RunSnapshot) => void
   onReset?: (snapshot: RunSnapshot) => void
+  onConnected?: (snapshot: RunSnapshot) => void
   onError?: (error: Error) => void
   signal?: AbortSignal
 }
@@ -102,6 +103,8 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
         resetting = false
         if (signal.aborted) return
         const response = await get(`${url}/events?after=${cursor}`, 'text/event-stream')
+        if (signal.aborted) return
+        options.onConnected?.(snapshot)
         await parseSseStream(response, (frame) => {
           if (frame.event === 'reset') throw resetStream
           if (frame.event !== 'run.event') return

@@ -1,4 +1,5 @@
 """Authoritative Run lifecycle. Does not execute models or publish queue messages."""
+from datetime import timezone
 from uuid import uuid4
 
 from sqlalchemy import and_, func, select, update
@@ -6,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.db.agent_models import AgentAction, AgentRun, AgentRunEvent, AgentSession
+from backend.db.career_models import ResumeVersion
 from backend.db.models import JobDescription, Resume, utcnow
 from backend.schemas.agent_runs import ActionResponse, RunCreate, RunStatus
 from backend.services.run_events import append_event
@@ -25,6 +27,35 @@ def get_run(db: Session, user_id: int, run_id: str, *, lock=False) -> AgentRun:
     if run is None:
         raise RunError(404, 'not_found', '任务不存在')
     return run
+
+
+def list_runs(db: Session, user_id: int, *, limit: int = 20, offset: int = 0) -> dict:
+    runs = list(db.scalars(select(AgentRun).where(AgentRun.user_id == user_id)
+        .order_by(AgentRun.created_at.desc(), AgentRun.id.desc()).offset(offset).limit(limit + 1)))
+    # SQL stores UTC without timezone; keep the offset explicit for browser parsing.
+    return {
+        'items': [{
+            'runId': run.id, 'sessionId': run.session_id, 'kind': run.kind,
+            'status': run.status,
+            'createdAt': run.created_at.replace(tzinfo=timezone.utc).isoformat(),
+            'updatedAt': run.updated_at.replace(tzinfo=timezone.utc).isoformat(),
+            'input': run.input_json, 'errorCode': run.error_code,
+        } for run in runs[:limit]],
+        'hasMore': len(runs) > limit,
+    }
+
+
+def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
+    get_run(db, user_id, run_id)
+    versions = db.scalars(select(ResumeVersion).where(
+        ResumeVersion.run_id == run_id, ResumeVersion.user_id == user_id,
+    ).order_by(ResumeVersion.created_at.desc(), ResumeVersion.id.desc()))
+    return [{
+        'id': version.id, 'runId': version.run_id, 'resumeId': version.resume_id,
+        'jdId': version.jd_id, 'revision': version.revision, 'status': version.status,
+        'structuredContent': version.structured_content, 'factRefs': version.fact_refs,
+        'createdAt': version.created_at.replace(tzinfo=timezone.utc).isoformat(),
+    } for version in versions]
 
 
 def _input_versions(db: Session, user_id: int, jd_id: int, resume_id: int) -> dict:

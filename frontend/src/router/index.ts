@@ -8,6 +8,7 @@ import QuestionsView from '../views/QuestionsView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
+import AgentTaskView from '../views/AgentTaskView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +28,7 @@ const router = createRouter({
       component: DocumentsView,
       meta: { title: '文档管理', description: '上传、解析、查看和删除 JD 与简历' },
     },
+    { path: '/agent/tasks/:runId?', name: 'agent-tasks', component: AgentTaskView, meta: { title: '材料准备', description: '准备、补充并核对你的投递材料' } },
     {
       path: '/matching',
       name: 'matching',

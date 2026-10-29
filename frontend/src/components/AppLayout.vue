@@ -16,6 +16,7 @@
           v-for="item in navItems"
           :key="item.path"
           class="nav-item"
+          :class="{ 'router-link-active': route.path.startsWith(`${item.path}/`) }"
           :to="item.path"
           @click="closeNavigation"
         >
@@ -118,6 +119,7 @@ function syncFluidPreferences() {
 const navItems = [
   { path: '/documents', label: '文档管理', icon: Files },
   { path: '/matching', label: '岗位匹配', icon: ScanSearch },
+  { path: '/agent/tasks', label: '材料准备', icon: ClipboardList },
   { path: '/profile-fields', label: '结构资料', icon: ClipboardList },
   { path: '/questions', label: '试题生成', icon: CircleHelp },
   { path: '/applications', label: '投递记录', icon: ChartNoAxesCombined },

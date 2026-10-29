@@ -228,3 +228,13 @@ describe('subscribeRun', () => {
     ])
   })
 })
+
+it('notifies the workspace when an idle stream reconnects with an authoritative snapshot', async () => {
+  respond(Response.json(snapshot()), stream(''), Response.json(snapshot({ status: 'waiting_input', lastSeq: 2 })), stream('', true))
+  const connected = vi.fn()
+  const subscription = subscribeRun({ runId, onEvent: () => {}, onConnected: connected })
+  await vi.advanceTimersByTimeAsync(0)
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(connected.mock.calls.map(([value]) => value.status)).toEqual(['running', 'waiting_input'])
+  subscription.close(); await subscription.done
+})

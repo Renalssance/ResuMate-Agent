@@ -1,0 +1,208 @@
+FF..............FF....                                                   [100%]
+=================================== FAILURES ===================================
+______ test_list_paginates_owned_runs_with_stable_creation_order[sqlite] _______
+
+workspace_client = <starlette.testclient.TestClient object at 0x10dd71ac0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d56b8f0>
+
+    def test_list_paginates_owned_runs_with_stable_creation_order(workspace_client, career_db):
+        seed_run(career_db, 'run-a', status='failed', error_code='model_timeout')
+        seed_run(career_db, 'run-c')
+        seed_run(career_db, 'run-b')
+        seed_run(career_db, 'run-new', created_at=datetime(2026, 10, 29, 11))
+        seed_run(career_db, 'run-foreign', owner=2, created_at=datetime(2026, 10, 29, 12))
+        first = workspace_client.get('/api/agent/runs?limit=2', headers=headers())
+        assert first.status_code == 200
+        assert [r['runId'] for r in first.json()['items']] == ['run-new', 'run-c']
+        assert first.json()['hasMore'] is True
+        second = workspace_client.get('/api/agent/runs?limit=2&offset=2', headers=headers()).json()
+        assert [r['runId'] for r in second['items']] == ['run-b', 'run-a']
+        assert second['hasMore'] is False
+>       assert second['items'][1] == {
+            'runId': 'run-a', 'sessionId': 'session-run-a', 'kind': 'tailoring',
+            'status': 'failed', 'createdAt': '2026-10-29T10:00:00+00:00',
+            'updatedAt': '2026-10-29T10:00:00+00:00', 'input': {'resumeId': 1, 'jdId': 1},
+            'errorCode': 'model_timeout',
+        }
+E       AssertionError: assert {'createdAt':...iloring', ...} == {'createdAt':...iloring', ...}
+E         
+E         Omitting 6 identical items, use -vv to show
+E         Differing items:
+E         {'createdAt': '2026-10-29T10:00:00'} != {'createdAt': '2026-10-29T10:00:00+00:00'}
+E         {'updatedAt': '2026-10-29T10:00:00'} != {'updatedAt': '2026-10-29T10:00:00+00:00'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_workspace.py:64: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-29 23:58:16,335 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-29 23:58:16,340 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=5
+2026-10-29 23:58:16,340 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs?limit=2 "HTTP/1.1 200 OK"
+2026-10-29 23:58:16,341 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-29 23:58:16,343 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+2026-10-29 23:58:16,343 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs?limit=2&offset=2 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=5
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs?limit=2 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs?limit=2&offset=2 "HTTP/1.1 200 OK"
+_______ test_list_paginates_owned_runs_with_stable_creation_order[mysql] _______
+
+workspace_client = <starlette.testclient.TestClient object at 0x10d7335c0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d733ad0>
+
+    def test_list_paginates_owned_runs_with_stable_creation_order(workspace_client, career_db):
+        seed_run(career_db, 'run-a', status='failed', error_code='model_timeout')
+        seed_run(career_db, 'run-c')
+        seed_run(career_db, 'run-b')
+        seed_run(career_db, 'run-new', created_at=datetime(2026, 10, 29, 11))
+        seed_run(career_db, 'run-foreign', owner=2, created_at=datetime(2026, 10, 29, 12))
+        first = workspace_client.get('/api/agent/runs?limit=2', headers=headers())
+        assert first.status_code == 200
+        assert [r['runId'] for r in first.json()['items']] == ['run-new', 'run-c']
+        assert first.json()['hasMore'] is True
+        second = workspace_client.get('/api/agent/runs?limit=2&offset=2', headers=headers()).json()
+        assert [r['runId'] for r in second['items']] == ['run-b', 'run-a']
+        assert second['hasMore'] is False
+>       assert second['items'][1] == {
+            'runId': 'run-a', 'sessionId': 'session-run-a', 'kind': 'tailoring',
+            'status': 'failed', 'createdAt': '2026-10-29T10:00:00+00:00',
+            'updatedAt': '2026-10-29T10:00:00+00:00', 'input': {'resumeId': 1, 'jdId': 1},
+            'errorCode': 'model_timeout',
+        }
+E       AssertionError: assert {'createdAt':...iloring', ...} == {'createdAt':...iloring', ...}
+E         
+E         Omitting 6 identical items, use -vv to show
+E         Differing items:
+E         {'createdAt': '2026-10-29T10:00:00'} != {'createdAt': '2026-10-29T10:00:00+00:00'}
+E         {'updatedAt': '2026-10-29T10:00:00'} != {'updatedAt': '2026-10-29T10:00:00+00:00'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_workspace.py:64: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-29 23:58:16,632 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-29 23:58:16,634 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+2026-10-29 23:58:16,634 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs?limit=2 "HTTP/1.1 200 OK"
+2026-10-29 23:58:16,634 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-29 23:58:16,636 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+2026-10-29 23:58:16,636 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs?limit=2&offset=2 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs?limit=2 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs?limit=2&offset=2 "HTTP/1.1 200 OK"
+_______ test_artifacts_include_owned_drafts_before_run_finishes[sqlite] ________
+
+workspace_client = <starlette.testclient.TestClient object at 0x110cb5040>
+career_db = <sqlalchemy.orm.session.Session object at 0x110cb7f80>
+
+    def test_artifacts_include_owned_drafts_before_run_finishes(workspace_client, career_db):
+        seed_run(career_db, 'run-draft', status='running', output_refs=[])
+        seed_run(career_db, 'run-other')
+        career_db.add_all([
+            ResumeVersion(id='draft', user_id=1, run_id='run-draft', resume_id=1, jd_id=1,
+                          structured_content={'summary': 'API development'}, fact_refs=['fact-1'],
+                          revision=2, status='draft', created_at=datetime(2026, 10, 29, 11)),
+            ResumeVersion(id='foreign', user_id=2, run_id='run-draft', structured_content={'private': 'Bob'}),
+            ResumeVersion(id='other-run', user_id=1, run_id='run-other'),
+        ])
+        career_db.commit()
+        response = workspace_client.get('/api/agent/runs/run-draft/artifacts', headers=headers())
+        assert response.status_code == 200
+>       assert response.json() == [{
+            'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
+            'status': 'draft', 'structuredContent': {'summary': 'API development'},
+            'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00',
+        }]
+E       AssertionError: assert [{'createdAt'...dId': 1, ...}] == [{'createdAt'...dId': 1, ...}]
+E         
+E         At index 0 diff: {'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2, 'status': 'draft', 'structuredContent': {'summary': 'API development'}, 'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00'} != {'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2, 'status': 'draft', 'structuredContent': {'summary': 'API development'}, 'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_workspace.py:117: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-29 23:58:18,613 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/run-draft/artifacts client=testclient
+2026-10-29 23:58:18,615 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/run-draft/artifacts status=200 duration_ms=2
+2026-10-29 23:58:18,616 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/run-draft/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/run-draft/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/run-draft/artifacts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/run-draft/artifacts "HTTP/1.1 200 OK"
+________ test_artifacts_include_owned_drafts_before_run_finishes[mysql] ________
+
+workspace_client = <starlette.testclient.TestClient object at 0x110d2e6c0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d5c4830>
+
+    def test_artifacts_include_owned_drafts_before_run_finishes(workspace_client, career_db):
+        seed_run(career_db, 'run-draft', status='running', output_refs=[])
+        seed_run(career_db, 'run-other')
+        career_db.add_all([
+            ResumeVersion(id='draft', user_id=1, run_id='run-draft', resume_id=1, jd_id=1,
+                          structured_content={'summary': 'API development'}, fact_refs=['fact-1'],
+                          revision=2, status='draft', created_at=datetime(2026, 10, 29, 11)),
+            ResumeVersion(id='foreign', user_id=2, run_id='run-draft', structured_content={'private': 'Bob'}),
+            ResumeVersion(id='other-run', user_id=1, run_id='run-other'),
+        ])
+        career_db.commit()
+        response = workspace_client.get('/api/agent/runs/run-draft/artifacts', headers=headers())
+        assert response.status_code == 200
+>       assert response.json() == [{
+            'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
+            'status': 'draft', 'structuredContent': {'summary': 'API development'},
+            'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00',
+        }]
+E       AssertionError: assert [{'createdAt'...dId': 1, ...}] == [{'createdAt'...dId': 1, ...}]
+E         
+E         At index 0 diff: {'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2, 'status': 'draft', 'structuredContent': {'summary': 'API development'}, 'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00'} != {'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2, 'status': 'draft', 'structuredContent': {'summary': 'API development'}, 'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00'}
+E         Use -v to get more diff
+
+backend/tests/test_agent_workspace.py:117: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-29 23:58:18,842 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/run-draft/artifacts client=testclient
+2026-10-29 23:58:18,844 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/run-draft/artifacts status=200 duration_ms=2
+2026-10-29 23:58:18,845 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/run-draft/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/run-draft/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/run-draft/artifacts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/run-draft/artifacts "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_workspace.py::test_list_paginates_owned_runs_with_stable_creation_order[sqlite]
+FAILED backend/tests/test_agent_workspace.py::test_list_paginates_owned_runs_with_stable_creation_order[mysql]
+FAILED backend/tests/test_agent_workspace.py::test_artifacts_include_owned_drafts_before_run_finishes[sqlite]
+FAILED backend/tests/test_agent_workspace.py::test_artifacts_include_owned_drafts_before_run_finishes[mysql]
+4 failed, 18 passed, 7 warnings in 3.87s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

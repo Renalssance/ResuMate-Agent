@@ -1,0 +1,13 @@
+
+> test:e2e
+> playwright test --grep 页面发起|另一个标签页
+
+
+Running 2 tests using 1 worker
+
+(node:85886) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/agent-run.spec.ts:26:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (5.5s)
+  ✓  2 [chromium] › tests/e2e/agent-run.spec.ts:83:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 (4.3s)
+
+  2 passed (15.5s)
