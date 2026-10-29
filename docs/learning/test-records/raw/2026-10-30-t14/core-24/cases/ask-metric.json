@@ -1,0 +1,1104 @@
+{
+  "case_id": "ask-metric",
+  "category": "clarification",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "category": "clarification",
+    "resume": {
+      "raw_text": "测试申请人甲。负责 Python 接口开发并优化接口响应，没有记录测量结果。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "负责 Python 接口开发并优化接口响应。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      }
+    },
+    "job": {
+      "title": "Python 后端工程师（合成岗位）",
+      "raw_text": "使用 Python/FastAPI 开发订单接口，维护 PostgreSQL 查询并编写测试。不需要补写未经确认的指标。"
+    },
+    "facts": [],
+    "memories": [],
+    "proposal": {
+      "section": "/self_summary",
+      "after": "负责 Python 接口开发与响应优化。",
+      "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+      "source_sections": [],
+      "include_answer": true
+    },
+    "expected": {
+      "statuses": [
+        "succeeded"
+      ],
+      "draft_count": 1,
+      "requires_answer": true,
+      "requires_waiting": true
+    },
+    "id": "ask-metric",
+    "question": "接口优化是否有可靠的基线、结果和测量范围？",
+    "answer": {
+      "text": "没有可靠性能测量，不能提供提升比例。"
+    }
+  },
+  "output": {
+    "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+    "status": "succeeded",
+    "error_code": null,
+    "coverage": {
+      "waiting_observed": true,
+      "waiting_draft_count": 0,
+      "checkpoint_reopened": true,
+      "summary_calls": 0,
+      "file_reads": [],
+      "cancel_claim_blocked": false,
+      "model_calls_after_cancel": 0,
+      "fault_injected": false,
+      "duplicate_result_refs": [
+        "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+      ],
+      "required_context_preserved": true
+    },
+    "required_context_checks": [
+      {
+        "sdk_call_id": "01a18911-33ef-7ea0-99e9-3009f32b40ca",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18911-33f7-7c12-b1ae-1ff49e34492e",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18911-3419-7570-961a-ccd4e3682f4a",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [
+            "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+          ],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [
+              "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+            ],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18911-3421-7040-8fc8-0d43f1b1a725",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [
+            "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+          ],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [
+              "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+            ],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18911-3429-7151-843d-348d2b72d69a",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [
+            "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+          ],
+          "outputs": [
+            "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+          ]
+        },
+        "observed": [
+          {
+            "runId": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [
+              "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+            ],
+            "outputs": [
+              "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+            ]
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-1",
+            "name": "get_application_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-2",
+            "name": "ask_applicant",
+            "args": {
+              "question": "接口优化是否有可靠的基线、结果和测量范围？"
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-3",
+            "name": "get_application_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-4",
+            "name": "create_resume_draft",
+            "args": {
+              "changes": [
+                {
+                  "section": "/self_summary",
+                  "before": "负责 Python 接口开发并优化接口响应。",
+                  "after": "负责 Python 接口开发与响应优化。",
+                  "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-01T00:00:00",
+                      "section": "/self_summary",
+                      "sourceRefs": [
+                        "page:1"
+                      ]
+                    },
+                    {
+                      "kind": "applicant_answer",
+                      "actionId": "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+                    }
+                  ],
+                  "requires_input": false
+                }
+              ]
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。",
+        "tool_calls": [],
+        "invalid_tool_calls": []
+      }
+    ],
+    "model": "resumate-eval-stub-v1"
+  },
+  "db_snapshot": {
+    "run": {
+      "id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+      "user_id": 1,
+      "session_id": "bcc4f401-82f9-4bf5-a713-b0cfbcd68247",
+      "request_id": "7c58e0d5-ae54-4d64-b346-d58e3154712c",
+      "kind": "tailoring",
+      "status": "succeeded",
+      "input_json": {
+        "jdId": 1,
+        "resumeId": 1,
+        "contextSnapshot": {
+          "resume": {
+            "id": 1,
+            "text": "测试申请人甲。负责 Python 接口开发并优化接口响应，没有记录测量结果。",
+            "structured": {
+              "name": "测试申请人甲",
+              "self_summary": "负责 Python 接口开发并优化接口响应。",
+              "source_refs": [
+                "page:1"
+              ],
+              "work_experience": [
+                {
+                  "company": "合成业务项目",
+                  "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+                  "source_refs": [
+                    "page:1:work:0"
+                  ]
+                }
+              ],
+              "projects": [
+                {
+                  "name": "订单接口测试",
+                  "description": "为订单接口编写 pytest 测试。",
+                  "source_refs": [
+                    "page:1:project:0"
+                  ]
+                }
+              ]
+            },
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "job": {
+            "id": 1,
+            "title": "Python 后端工程师（合成岗位）",
+            "text": "使用 Python/FastAPI 开发订单接口，维护 PostgreSQL 查询并编写测试。不需要补写未经确认的指标。",
+            "structured": {},
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "facts": [],
+          "match": null
+        }
+      },
+      "input_versions": {
+        "resume": "2026-10-01T00:00:00",
+        "jd": "2026-10-01T00:00:00",
+        "memories": [],
+        "facts": []
+      },
+      "result_json": null,
+      "attempt": 1,
+      "execution_epoch": 2,
+      "heartbeat_at": "2026-10-29T19:09:28.492056",
+      "cancel_requested_at": null,
+      "error_code": null,
+      "output_refs": [
+        {
+          "type": "resume_version",
+          "id": "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+        }
+      ],
+      "created_at": "2026-10-29T19:09:28.325728",
+      "updated_at": "2026-10-29T19:09:28.492643"
+    },
+    "session": {
+      "id": "bcc4f401-82f9-4bf5-a713-b0cfbcd68247",
+      "user_id": 1,
+      "purpose": "tailoring",
+      "context_invalidated_at": null,
+      "checkpoint_deleted_at": null,
+      "active_run_id": null,
+      "created_at": "2026-10-29T19:09:28.317884"
+    },
+    "resume": {
+      "id": 1,
+      "user_id": 1,
+      "filename": "synthetic-resume.txt",
+      "file_path": "",
+      "content_hash": "",
+      "document_size": 0,
+      "parse_status": "pending",
+      "raw_text": "测试申请人甲。负责 Python 接口开发并优化接口响应，没有记录测量结果。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "负责 Python 接口开发并优化接口响应。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-10-29T19:09:28.318707",
+      "updated_at": "2026-10-01T00:00:00"
+    },
+    "baseline": {
+      "resume": {
+        "id": 1,
+        "user_id": 1,
+        "raw_text": "测试申请人甲。负责 Python 接口开发并优化接口响应，没有记录测量结果。",
+        "structured_data": {
+          "name": "测试申请人甲",
+          "self_summary": "负责 Python 接口开发并优化接口响应。",
+          "source_refs": [
+            "page:1"
+          ],
+          "work_experience": [
+            {
+              "company": "合成业务项目",
+              "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+              "source_refs": [
+                "page:1:work:0"
+              ]
+            }
+          ],
+          "projects": [
+            {
+              "name": "订单接口测试",
+              "description": "为订单接口编写 pytest 测试。",
+              "source_refs": [
+                "page:1:project:0"
+              ]
+            }
+          ]
+        }
+      },
+      "facts": [],
+      "memories": []
+    },
+    "versions": [
+      {
+        "id": "657f0c5d-5151-4d2f-92c0-20f59c1d7b81",
+        "user_id": 1,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 1,
+        "structured_content": {
+          "resume": {
+            "name": "测试申请人甲",
+            "self_summary": "负责 Python 接口开发并优化接口响应。",
+            "source_refs": [
+              "page:1"
+            ],
+            "work_experience": [
+              {
+                "company": "合成业务项目",
+                "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+                "source_refs": [
+                  "page:1:work:0"
+                ]
+              }
+            ],
+            "projects": [
+              {
+                "name": "订单接口测试",
+                "description": "为订单接口编写 pytest 测试。",
+                "source_refs": [
+                  "page:1:project:0"
+                ]
+              }
+            ]
+          },
+          "changes": [
+            {
+              "section": "/self_summary",
+              "before": "负责 Python 接口开发并优化接口响应。",
+              "after": "负责 Python 接口开发与响应优化。",
+              "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+              "fact_refs": [
+                {
+                  "kind": "resume",
+                  "resumeId": 1,
+                  "inputVersion": "2026-10-01T00:00:00",
+                  "section": "/self_summary",
+                  "sourceRefs": [
+                    "page:1"
+                  ]
+                },
+                {
+                  "kind": "applicant_answer",
+                  "actionId": "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+                }
+              ],
+              "requires_input": false,
+              "id": "27c8b761-972f-41c9-bf9c-d824b55e5f54",
+              "status": "pending"
+            }
+          ],
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          }
+        },
+        "fact_refs": [
+          {
+            "kind": "resume",
+            "resumeId": 1,
+            "inputVersion": "2026-10-01T00:00:00",
+            "section": "/self_summary",
+            "sourceRefs": [
+              "page:1"
+            ]
+          },
+          {
+            "kind": "applicant_answer",
+            "actionId": "7ece2d4a-4fce-4ed3-82c4-bc87de01130c"
+          }
+        ],
+        "status": "draft",
+        "created_at": "2026-10-29T19:09:28.484930"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "operation_key": "draft:1:initial",
+        "tool_name": "create_resume_draft",
+        "status": "succeeded",
+        "result_ref": "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.326617"
+      },
+      {
+        "id": 2,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.330455"
+      },
+      {
+        "id": 3,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1"
+        },
+        "created_at": "2026-10-29T19:09:28.434250"
+      },
+      {
+        "id": 4,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1",
+          "result_ref": null
+        },
+        "created_at": "2026-10-29T19:09:28.435931"
+      },
+      {
+        "id": 5,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2"
+        },
+        "created_at": "2026-10-29T19:09:28.441863"
+      },
+      {
+        "id": 6,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 6,
+        "type": "action.required",
+        "payload": {
+          "action_id": "7ece2d4a-4fce-4ed3-82c4-bc87de01130c",
+          "kind": "input"
+        },
+        "created_at": "2026-10-29T19:09:28.443779"
+      },
+      {
+        "id": 7,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "waiting_input",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.444960"
+      },
+      {
+        "id": 8,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 8,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.447940"
+      },
+      {
+        "id": 9,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 9,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.448872"
+      },
+      {
+        "id": 10,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 10,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2"
+        },
+        "created_at": "2026-10-29T19:09:28.466027"
+      },
+      {
+        "id": 11,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 11,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2",
+          "result_ref": null
+        },
+        "created_at": "2026-10-29T19:09:28.466896"
+      },
+      {
+        "id": 12,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 12,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-3"
+        },
+        "created_at": "2026-10-29T19:09:28.475831"
+      },
+      {
+        "id": 13,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 13,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-3",
+          "result_ref": null
+        },
+        "created_at": "2026-10-29T19:09:28.477484"
+      },
+      {
+        "id": 14,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 14,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial"
+        },
+        "created_at": "2026-10-29T19:09:28.483012"
+      },
+      {
+        "id": 15,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 15,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "657f0c5d-5151-4d2f-92c0-20f59c1d7b81",
+          "kind": "resume_version"
+        },
+        "created_at": "2026-10-29T19:09:28.485266"
+      },
+      {
+        "id": 16,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 16,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial",
+          "result_ref": "657f0c5d-5151-4d2f-92c0-20f59c1d7b81"
+        },
+        "created_at": "2026-10-29T19:09:28.486016"
+      },
+      {
+        "id": 17,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 17,
+        "type": "assistant.delta",
+        "payload": {
+          "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。"
+        },
+        "created_at": "2026-10-29T19:09:28.491029"
+      },
+      {
+        "id": 18,
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "seq": 18,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:28.492882"
+      }
+    ],
+    "actions": [
+      {
+        "id": "7ece2d4a-4fce-4ed3-82c4-bc87de01130c",
+        "run_id": "8b25a2e5-0bdd-4266-aaa3-f0218d2c514b",
+        "interrupt_id": "d582162fb2900621afe186576deea34b",
+        "kind": "input",
+        "payload": {
+          "kind": "input",
+          "question": "接口优化是否有可靠的基线、结果和测量范围？"
+        },
+        "status": "answered",
+        "response": {
+          "decision": "submit",
+          "answers": {
+            "text": "没有可靠性能测量，不能提供提升比例。"
+          }
+        },
+        "answered_at": "2026-10-29T19:09:28.447206"
+      }
+    ],
+    "facts": [],
+    "memories": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "run_identity",
+        "passed": true,
+        "reason": "SQL Run and session belong to the evaluated user",
+        "evidence_refs": [
+          "run",
+          "session"
+        ]
+      },
+      {
+        "name": "run_status",
+        "passed": true,
+        "reason": "status=succeeded; expected=['succeeded']",
+        "evidence_refs": [
+          "run.status"
+        ]
+      },
+      {
+        "name": "run_attempt",
+        "passed": true,
+        "reason": "attempt=1; epoch=2",
+        "evidence_refs": [
+          "run"
+        ]
+      },
+      {
+        "name": "session_released",
+        "passed": true,
+        "reason": "Terminal Run releases its session",
+        "evidence_refs": [
+          "session.active_run_id"
+        ]
+      },
+      {
+        "name": "draft_count",
+        "passed": true,
+        "reason": "draft_count=1; expected=1",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "operation_count",
+        "passed": true,
+        "reason": "operation_count=1; expected=1",
+        "evidence_refs": [
+          "operations"
+        ]
+      },
+      {
+        "name": "artifact_event_count",
+        "passed": true,
+        "reason": "artifact_event_count=1; expected=1",
+        "evidence_refs": [
+          "events"
+        ]
+      },
+      {
+        "name": "artifact_consistency",
+        "passed": true,
+        "reason": "Run, saved operation and artifact event reference exactly the persisted versions",
+        "evidence_refs": [
+          "run.output_refs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "original_resume_unchanged",
+        "passed": true,
+        "reason": "Original resume business fields match the pre-run baseline",
+        "evidence_refs": [
+          "resume",
+          "baseline.resume"
+        ]
+      },
+      {
+        "name": "facts_unchanged",
+        "passed": true,
+        "reason": "No fact was inserted, confirmed, edited or deleted by the agent",
+        "evidence_refs": [
+          "facts",
+          "baseline.facts"
+        ]
+      },
+      {
+        "name": "memories_unchanged",
+        "passed": true,
+        "reason": "No preference was silently inserted or changed",
+        "evidence_refs": [
+          "memories",
+          "baseline.memories"
+        ]
+      },
+      {
+        "name": "version_identity",
+        "passed": true,
+        "reason": "Draft keeps the owned resume, job, frozen versions and unchanged review base",
+        "evidence_refs": [
+          "versions",
+          "run.input_versions"
+        ]
+      },
+      {
+        "name": "pending_review",
+        "passed": true,
+        "reason": "All suggested changes remain pending in an unconfirmed draft",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "nonempty_suggestions",
+        "passed": true,
+        "reason": "Expected drafts contain reviewable field suggestions",
+        "evidence_refs": [
+          "versions.structured_content.changes"
+        ]
+      },
+      {
+        "name": "suggestion_shape",
+        "passed": true,
+        "reason": "Editable fields occur once and missing information has no invented replacement",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "before_matches",
+        "passed": true,
+        "reason": "Every before value equals its actual frozen resume field",
+        "evidence_refs": [
+          "versions",
+          "run.input_json.contextSnapshot.resume"
+        ]
+      },
+      {
+        "name": "source_identity",
+        "passed": true,
+        "reason": "Source IDs, owner, frozen version, source marks and answer ownership agree; this does not establish textual truth",
+        "evidence_refs": [
+          "versions.fact_refs",
+          "facts",
+          "actions"
+        ]
+      },
+      {
+        "name": "answer_persistence",
+        "passed": true,
+        "reason": "The submitted answer remains in this Run and is cited by the draft",
+        "evidence_refs": [
+          "actions",
+          "versions.fact_refs"
+        ]
+      },
+      {
+        "name": "waiting_observed",
+        "passed": true,
+        "reason": "A real waiting_input phase occurred before any draft was written",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "checkpoint_reopened",
+        "passed": true,
+        "reason": "Resume used a reopened persisted checkpoint",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      }
+    ],
+    "limitations": [
+      "Legal source identity does not prove that natural-language claims are true.",
+      "Stub outputs do not measure real-model quality or latency."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

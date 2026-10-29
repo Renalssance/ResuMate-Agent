@@ -144,6 +144,7 @@
 
 <script setup lang="ts">
 import { Plus, RefreshCw, Trash2 } from '@lucide/vue'
+import { activeTaskKey, readActiveTask, saveActiveTask } from '../services/activeTasks'
 import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import TaskProgress from '../components/TaskProgress.vue'
@@ -159,7 +160,7 @@ const documentStore = useDocumentStore()
 const matchStore = useMatchStore()
 const questionStore = useQuestionStore()
 const task = useTaskSse(QUESTION_STEPS)
-const QUESTION_TASK_ID_KEY = 'resumate:active-question-task'
+const QUESTION_TASK_ID_KEY = activeTaskKey('question-task')
 
 interface ActiveQuestionTask {
   taskId: string
@@ -184,6 +185,10 @@ onMounted(async () => {
   const restored = readActiveQuestionTask()
   if (restored) {
     restoredQuestionTask.value = restored
+    selectedJdId.value = restored.jdId
+    selectedResumeId.value = restored.resumeId
+    selectedMatchId.value = restored.matchId
+    questionCount.value = restored.questionCount
     const restoredTaskId = restored.taskId
     task.start(restoredTaskId)
   }
@@ -203,9 +208,9 @@ function refreshLoadedQuestionSets(selectedId = selectedSet.value?.id) {
 watch(task.status, async (status) => {
   const restored = restoredQuestionTask.value
   if (!restored || task.taskId.value !== restored.taskId || (status !== 'success' && status !== 'failed')) return
-  if (status === 'success') await restoreGeneratedQuestionSet(restored)
-  localStorage.removeItem(QUESTION_TASK_ID_KEY)
-  restoredQuestionTask.value = null
+  try { if (status === 'success') await restoreGeneratedQuestionSet(restored) }
+  catch (error) { task.failManual(error instanceof Error ? error.message : String(error)) }
+  finally { localStorage.removeItem(QUESTION_TASK_ID_KEY); restoredQuestionTask.value = null }
 })
 
 async function generate() {
@@ -215,15 +220,19 @@ async function generate() {
   const match = matchStore.results.find((item) => item.id === selectedMatchId.value)
   if (!jd || !resume || !match) return
   const taskId = createId('task_questions')
-  localStorage.setItem(QUESTION_TASK_ID_KEY, JSON.stringify({ taskId, jdId: jd.id, resumeId: resume.id, matchId: match.id, questionCount: questionCount.value }))
+  const active = { taskId: '', jdId: jd.id, resumeId: resume.id, matchId: match.id, questionCount: questionCount.value }
   task.startManual(taskId, '正在提交试题生成任务')
   try {
-    await questionStore.createQuestionSet(jd, resume, questionCount.value, match, taskId, task.start)
+    await questionStore.createQuestionSet(jd, resume, active.questionCount, match, taskId, acceptedId => {
+      active.taskId = acceptedId
+      saveActiveTask(QUESTION_TASK_ID_KEY, active)
+      task.start(acceptedId)
+    })
     selectedSet.value = questionStore.questionSets[0] || null
   } catch (err) {
     task.failManual(err instanceof Error ? err.message : String(err))
   } finally {
-    localStorage.removeItem(QUESTION_TASK_ID_KEY)
+    if (readActiveQuestionTask()?.taskId === active.taskId) localStorage.removeItem(QUESTION_TASK_ID_KEY)
   }
 }
 
@@ -232,13 +241,12 @@ async function restoreGeneratedQuestionSet(activeTask: ActiveQuestionTask) {
   const resume = documentStore.parsedResumes.find((item) => item.id === activeTask.resumeId)
   const match = matchStore.results.find((item) => item.id === activeTask.matchId)
   if (!jd || !resume || !match) throw new Error('Stored question generation context no longer matches loaded records.')
-  await questionStore.restoreQuestionSet(jd, resume, activeTask.questionCount, match)
+  await questionStore.restoreQuestionSet(jd, resume, activeTask.questionCount, match, activeTask.taskId)
   selectedSet.value = questionStore.questionSets[0] || null
 }
 
 function readActiveQuestionTask() {
-  const raw = localStorage.getItem(QUESTION_TASK_ID_KEY)
-  return raw ? (JSON.parse(raw) as ActiveQuestionTask) : null
+  return readActiveTask<ActiveQuestionTask>(QUESTION_TASK_ID_KEY)
 }
 
 async function remove(id: string) {

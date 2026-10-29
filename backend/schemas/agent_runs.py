@@ -5,6 +5,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
+from backend.schemas.workflow import FollowUpAnalysisRequest
+
 
 class RunStatus(StrEnum):
     QUEUED = 'queued'
@@ -58,6 +60,20 @@ class UsagePayload(Payload):
     completion_tokens: int = Field(ge=0)
 
 
+class TaskProgressPayload(Payload):
+    stage: str
+    status: Literal['pending', 'running'] = 'running'
+    progress: int = Field(ge=0, le=100)
+    overall_progress: int = Field(ge=0, le=100)
+    message: str
+    document_id: str | None = None
+    filename: str | None = None
+    stage_progress: int | None = Field(default=None, ge=0, le=100)
+    current: int | None = None
+    total: int | None = None
+    data: dict = Field(default_factory=dict)
+
+
 class EventEnvelope(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid')
     run_id: str = Field(alias='runId')
@@ -105,9 +121,14 @@ class UsageEvent(EventEnvelope):
     payload: UsagePayload
 
 
+class TaskProgressEvent(EventEnvelope):
+    type: Literal['task.progress']
+    payload: TaskProgressPayload
+
+
 RunEvent = Annotated[
     StatusEvent | DeltaEvent | ToolStartedEvent | ToolCompletedEvent | ToolFailedEvent
-    | ActionEvent | ArtifactEvent | UsageEvent,
+    | ActionEvent | ArtifactEvent | UsageEvent | TaskProgressEvent,
     Field(discriminator='type'),
 ]
 RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
@@ -116,19 +137,37 @@ RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
 class RunCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
     session_id: str | None = Field(default=None, alias='sessionId', min_length=1, max_length=36)
-    kind: Literal['tailoring', 'resume_export']
+    kind: Literal['tailoring', 'resume_export', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup']
     jd_id: int | None = Field(default=None, alias='jdId', gt=0)
     resume_id: int | None = Field(default=None, alias='resumeId', gt=0)
     resume_version_id: str | None = Field(default=None, alias='resumeVersionId', min_length=1, max_length=36)
+    document_id: str | None = Field(default=None, alias='documentId', pattern=r'^(resume|jd):[1-9][0-9]*$')
+    parse_mode: Literal['upload', 'reparse', 'saved_job'] | None = Field(default=None, alias='parseMode')
+    resume_ids: list[Annotated[int, Field(gt=0)]] | None = Field(default=None, alias='resumeIds', min_length=1)
+    analysis_job_id: int | None = Field(default=None, alias='analysisJobId', gt=0)
+    candidate_id: int | None = Field(default=None, alias='candidateId', gt=0)
+    question_count: int = Field(default=10, alias='questionCount', ge=1, le=10)
+    followup: FollowUpAnalysisRequest | None = None
     request_id: str = Field(alias='requestId', min_length=1, max_length=100)
 
     @model_validator(mode='after')
     def validate_inputs(self):
-        if self.kind == 'tailoring':
-            if self.jd_id is None or self.resume_id is None or 'resume_version_id' in self.model_fields_set:
-                raise ValueError('准备材料需要岗位和简历，不能混用已确认版本')
-        elif self.resume_version_id is None or {'jd_id', 'resume_id'} & self.model_fields_set:
-            raise ValueError('导出需要已确认版本，不能混用原始简历或岗位')
+        fields = {
+            'tailoring': {'jd_id', 'resume_id'},
+            'resume_export': {'resume_version_id'},
+            'document_parse': {'document_id', 'parse_mode'},
+            'match_analysis': {'jd_id', 'resume_ids'},
+            'question_generation': {'analysis_job_id', 'candidate_id', 'question_count'},
+            'answer_followup': {'followup'},
+        }[self.kind]
+        if self.model_fields_set - fields - {'kind', 'session_id', 'request_id'}:
+            raise ValueError('不能混用其他任务类型的字段')
+        if any(getattr(self, field) is None for field in fields):
+            raise ValueError('缺少任务需要的输入字段')
+        if self.kind == 'document_parse' and self.parse_mode == 'saved_job' and not self.document_id.startswith('jd:'):
+            raise ValueError('已保存岗位解析需要岗位文档')
+        if self.kind == 'match_analysis' and len(set(self.resume_ids)) != len(self.resume_ids):
+            raise ValueError('同一次匹配不能重复选择简历')
         return self
 
 

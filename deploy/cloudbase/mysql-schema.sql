@@ -1,5 +1,8 @@
 -- Initial ResuMate schema for existing CloudBase MySQL.
 -- Run only after inspecting target tables; no IF NOT EXISTS, ALTER or DROP.
+-- This is the original base schema. For the current application, follow it with
+-- deploy/schema/001_agent_and_versions.sql, 002_jobs_primary_resume.sql,
+-- 003_context_and_memory.sql and 004_long_task_results.sql in order.
 
 CREATE TABLE document_embedding_chunks (
 	user_id INTEGER NOT NULL, 

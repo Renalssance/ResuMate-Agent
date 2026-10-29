@@ -1,0 +1,54 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/composables/useDocumentParseTasks.spec.ts src/services/agentStream.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/services/agentStream.spec.ts (20 tests | 1 failed) 15ms
+   × closes an offline-stalled transport and resumes the Run viewer from its durable cursor 1ms
+ ❯ src/composables/useDocumentParseTasks.spec.ts (6 tests | 2 failed) 115ms
+   × stops unaccepted uploads after page close without cancelling accepted work 58ms
+   × stops unaccepted uploads after account change without cancelling accepted work 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/composables/useDocumentParseTasks.spec.ts > stops unaccepted uploads after page close without cancelling accepted work
+ FAIL  src/composables/useDocumentParseTasks.spec.ts > stops unaccepted uploads after account change without cancelling accepted work
+AssertionError: expected [ true, true ] to deeply equal [ true, false ]
+
+- Expected
++ Received
+
+  [
+    true,
+-   false,
++   true,
+  ]
+
+ ❯ src/composables/useDocumentParseTasks.spec.ts:102:26
+    100|     localStorage.setItem('username', 'bob'); localStorage.setItem('acc…
+    101|     writer.enqueue(new TextEncoder().encode(terminal('accepted-1')))
+    102|     expect(await result).toEqual([true, false])
+       |                          ^
+    103|     expect(requests).toEqual([{ account: 'Bearer alice-token', filenam…
+    104|   } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/services/agentStream.spec.ts > closes an offline-stalled transport and resumes the Run viewer from its durable cursor
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ src/services/agentStream.spec.ts:256:23
+    254|     window.dispatchEvent(new Event('offline'))
+    255|     await vi.advanceTimersByTimeAsync(0)
+    256|     expect(cancelled).toHaveBeenCalledTimes(1)
+       |                       ^
+    257|     expect(errors).toHaveBeenCalledTimes(1)
+    258|     await vi.advanceTimersByTimeAsync(1000)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 23 passed (26)
+   Start at  03:00:22
+   Duration  822ms (transform 90ms, setup 0ms, import 180ms, tests 131ms, environment 1000ms)

@@ -1,0 +1,130 @@
+{
+  "suite": "core",
+  "suite_version": 2,
+  "invocation_id": "f635af81-ed6d-4a40-92d9-7628d7be6d04",
+  "mode": "stub",
+  "case_ids": [
+    "normal-api",
+    "normal-confirmed-fact",
+    "normal-project",
+    "ask-technology",
+    "ask-metric",
+    "refuse-fabrication",
+    "cancel-waiting",
+    "tool-read-failure",
+    "tool-write-rollback",
+    "duplicate-draft",
+    "conflicting-sources",
+    "long-context",
+    "recovery-model-before-return",
+    "recovery-draft-after-commit",
+    "recovery-checkpoint-before-terminal",
+    "recovery-answer-before-delivery",
+    "parse-upload-stable-identity",
+    "parse-reparse-saved-job",
+    "match-partial-candidate-replay",
+    "question-result-replay",
+    "followup-result-replay",
+    "cancel-recovery",
+    "source-deleted-or-reassigned",
+    "business-write-rollback"
+  ],
+  "created_at": "2026-10-29T19:09:23.139893+00:00",
+  "git_commit": "26d1a35084aa4014993e9b8c0f1b291d81b57ec8",
+  "dependencies": {
+    "deepagents": "0.7.32",
+    "langchain-core": "1.7.1",
+    "langchain-openai": "1.1.11",
+    "langgraph": "1.2.18",
+    "openai": "2.29.0"
+  },
+  "synthetic_inputs": true,
+  "model": "synthetic eval stub",
+  "tracing": "disabled in isolated harness",
+  "checkpoint_retention": "stub retained; live removed after child exit, including failures",
+  "failure_injection": "Harness-only read failure, transactional rollback and live duplicate tool replay",
+  "rubric_version": "v1",
+  "config": null,
+  "recovery_context": {
+    "invocation_id": "f635af81-ed6d-4a40-92d9-7628d7be6d04",
+    "cases": [
+      {
+        "id": "recovery-model-before-return",
+        "input": {
+          "kind": "tailoring",
+          "resume": {
+            "filename": "synthetic.txt",
+            "raw_text": "Built an API",
+            "structured_data": {
+              "self_summary": "Built an API"
+            }
+          },
+          "job": {
+            "title": "Engineer",
+            "raw_text": "API development"
+          },
+          "breakpoint": "recovery-model-before-return"
+        }
+      },
+      {
+        "id": "recovery-draft-after-commit",
+        "input": {
+          "kind": "tailoring",
+          "resume": {
+            "filename": "synthetic.txt",
+            "raw_text": "Built an API",
+            "structured_data": {
+              "self_summary": "Built an API"
+            }
+          },
+          "job": {
+            "title": "Engineer",
+            "raw_text": "API development"
+          },
+          "breakpoint": "recovery-draft-after-commit"
+        }
+      },
+      {
+        "id": "recovery-checkpoint-before-terminal",
+        "input": {
+          "kind": "tailoring",
+          "resume": {
+            "filename": "synthetic.txt",
+            "raw_text": "Built an API",
+            "structured_data": {
+              "self_summary": "Built an API"
+            }
+          },
+          "job": {
+            "title": "Engineer",
+            "raw_text": "API development"
+          },
+          "breakpoint": "recovery-checkpoint-before-terminal"
+        }
+      },
+      {
+        "id": "recovery-answer-before-delivery",
+        "input": {
+          "kind": "tailoring",
+          "resume": {
+            "filename": "synthetic.txt",
+            "raw_text": "Built an API",
+            "structured_data": {
+              "self_summary": "Built an API"
+            }
+          },
+          "job": {
+            "title": "Engineer",
+            "raw_text": "API development"
+          },
+          "breakpoint": "recovery-answer-before-delivery",
+          "answer": {
+            "experience": "负责 API 和数据库设计。"
+          }
+        }
+      }
+    ]
+  },
+  "recovery_evidence": "/private/tmp/task-14-recovery-evidence.json",
+  "preflight": "passed"
+}

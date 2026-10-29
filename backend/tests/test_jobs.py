@@ -19,9 +19,10 @@ from backend.tests.career_fixtures import career_db, career_engine
 
 @pytest.fixture
 def client(career_db, career_engine, monkeypatch):
-    from backend.services import background_tasks, llm_settings
+    from backend.services import background_tasks, llm_settings, document_tasks
     factory = sessionmaker(bind=career_engine, expire_on_commit=False)
-    monkeypatch.setattr(background_tasks, 'SessionLocal', factory)
+    monkeypatch.setattr(document_tasks, 'SessionLocal', factory)
+    monkeypatch.setattr(background_tasks, 'publish_run', lambda *args: False)
     monkeypatch.setattr(llm_settings, 'SessionLocal', factory)
     app = FastAPI()
     app.include_router(router)
@@ -127,38 +128,44 @@ def test_matches_are_existing_results_for_owned_job(client, career_db):
 
 
 def test_parse_pasted_text_uses_real_job_profile_and_keeps_saved_text_on_failure(client, career_db, monkeypatch):
-    from backend.routes import documents
-    from backend.services.progress import progress_hub
+    from backend.services import document_tasks
+    from backend.services.agent_runs import claim_run
+    from backend.db.agent_models import AgentRun
     career_db.add(UserLlmSettings(user_id=1, api_key='test-key', base_url='https://example.test/v1', model='test-model'))
     career_db.commit()
     profile = JobProfile(job_title='Parsed Engineer', summary='Python services', criteria=[{'criterion_id': 'python', 'name': 'Python', 'description': 'Build APIs', 'importance': 'must', 'weight': 100, 'evidence_query': 'Python'}])
     def model_result(self, **kwargs):
-        if kwargs['variables']['jd_text'] != 'Develop Python APIs':
-            raise AssertionError('parser did not receive saved text')
+        assert kwargs['variables']['jd_text'] == 'Develop Python APIs'
         return profile
-    monkeypatch.setattr(documents.AgentHarness, 'run_schema', model_result)
+    monkeypatch.setattr(document_tasks.AgentHarness, 'run_schema', model_result)
     job_id = capture(client).json()['job']['id']
+    def run_worker(response):
+        run_id = response.json()['taskId']
+        with document_tasks.SessionLocal() as db:
+            epoch = claim_run(db, run_id)
+        document_tasks.run_document_parse(run_id, epoch)
+        career_db.expire_all()
+        return run_id
     task_id = 'parse-' + uuid4().hex
     response = client.post(f'/api/jobs/{job_id}/parse?task_id={task_id}')
-    assert response.status_code == 202 and response.json() == {'taskId': task_id}
-    career_db.expire_all()
+    assert response.status_code == 202 and response.json()['taskId'] != task_id
+    assert client.get(f'/api/jobs/{job_id}').json()['parseStatus'] == 'pending'
+    run_id = run_worker(response)
     detail = client.get(f'/api/jobs/{job_id}').json()
-    assert detail['parseStatus'] == 'success', [event.message for event in progress_hub._history[task_id]]
+    assert detail['parseStatus'] == 'success'
     assert detail['structuredContent']['job_title'] == 'Parsed Engineer'
     assert detail['title'] == 'API Engineer'
     assert career_db.get(JobDescription, job_id).file_path == ''
-    assert progress_hub._history[task_id][-1].data['document']['id'] == f'jd:{job_id}'
-    assert progress_hub._history[task_id][-1].data['document']['vectorized'] is False
+    assert career_db.get(AgentRun, run_id).result_json['vectorized'] is False
+    career_db.commit()
     def unavailable(self, **kwargs):
         raise ValueError('model unavailable')
-    monkeypatch.setattr(documents.AgentHarness, 'run_schema', unavailable)
-    assert client.post(f'/api/jobs/{job_id}/parse').status_code == 202
-    career_db.expire_all()
+    monkeypatch.setattr(document_tasks.AgentHarness, 'run_schema', unavailable)
+    run_worker(client.post(f'/api/jobs/{job_id}/parse'))
     failed = client.get(f'/api/jobs/{job_id}').json()
     assert failed['text'] == 'Develop Python APIs' and failed['parseStatus'] == 'failed'
-    monkeypatch.setattr(documents.AgentHarness, 'run_schema', model_result)
-    assert client.post(f'/api/jobs/{job_id}/parse').status_code == 202
-    career_db.expire_all()
+    monkeypatch.setattr(document_tasks.AgentHarness, 'run_schema', model_result)
+    run_worker(client.post(f'/api/jobs/{job_id}/parse'))
     assert client.get(f'/api/jobs/{job_id}').json()['parseStatus'] == 'success'
 
 
@@ -201,9 +208,15 @@ def test_upgrade_adds_nullable_primary_resume_without_losing_saved_jobs(career_e
 
 
 def test_pasted_job_can_reparse_from_existing_document_library(client, monkeypatch):
-    from backend.routes import documents
+    from backend.services import background_tasks, document_tasks
+    from backend.services.agent_runs import claim_run
     profile = {'job_title': 'Engineer', 'summary': 'Build APIs', 'criteria': [{'criterion_id': 'api', 'name': 'API', 'description': 'Build APIs', 'importance': 'must', 'weight': 100, 'evidence_query': 'API'}]}
-    monkeypatch.setattr(documents, '_parse_profile', lambda *args: profile)
+    monkeypatch.setattr(document_tasks, '_parse_profile', lambda *args, **kwargs: profile)
+    def dispatch(run_id):
+        with document_tasks.SessionLocal() as db:
+            epoch = claim_run(db, run_id)
+        document_tasks.run_document_parse(run_id, epoch)
+    monkeypatch.setattr(background_tasks, 'publish_run', dispatch)
     response = client.post('/api/documents/jd:1/parse')
     assert response.status_code == 200
     assert response.json()['raw_text'] == 'Build APIs'

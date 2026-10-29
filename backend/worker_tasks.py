@@ -102,6 +102,18 @@ def execute_run(run_id: str) -> None:
                 elif kind == 'resume_export':
                     from backend.services.resume_export import run_resume_export
                     run_resume_export(run_id, epoch)
+                elif kind == 'document_parse':
+                    from backend.services.document_tasks import run_document_parse
+                    run_document_parse(run_id, epoch)
+                elif kind == 'match_analysis':
+                    from backend.services.analysis_tasks import run_match_analysis
+                    run_match_analysis(run_id, epoch)
+                elif kind == 'question_generation':
+                    from backend.services.analysis_tasks import run_question_generation
+                    run_question_generation(run_id, epoch)
+                elif kind == 'answer_followup':
+                    from backend.services.analysis_tasks import run_answer_followup
+                    run_answer_followup(run_id, epoch)
                 else:
                     with SessionLocal() as db:
                         agent_runs.finish_run(db, run_id, epoch, RunStatus.FAILED,

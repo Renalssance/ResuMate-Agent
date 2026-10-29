@@ -82,3 +82,14 @@ T12 最终后端 678 passed / 6 expected skipped / 121.97s；前端全组件 109
 完整后端 751 passed / 6 expected skipped / 103.58s 发生于最后 A retry/B 修复之前；之后 A 验证器 33 passed、B runner/budget 22 passed，最后 core 为 12 pass / 0 fail / 0 incomplete / 0 not_run。56 次请求（48 主模型/8 摘要）均有通过的上下文证明；长案 18 次请求、5 次文件读取、补问后重开 checkpoint。选定 manifest/calls/report/cases 已归档，不保存临时 SQL/checkpoint。详见[第十三课](13-tracing-and-core-evals.md)与[T13 测试记录](test-records/2026-10-30-t13.md)。
 
 真实 Langfuse 5.0.4 SDK 已在关闭 tracing 时完成生命周期适配验证；无云端凭据与接收证据。没有付费模型调用；smoke 与首批 live 共享总预算问题已提出、等待用户答复，真实语义质量仍未验收。默认 stub CLI 已运行，未提供实际 CI 作业证据；实际 CI 接入留待 T17。Git manifest 基线为 4f4f201，执行含未提交 T13 实现；本记录不虚构最终提交或预算批准。后续继续独立 T14 工作，真实崩溃实验不能由本轮 checkpoint 重开替代。
+
+
+## T14：旧长任务迁移与四断点恢复（确定性验收完成）
+
+解析、匹配、出题及回答分析接入同一持久Run/worker/SQL事件。固定业务身份、每候选恢复单位及不可变Run结果；旧同步成功合同保留。独立审查发现的取消后下一检索、未上传队列账号切换、offline悬挂流、旧出题异步结果污染新账号均已先红后绿修复。
+
+最终四次真实SIGKILL为4 passed / 453.10s，invocation f635af81-ed6d-4a40-92d9-7628d7be6d04；保留90秒失联阈值和15秒scanner。最终core24 pass/0 fail/0 not_run。首轮原始临时日志被并行pytest清理，因此修正持久归档目录后完整重跑，未重构或混用旧证据。
+
+完整后端873 passed/1旧源码字符串断言failed/10 skipped；该文件三项文本搜索已改为真实组件/store行为测试。最终前端140 passed，原测试、类型与构建通过。浏览器完整23 passed，审查/截图修复后受影响10 passed，实际已连接流offline额外1 passed。20张最终截图逐张打开，修复长文件名溢出、终态旧进度、出题条件恢复和桌面长列表；保持米棕视觉。
+
+[第十四课](14-durable-long-tasks.md)与[T14记录](test-records/2026-10-30-t14.md)保存过程、原始输出、截图、四断点源码快照及24案输出。模型为合成响应，无付费调用；SDK内部embedding重试/旧Harness未接Run级usage及通用解析错误提示仍明确记录边界。继续T15，随后T20→T16→T21→T17/T18→T19。

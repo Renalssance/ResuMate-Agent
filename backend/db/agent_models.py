@@ -42,6 +42,7 @@ class AgentRun(Base):
              create_constraint=True, name='run_status'), default=RunStatus.QUEUED, index=True)
     input_json: Mapped[dict] = mapped_column(JSON, default=dict)
     input_versions: Mapped[dict] = mapped_column(JSON, default=dict)
+    result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     attempt: Mapped[int] = mapped_column(Integer, default=1)
     execution_epoch: Mapped[int] = mapped_column(Integer, default=0)
     heartbeat_at: Mapped[datetime | None] = mapped_column(DateTime)

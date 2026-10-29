@@ -9,14 +9,16 @@ function eventStream() {
   return {
     response: new Response(body, { headers: { 'Content-Type': 'text/event-stream' } }),
     cancelled,
-    emit(status: 'running' | 'success') {
-      writer.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ taskId: 'same-task', status, data: { value: 7 } })}\n\n`))
+    end() { writer.close() },
+    emit(status: 'running' | 'success', id?: number) {
+      writer.enqueue(new TextEncoder().encode(`${id === undefined ? '' : `id: ${id}\n`}data: ${JSON.stringify({ taskId: 'same-task', status, data: { value: 7 } })}\n\n`))
     },
   }
 }
 
 afterEach(() => {
   closeTaskProgress('same-task')
+  vi.useRealTimers()
   vi.unstubAllGlobals()
   window.localStorage.clear()
 })
@@ -70,4 +72,82 @@ it('reports malformed event data and closes its subscription', async () => {
   await vi.waitFor(() => expect(error).toHaveBeenCalledTimes(1))
   expect(close).toHaveBeenCalledTimes(1)
   await expect(waitForTaskResult('same-task', data => data)).rejects.toThrow()
+})
+
+
+it('reconnects from the last event ID, allows filtered sequence gaps and ignores duplicate replay', async () => {
+  vi.useFakeTimers()
+  const first = eventStream(), second = eventStream()
+  const fetch = vi.fn().mockResolvedValueOnce(first.response).mockResolvedValueOnce(second.response)
+  vi.stubGlobal('fetch', fetch)
+  const messages = vi.fn(), error = vi.fn(), close = vi.fn()
+  subscribeTaskProgress('same-task', { onMessage: messages, onError: error, onClose: close })
+  first.emit('running', 4)
+  first.end()
+  await vi.advanceTimersByTimeAsync(0)
+  expect(messages).toHaveBeenCalledTimes(1)
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(fetch).toHaveBeenCalledTimes(2)
+  expect(fetch.mock.calls[1]?.[0]).toBe('/api/tasks/same-task/events?after=4')
+  second.emit('running', 4)
+  second.emit('success', 9)
+  await vi.advanceTimersByTimeAsync(0)
+  expect(messages).toHaveBeenCalledTimes(2)
+  expect(error).not.toHaveBeenCalled()
+  expect(close).toHaveBeenCalledTimes(1)
+})
+
+it('keeps the result pending across a disconnect and obtains the durable final response', async () => {
+  vi.useFakeTimers()
+  const first = eventStream(), second = eventStream()
+  const fetch = vi.fn().mockResolvedValueOnce(first.response).mockResolvedValueOnce(second.response)
+  vi.stubGlobal('fetch', fetch)
+  const result = waitForTaskResult('same-task', data => data.value)
+  const settled = vi.fn()
+  const observed = result.then(value => { settled(value); return value }, error => { settled(error); return error })
+  first.emit('running', 2)
+  first.end()
+  await vi.advanceTimersByTimeAsync(0)
+  expect(settled).not.toHaveBeenCalled()
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(fetch.mock.calls[1]?.[0]).toBe('/api/tasks/same-task/events?after=2')
+  second.emit('success', 8)
+  await expect(observed).resolves.toBe(7)
+})
+
+it('cancels a pending reconnect when the viewer closes', async () => {
+  vi.useFakeTimers()
+  const stream = eventStream()
+  const fetch = vi.fn().mockResolvedValue(stream.response)
+  vi.stubGlobal('fetch', fetch)
+  const connection = subscribeTaskProgress('same-task', { onMessage() {} })
+  stream.end()
+  await vi.advanceTimersByTimeAsync(0)
+  connection.close()
+  await vi.advanceTimersByTimeAsync(16000)
+  expect(fetch).toHaveBeenCalledTimes(1)
+})
+
+it('closes a stalled transport on the browser offline event and resumes from the durable cursor', async () => {
+  vi.useFakeTimers()
+  const first = eventStream(), second = eventStream()
+  const fetch = vi.fn().mockResolvedValueOnce(first.response).mockResolvedValueOnce(second.response)
+  vi.stubGlobal('fetch', fetch)
+  const reconnect = vi.fn(), error = vi.fn(), messages = vi.fn()
+  const connection = subscribeTaskProgress('same-task', { onMessage: messages, onReconnect: reconnect, onError: error })
+  first.emit('running', 4)
+  await vi.advanceTimersByTimeAsync(0)
+  window.dispatchEvent(new Event('offline'))
+  await vi.advanceTimersByTimeAsync(0)
+  expect(first.cancelled).toHaveBeenCalledTimes(1)
+  expect(reconnect).toHaveBeenCalledTimes(1)
+  expect(error).not.toHaveBeenCalled()
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(fetch.mock.calls[1]?.[0]).toBe('/api/tasks/same-task/events?after=4')
+  second.emit('success', 9)
+  await vi.advanceTimersByTimeAsync(0)
+  expect(messages).toHaveBeenCalledTimes(2)
+  connection.close()
+  window.dispatchEvent(new Event('offline'))
+  expect(reconnect).toHaveBeenCalledTimes(1)
 })

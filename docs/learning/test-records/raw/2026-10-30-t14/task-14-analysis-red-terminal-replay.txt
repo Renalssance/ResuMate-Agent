@@ -1,0 +1,53 @@
+Fs                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d515a60>
+runtime = namespace(module=<module 'backend.services.analysis_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learn...0000gn/T/pytest-of-bono/pytest-174/test_completed_candidates_need0/career.db), autoflush=True, expire_on_commit=False))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d6871d0>
+
+    def test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains(career_db, runtime, monkeypatch):
+        real_finish = runtime.module.agent_runs.finish_run
+        def stop_before_terminal(db, run_id, epoch, status, **kwargs):
+            if status == RunStatus.SUCCEEDED:
+                raise RuntimeError('worker lost before terminal')
+            return real_finish(db, run_id, epoch, status, **kwargs)
+        monkeypatch.setattr(runtime.module.agent_runs, 'finish_run', stop_before_terminal)
+        run_id, _ = run_match(career_db, runtime)
+        monkeypatch.setattr(runtime.module.agent_runs, 'finish_run', real_finish)
+        def no_model_needed(**kwargs):
+            raise AssertionError('all candidate results are already saved')
+        monkeypatch.setattr(runtime.module, 'AgentHarness', no_model_needed)
+        with runtime.factory() as db:
+            assert db.query(ToolOperation).count() == 1
+            agent_runs.retry_run(db, 1, run_id)
+            epoch = agent_runs.claim_run(db, run_id)
+        runtime.module.run_match_analysis(run_id, epoch)
+        with runtime.factory() as db:
+>           assert db.get(AgentRun, run_id).status == RunStatus.SUCCEEDED
+E           AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E             - succeeded
+E             + failed
+
+backend/tests/test_analysis_tasks.py:197: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.services.analysis_tasks:analysis_tasks.py:65 Analysis task 0603581d-f545-4973-9046-5a71285e988c stopped (match_analysis_failed)
+WARNING  backend.services.analysis_tasks:analysis_tasks.py:65 Analysis task 0603581d-f545-4973-9046-5a71285e988c stopped (match_analysis_failed)
+=============================== warnings summary ===============================
+backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_analysis_tasks.py::test_completed_candidates_need_no_model_setup_when_only_terminal_commit_remains[sqlite]
+1 failed, 1 skipped, 28 deselected, 5 warnings in 0.81s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

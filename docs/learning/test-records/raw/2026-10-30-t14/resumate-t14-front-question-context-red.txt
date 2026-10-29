@@ -1,0 +1,41 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/workflowSelection.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/workflowSelection.spec.ts (8 tests | 1 failed) 41ms
+   × restores the question form context and uses the accepted task when its result arrives 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/workflowSelection.spec.ts > restores the question form context and uses the accepted task when its result arrives
+AssertionError: expected [ '', '', '' ] to deeply equal [ 'jd:3', 'resume:4', '5:6' ]
+
+- Expected
++ Received
+
+  [
+-   "jd:3",
+-   "resume:4",
+-   "5:6",
++   "",
++   "",
++   "",
+  ]
+
+ ❯ src/views/workflowSelection.spec.ts:62:79
+     60|  fixtures.task.start.mockImplementation((id: string) => { fixtures.tas…
+     61|  const w = await render(QuestionsView, '/questions'); await flushPromi…
+     62|  expect(w.findAll('select').map(s => (s.element as HTMLSelectElement).…
+       |                                                                               ^
+     63|  expect((w.get('input[type="number"]').element as HTMLInputElement).va…
+     64|  expect(fixtures.task.start).toHaveBeenCalledWith('saved-question')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  03:00:32
+   Duration  734ms (transform 274ms, setup 0ms, import 369ms, tests 41ms, environment 258ms)

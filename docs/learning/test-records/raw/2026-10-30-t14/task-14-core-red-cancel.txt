@@ -1,0 +1,202 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_terminal_parse_status_survives_without_handler_cleanup[sqlite-queued_cancel] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e399d90>
+path = 'queued_cancel'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'cancelled'
+E
+E         - cancelled
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+_ test_terminal_parse_status_survives_without_handler_cleanup[sqlite-running_cancel] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e4a0da0>
+path = 'running_cancel'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'cancelled'
+E
+E         - cancelled
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+_ test_terminal_parse_status_survives_without_handler_cleanup[sqlite-worker_lost] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e3da6f0>
+path = 'worker_lost'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'failed'
+E
+E         - failed
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+_ test_terminal_parse_status_survives_without_handler_cleanup[mysql-queued_cancel] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e432990>
+path = 'queued_cancel'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'cancelled'
+E
+E         - cancelled
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+_ test_terminal_parse_status_survives_without_handler_cleanup[mysql-running_cancel] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e8abf80>
+path = 'running_cancel'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'cancelled'
+E
+E         - cancelled
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+_ test_terminal_parse_status_survives_without_handler_cleanup[mysql-worker_lost] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e9a42c0>
+path = 'worker_lost'
+
+    @pytest.mark.parametrize('path', ['queued_cancel', 'running_cancel', 'worker_lost'])
+    def test_terminal_parse_status_survives_without_handler_cleanup(career_db, path):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        row = career_db.get(Resume, 1)
+        row.file_path = '/retained/original.txt'
+        career_db.commit()
+        run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+        if path == 'queued_cancel':
+            agent_runs.cancel_run(career_db, 1, run_id)
+        elif path == 'running_cancel':
+            epoch = agent_runs.claim_run(career_db, run_id)
+            agent_runs.cancel_run(career_db, 1, run_id)
+            agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'unexpected': 'cancelled'})
+        else:
+            agent_runs.claim_run(career_db, run_id)
+            career_db.get(AgentRun, run_id).attempt = 3
+            career_db.commit()
+            agent_runs.recover_stale_runs(career_db, now=utcnow() + timedelta(seconds=91))
+        career_db.expire_all()
+>       assert career_db.get(Resume, 1).parse_status == ('failed' if path == 'worker_lost' else 'cancelled')
+E       AssertionError: assert 'pending' == 'failed'
+E
+E         - failed
+E         + pending
+
+backend/tests/test_long_task_core.py:211: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[sqlite-queued_cancel]
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[sqlite-running_cancel]
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[sqlite-worker_lost]
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[mysql-queued_cancel]
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[mysql-running_cancel]
+FAILED backend/tests/test_long_task_core.py::test_terminal_parse_status_survives_without_handler_cleanup[mysql-worker_lost]
+6 failed, 24 deselected in 1.36s

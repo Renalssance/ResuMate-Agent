@@ -1,0 +1,585 @@
+{"at": "2026-10-29T19:03:11.385481+00:00", "command": ["up", "-d", "--no-build", "--wait"], "exit_code": 0}
+ Network resumate-recovery-210ccaeb0a_default Creating
+ Volume resumate-recovery-210ccaeb0a_redis-data Creating
+ Volume resumate-recovery-210ccaeb0a_redis-data Creating
+ Network resumate-recovery-210ccaeb0a_default Creating
+ Volume resumate-recovery-210ccaeb0a_redis-data Created
+ Volume resumate-recovery-210ccaeb0a_redis-data Created
+ Network resumate-recovery-210ccaeb0a_default Created
+ Network resumate-recovery-210ccaeb0a_default Created
+ Container resumate-recovery-210ccaeb0a-api-1 Creating
+ Container resumate-recovery-210ccaeb0a-redis-1 Creating
+ Container resumate-recovery-210ccaeb0a-api-1 Created
+ Container resumate-recovery-210ccaeb0a-redis-1 Created
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Creating
+ Container resumate-recovery-210ccaeb0a-worker-1 Creating
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Created
+ Container resumate-recovery-210ccaeb0a-worker-1 Created
+ Container resumate-recovery-210ccaeb0a-redis-1 Starting
+ Container resumate-recovery-210ccaeb0a-api-1 Starting
+ Container resumate-recovery-210ccaeb0a-redis-1 Started
+ Container resumate-recovery-210ccaeb0a-redis-1 Waiting
+ Container resumate-recovery-210ccaeb0a-api-1 Started
+ Container resumate-recovery-210ccaeb0a-redis-1 Waiting
+ Container resumate-recovery-210ccaeb0a-api-1 Waiting
+ Container resumate-recovery-210ccaeb0a-redis-1 Healthy
+ Container resumate-recovery-210ccaeb0a-redis-1 Healthy
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Starting
+ Container resumate-recovery-210ccaeb0a-api-1 Healthy
+ Container resumate-recovery-210ccaeb0a-worker-1 Starting
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Started
+ Container resumate-recovery-210ccaeb0a-worker-1 Started
+ Container resumate-recovery-210ccaeb0a-worker-1 Waiting
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Waiting
+ Container resumate-recovery-210ccaeb0a-api-1 Waiting
+ Container resumate-recovery-210ccaeb0a-redis-1 Waiting
+ Container resumate-recovery-210ccaeb0a-worker-1 Healthy
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Healthy
+ Container resumate-recovery-210ccaeb0a-redis-1 Healthy
+ Container resumate-recovery-210ccaeb0a-api-1 Healthy
+
+{"at": "2026-10-29T19:03:31.292367+00:00", "command": ["exec", "-T", "api", "python", "-c", "import json; from backend.tests.recovery_worker_fixture import inspect_recovery; print(json.dumps(inspect_recovery('180f3eaa-28e1-4e0e-8d22-4affcf306e13'), ensure_ascii=False))"], "exit_code": 0}
+{"run": {"id": "180f3eaa-28e1-4e0e-8d22-4affcf306e13", "session_id": "9147b45e-e0b6-48c0-9931-521afaa7b4a0", "status": "running", "attempt": 1, "epoch": 1, "heartbeat_at": "2026-10-29T19:03:27.524792", "output_refs": [], "error_code": null}, "versions": [{"id": "fd6399f2-b473-43aa-8361-14c9c7307783", "structured_content": {"resume": {"self_summary": "Built an API"}, "changes": [{"section": "/self_summary", "before": "Built an API", "after": "Built an API。负责 API 和数据库设计。", "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。", "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:03:04.951107", "section": "/self_summary", "sourceRefs": []}], "requires_input": false, "id": "b1d9d75b-81a9-4a6b-ad69-400dfbdb35c7", "status": "pending"}], "inputVersions": {"resume": "2026-10-29T19:03:04.951107", "jd": "2026-10-29T19:03:04.950746", "memories": [], "facts": []}}, "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:03:04.951107", "section": "/self_summary", "sourceRefs": []}]}], "operations": [{"id": 1, "operation_key": "draft:1:initial", "status": "succeeded", "result_ref": "fd6399f2-b473-43aa-8361-14c9c7307783"}], "actions": [], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-0", "result_ref": null}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial"}}, {"seq": 6, "type": "artifact.created", "payload": {"artifact_id": "fd6399f2-b473-43aa-8361-14c9c7307783", "kind": "resume_version"}}], "checkpoint": {"run_id": "180f3eaa-28e1-4e0e-8d22-4affcf306e13", "next": ["tools"], "interrupts": [], "message_count": 4}, "model_starts": [{"phase": [], "started_at": 1793300607.5054026, "pid": 8}, {"phase": ["get_application_context"], "started_at": 1793300607.516691, "pid": 8}]}
+
+{"at": "2026-10-29T19:03:31.356310+00:00", "command": ["ps", "-a", "-q", "worker"], "exit_code": 0}
+6734cc81e93a484eaff7b0ceb95d76d8024030e39391e3c5527b48971581a800
+
+{"at": "2026-10-29T19:03:31.493138+00:00", "command": ["kill", "-s", "SIGKILL", "worker"], "exit_code": 0}
+ Container resumate-recovery-210ccaeb0a-worker-1 Killing
+ Container resumate-recovery-210ccaeb0a-worker-1 Killed
+
+{"at": "2026-10-29T19:03:32.697848+00:00", "command": ["up", "-d", "--no-build", "--wait", "worker"], "exit_code": 0}
+ Container resumate-recovery-210ccaeb0a-api-1 Running
+ Container resumate-recovery-210ccaeb0a-redis-1 Running
+ Container resumate-recovery-210ccaeb0a-redis-1 Waiting
+ Container resumate-recovery-210ccaeb0a-api-1 Waiting
+ Container resumate-recovery-210ccaeb0a-api-1 Healthy
+ Container resumate-recovery-210ccaeb0a-redis-1 Healthy
+ Container resumate-recovery-210ccaeb0a-worker-1 Starting
+ Container resumate-recovery-210ccaeb0a-worker-1 Started
+ Container resumate-recovery-210ccaeb0a-api-1 Waiting
+ Container resumate-recovery-210ccaeb0a-redis-1 Waiting
+ Container resumate-recovery-210ccaeb0a-worker-1 Waiting
+ Container resumate-recovery-210ccaeb0a-redis-1 Healthy
+ Container resumate-recovery-210ccaeb0a-api-1 Healthy
+ Container resumate-recovery-210ccaeb0a-worker-1 Healthy
+
+{"at": "2026-10-29T19:05:16.231287+00:00", "command": ["exec", "-T", "api", "python", "-c", "import json; from backend.tests.recovery_worker_fixture import inspect_recovery; print(json.dumps(inspect_recovery('180f3eaa-28e1-4e0e-8d22-4affcf306e13'), ensure_ascii=False))"], "exit_code": 0}
+{"run": {"id": "180f3eaa-28e1-4e0e-8d22-4affcf306e13", "session_id": "9147b45e-e0b6-48c0-9931-521afaa7b4a0", "status": "succeeded", "attempt": 2, "epoch": 2, "heartbeat_at": "2026-10-29T19:05:12.469111", "output_refs": [{"type": "resume_version", "id": "fd6399f2-b473-43aa-8361-14c9c7307783"}], "error_code": null}, "versions": [{"id": "fd6399f2-b473-43aa-8361-14c9c7307783", "structured_content": {"resume": {"self_summary": "Built an API"}, "changes": [{"section": "/self_summary", "before": "Built an API", "after": "Built an API。负责 API 和数据库设计。", "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。", "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:03:04.951107", "section": "/self_summary", "sourceRefs": []}], "requires_input": false, "id": "b1d9d75b-81a9-4a6b-ad69-400dfbdb35c7", "status": "pending"}], "inputVersions": {"resume": "2026-10-29T19:03:04.951107", "jd": "2026-10-29T19:03:04.950746", "memories": [], "facts": []}}, "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:03:04.951107", "section": "/self_summary", "sourceRefs": []}]}], "operations": [{"id": 1, "operation_key": "draft:1:initial", "status": "succeeded", "result_ref": "fd6399f2-b473-43aa-8361-14c9c7307783"}], "actions": [], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-0", "result_ref": null}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial"}}, {"seq": 6, "type": "artifact.created", "payload": {"artifact_id": "fd6399f2-b473-43aa-8361-14c9c7307783", "kind": "resume_version"}}, {"seq": 7, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 8, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 9, "type": "tool.started", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial"}}, {"seq": 10, "type": "tool.completed", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial", "result_ref": "fd6399f2-b473-43aa-8361-14c9c7307783"}}, {"seq": 11, "type": "assistant.delta", "payload": {"text": "请审阅草稿"}}, {"seq": 12, "type": "run.status", "payload": {"status": "succeeded", "error_code": null}}], "checkpoint": {"run_id": "180f3eaa-28e1-4e0e-8d22-4affcf306e13", "next": [], "interrupts": [], "message_count": 6}, "model_starts": [{"phase": [], "started_at": 1793300607.5054026, "pid": 8}, {"phase": ["get_application_context"], "started_at": 1793300607.516691, "pid": 8}, {"phase": ["get_application_context", "create_resume_draft"], "started_at": 1793300712.4649303, "pid": 8}]}
+
+{"at": "2026-10-29T19:05:16.318803+00:00", "command": ["logs", "--no-color"], "exit_code": 0}
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-29 19:03:12
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-29 19:03:12,254: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-29 19:03:27,285: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:03:42,259: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:03:57,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:04:12,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:04:27,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:04:42,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:04:57,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:05:12,260: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+redis-1      | 1:C 29 Oct 2026 19:03:05.199 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1      | 1:C 29 Oct 2026 19:03:05.199 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 29 Oct 2026 19:03:05.199 * Configuration loaded
+redis-1      | 1:M 29 Oct 2026 19:03:05.199 * monotonic clock: POSIX clock_gettime
+redis-1      | 1:M 29 Oct 2026 19:03:05.200 * Running mode=standalone, port=6379.
+redis-1      | 1:M 29 Oct 2026 19:03:05.200 * Server initialized
+redis-1      | 1:M 29 Oct 2026 19:03:05.201 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+redis-1      | 1:M 29 Oct 2026 19:03:05.203 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+redis-1      | 1:M 29 Oct 2026 19:03:05.203 * Ready to accept connections tcp
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@6734cc81e93a v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-29 19:03:13
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffff8588cfe0
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . resumate.execute_run
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-29 19:03:13,569: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-29 19:03:13,570: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-29 19:03:14,581: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-29 19:03:14,600: INFO/MainProcess] celery@6734cc81e93a ready.
+worker-1     | [2026-10-29 19:03:27,301: INFO/MainProcess] Task resumate.recover_runs[87d410a7-cdd4-4078-82f4-8d9794dc7bbb] received
+worker-1     | [2026-10-29 19:03:27,380: INFO/ForkPoolWorker-1] Task resumate.recover_runs[87d410a7-cdd4-4078-82f4-8d9794dc7bbb] succeeded in 0.07418637500018122s: 1
+worker-1     | [2026-10-29 19:03:27,381: INFO/MainProcess] Task resumate.execute_run[b02cf79a-5c8a-4ecf-b0d0-82f7e7868b25] received
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@6734cc81e93a v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-29 19:03:34
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffffa42210a0
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . resumate.execute_run
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-29 19:03:34,798: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-29 19:03:34,801: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-29 19:03:35,808: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-29 19:03:35,819: INFO/MainProcess] celery@6734cc81e93a ready.
+worker-1     | [2026-10-29 19:03:42,265: INFO/MainProcess] Task resumate.recover_runs[4045139f-14ac-4a7e-8bd2-1ae0fc9db645] received
+worker-1     | [2026-10-29 19:03:42,322: INFO/ForkPoolWorker-1] Task resumate.recover_runs[4045139f-14ac-4a7e-8bd2-1ae0fc9db645] succeeded in 0.05539354099983029s: 0
+worker-1     | [2026-10-29 19:03:57,269: INFO/MainProcess] Task resumate.recover_runs[759b13a6-a619-48bd-a7cc-655b18904de3] received
+worker-1     | [2026-10-29 19:03:57,279: INFO/ForkPoolWorker-1] Task resumate.recover_runs[759b13a6-a619-48bd-a7cc-655b18904de3] succeeded in 0.007897791999994297s: 0
+worker-1     | [2026-10-29 19:04:12,266: INFO/MainProcess] Task resumate.recover_runs[42a551fc-aa80-468d-bf43-3952783e7f09] received
+worker-1     | [2026-10-29 19:04:12,272: INFO/ForkPoolWorker-1] Task resumate.recover_runs[42a551fc-aa80-468d-bf43-3952783e7f09] succeeded in 0.004535292000127811s: 0
+worker-1     | [2026-10-29 19:04:27,264: INFO/MainProcess] Task resumate.recover_runs[9ef0438e-4871-4709-81eb-b6dd45f64fee] received
+worker-1     | [2026-10-29 19:04:27,269: INFO/ForkPoolWorker-1] Task resumate.recover_runs[9ef0438e-4871-4709-81eb-b6dd45f64fee] succeeded in 0.0038890420000825543s: 0
+worker-1     | [2026-10-29 19:04:42,275: INFO/MainProcess] Task resumate.recover_runs[f2306eba-cd75-43b6-b566-739d5fc962b3] received
+worker-1     | [2026-10-29 19:04:42,302: INFO/ForkPoolWorker-1] Task resumate.recover_runs[f2306eba-cd75-43b6-b566-739d5fc962b3] succeeded in 0.020530583000208935s: 0
+worker-1     | [2026-10-29 19:04:57,263: INFO/MainProcess] Task resumate.recover_runs[4f8f3778-5309-48ef-9275-afc07894468e] received
+worker-1     | [2026-10-29 19:04:57,268: INFO/ForkPoolWorker-1] Task resumate.recover_runs[4f8f3778-5309-48ef-9275-afc07894468e] succeeded in 0.0038735420000648446s: 0
+worker-1     | [2026-10-29 19:05:12,266: INFO/MainProcess] Task resumate.recover_runs[95a29f11-0124-476f-98c6-81212831af33] received
+worker-1     | [2026-10-29 19:05:12,314: INFO/ForkPoolWorker-1] Task resumate.recover_runs[95a29f11-0124-476f-98c6-81212831af33] succeeded in 0.04733054100006484s: 1
+worker-1     | [2026-10-29 19:05:12,316: INFO/MainProcess] Task resumate.execute_run[f75336b8-ede9-4529-8875-06a999ad837d] received
+worker-1     | [2026-10-29 19:05:12,471: INFO/ForkPoolWorker-1] Task resumate.execute_run[f75336b8-ede9-4529-8875-06a999ad837d] succeeded in 0.15470945799984293s: None
+api-1        | 2026-10-29 19:03:08,010 | INFO | backend.app | Creating FastAPI app
+api-1        | INFO:     Started server process [1]
+api-1        | INFO:     Waiting for application startup.
+api-1        | 2026-10-29 19:03:08,030 | INFO | backend.app | Startup: initializing database
+api-1        | 2026-10-29 19:03:08,034 | INFO | backend.app | Startup: database initialized
+api-1        | INFO:     Application startup complete.
+api-1        | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1        | 2026-10-29 19:03:10,408 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:10,409 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api-1        | INFO:     127.0.0.1:35272 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:15,615 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:15,619 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=3
+api-1        | INFO:     127.0.0.1:35274 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:20,828 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:20,829 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api-1        | INFO:     127.0.0.1:57436 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:26,018 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:26,021 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=2
+api-1        | INFO:     127.0.0.1:57446 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:31,177 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:31,177 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:54068 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:32,700 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:32,751 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=50
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:33,761 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:33,763 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:34,773 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:34,776 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:35,789 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:35,794 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:36,359 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:36,360 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:54080 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:36,807 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:36,812 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:37,826 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:37,833 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:38,848 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:38,853 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:39,863 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:39,869 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:40,878 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:40,884 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:41,529 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:41,529 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:44442 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:41,898 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:41,906 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:42,917 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:42,923 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:43,935 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:43,944 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:44,954 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:44,960 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:45,976 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:45,982 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:46,714 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:46,714 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:44450 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:46,990 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:46,995 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:48,007 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:48,015 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:49,025 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:49,029 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:50,043 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:50,050 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:51,062 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:51,068 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:51,936 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:51,937 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api-1        | INFO:     127.0.0.1:39448 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:52,077 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:52,089 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=12
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:53,102 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:53,107 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:54,119 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:54,124 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:55,138 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:55,147 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:56,151 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:56,156 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:57,130 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:03:57,130 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:39450 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:57,165 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:57,166 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:58,175 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:58,180 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:03:59,194 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:03:59,199 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:00,212 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:00,218 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:01,233 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:01,238 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:02,245 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:02,247 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:02,312 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:02,312 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:57734 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:03,258 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:03,262 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:04,279 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:04,286 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:05,294 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:05,300 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:06,312 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:06,319 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:07,331 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:07,337 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:07,484 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:07,484 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:57746 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:08,352 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:08,360 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:09,371 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:09,378 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:10,383 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:10,388 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:11,395 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:11,402 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:12,417 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:12,426 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:12,682 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:12,682 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:50488 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:13,443 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:13,449 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:14,461 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:14,467 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:15,482 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:15,488 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:16,501 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:16,512 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=11
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:17,524 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:17,530 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:17,856 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:17,856 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:59426 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:18,542 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:18,550 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:19,565 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:19,571 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:20,577 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:20,584 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:21,594 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:21,599 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:22,608 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:22,614 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:23,034 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:23,035 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:59436 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:23,629 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:23,634 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:24,646 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:24,654 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:25,666 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:25,671 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:26,684 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:26,690 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:27,706 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:27,713 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:28,208 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:28,209 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35664 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:28,726 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:28,732 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:29,746 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:29,760 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=14
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:30,766 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:30,771 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:31,785 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:31,791 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:32,806 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:32,815 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:33,390 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:33,390 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35668 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:33,828 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:33,835 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:34,845 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:34,852 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:35,862 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:35,867 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:36,877 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:36,884 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:37,896 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:37,902 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:38,573 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:38,573 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:60924 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:38,910 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:38,914 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:39,926 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:39,933 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:40,942 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:40,945 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:41,954 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:41,964 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=10
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:42,977 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:42,983 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:43,746 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:43,746 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:60934 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:43,996 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:44,009 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=12
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:45,026 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:45,033 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:46,043 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:46,047 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:47,053 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:47,060 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:48,071 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:48,077 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:48,925 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:48,925 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35614 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:49,085 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:49,088 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:50,101 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:50,107 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:51,122 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:51,127 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:52,141 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:52,145 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:53,160 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:53,165 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:54,105 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:54,105 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35628 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:54,178 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:54,180 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:55,194 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:55,198 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:56,212 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:56,217 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:57,226 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:57,232 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:58,241 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:58,246 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:59,260 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:04:59,262 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:04:59,284 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:04:59,284 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:32800 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:00,266 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:00,272 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:01,282 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:01,287 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:02,295 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:02,299 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:03,311 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:03,316 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:04,323 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:04,327 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:04,464 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:05:04,464 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:32804 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:05,340 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:05,348 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:06,357 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:06,363 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:07,377 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:07,388 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=10
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:08,402 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:08,409 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:09,415 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:09,420 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:09,641 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:05:09,641 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:36332 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:10,428 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:10,433 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:11,446 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:11,451 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:12,457 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:12,461 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:13,476 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 client=172.18.0.1
+api-1        | 2026-10-29 19:05:13,483 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:65416 - "GET /api/agent/runs/180f3eaa-28e1-4e0e-8d22-4affcf306e13 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:05:14,782 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:05:14,783 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:36334 - "GET /healthz HTTP/1.1" 200 OK
+
+{"at": "2026-10-29T19:05:19.794433+00:00", "command": ["down", "-v", "--remove-orphans"], "exit_code": 0}
+ Container resumate-recovery-210ccaeb0a-worker-1 Stopping
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Stopping
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Stopped
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Removing
+ Container resumate-recovery-210ccaeb0a-scheduler-1 Removed
+ Container resumate-recovery-210ccaeb0a-worker-1 Stopped
+ Container resumate-recovery-210ccaeb0a-worker-1 Removing
+ Container resumate-recovery-210ccaeb0a-worker-1 Removed
+ Container resumate-recovery-210ccaeb0a-redis-1 Stopping
+ Container resumate-recovery-210ccaeb0a-api-1 Stopping
+ Container resumate-recovery-210ccaeb0a-redis-1 Stopped
+ Container resumate-recovery-210ccaeb0a-redis-1 Removing
+ Container resumate-recovery-210ccaeb0a-redis-1 Removed
+ Container resumate-recovery-210ccaeb0a-api-1 Stopped
+ Container resumate-recovery-210ccaeb0a-api-1 Removing
+ Container resumate-recovery-210ccaeb0a-api-1 Removed
+ Volume resumate-recovery-210ccaeb0a_redis-data Removing
+ Network resumate-recovery-210ccaeb0a_default Removing
+ Volume resumate-recovery-210ccaeb0a_redis-data Removed
+ Network resumate-recovery-210ccaeb0a_default Removed

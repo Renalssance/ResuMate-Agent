@@ -63,6 +63,7 @@
         </div>
 
         <p class="parse-task-message">{{ task.message }}</p>
+        <RouterLink v-if="task.accepted" class="parse-task-link" :to="`/agent/tasks/${task.taskId}`">查看任务与结果</RouterLink>
 
         <p v-if="task.errorReason" class="error-note">
           失败原因：{{ task.errorReason }}
@@ -94,6 +95,8 @@ const labels: Record<ParseStage, string> = {
   llm_analyze: 'LLM 结构化分析',
   embedding: '向量生成',
   milvus_save: '向量入库',
+  chroma_save: '向量入库',
+  cancelled: '解析已取消',
   local_save: '本地保存',
   completed: '解析完成',
   failed: '解析失败',
@@ -116,3 +119,5 @@ function progressSegments(steps: ProgressStep[]) {
   return buildProgressSegments(steps)
 }
 </script>
+
+<style scoped>.parse-task-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-primary); text-underline-offset: 4px; }</style>

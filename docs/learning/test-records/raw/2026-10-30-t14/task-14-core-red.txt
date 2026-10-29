@@ -1,0 +1,829 @@
+FFFFFFFFFFFFFFFFFFFFFFFF                                                 [100%]
+=================================== FAILURES ===================================
+__________ test_new_kinds_accept_only_their_own_request_fields[data0] __________
+
+data = {'documentId': 'resume:1', 'kind': 'document_parse', 'parseMode': 'upload'}
+
+    @pytest.mark.parametrize('data', [
+        {'kind': 'document_parse', 'documentId': 'resume:1', 'parseMode': 'upload'},
+        {'kind': 'match_analysis', 'jdId': 1, 'resumeIds': [1]},
+        {'kind': 'question_generation', 'analysisJobId': 1, 'candidateId': 1, 'questionCount': 3},
+        {'kind': 'answer_followup', 'followup': {'question': '怎样排查？', 'answer': '先看指标'}},
+    ])
+    def test_new_kinds_accept_only_their_own_request_fields(data):
+>       request = RunCreate(**data, requestId='request')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='upload', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:36: ValidationError
+__________ test_new_kinds_accept_only_their_own_request_fields[data1] __________
+
+data = {'jdId': 1, 'kind': 'match_analysis', 'resumeIds': [1]}
+
+    @pytest.mark.parametrize('data', [
+        {'kind': 'document_parse', 'documentId': 'resume:1', 'parseMode': 'upload'},
+        {'kind': 'match_analysis', 'jdId': 1, 'resumeIds': [1]},
+        {'kind': 'question_generation', 'analysisJobId': 1, 'candidateId': 1, 'questionCount': 3},
+        {'kind': 'answer_followup', 'followup': {'question': '怎样排查？', 'answer': '先看指标'}},
+    ])
+    def test_new_kinds_accept_only_their_own_request_fields(data):
+>       request = RunCreate(**data, requestId='request')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='match_analysis', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       resumeIds
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=[1], input_type=list]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:36: ValidationError
+__________ test_new_kinds_accept_only_their_own_request_fields[data2] __________
+
+data = {'analysisJobId': 1, 'candidateId': 1, 'kind': 'question_generation', 'questionCount': 3}
+
+    @pytest.mark.parametrize('data', [
+        {'kind': 'document_parse', 'documentId': 'resume:1', 'parseMode': 'upload'},
+        {'kind': 'match_analysis', 'jdId': 1, 'resumeIds': [1]},
+        {'kind': 'question_generation', 'analysisJobId': 1, 'candidateId': 1, 'questionCount': 3},
+        {'kind': 'answer_followup', 'followup': {'question': '怎样排查？', 'answer': '先看指标'}},
+    ])
+    def test_new_kinds_accept_only_their_own_request_fields(data):
+>       request = RunCreate(**data, requestId='request')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='question_generation', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       analysisJobId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       candidateId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       questionCount
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:36: ValidationError
+__________ test_new_kinds_accept_only_their_own_request_fields[data3] __________
+
+data = {'followup': {'answer': '先看指标', 'question': '怎样排查？'}, 'kind': 'answer_followup'}
+
+    @pytest.mark.parametrize('data', [
+        {'kind': 'document_parse', 'documentId': 'resume:1', 'parseMode': 'upload'},
+        {'kind': 'match_analysis', 'jdId': 1, 'resumeIds': [1]},
+        {'kind': 'question_generation', 'analysisJobId': 1, 'candidateId': 1, 'questionCount': 3},
+        {'kind': 'answer_followup', 'followup': {'question': '怎样排查？', 'answer': '先看指标'}},
+    ])
+    def test_new_kinds_accept_only_their_own_request_fields(data):
+>       request = RunCreate(**data, requestId='request')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:36: ValidationError
+_____ test_document_run_identity_dedupes_and_captures_owned_source[sqlite] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x108c4d040>
+
+    def test_document_run_identity_dedupes_and_captures_owned_source(career_db):
+>       request = parse_request()
+                  ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:43:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+_____ test_document_run_identity_dedupes_and_captures_owned_source[mysql] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x109dd2960>
+
+    def test_document_run_identity_dedupes_and_captures_owned_source(career_db):
+>       request = parse_request()
+                  ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:43:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+_ test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts[sqlite] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a01b8f0>
+
+    def test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts(career_db):
+>       request = RunCreate(kind='document_parse', documentId='resume:1', parseMode='upload', requestId='upload-1')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='upload', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:57: ValidationError
+__ test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts[mysql] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x109dd2300>
+
+    def test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts(career_db):
+>       request = RunCreate(kind='document_parse', documentId='resume:1', parseMode='upload', requestId='upload-1')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='upload', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:57: ValidationError
+____ test_match_job_and_candidates_rollback_when_queued_event_fails[sqlite] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a0db380>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-164/test_match_job_and_candidates_0/career.db)
+
+    def test_match_job_and_candidates_rollback_when_queued_event_fails(career_db, career_engine):
+>       request = RunCreate(kind='match_analysis', jdId=1, resumeIds=[1], requestId='match-1')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='match_analysis', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       resumeIds
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=[1], input_type=list]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:67: ValidationError
+____ test_match_job_and_candidates_rollback_when_queued_event_fails[mysql] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a1c6a50>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_b7d70c96afa04c03935785f4d6266633?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_match_job_and_candidates_rollback_when_queued_event_fails(career_db, career_engine):
+>       request = RunCreate(kind='match_analysis', jdId=1, resumeIds=[1], requestId='match-1')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='match_analysis', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       resumeIds
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=[1], input_type=list]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:67: ValidationError
+_ test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a04d700>
+
+    def test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts(career_db):
+>       run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+                                                     ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:88:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts[mysql] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x109dd2300>
+
+    def test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts(career_db):
+>       run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+                                                     ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:88:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_retry_revalidates_new_kind_source_instead_of_tailoring_context[sqlite] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a28d160>
+
+    def test_retry_revalidates_new_kind_source_instead_of_tailoring_context(career_db):
+>       run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+                                                     ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:98:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+__ test_retry_revalidates_new_kind_source_instead_of_tailoring_context[mysql] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a2d32f0>
+
+    def test_retry_revalidates_new_kind_source_instead_of_tailoring_context(career_db):
+>       run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+                                                     ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:98:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+____ test_progress_reads_prior_sql_progress_and_fences_cancellation[sqlite] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a293fe0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-164/test_progress_reads_prior_sql_0/career.db)
+
+    def test_progress_reads_prior_sql_progress_and_fences_cancellation(career_db, career_engine):
+>       run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+                                                     ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:112:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+____ test_progress_reads_prior_sql_progress_and_fences_cancellation[mysql] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a243320>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_a3cf8ff376494beabd9135a25f075de5?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_progress_reads_prior_sql_progress_and_fences_cancellation(career_db, career_engine):
+>       run_id = agent_runs.create_run(career_db, 1, parse_request()).id
+                                                     ^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:112:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'parse-1', extra = {}
+
+    def parse_request(request_id='parse-1', **extra):
+>       return RunCreate(kind='document_parse', documentId='resume:1', parseMode='reparse', requestId=request_id, **extra)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 3 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='document_parse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       documentId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='resume:1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+E       parseMode
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='reparse', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:22: ValidationError
+____ test_async_submit_survives_broker_down_without_running_handler[sqlite] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a292bd0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x108c4e180>
+
+    def test_async_submit_survives_broker_down_without_running_handler(career_db, monkeypatch):
+        monkeypatch.setattr(background_tasks, 'publish_run', lambda run_id: False, raising=False)
+>       response = background_tasks.submit_task(career_db, 1, followup_request(), prefer='respond-async')
+                                                              ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:130:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+____ test_async_submit_survives_broker_down_without_running_handler[mysql] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x108c4e570>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a28e630>
+
+    def test_async_submit_survives_broker_down_without_running_handler(career_db, monkeypatch):
+        monkeypatch.setattr(background_tasks, 'publish_run', lambda run_id: False, raising=False)
+>       response = background_tasks.submit_task(career_db, 1, followup_request(), prefer='respond-async')
+                                                              ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:130:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_sync_wait_closes_request_connection_and_times_out_with_identity[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a2d21e0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-164/test_sync_wait_closes_request_0/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a243320>
+
+    def test_sync_wait_closes_request_connection_and_times_out_with_identity(career_db, career_engine, monkeypatch):
+        monkeypatch.setattr(background_tasks, 'publish_run', lambda run_id: False, raising=False)
+        clock = [0.0]
+        monkeypatch.setattr(background_tasks, 'monotonic', lambda: clock[0], raising=False)
+        def advance(seconds):
+            assert career_engine.pool.checkedout() == 0
+            clock[0] += 46
+        monkeypatch.setattr(background_tasks, 'sleep', advance, raising=False)
+>       response = background_tasks.submit_task(career_db, 1, followup_request(), prefer='')
+                                                              ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:148:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_sync_wait_closes_request_connection_and_times_out_with_identity[mysql] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a28d010>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_77103b81535143dfafe0aba7892d52c8?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a403b00>
+
+    def test_sync_wait_closes_request_connection_and_times_out_with_identity(career_db, career_engine, monkeypatch):
+        monkeypatch.setattr(background_tasks, 'publish_run', lambda run_id: False, raising=False)
+        clock = [0.0]
+        monkeypatch.setattr(background_tasks, 'monotonic', lambda: clock[0], raising=False)
+        def advance(seconds):
+            assert career_engine.pool.checkedout() == 0
+            clock[0] += 46
+        monkeypatch.setattr(background_tasks, 'sleep', advance, raising=False)
+>       response = background_tasks.submit_task(career_db, 1, followup_request(), prefer='')
+                                                              ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:148:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x108c4f710>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-164/test_legacy_replay_advances_fi0/career.db)
+
+    def test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt(career_db, career_engine):
+>       run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+                                                     ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:155:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+_ test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt[mysql] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a1c7d70>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_038aba751014476e9b00e848557dd06e?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt(career_db, career_engine):
+>       run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+                                                     ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:155:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request_id = 'followup-1'
+
+    def followup_request(request_id='followup-1'):
+>       return RunCreate(kind='answer_followup', followup={'question': '怎样排查？', 'answer': '先看指标'}, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' or 'resume_export' [type=literal_error, input_value='answer_followup', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       followup
+E         Extra inputs are not permitted [type=extra_forbidden, input_value={'question': '怎样排...answer': '先看指标'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_long_task_core.py:26: ValidationError
+___________ test_old_database_upgrade_preserves_existing_run[sqlite] ___________
+
+self = <sqlalchemy.engine.base.Connection object at 0x10a7b1a30>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10a4af1a0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10a7d2630>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10a7d2600>
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10a4af1a0>
+cursor = <sqlite3.Cursor object at 0x10a7afa40>
+statement = 'SELECT id,result_json FROM agent_runs', parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10a7d2630>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: result_json
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a403740>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-164/test_old_database_upgrade_pres0/career.db)
+
+    def test_old_database_upgrade_preserves_existing_run(career_db, career_engine):
+        run_id = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jdId=1, resumeId=1, requestId='upgrade')).id
+        career_db.close()
+        with career_engine.begin() as connection:
+            if 'result_json' in {col['name'] for col in inspect(connection).get_columns('agent_runs')}:
+                connection.execute(text('ALTER TABLE agent_runs DROP COLUMN result_json'))
+        if career_engine.dialect.name == 'sqlite':
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+            sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/004_long_task_results.sql').read_text()
+            with career_engine.begin() as connection:
+                for statement in sql.split(';'):
+                    if statement.strip():
+                        connection.execute(text(statement))
+        with career_engine.connect() as connection:
+>           assert connection.execute(text('SELECT id,result_json FROM agent_runs')).one() == (run_id, None)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:188:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10a4af1a0>
+cursor = <sqlite3.Cursor object at 0x10a7afa40>
+statement = 'SELECT id,result_json FROM agent_runs', parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10a7d2630>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: result_json
+E       [SQL: SELECT id,result_json FROM agent_runs]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+___________ test_old_database_upgrade_preserves_existing_run[mysql] ____________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10a4034a0>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_51065fcba17040adb155d16cd0ad454c?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_old_database_upgrade_preserves_existing_run(career_db, career_engine):
+        run_id = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jdId=1, resumeId=1, requestId='upgrade')).id
+        career_db.close()
+        with career_engine.begin() as connection:
+            if 'result_json' in {col['name'] for col in inspect(connection).get_columns('agent_runs')}:
+                connection.execute(text('ALTER TABLE agent_runs DROP COLUMN result_json'))
+        if career_engine.dialect.name == 'sqlite':
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+>           sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/004_long_task_results.sql').read_text()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_long_task_core.py:182:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/004_long_task_results.sql')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/004_long_task_results.sql'
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_long_task_core.py::test_new_kinds_accept_only_their_own_request_fields[data0]
+FAILED backend/tests/test_long_task_core.py::test_new_kinds_accept_only_their_own_request_fields[data1]
+FAILED backend/tests/test_long_task_core.py::test_new_kinds_accept_only_their_own_request_fields[data2]
+FAILED backend/tests/test_long_task_core.py::test_new_kinds_accept_only_their_own_request_fields[data3]
+FAILED backend/tests/test_long_task_core.py::test_document_run_identity_dedupes_and_captures_owned_source[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_document_run_identity_dedupes_and_captures_owned_source[mysql]
+FAILED backend/tests/test_long_task_core.py::test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_upload_lookup_reuses_before_storage_and_rejects_kind_conflicts[mysql]
+FAILED backend/tests/test_long_task_core.py::test_match_job_and_candidates_rollback_when_queued_event_fails[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_match_job_and_candidates_rollback_when_queued_event_fails[mysql]
+FAILED backend/tests/test_long_task_core.py::test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_result_is_durable_immutable_and_exposed_without_tailoring_artifacts[mysql]
+FAILED backend/tests/test_long_task_core.py::test_retry_revalidates_new_kind_source_instead_of_tailoring_context[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_retry_revalidates_new_kind_source_instead_of_tailoring_context[mysql]
+FAILED backend/tests/test_long_task_core.py::test_progress_reads_prior_sql_progress_and_fences_cancellation[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_progress_reads_prior_sql_progress_and_fences_cancellation[mysql]
+FAILED backend/tests/test_long_task_core.py::test_async_submit_survives_broker_down_without_running_handler[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_async_submit_survives_broker_down_without_running_handler[mysql]
+FAILED backend/tests/test_long_task_core.py::test_sync_wait_closes_request_connection_and_times_out_with_identity[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_sync_wait_closes_request_connection_and_times_out_with_identity[mysql]
+FAILED backend/tests/test_long_task_core.py::test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_legacy_replay_advances_filtered_pages_and_skips_old_failed_attempt[mysql]
+FAILED backend/tests/test_long_task_core.py::test_old_database_upgrade_preserves_existing_run[sqlite]
+FAILED backend/tests/test_long_task_core.py::test_old_database_upgrade_preserves_existing_run[mysql]
+24 failed in 3.85s

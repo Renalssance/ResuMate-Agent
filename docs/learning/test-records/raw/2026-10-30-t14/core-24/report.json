@@ -1,0 +1,179 @@
+{
+  "mode": "stub",
+  "results": [
+    {
+      "case_id": "normal-api",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-api.json"
+    },
+    {
+      "case_id": "normal-confirmed-fact",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-confirmed-fact.json"
+    },
+    {
+      "case_id": "normal-project",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-project.json"
+    },
+    {
+      "case_id": "ask-technology",
+      "category": "clarification",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/ask-technology.json"
+    },
+    {
+      "case_id": "ask-metric",
+      "category": "clarification",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/ask-metric.json"
+    },
+    {
+      "case_id": "refuse-fabrication",
+      "category": "refusal_cancel",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/refuse-fabrication.json"
+    },
+    {
+      "case_id": "cancel-waiting",
+      "category": "refusal_cancel",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/cancel-waiting.json"
+    },
+    {
+      "case_id": "tool-read-failure",
+      "category": "tool_failure",
+      "status": "pass",
+      "error_code": "eval_context_unavailable",
+      "artifact": "cases/tool-read-failure.json"
+    },
+    {
+      "case_id": "tool-write-rollback",
+      "category": "tool_failure",
+      "status": "pass",
+      "error_code": "agent_failed",
+      "artifact": "cases/tool-write-rollback.json"
+    },
+    {
+      "case_id": "duplicate-draft",
+      "category": "duplicate",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/duplicate-draft.json"
+    },
+    {
+      "case_id": "conflicting-sources",
+      "category": "source_conflict",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/conflicting-sources.json"
+    },
+    {
+      "case_id": "long-context",
+      "category": "long_context",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/long-context.json"
+    },
+    {
+      "case_id": "recovery-model-before-return",
+      "category": "process_recovery",
+      "status": "pass",
+      "artifact": "cases/recovery-model-before-return.json"
+    },
+    {
+      "case_id": "recovery-draft-after-commit",
+      "category": "process_recovery",
+      "status": "pass",
+      "artifact": "cases/recovery-draft-after-commit.json"
+    },
+    {
+      "case_id": "recovery-checkpoint-before-terminal",
+      "category": "process_recovery",
+      "status": "pass",
+      "artifact": "cases/recovery-checkpoint-before-terminal.json"
+    },
+    {
+      "case_id": "recovery-answer-before-delivery",
+      "category": "process_recovery",
+      "status": "pass",
+      "artifact": "cases/recovery-answer-before-delivery.json"
+    },
+    {
+      "case_id": "parse-upload-stable-identity",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/parse-upload-stable-identity.json"
+    },
+    {
+      "case_id": "parse-reparse-saved-job",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/parse-reparse-saved-job.json"
+    },
+    {
+      "case_id": "match-partial-candidate-replay",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/match-partial-candidate-replay.json"
+    },
+    {
+      "case_id": "question-result-replay",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/question-result-replay.json"
+    },
+    {
+      "case_id": "followup-result-replay",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/followup-result-replay.json"
+    },
+    {
+      "case_id": "cancel-recovery",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/cancel-recovery.json"
+    },
+    {
+      "case_id": "source-deleted-or-reassigned",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/source-deleted-or-reassigned.json"
+    },
+    {
+      "case_id": "business-write-rollback",
+      "category": "durable_task",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/business-write-rollback.json"
+    }
+  ],
+  "counts": {
+    "pass": 24,
+    "fail": 0,
+    "incomplete": 0,
+    "not_run": 0
+  },
+  "executed_count": 24,
+  "error_code": null,
+  "semantic_status": "not_applicable",
+  "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."
+}

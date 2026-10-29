@@ -16,15 +16,19 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
   const agentEvents = ref<AgentProgressEvent[]>([])
 
   const completedSteps = computed(() => steps.value.filter((step) => step.status === 'success'))
-  const currentStep = computed(() => steps.value.find((step) => step.status === 'running')?.label || currentStage.value)
+  const currentStep = computed(() => ({ completed: '任务已完成', failed: '任务未完成', cancelled: '任务已取消' })[currentStage.value as 'completed' | 'failed' | 'cancelled']
+    || steps.value.find((step) => step.status === 'running')?.label || currentStage.value)
   const currentAgent = computed(() => agentEvents.value[0] || null)
 
   function start(id: string) {
     if (disposed) return
     reset()
     taskId.value = id
+    status.value = 'running'
+    message.value = '正在读取任务进度'
     subscribeTaskProgress(id, {
       onMessage: handleMessage,
+      onReconnect: () => { message.value = '网络连接已断开，正在重新连接。任务会继续运行。' },
       onError: (error) => {
         status.value = 'failed'
         errorReason.value = error.message

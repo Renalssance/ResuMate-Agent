@@ -1,0 +1,128 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/stores/question.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/stores/question.spec.ts (6 tests | 4 failed) 9ms
+   × ignores an old account create result while the new account is still loading 3ms
+   × ignores an old account restore result while the new account is still loading 1ms
+   × does not replace the new account error with a late create error 1ms
+   × does not replace the new account error with a late restore error 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/stores/question.spec.ts > ignores an old account create result while the new account is still loading
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "candidateName": "A",
++     "createdAt": "2026-10-29T19:08:19.409Z",
++     "followUpCount": 0,
++     "followUpQuestions": [],
++     "id": "qs_A_1",
++     "jdId": "jd:A",
++     "jdTitle": "job",
++     "questionCount": 1,
++     "questions": [
++       {
++         "difficulty": "基础",
++         "evidence": "",
++         "focus": [],
++         "followUps": [
++           "Continue verification.",
++         ],
++         "id": "q_evm0nsc",
++         "idealAnswer": undefined,
++         "rubric": [],
++         "title": "A question",
++         "type": "resume_experience",
++       },
++     ],
++     "resumeId": "resume:A",
++   },
++ ]
+
+ ❯ src/stores/question.spec.ts:56:30
+     54|  try {
+     55|   first.resolve(result('A')); await requestA
+     56|   expect(store.questionSets).toEqual([])
+       |                              ^
+     57|   expect(store.loading).toBe(true)
+     58|   expect(store.error).toBe('')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/stores/question.spec.ts > ignores an old account restore result while the new account is still loading
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "candidateName": "A",
++     "createdAt": "2026-10-29T19:08:19.412Z",
++     "followUpCount": 0,
++     "followUpQuestions": [],
++     "id": "qs_A_1",
++     "jdId": "jd:A",
++     "jdTitle": "job",
++     "questionCount": 1,
++     "questions": [
++       {
++         "difficulty": "基础",
++         "evidence": "",
++         "focus": [],
++         "followUps": [
++           "Continue verification.",
++         ],
++         "id": "q_0nkufe0",
++         "idealAnswer": undefined,
++         "rubric": [],
++         "title": "A question",
++         "type": "resume_experience",
++       },
++     ],
++     "resumeId": "resume:A",
++   },
++ ]
+
+ ❯ src/stores/question.spec.ts:56:30
+     54|  try {
+     55|   first.resolve(result('A')); await requestA
+     56|   expect(store.questionSets).toEqual([])
+       |                              ^
+     57|   expect(store.loading).toBe(true)
+     58|   expect(store.error).toBe('')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/stores/question.spec.ts > does not replace the new account error with a late create error
+ FAIL  src/stores/question.spec.ts > does not replace the new account error with a late restore error
+AssertionError: expected 'A request failed' to be 'B request failed' // Object.is equality
+
+Expected: "B request failed"
+Received: "A request failed"
+
+ ❯ src/stores/question.spec.ts:81:22
+     79|  first.reject(new Error('A request failed'))
+     80|  await expect(requestA).rejects.toThrow('A request failed')
+     81|  expect(store.error).toBe('B request failed')
+       |                      ^
+     82|  expect(store.loading).toBe(false)
+     83|  expect(store.questionSets).toEqual([])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  03:08:18
+   Duration  642ms (transform 35ms, setup 0ms, import 75ms, tests 9ms, environment 486ms)

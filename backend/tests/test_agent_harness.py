@@ -2,7 +2,8 @@ from types import SimpleNamespace
 
 from backend.agents.harness import AgentHarness
 from backend.schemas.workflow import JobProfile
-from backend.services.progress import TaskProgressHub
+import pytest
+from backend.services.agent_runs import RunError
 
 
 VALID_JOB_PROFILE = """
@@ -88,11 +89,11 @@ def test_harness_defaults_avoid_duplicate_long_llm_requests(monkeypatch):
 def test_run_schema_publishes_agent_lifecycle_events(monkeypatch):
     monkeypatch.setattr(AgentHarness, "load_prompt", staticmethod(lambda name: "Parse {{jd_text}}"))
     completions = FakeCompletions()
-    hub = TaskProgressHub()
+    events = []
     harness = AgentHarness.__new__(AgentHarness)
     harness.model = "compatible-model"
     harness.client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
-    harness.progress_hub = hub
+    harness.progress_callback = lambda **event: events.append(event)
 
     result = harness.run_schema(
         task="document.parse_jd",
@@ -106,9 +107,9 @@ def test_run_schema_publishes_agent_lifecycle_events(monkeypatch):
 
     assert result.job_title == "Backend Engineer"
     agents = [
-        event.data["agent"]
-        for event in hub._history["task-llm"]
-        if "agent" in event.data
+        event["data"]["agent"]
+        for event in events
+        if "agent" in event["data"]
     ]
 
     assert [event["phase"] for event in agents] == [
@@ -351,3 +352,20 @@ def test_deepseek_parsing_falls_back_without_response_format(monkeypatch):
     assert len(completions.calls) == 2
     assert completions.calls[0]["response_format"] == {"type": "json_object"}
     assert "response_format" not in completions.calls[1]
+
+
+@pytest.mark.parametrize("completions_factory", [FakeCompletions, FakeUnsupportedResponseFormatCompletions])
+def test_cancelled_retry_or_fallback_never_starts_another_model_call(monkeypatch, completions_factory):
+    monkeypatch.setattr(AgentHarness, "load_prompt", staticmethod(lambda name: "Parse {{jd_text}}"))
+    completions = completions_factory()
+    harness = AgentHarness.__new__(AgentHarness)
+    harness.model = "compatible-model"
+    harness.client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
+    def guard():
+        if completions.calls:
+            raise RunError(409, "execution_lost", "cancelled")
+    harness.guard = guard
+    with pytest.raises(RunError, match="cancelled"):
+        harness.run_schema(task="evaluate_match", prompt_name="parse_jd", schema=JobProfile,
+                           variables={"jd_text": "Backend Engineer JD"})
+    assert len(completions.calls) == 1

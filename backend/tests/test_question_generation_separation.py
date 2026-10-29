@@ -2,10 +2,8 @@ from types import SimpleNamespace
 from collections import Counter
 
 import pytest
-from fastapi import HTTPException
 
 from backend.graph.candidate_workflow import CandidateAnalysisGraph
-from backend.routes import runs as runs_route
 from backend.schemas.workflow import (
     AmbiguityFollowupSet,
     CandidateReport,
@@ -120,7 +118,6 @@ def test_matching_graph_does_not_generate_questions():
     graph = CandidateAnalysisGraph(
         harness=harness,
         rag_store=RecordingRagStore(job_profile, resume_profile),
-        repository=repository,
     )
 
     report = graph.run(
@@ -131,10 +128,8 @@ def test_matching_graph_does_not_generate_questions():
             "jd_document_id": 4,
             "resume_document_id": 5,
             "filename": "candidate.pdf",
-            "job": SimpleNamespace(jd=SimpleNamespace(structured_data=job_profile.model_dump(mode="json"))),
-            "candidate": SimpleNamespace(
-                resume=SimpleNamespace(structured_data=resume_profile.model_dump(mode="json"))
-            ),
+            "job_data": job_profile.model_dump(mode="json"),
+            "resume_data": resume_profile.model_dump(mode="json"),
         }
     )
 
@@ -190,14 +185,15 @@ def test_question_generation_honors_requested_question_count():
     service.repository = repository
     service._build_question_set_from_split = lambda **_kwargs: question_set
 
-    updated = service.generate_questions(user_id=1, run_id=2, candidate_id=3, question_count=5)
+    updated = service.generate_questions(user_id=1, report=report, question_count=5)
 
     assert harness.tasks == [
         "plan_question_blueprint",
         "generate_question_batch",
         "generate_ambiguity_followups",
     ]
-    assert repository.saved_question_sets == [question_set]
+    assert updated is question_set
+    assert repository.saved_question_sets == []
     assert updated.formal_questions == []
 
 
@@ -1009,26 +1005,3 @@ def test_question_generation_allows_dynamic_primary_evidence_cap_when_evidence_i
     )
     assert sum(primary_counts.values()) == 8
     assert max(primary_counts.values()) <= 3
-
-
-@pytest.mark.asyncio
-async def test_question_generation_validation_error_returns_bad_request(monkeypatch):
-    class FailingAnalysisService:
-        def __init__(self, *, db):
-            pass
-
-        def generate_questions(self, **_kwargs):
-            raise ValueError("evidence chunk overused: e1")
-
-    monkeypatch.setattr(runs_route, "AnalysisService", FailingAnalysisService)
-
-    with pytest.raises(HTTPException) as exc_info:
-        await runs_route.generate_candidate_questions(
-            run_id=1,
-            candidate_id=2,
-            current_user=SimpleNamespace(id=3),
-            db=SimpleNamespace(),
-        )
-
-    assert exc_info.value.status_code == 400
-    assert exc_info.value.detail == "evidence chunk overused: e1"

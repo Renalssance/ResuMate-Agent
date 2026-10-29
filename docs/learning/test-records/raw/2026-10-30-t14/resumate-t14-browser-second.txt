@@ -1,0 +1,57 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-RQlSNC
+
+Running 2 tests using 1 worker
+
+(node:27182) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/recovery.spec.ts:35:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 (2.0m)
+(node:27772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 (15.6s)
+
+
+  1) [chromium] › tests/e2e/recovery.spec.ts:35:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 ───────────────────────
+
+    Test timeout of 120000ms exceeded.
+
+    Error: page.waitForResponse: Test timeout of 120000ms exceeded.
+
+      56 |   const row = page.getByRole('row').filter({ has: page.getByRole('button', { name: longFilename, exact: true }) })
+      57 |   pauseModel()
+    > 58 |   const acceptedReparse = page.waitForResponse(r => r.url().includes('/parse?task_id=') && r.request().method() === 'POST')
+         |                                ^
+      59 |   await row.getByRole('button', { name: '重解析', exact: true }).click()
+      60 |   const reparseId = (await (await acceptedReparse).json()).taskId
+      61 |   await modelStarted()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/recovery.spec.ts:58:32
+
+    Error Context: test-results/recovery-上传、匹配和出题离开重开后读取同一持久任务及结果-chromium/error-context.md
+
+  2) [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 ───────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('网络连接已断开，正在重新连接。任务会继续运行。', { exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('网络连接已断开，正在重新连接。任务会继续运行。', { exact: true }) with timeout 15000ms
+      - waiting for getByText('网络连接已断开，正在重新连接。任务会继续运行。', { exact: true })
+
+
+      131 |   await capture(page, 'job-parse-reopened-desktop')
+      132 |   await page.context().setOffline(true)
+    > 133 |   await expect(page.getByText('网络连接已断开，正在重新连接。任务会继续运行。', { exact: true })).toBeVisible()
+          |                                                                            ^
+      134 |   await capture(page, 'job-parse-offline-mobile', true)
+      135 |   await page.context().setOffline(false)
+      136 |   resumeModel()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/recovery.spec.ts:133:76
+
+    Error Context: test-results/recovery-保存岗位解析在刷新及网络断开后恢复进度-chromium/error-context.md
+
+  2 failed
+    [chromium] › tests/e2e/recovery.spec.ts:35:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 ────────────────────────
+    [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 ────────────────────────────

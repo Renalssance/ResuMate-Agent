@@ -2,18 +2,12 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from typing import TYPE_CHECKING
+from typing import Callable
 
-from sqlalchemy.orm import Session
 
 from backend.agents.harness import AgentHarness
-from backend.db.models import JobDescription, Resume
-from backend.graph.candidate_workflow import CandidateAnalysisGraph
-from backend.rag import get_rag_store
-from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     AmbiguityFollowupSet,
-    AnalyzeResponse,
     CandidateReport,
     InterviewQuestion,
     QuestionBatch,
@@ -22,11 +16,6 @@ from backend.schemas.workflow import (
     QuestionSet,
 )
 from backend.services.llm_validation import question_primary_evidence_limit, validate_question_set
-from backend.services.progress import progress_hub
-
-if TYPE_CHECKING:
-    from backend.rag.chroma import ChromaRagStore
-    from backend.rag.mysql import MySQLRagStore
 
 QUESTION_TYPE_SEQUENCE = [
     "resume_experience",
@@ -50,142 +39,14 @@ def parse_document_id(value: str, expected_type: str) -> int:
 
 
 class AnalysisService:
-    def __init__(
-        self,
-        *,
-        db: Session,
-        harness: AgentHarness | None = None,
-        rag_store: ChromaRagStore | MySQLRagStore | None = None,
-    ) -> None:
-        self.db = db
+    """Question computation from a frozen report; the worker owns all SQL writes."""
+
+    def __init__(self, *, harness: AgentHarness, progress_callback: Callable[..., None] | None = None) -> None:
         self.harness = harness
-        self.rag_store = rag_store if rag_store is not None else get_rag_store()
-        self.repository = SqlAlchemyRunRepository(db)
+        self.progress_callback = progress_callback
 
-    def _harness_for_user(self, user_id: int) -> AgentHarness:
-        return self.harness or AgentHarness(user_id=user_id)
-
-    def _graph_for_user(self, user_id: int) -> CandidateAnalysisGraph:
-        return CandidateAnalysisGraph(
-            harness=self._harness_for_user(user_id),
-            rag_store=self.rag_store,
-            repository=self.repository,
-        )
-
-    def analyze_document_ids(
-        self,
-        *,
-        user_id: int,
-        jd_document_id: str,
-        resume_document_ids: list[str],
-        task_id: str = "",
-    ) -> AnalyzeResponse:
-        task_id = progress_hub.create_task("task_match", user_id=user_id, task_id=task_id)
-        try:
-            jd_id = parse_document_id(jd_document_id, "jd")
-            resume_ids = [parse_document_id(value, "resume") for value in resume_document_ids]
-        except ValueError as exc:
-            progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message=str(exc))
-            raise
-        jd = self.db.query(JobDescription).filter(JobDescription.id == jd_id, JobDescription.user_id == user_id).first()
-        resumes = self.db.query(Resume).filter(Resume.id.in_(resume_ids), Resume.user_id == user_id).all()
-        by_id = {resume.id: resume for resume in resumes}
-        if not jd or len(by_id) != len(set(resume_ids)):
-            progress_hub.publish(
-                task_id,
-                stage="failed",
-                status="failed",
-                progress=100,
-                message="Selected documents do not exist or are not owned by the current user",
-            )
-            raise ValueError("selected documents do not exist or are not owned by the current user")
-        progress_hub.publish(
-            task_id,
-            stage="load_jd",
-            status="running",
-            progress=5,
-            message="Creating analysis run",
-            data={"jd_document_id": jd_document_id, "resume_count": len(resume_ids)},
-        )
-        job = self.repository.create_run(user_id=user_id, jd=jd, resumes=[by_id[item] for item in resume_ids])
-        graph = self._graph_for_user(user_id)
-        for candidate in job.candidates:
-            resume = candidate.resume
-            try:
-                report = graph.run(
-                    {
-                        "user_id": user_id,
-                        "run_id": job.id,
-                        "candidate_id": candidate.id,
-                        "jd_document_id": jd.id,
-                        "resume_document_id": resume.id,
-                        "filename": resume.filename,
-                        "job": job,
-                        "candidate": candidate,
-                        "task_id": task_id,
-                    }
-                )
-            except Exception as exc:
-                self.repository.mark_candidate_failed(candidate, str(exc))
-                progress_hub.publish(
-                    task_id,
-                    stage="failed",
-                    status="failed",
-                    progress=100,
-                    message=f"{resume.filename}: {exc}",
-                    data={"run_id": job.id, "candidate_id": candidate.id},
-                )
-                raise
-        summary = self.repository.get_run(user_id=user_id, run_id=job.id)
-        if not summary:
-            progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message="Analysis did not persist a run")
-            raise RuntimeError("analysis did not persist a run")
-        response = AnalyzeResponse(**summary.model_dump(), task_id=task_id)
-        progress_hub.publish(
-            task_id,
-            stage="completed",
-            status="success",
-            progress=100,
-            message="Match analysis completed",
-            data=response.model_dump(mode="json", by_alias=True),
-        )
-        return response
-
-    def generate_questions(
-        self,
-        *,
-        user_id: int,
-        run_id: int,
-        candidate_id: int,
-        task_id: str = "",
-        question_count: int = 10,
-    ) -> CandidateReport:
-        task_id = progress_hub.create_task("task_questions", user_id=user_id, task_id=task_id)
-        question_count = max(1, min(question_count, 10))
-        progress_hub.publish(
-            task_id,
-            stage="load_context",
-            status="running",
-            progress=15,
-            message="Loading persisted match report",
-            data={"run_id": run_id, "candidate_id": candidate_id},
-        )
-        report = self.repository.get_candidate_report(
-            user_id=user_id,
-            run_id=run_id,
-            candidate_id=candidate_id,
-        )
-        if not report:
-            progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message="Candidate report not found")
-            raise ValueError("candidate report not found")
-        progress_hub.publish(
-            task_id,
-            stage="retrieve_evidence",
-            status="running",
-            progress=30,
-            message="Using cited match evidence for question context",
-            data={"run_id": run_id, "candidate_id": candidate_id},
-        )
+    def generate_questions(self, *, user_id: int, report: CandidateReport, task_id: str = "",
+                           question_count: int = 10) -> QuestionSet:
         report_context = {
             "job_profile": report.job_profile.model_dump(mode="json"),
             "resume_profile": report.resume_profile.model_dump(mode="json"),
@@ -193,153 +54,89 @@ class AnalysisService:
             "total_score": report.total_score,
             "recommendation": report.recommendation,
         }
-        progress_hub.publish(
-            task_id,
-            stage="analyze_gaps",
-            status="running",
-            progress=45,
-            message="Preparing gaps and assessment focus for question generation",
-            data={"run_id": run_id, "candidate_id": candidate_id},
-        )
-        progress_hub.publish(
-            task_id,
-            stage="generate_questions",
-            status="running",
+        callback = getattr(self, "progress_callback", None)
+        if callback:
+            callback(stage="generate_questions", status="running", progress=65,
+                     message="Generating interview questions from saved match context")
+        harness = self.harness
+        blueprint = harness.run_schema(
+            task="plan_question_blueprint",
+            prompt_name="plan_question_blueprint",
+            schema=QuestionBlueprint,
+            task_id=task_id,
+            progress_stage="generate_questions",
             progress=65,
-            message="Generating interview questions with LLM",
-            data={"run_id": run_id, "candidate_id": candidate_id},
+            variables={
+                "report_json": json.dumps(report_context, ensure_ascii=False),
+                "question_count": question_count,
+                "question_type_distribution": _question_type_distribution(question_count),
+            },
         )
-        try:
-            harness = self._harness_for_user(user_id)
-            # Split question generation into blueprint -> two batches -> follow-ups.
-            # Smaller schema-constrained calls are more stable than asking the LLM
-            # to produce the full interview pack in one long JSON response.
-            blueprint = harness.run_schema(
-                task="plan_question_blueprint",
-                prompt_name="plan_question_blueprint",
-                schema=QuestionBlueprint,
-                task_id=task_id,
-                progress_stage="generate_questions",
-                progress=65,
-                variables={
-                    "report_json": json.dumps(report_context, ensure_ascii=False),
-                    "question_count": question_count,
-                    "question_type_distribution": _question_type_distribution(question_count),
-                },
-            )
-            batch_1 = harness.run_schema(
-                task="generate_question_batch",
-                prompt_name="generate_question_batch",
-                schema=QuestionBatch,
-                task_id=task_id,
-                progress_stage="generate_questions",
-                progress=68,
-                variables={
-                    "report_json": json.dumps(report_context, ensure_ascii=False),
-                    "blueprint_json": json.dumps(
-                        {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[:5]]},
-                        ensure_ascii=False,
-                    ),
-                    "existing_questions_json": "[]",
-                },
-            )
-            batches = [batch_1]
-            if blueprint.formal_questions[5:]:
-                batches.append(
-                    harness.run_schema(
-                        task="generate_question_batch",
-                        prompt_name="generate_question_batch",
-                        schema=QuestionBatch,
-                        task_id=task_id,
-                        progress_stage="generate_questions",
-                        progress=72,
-                        variables={
-                            "report_json": json.dumps(report_context, ensure_ascii=False),
-                            "blueprint_json": json.dumps(
-                                {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[5:]]},
-                                ensure_ascii=False,
-                            ),
-                            "existing_questions_json": json.dumps(
-                                [item.question for item in batch_1.formal_questions],
-                                ensure_ascii=False,
-                            ),
-                        },
-                    )
+        batch_1 = harness.run_schema(
+            task="generate_question_batch",
+            prompt_name="generate_question_batch",
+            schema=QuestionBatch,
+            task_id=task_id,
+            progress_stage="generate_questions",
+            progress=68,
+            variables={
+                "report_json": json.dumps(report_context, ensure_ascii=False),
+                "blueprint_json": json.dumps(
+                    {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[:5]]},
+                    ensure_ascii=False,
+                ),
+                "existing_questions_json": "[]",
+            },
+        )
+        batches = [batch_1]
+        if blueprint.formal_questions[5:]:
+            batches.append(
+                harness.run_schema(
+                    task="generate_question_batch",
+                    prompt_name="generate_question_batch",
+                    schema=QuestionBatch,
+                    task_id=task_id,
+                    progress_stage="generate_questions",
+                    progress=72,
+                    variables={
+                        "report_json": json.dumps(report_context, ensure_ascii=False),
+                        "blueprint_json": json.dumps(
+                            {"formal_questions": [item.model_dump(mode="json") for item in blueprint.formal_questions[5:]]},
+                            ensure_ascii=False,
+                        ),
+                        "existing_questions_json": json.dumps(
+                            [item.question for item in batch_1.formal_questions],
+                            ensure_ascii=False,
+                        ),
+                    },
                 )
-            followups = harness.run_schema(
-                task="generate_ambiguity_followups",
-                prompt_name="generate_ambiguity_followups",
-                schema=AmbiguityFollowupSet,
-                task_id=task_id,
-                progress_stage="generate_questions",
-                progress=76,
-                variables={
-                    "report_json": json.dumps(report_context, ensure_ascii=False),
-                    "blueprint_json": json.dumps(blueprint.model_dump(mode="json"), ensure_ascii=False),
-                    "formal_questions_json": json.dumps(
-                        [item.model_dump(mode="json") for batch in batches for item in batch.formal_questions],
-                        ensure_ascii=False,
-                    ),
-                },
             )
-            question_set = self._build_question_set_from_split(
-                report=report,
-                blueprint=blueprint,
-                batches=batches,
-                followups=followups,
-            )
-        except Exception as exc:
-            progress_hub.publish(
-                task_id,
-                stage="failed",
-                status="failed",
-                progress=100,
-                message=f"Question generation failed: {exc}",
-                data={"run_id": run_id, "candidate_id": candidate_id},
-            )
-            raise
-        progress_hub.publish(
-            task_id,
-            stage="rubric",
-            status="running",
-            progress=82,
-            message="Validating question rubric and follow-up prompts",
-            data={"run_id": run_id, "candidate_id": candidate_id},
+        followups = harness.run_schema(
+            task="generate_ambiguity_followups",
+            prompt_name="generate_ambiguity_followups",
+            schema=AmbiguityFollowupSet,
+            task_id=task_id,
+            progress_stage="generate_questions",
+            progress=76,
+            variables={
+                "report_json": json.dumps(report_context, ensure_ascii=False),
+                "blueprint_json": json.dumps(blueprint.model_dump(mode="json"), ensure_ascii=False),
+                "formal_questions_json": json.dumps(
+                    [item.model_dump(mode="json") for batch in batches for item in batch.formal_questions],
+                    ensure_ascii=False,
+                ),
+            },
         )
-        try:
-            updated = self.repository.save_questions(
-                user_id=user_id,
-                run_id=run_id,
-                candidate_id=candidate_id,
-                question_set=question_set,
-            )
-        except Exception as exc:
-            progress_hub.publish(
-                task_id,
-                stage="failed",
-                status="failed",
-                progress=100,
-                message=f"Question save failed: {exc}",
-                data={"run_id": run_id, "candidate_id": candidate_id},
-            )
-            raise
-        progress_hub.publish(
-            task_id,
-            stage="save",
-            status="running",
-            progress=94,
-            message="Saving generated questions",
-            data={"run_id": run_id, "candidate_id": candidate_id},
+        question_set = self._build_question_set_from_split(
+            report=report,
+            blueprint=blueprint,
+            batches=batches,
+            followups=followups,
         )
-        progress_hub.publish(
-            task_id,
-            stage="completed",
-            status="success",
-            progress=100,
-            message="Question generation completed",
-            data=updated.model_dump(mode="json"),
-        )
-        return updated
+        if callback:
+            callback(stage="rubric", status="running", progress=82,
+                     message="Validated question rubric and follow-up prompts")
+        return question_set
 
     def _build_question_set_from_split(
         self,

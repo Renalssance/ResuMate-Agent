@@ -1,0 +1,23 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-9.0.3, pluggy-1.6.0 -- /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, langsmith-0.14.15
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+backend/tests/test_agent_recovery.py::test_real_process_kill_recovers_durable_state[recovery-model-before-return] recovery-model-before-return: PASS, attempt=2, epoch=2, model starts=1->4, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-model-before-return
+PASSED
+backend/tests/test_agent_recovery.py::test_real_process_kill_recovers_durable_state[recovery-draft-after-commit] recovery-draft-after-commit: PASS, attempt=2, epoch=2, model starts=2->3, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-draft-after-commit
+PASSED
+backend/tests/test_agent_recovery.py::test_real_process_kill_recovers_durable_state[recovery-checkpoint-before-terminal] recovery-checkpoint-before-terminal: PASS, attempt=2, epoch=2, model starts=3->3, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal
+PASSED
+backend/tests/test_agent_recovery.py::test_real_process_kill_recovers_durable_state[recovery-answer-before-delivery] recovery-answer-before-delivery: PASS, attempt=1, epoch=2, model starts=2->5, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-answer-before-delivery
+PASSED
+
+======================== 4 passed in 453.10s (0:07:33) =========================

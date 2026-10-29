@@ -1,102 +1,91 @@
-from io import BytesIO
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
-from fastapi import HTTPException, UploadFile
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
-from backend.db.database import Base
-from backend.db.models import Resume, User
-from backend.routes import documents as routes
-from backend.services.documents import PageText, StoredUpload
+from backend.db.agent_models import AgentRun
+from backend.db.models import Resume
+from backend.routes import documents
+from backend.services.documents import StoredUpload
+from backend.tests.career_fixtures import career_db, career_engine
+from backend.tests.test_document_tasks import parse_app, upload, execute
 
 
 @pytest.fixture
-def document_db(tmp_path):
-    engine = create_engine(f"sqlite:///{tmp_path / 'documents.db'}")
-    Base.metadata.create_all(engine)
-    with Session(engine) as db:
-        user = User(username="cloud-documents", password_hash="hash")
-        db.add(user)
+def cloud_original(parse_app, tmp_path, monkeypatch):
+    scratch = tmp_path / 'resume.txt'
+    scratch.write_text('Candidate resume original cloud content.')
+    reference = 'cloud://test-env.default-bucket/documents/123/resume.txt'
+    stored = StoredUpload('resume.txt', scratch, scratch.stat().st_size, 'cloud-hash', reference)
+    async def saved(file):
+        return stored
+    monkeypatch.setattr(documents, 'store_upload', saved)
+    downloads, deleted = [], []
+    class Storage:
+        def download(self, path, destination):
+            downloads.append(path)
+            Path(destination).write_text('Candidate resume original cloud content.')
+        def delete(self, path):
+            deleted.append(path)
+    from backend.services import documents as service
+    monkeypatch.setattr(service.CloudBaseStorage, 'from_env', Storage)
+    return scratch, reference, downloads, deleted
+
+
+def test_upload_removes_cache_but_worker_downloads_persisted_cloud_original(parse_app, cloud_original, monkeypatch):
+    client, factory, originals = parse_app
+    scratch, reference, downloads, deleted = cloud_original
+    run_id = upload(client).json()['taskId']
+    assert not scratch.exists()
+    execute(factory, run_id, monkeypatch)
+    with factory() as db:
+        run = db.get(AgentRun, run_id)
+        row = db.get(Resume, int(run.input_json['documentId'].split(':')[1]))
+        assert run.status == 'succeeded'
+        assert row.file_path == reference and row.raw_text == 'Candidate resume original cloud content.'
+    assert downloads == [reference] and deleted == []
+
+
+def test_accepted_failed_upload_retains_cloud_original(parse_app, cloud_original, monkeypatch):
+    client, factory, originals = parse_app
+    scratch, reference, downloads, deleted = cloud_original
+    run_id = upload(client).json()['taskId']
+    def fail(*args, **kwargs):
+        raise ValueError('profile extraction failed')
+    execute(factory, run_id, monkeypatch, parse=fail)
+    with factory() as db:
+        run = db.get(AgentRun, run_id)
+        row = db.get(Resume, int(run.input_json['documentId'].split(':')[1]))
+        assert run.status == 'failed' and row.file_path == reference and row.parse_status == 'failed'
+    assert not scratch.exists() and deleted == []
+
+
+def test_preaccept_failure_removes_cloud_original_and_cache(parse_app, cloud_original, monkeypatch):
+    client, factory, originals = parse_app
+    scratch, reference, downloads, deleted = cloud_original
+    def fail(*args, **kwargs):
+        raise HTTPException(status_code=400, detail='accept failed')
+    monkeypatch.setattr(documents, 'submit_task', fail)
+    response = upload(client)
+    assert response.status_code == 400
+    with factory() as db:
+        assert db.query(AgentRun).count() == 0
+        assert db.query(Resume).count() == 1  # seeded unrelated resume remains
+    assert not scratch.exists() and deleted == [reference]
+
+
+def test_reparse_preserves_cloud_reference(parse_app, cloud_original, monkeypatch):
+    client, factory, originals = parse_app
+    scratch, reference, downloads, deleted = cloud_original
+    with factory() as db:
+        row = db.get(Resume, 1)
+        row.file_path, row.filename = reference, 'resume.txt'
         db.commit()
-        yield db, user
-    engine.dispose()
-
-
-@pytest.fixture
-def rag_store(monkeypatch):
-    class FakeRagStore:
-        def replace_document_chunks(self, **kwargs):
-            pass
-
-        def delete_document(self, **kwargs):
-            pass
-
-    monkeypatch.setattr(routes, "get_rag_store", FakeRagStore)
-
-
-def test_reparse_preserves_cloud_reference(document_db, monkeypatch, rag_store):
-    db, user = document_db
-    reference = "cloud://test-env.default-bucket/documents/123/简历.txt"
-    row = Resume(user_id=user.id, filename="简历.txt", file_path=reference, raw_text="old content", structured_data={})
-    db.add(row)
-    db.commit()
-    received_paths = []
-
-    def extract(path, filename, **kwargs):
-        received_paths.append(path)
-        return [PageText(page_number=1, text="Candidate resume original cloud content.")]
-
-    monkeypatch.setattr(routes, "extract_stored_pages", extract)
-    monkeypatch.setattr(routes, "_parse_profile", lambda *args: {"candidate_name": "Ada"})
-    result = routes.reparse_document(f"resume:{row.id}", task_id="cloud-reparse", current_user=user, db=db)
-
-    assert received_paths == [reference]
-    assert result.raw_text == "Candidate resume original cloud content."
-    assert db.get(Resume, row.id).file_path == reference
-
-
-def _prepared_upload(tmp_path, monkeypatch):
-    scratch = tmp_path / "resume.txt"
-    scratch.write_text("Candidate resume original cloud content.")
-    reference = "cloud://test-env.default-bucket/documents/123/resume.txt"
-    stored = StoredUpload("resume.txt", scratch, scratch.stat().st_size, "test-content-hash", reference)
-    monkeypatch.setattr(routes.anyio.from_thread, "run", lambda *args: stored)
-    return scratch, reference
-
-
-def test_upload_persists_cloud_reference_and_removes_scratch(document_db, tmp_path, monkeypatch, rag_store):
-    db, user = document_db
-    scratch, reference = _prepared_upload(tmp_path, monkeypatch)
-    monkeypatch.setattr(routes, "_parse_profile", lambda *args: {"candidate_name": "Ada"})
-
-    result = routes.upload_documents(
-        document_type="resume", files=[UploadFile(filename="resume.txt", file=BytesIO())],
-        task_id="cloud-upload", current_user=user, db=db,
-    )
-
-    row = db.get(Resume, int(result.documents[0].id.partition(":")[2]))
-    assert row.file_path == reference
-    assert row.raw_text == "Candidate resume original cloud content."
-    assert not scratch.exists()
-
-
-def test_failed_upload_deletes_cloud_original_and_scratch(document_db, tmp_path, monkeypatch, rag_store):
-    db, user = document_db
-    scratch, reference = _prepared_upload(tmp_path, monkeypatch)
-    deleted = []
-
-    def parse(*args):
-        raise ValueError("profile extraction failed")
-
-    monkeypatch.setattr(routes, "_parse_profile", parse)
-    monkeypatch.setattr(routes, "delete_stored_file", deleted.append)
-    with pytest.raises(HTTPException, match="profile extraction failed"):
-        routes.upload_documents(
-            document_type="resume", files=[UploadFile(filename="resume.txt", file=BytesIO())],
-            task_id="cloud-failed-upload", current_user=user, db=db,
-        )
-
-    assert deleted == [reference]
-    assert not scratch.exists()
-    assert db.query(Resume).count() == 0
+    response = client.post('/api/documents/resume:1/parse', headers={'Prefer': 'respond-async'})
+    run_id = response.json()['taskId']
+    execute(factory, run_id, monkeypatch)
+    with factory() as db:
+        assert db.get(Resume, 1).file_path == reference
+        assert db.get(AgentRun, run_id).result_json['raw_text'] == 'Candidate resume original cloud content.'
+    assert downloads == [reference] and deleted == []

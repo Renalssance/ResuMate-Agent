@@ -1,6 +1,8 @@
 """Browser-test worker: deterministic model; real graph, tools and persistence."""
 import time
 
+from backend.tests import e2e_legacy_fixture  # noqa: F401
+
 from backend.agent_runtime import factory
 from backend.tests.agent_fixtures import DraftModel
 from backend.worker import app

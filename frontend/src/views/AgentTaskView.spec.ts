@@ -67,3 +67,19 @@ it('keeps a completed historical artifact visible after its session is invalidat
  await flushPromises()
  expect(wrapper.text()).toContain('材料已生成'); expect(wrapper.text()).toContain('已生成的历史简历内容'); expect(wrapper.get('[data-review-link]').attributes('href')).toBe('/resume-versions/version-1'); expect(wrapper.find('.task-failure').exists()).toBe(false); wrapper.unmount()
 })
+
+it.each([
+ ['document_parse', { documentId: 'resume:7', parseMode: 'upload' }, { documents: [{ id: 'resume:7', filename: '恢复后的简历.txt', parse_status: 'success' }] }, '恢复后的简历.txt'],
+ ['match_analysis', { jdId: 1, resumeIds: [7] }, { run_id: 8, job_title: 'API工程师', candidates: [{ candidate_id: 2, candidate_name: '示例求职者', total_score: 76 }] }, '示例求职者'],
+ ['question_generation', { analysisJobId: 8, candidateId: 2 }, { candidate_name: '示例求职者', formal_questions: [{ question_id: 'q1', question: '请说明一次接口故障的定位过程', assessment_points: ['定位'], scoring_rubric: ['真实证据'], reference_answer_direction: '解释观察和判断', suggested_followups: [] }], ambiguity_followups: [] }, '请说明一次接口故障的定位过程'],
+ ['answer_followup', {}, { follow_up: '当时如何确认恢复？', reason: '核对观察依据', evidence: ['服务日志'], risks: ['尚无测量记录'], current_ability: '能解释处理步骤', next_suggestion: '补充验证依据' }, '当时如何确认恢复？'],
+])('shows saved %s output without waiting for a nonexistent resume draft', async (kind, input, result, visible) => {
+ fixtures.store = reactive({ snapshot: { runId: 'long-run', kind, status: 'succeeded', input, result, actions: [] }, runs: [], drafts: {}, actionErrors: {}, conflictedActions: [], events: [], artifacts: [], busy: false, openRun: vi.fn(), loadRuns: vi.fn(), disconnect: vi.fn() })
+ const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/agent/tasks/:runId', component: AgentTaskView }, ...['/documents', '/matching', '/questions'].map(path => ({ path, component: { template: '<p>结果</p>' } }))] })
+ await router.push('/agent/tasks/long-run'); await router.isReady()
+ const wrapper = mount(AgentTaskView, { global: { plugins: [router] } })
+ expect(wrapper.text()).toContain(visible)
+ expect(wrapper.text()).not.toContain('正在读取草稿')
+ expect(wrapper.text()).not.toContain('材料已生成')
+ wrapper.unmount()
+})

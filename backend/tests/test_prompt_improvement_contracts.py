@@ -432,7 +432,7 @@ def test_question_split_uses_blueprint_two_batches_and_ambiguity_followups():
     )
     service._build_question_set_from_split = lambda **_kwargs: followups
 
-    service.generate_questions(user_id=1, run_id=2, candidate_id=3)
+    service.generate_questions(user_id=1, report=report)
 
     assert calls == [
         ("plan_question_blueprint", "QuestionBlueprint"),

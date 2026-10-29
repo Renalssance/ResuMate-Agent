@@ -117,6 +117,9 @@ def make_live_model(config, recorder, case):
 
 
 def execute_case(request):
+    if request['case'].get('runner') == 'durable':
+        from evals.task_runner import execute_task_case
+        return execute_task_case(request)
     # The subprocess environment is already isolated before any project import.
     from sqlalchemy import select
     from unittest.mock import patch
@@ -226,7 +229,7 @@ def execute_case(request):
 def write_report(invocation, mode, results, *, error_code=None, configuration_error=None):
     from evals.records import write_json
     counts = {status: sum(item['status'] == status for item in results) for status in ('pass', 'fail', 'incomplete', 'not_run')}
-    report = dict(mode=mode, results=results, counts=counts, error_code=error_code,
+    report = dict(mode=mode, results=results, counts=counts, executed_count=counts['pass'] + counts['fail'], error_code=error_code,
                   semantic_status='not_applicable' if mode == 'stub' else 'unreviewed',
                   note='Exit code 0 means deterministic checks passed; it does not approve semantic quality.')
     if configuration_error:
@@ -259,6 +262,8 @@ def main(argv=None):
     parser.add_argument('--cases', help='Comma separated case IDs, for example normal-api')
     parser.add_argument('--config', type=Path)
     parser.add_argument('--env-file', type=Path)
+    parser.add_argument('--recovery-context', type=Path, help='Explicit current invocation and four exact Compose inputs')
+    parser.add_argument('--recovery-evidence', type=Path, help='Actual process-kill evidence for that invocation')
     parser.add_argument('--_worker', type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if args._worker:
@@ -282,14 +287,15 @@ def main(argv=None):
     os.environ.update(DATABASE_URL='sqlite:///:memory:', AGENT_STATE_DIR=str(invocation / 'parent-state'), PYTHON_DOTENV_DISABLED='1')
     from evals.fixtures import load_cases
     from evals.records import write_json
-    cases = load_cases(args.suite)
+    all_cases = load_cases(args.suite)
+    cases = all_cases
     chosen = args.cases.split(',') if args.cases else [case['id'] for case in cases]
     cases = [case for case in cases if case['id'] in chosen]
     try:
         revision = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         revision = None
-    manifest = dict(suite=args.suite, suite_version=1, mode=args.mode, case_ids=chosen, created_at=datetime.now(timezone.utc).isoformat(),
+    manifest = dict(suite=args.suite, suite_version=2, invocation_id=str(uuid4()), mode=args.mode, case_ids=chosen, created_at=datetime.now(timezone.utc).isoformat(),
                     git_commit=revision, dependencies={name: importlib.metadata.version(name) for name in
                     ('deepagents', 'langchain-core', 'langchain-openai', 'langgraph', 'openai')},
                     synthetic_inputs=True, model='synthetic eval stub', tracing='disabled in isolated harness',
@@ -298,9 +304,21 @@ def main(argv=None):
                     rubric_version='v1', config=None)
     config = None
     error = None
+    recovery_context, recovery_evidence = None, None
+    try:
+        if args.recovery_context:
+            from evals.recovery_evidence import read_context
+            recovery_context = read_context(args.recovery_context, all_cases)
+            manifest['invocation_id'] = recovery_context['invocation_id']
+            manifest['recovery_context'] = recovery_context
+        if args.recovery_evidence:
+            recovery_evidence = json.loads(args.recovery_evidence.read_text())
+            manifest['recovery_evidence'] = str(args.recovery_evidence.resolve())
+    except (ValueError, OSError, TypeError):
+        error = 'Invalid or unreadable recovery context/evidence'
     if set(chosen) != {case['id'] for case in cases}:
         error = 'Unknown case ID in --cases'
-    if args.mode == 'live' and not error:
+    if args.mode == 'live' and not error and any(case.get('runner') not in ('durable','compose') for case in cases):
         try:
             from evals.budget import BudgetConfig
             if args.config is None:
@@ -329,6 +347,22 @@ def main(argv=None):
         return code
     results, stop_reason = [], None
     for case in cases:
+        if case.get('runner') == 'compose':
+            detail = None
+            if recovery_evidence is not None:
+                from evals.recovery_evidence import merge_case
+                detail = merge_case(case, recovery_context, recovery_evidence)
+            if detail is None:
+                results.append(dict(case_id=case['id'], category=case['category'], status='not_run',
+                    error_code='requires_compose' if recovery_evidence is None else 'recovery_evidence_mismatch'))
+            else:
+                path = invocation / 'cases' / (case['id'] + '.json')
+                write_json(path, detail)
+                results.append(dict(case_id=case['id'], category=case['category'], status=detail['status'], artifact='cases/' + path.name))
+            continue
+        if case.get('runner') == 'durable' and args.mode == 'live':
+            results.append(dict(case_id=case['id'], category=case['category'], status='not_run', error_code='durable_live_not_implemented'))
+            continue
         if stop_reason:
             results.append(dict(case_id=case['id'], category=case['category'], status='not_run', error_code=stop_reason))
             continue

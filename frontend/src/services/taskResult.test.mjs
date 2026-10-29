@@ -20,7 +20,9 @@ class FetchConnection {
   emit(event) { this.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`)) }
   end() { this.controller.close() }
 }
-globalThis.window = { localStorage: { getItem: () => 'legacy-token' } }
+const stored = new Map([['accessToken', 'legacy-token']])
+globalThis.localStorage = { getItem: key => stored.get(key) ?? null, setItem: (key, value) => stored.set(key, value), removeItem: key => stored.delete(key) }
+globalThis.window = Object.assign(new EventTarget(), { localStorage: globalThis.localStorage })
 globalThis.fetch = async (url, options) => new FetchConnection(url, options).response
 const tempDir = await mkdtemp(join(new URL('../..', import.meta.url).pathname, '.task-result-test-'))
 try {
@@ -109,8 +111,11 @@ try {
   await new Promise(resolve => setImmediate(resolve))
   const disconnectedSource = FetchConnection.instances.at(-1)
   disconnectedSource.end()
-  await assert.rejects(disconnected, /connection/i)
-  assert.equal(disconnectedSource.closed, true)
+  await new Promise(resolve => setTimeout(resolve, 1100))
+  const resumedSource = FetchConnection.instances.at(-1)
+  assert.notEqual(resumedSource, disconnectedSource, 'temporary disconnection must reconnect')
+  resumedSource.emit({ taskId, stage: 'completed', status: 'success', progress: 100, message: 'Done', data: run })
+  assert.deepEqual(await disconnected, run)
   // A failed queued resume must not determine a later text upload's outcome.
   let finishFirst
   const firstUpload = new Promise(resolve => { finishFirst = resolve })

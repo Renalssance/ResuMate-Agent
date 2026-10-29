@@ -1,0 +1,86 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_ test_source_changed_during_embedding_cannot_write_index[sqlite-delete-mysql] _
+backend/tests/test_document_tasks.py:218: in test_source_changed_during_embedding_cannot_write_index
+    assert db.query(DocumentEmbeddingChunk).count() == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = <sqlalchemy.orm.query.Query object at 0x115147c50>.count
+E    +      where <sqlalchemy.orm.query.Query object at 0x115147c50> = query(<class 'backend.rag.mysql.DocumentEmbeddingChunk'>)
+E    +        where query = <sqlalchemy.orm.session.Session object at 0x114ffe480>.query
+_ test_source_changed_during_embedding_cannot_write_index[sqlite-delete-chroma] _
+backend/tests/test_document_tasks.py:220: in test_source_changed_during_embedding_cannot_write_index
+    assert rag.collection.count() == 0
+E   assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = Collection(name=document_chunks).count
+E    +      where Collection(name=document_chunks) = <backend.rag.chroma.ChromaRagStore object at 0x1153bdb80>.collection
+_ test_source_changed_during_embedding_cannot_write_index[sqlite-cancel-mysql] _
+backend/tests/test_document_tasks.py:218: in test_source_changed_during_embedding_cannot_write_index
+    assert db.query(DocumentEmbeddingChunk).count() == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = <sqlalchemy.orm.query.Query object at 0x113f8b050>.count
+E    +      where <sqlalchemy.orm.query.Query object at 0x113f8b050> = query(<class 'backend.rag.mysql.DocumentEmbeddingChunk'>)
+E    +        where query = <sqlalchemy.orm.session.Session object at 0x113f5b680>.query
+_ test_source_changed_during_embedding_cannot_write_index[sqlite-cancel-chroma] _
+backend/tests/test_document_tasks.py:220: in test_source_changed_during_embedding_cannot_write_index
+    assert rag.collection.count() == 0
+E   assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = Collection(name=document_chunks).count
+E    +      where Collection(name=document_chunks) = <backend.rag.chroma.ChromaRagStore object at 0x115424ef0>.collection
+_ test_source_changed_during_embedding_cannot_write_index[mysql-delete-mysql] __
+backend/tests/test_document_tasks.py:218: in test_source_changed_during_embedding_cannot_write_index
+    assert db.query(DocumentEmbeddingChunk).count() == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = <sqlalchemy.orm.query.Query object at 0x1156149e0>.count
+E    +      where <sqlalchemy.orm.query.Query object at 0x1156149e0> = query(<class 'backend.rag.mysql.DocumentEmbeddingChunk'>)
+E    +        where query = <sqlalchemy.orm.session.Session object at 0x1155bd010>.query
+_ test_source_changed_during_embedding_cannot_write_index[mysql-delete-chroma] _
+backend/tests/test_document_tasks.py:220: in test_source_changed_during_embedding_cannot_write_index
+    assert rag.collection.count() == 0
+E   assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = Collection(name=document_chunks).count
+E    +      where Collection(name=document_chunks) = <backend.rag.chroma.ChromaRagStore object at 0x1156d9c10>.collection
+_ test_source_changed_during_embedding_cannot_write_index[mysql-cancel-mysql] __
+backend/tests/test_document_tasks.py:218: in test_source_changed_during_embedding_cannot_write_index
+    assert db.query(DocumentEmbeddingChunk).count() == 0
+E   AssertionError: assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = <sqlalchemy.orm.query.Query object at 0x1156c3ef0>.count
+E    +      where <sqlalchemy.orm.query.Query object at 0x1156c3ef0> = query(<class 'backend.rag.mysql.DocumentEmbeddingChunk'>)
+E    +        where query = <sqlalchemy.orm.session.Session object at 0x115777ef0>.query
+_ test_source_changed_during_embedding_cannot_write_index[mysql-cancel-chroma] _
+backend/tests/test_document_tasks.py:220: in test_source_changed_during_embedding_cannot_write_index
+    assert rag.collection.count() == 0
+E   assert 1 == 0
+E    +  where 1 = count()
+E    +    where count = Collection(name=document_chunks).count
+E    +      where Collection(name=document_chunks) = <backend.rag.chroma.ChromaRagStore object at 0x1158c03b0>.collection
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[sqlite-delete-mysql]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[sqlite-delete-chroma]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[sqlite-cancel-mysql]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[sqlite-cancel-chroma]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[mysql-delete-mysql]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[mysql-delete-chroma]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[mysql-cancel-mysql]
+FAILED backend/tests/test_document_tasks.py::test_source_changed_during_embedding_cannot_write_index[mysql-cancel-chroma]
+8 failed, 5 warnings in 2.22s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

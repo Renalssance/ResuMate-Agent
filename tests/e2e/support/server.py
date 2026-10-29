@@ -72,6 +72,8 @@ def main():
         redis_port = probe.getsockname()[1]
     env = dict(os.environ, DATABASE_URL=f'sqlite:///{STATE / "resumate.db"}',
                AGENT_STATE_DIR=str(STATE / 'agent'), RESUME_EXPORT_DIR=str(STATE / 'exports'),
+               RESUMATE_E2E_ROOT=str(STATE), DOCUMENT_STORAGE_ROOT=str(STATE / 'documents'),
+               CHROMA_PATH=str(STATE / 'chroma'),
                JWT_SECRET_KEY=uuid4().hex,
                REDIS_URL=f'redis://127.0.0.1:{redis_port}/0',
                CLOUDBASE_ENV_ID='', CLOUD_STORAGE_PROVIDER='local',
@@ -166,4 +168,5 @@ finally:
     # Keep service logs for diagnosing a failing run, remove all mutable test state.
     for filename in ('fixture.json', 'resumate.db', 'resumate.db-shm', 'resumate.db-wal'):
         (STATE / filename).unlink(missing_ok=True)
-    shutil.rmtree(STATE / 'agent', ignore_errors=True)
+    for dirname in ('agent', 'documents', 'chroma', 'exports'):
+        shutil.rmtree(STATE / dirname, ignore_errors=True)

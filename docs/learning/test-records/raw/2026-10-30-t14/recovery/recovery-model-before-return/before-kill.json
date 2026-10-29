@@ -1,0 +1,48 @@
+{
+  "run": {
+    "id": "184b6c5a-01ac-434c-81ea-099cc73114d6",
+    "session_id": "e7f65e45-cdc5-4813-a67b-4621a5218feb",
+    "status": "running",
+    "attempt": 1,
+    "epoch": 1,
+    "heartbeat_at": "2026-10-29T19:01:13.467181",
+    "output_refs": [],
+    "error_code": null
+  },
+  "versions": [],
+  "operations": [],
+  "actions": [],
+  "events": [
+    {
+      "seq": 1,
+      "type": "run.status",
+      "payload": {
+        "status": "queued",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 2,
+      "type": "run.status",
+      "payload": {
+        "status": "running",
+        "error_code": null
+      }
+    }
+  ],
+  "checkpoint": {
+    "run_id": "184b6c5a-01ac-434c-81ea-099cc73114d6",
+    "next": [
+      "model"
+    ],
+    "interrupts": [],
+    "message_count": 1
+  },
+  "model_starts": [
+    {
+      "phase": [],
+      "started_at": 1793300473.4690223,
+      "pid": 8
+    }
+  ]
+}

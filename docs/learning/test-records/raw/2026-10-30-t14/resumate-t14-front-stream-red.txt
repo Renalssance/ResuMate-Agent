@@ -1,0 +1,73 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/services/sse.spec.ts src/composables/useDocumentParseTasks.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/composables/useDocumentParseTasks.spec.ts (3 tests | 2 failed) 5ms
+   × starts upload progress only after the server accepts the task 4ms
+   × starts reparse progress only after the server accepts the task 0ms
+ ❯ src/services/sse.spec.ts (6 tests | 2 failed) 163ms
+   × reconnects from the last event ID, allows filtered sequence gaps and ignores duplicate replay 2ms
+   × keeps the result pending across a disconnect and obtains the durable final response 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/composables/useDocumentParseTasks.spec.ts > starts upload progress only after the server accepts the task
+ FAIL  src/composables/useDocumentParseTasks.spec.ts > starts reparse progress only after the server accepts the task
+AssertionError: expected 'local-request-key' to be 'accepted-task' // Object.is equality
+
+Expected: "accepted-task"
+Received: "local-request-key"
+
+ ❯ src/composables/useDocumentParseTasks.spec.ts:26:40
+     24|   accept('accepted-task')
+     25|   expect(subscribe).toHaveBeenCalledOnce()
+     26|   expect(subscribe.mock.calls[0]?.[0]).toBe('accepted-task')
+       |                                        ^
+     27|   expect([...queue.tasks.keys()]).toEqual(['accepted-task'])
+     28|   expect(queue.tasks.get('accepted-task')?.taskId).toBe('accepted-task…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/services/sse.spec.ts > reconnects from the last event ID, allows filtered sequence gaps and ignores duplicate replay
+AssertionError: expected "vi.fn()" to be called 2 times, but got 1 times
+ ❯ src/services/sse.spec.ts:90:17
+     88|   expect(messages).toHaveBeenCalledTimes(1)
+     89|   await vi.advanceTimersByTimeAsync(1000)
+     90|   expect(fetch).toHaveBeenCalledTimes(2)
+       |                 ^
+     91|   expect(fetch.mock.calls[1]?.[0]).toBe('/api/tasks/same-task/events?a…
+     92|   second.emit('running', 4)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/services/sse.spec.ts > keeps the result pending across a disconnect and obtains the durable final response
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      [Error: Task result connection closed],
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/services/sse.spec.ts:111:23
+    109|   first.end()
+    110|   await vi.advanceTimersByTimeAsync(0)
+    111|   expect(settled).not.toHaveBeenCalled()
+       |                       ^
+    112|   await vi.advanceTimersByTimeAsync(1000)
+    113|   expect(fetch.mock.calls[1]?.[0]).toBe('/api/tasks/same-task/events?a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 5 passed (9)
+   Start at  02:34:51
+   Duration  831ms (transform 86ms, setup 0ms, import 196ms, tests 168ms, environment 1.05s)

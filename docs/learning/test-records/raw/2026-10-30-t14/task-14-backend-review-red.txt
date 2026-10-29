@@ -1,0 +1,106 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_matching_stops_before_next_embedding_after_cancel[sqlite] ________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e5af140>
+runtime = namespace(module=<module 'backend.services.analysis_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learn...0000gn/T/pytest-of-bono/pytest-186/test_matching_stops_before_nex0/career.db), autoflush=True, expire_on_commit=False))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e783350>
+
+    def test_matching_stops_before_next_embedding_after_cancel(career_db, runtime, monkeypatch):
+        job = career_db.get(JobDescription, 1)
+        criterion = job.structured_data['criteria'][0]
+        job.structured_data = {**job.structured_data, 'criteria': [
+            {**criterion, 'weight': 50},
+            {**criterion, 'criterion_id': 'second', 'name': 'Second', 'weight': 50, 'evidence_query': 'Second query'},
+        ]}
+        career_db.commit()
+        queries = []
+
+        class Embeddings:
+            contract = {'provider': 'test', 'model': 'cancel-test'}
+
+            def embed(self, query):
+                queries.append(query)
+                if len(queries) == 1:
+                    with runtime.factory() as db:
+                        run = db.query(AgentRun).filter_by(kind='match_analysis').one()
+                        agent_runs.cancel_run(db, 1, run.id)
+                return [1.0, 0.0]
+
+        rag = MySQLRagStore(session_factory=runtime.factory, embedding_client=Embeddings())
+        monkeypatch.setattr(runtime.module, 'get_rag_store', lambda: rag)
+        run_id, _ = run_match(career_db, runtime)
+        with runtime.factory() as db:
+            run = db.get(AgentRun, run_id)
+            assert run.status == RunStatus.CANCELLED and run.result_json is None
+            assert db.query(MatchResult).count() == 0
+>       assert queries == ['API']
+E       AssertionError: assert ['API', 'Second query'] == ['API']
+E
+E         Left contains one more item: 'Second query'
+E         Use -v to get more diff
+
+backend/tests/test_analysis_tasks.py:135: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.services.analysis_tasks:analysis_tasks.py:65 Analysis task 174ecadd-c6fb-41b3-8225-da420d6d79d3 stopped (execution_lost)
+________ test_matching_stops_before_next_embedding_after_cancel[mysql] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10f191e20>
+runtime = namespace(module=<module 'backend.services.analysis_tasks' from '/Users/bono/.codex/worktrees/resumate-fullstack-learn...1f60643?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock), autoflush=True, expire_on_commit=False))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f31aea0>
+
+    def test_matching_stops_before_next_embedding_after_cancel(career_db, runtime, monkeypatch):
+        job = career_db.get(JobDescription, 1)
+        criterion = job.structured_data['criteria'][0]
+        job.structured_data = {**job.structured_data, 'criteria': [
+            {**criterion, 'weight': 50},
+            {**criterion, 'criterion_id': 'second', 'name': 'Second', 'weight': 50, 'evidence_query': 'Second query'},
+        ]}
+        career_db.commit()
+        queries = []
+
+        class Embeddings:
+            contract = {'provider': 'test', 'model': 'cancel-test'}
+
+            def embed(self, query):
+                queries.append(query)
+                if len(queries) == 1:
+                    with runtime.factory() as db:
+                        run = db.query(AgentRun).filter_by(kind='match_analysis').one()
+                        agent_runs.cancel_run(db, 1, run.id)
+                return [1.0, 0.0]
+
+        rag = MySQLRagStore(session_factory=runtime.factory, embedding_client=Embeddings())
+        monkeypatch.setattr(runtime.module, 'get_rag_store', lambda: rag)
+        run_id, _ = run_match(career_db, runtime)
+        with runtime.factory() as db:
+            run = db.get(AgentRun, run_id)
+            assert run.status == RunStatus.CANCELLED and run.result_json is None
+            assert db.query(MatchResult).count() == 0
+>       assert queries == ['API']
+E       AssertionError: assert ['API', 'Second query'] == ['API']
+E
+E         Left contains one more item: 'Second query'
+E         Use -v to get more diff
+
+backend/tests/test_analysis_tasks.py:135: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.services.analysis_tasks:analysis_tasks.py:65 Analysis task 757f0832-a588-4d4a-805b-5da46fa0ad3a stopped (execution_lost)
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_analysis_tasks.py::test_matching_stops_before_next_embedding_after_cancel[sqlite]
+FAILED backend/tests/test_analysis_tasks.py::test_matching_stops_before_next_embedding_after_cancel[mysql]
+2 failed, 30 deselected, 5 warnings in 1.72s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

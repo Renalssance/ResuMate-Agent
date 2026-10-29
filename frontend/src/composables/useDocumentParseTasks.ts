@@ -1,4 +1,6 @@
 import type { AxiosProgressEvent } from 'axios'
+import { activeTaskKey, readActiveTask, saveActiveTask } from '../services/activeTasks'
+import { readAccessToken } from '../services/authToken'
 import { reactive } from 'vue'
 import { uploadDocumentsApi, type ParseDocumentsResponse } from '../api/documents'
 import { subscribeTaskProgress, type TaskConnection } from '../services/sse'
@@ -17,12 +19,15 @@ export type ParseStage =
   | 'llm_analyze'
   | 'embedding'
   | 'milvus_save'
+  | 'chroma_save'
+  | 'cancelled'
   | 'local_save'
   | 'completed'
   | 'failed'
 
 export interface DocumentParseTask {
   taskId: string
+  accepted?: boolean
   filename: string
   documentType: DocumentType
   status: TaskStatus
@@ -67,7 +72,19 @@ export function useDocumentParseTasks(deps: UploadQueueDeps = {}) {
 }
 
 export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
+  const storageKey = activeTaskKey('document-tasks')
+  const ownerToken = readAccessToken()
+  type AcceptedDocumentTask = Pick<DocumentParseTask, 'taskId' | 'filename' | 'documentType'>
   const tasks = reactive(new Map<string, DocumentParseTask>())
+  function remember(task: DocumentParseTask) {
+    const saved = readActiveTask<AcceptedDocumentTask[]>(storageKey) || []
+    saveActiveTask(storageKey, [...saved.filter(item => item.taskId !== task.taskId), { taskId: task.taskId, filename: task.filename, documentType: task.documentType }])
+  }
+  function forget(taskId: string) {
+    const saved = (readActiveTask<AcceptedDocumentTask[]>(storageKey) || []).filter(item => item.taskId !== taskId)
+    if (saved.length) saveActiveTask(storageKey, saved)
+    else localStorage.removeItem(storageKey)
+  }
   const queue: QueueItem[] = []
   const connections = new Map<string, TaskConnection>()
   let activeCount = 0
@@ -92,6 +109,7 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   }
 
   function drain() {
+    if (closed || ownerToken !== readAccessToken()) { closeAll(); return }
     while (activeCount < concurrency && queue.length) {
       const item = queue.shift()
       if (!item) return
@@ -110,12 +128,21 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
     const task = tasks.get(taskId)!
 
     try {
-      await upload(item.type, item.file, taskId, (event) => updateUploadProgress(task, event), () => subscribeToTask(task))
+      await upload(item.type, item.file, taskId, (event) => updateUploadProgress(task, event), (acceptedId) => acceptTask(task, acceptedId))
       return true
     } catch (err) {
       failTask(task, err instanceof Error ? err.message : String(err))
       return false
     }
+  }
+
+  function acceptTask(task: DocumentParseTask, acceptedId: string) {
+    tasks.delete(task.taskId)
+    task.taskId = acceptedId
+    task.accepted = true
+    remember(task)
+    tasks.set(acceptedId, task)
+    subscribeToTask(task)
   }
 
   function subscribeToTask(task: DocumentParseTask) {
@@ -126,15 +153,13 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
       subscribe(taskId, {
         onMessage: (event) => {
           updateFromSse(task, event)
+          if (event.status === 'success' || event.status === 'failed') forget(task.taskId)
           if (event.stage === 'completed' && event.status === 'success') {
             void refreshDocumentsSilently()
           }
         },
-        onError: () => {
-          if (task.status !== 'success' && task.status !== 'failed') {
-            task.message = '实时进度连接已中断，正在等待服务端解析结果'
-          }
-        },
+        onReconnect: () => { task.message = '实时进度连接已中断，正在重新连接，任务会继续运行' },
+        onError: error => { failTask(task, error.message); forget(task.taskId) },
       }),
     )
   }
@@ -147,6 +172,7 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   function closeAll() {
     closed = true
     for (const taskId of connections.keys()) closeTask(taskId)
+    for (const item of queue.splice(0)) item.resolve(false)
   }
 
   async function reparseDocument(document: DocumentRecord) {
@@ -158,12 +184,20 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
     const task = tasks.get(taskId)!
 
     try {
-      await reparse(document.id, taskId, () => subscribeToTask(task))
+      await reparse(document.id, taskId, (acceptedId) => acceptTask(task, acceptedId))
     } catch (err) {
       failTask(task, err instanceof Error ? err.message : String(err))
     }
   }
 
+  for (const saved of readActiveTask<AcceptedDocumentTask[]>(storageKey) || []) {
+    const task = createTask(saved.taskId, saved.filename, saved.documentType)
+    task.accepted = true
+    task.status = 'running'
+    task.message = '正在恢复已受理任务的进度'
+    tasks.set(task.taskId, task)
+    subscribeToTask(tasks.get(task.taskId)!)
+  }
   return { tasks, enqueueFiles, reparseDocument, closeTask, closeAll }
 }
 

@@ -1,227 +1,75 @@
-import json
-from io import BytesIO
-from types import SimpleNamespace
-
+"""Legacy HTTP routes accept durable tasks without invoking model work in the API."""
 import pytest
-from fastapi import BackgroundTasks, FastAPI, UploadFile
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
 
-from backend.db.database import Base, get_db
-from backend.db.models import Resume, User
-from backend.auth.security import get_current_user
-from backend.routes import documents, runs
-from backend.schemas.workflow import AnalyzeRequest, AnalyzeResponse
-from backend.services.documents import StoredUpload
-from backend.services.progress import progress_hub
+from backend.db.agent_models import AgentRun
+from backend.db.models import AnalysisCandidate, AnalysisJob, MatchResult
+from backend.schemas.workflow import CandidateReport, JobProfile, ResumeProfile
+from backend.tests.career_fixtures import career_db, career_engine
+from backend.tests.test_document_tasks import parse_app
 
 
-@pytest.fixture
-def background_db(tmp_path, monkeypatch):
-    from backend.services import background_tasks
-
-    engine = create_engine(f"sqlite:///{tmp_path / 'async.db'}", connect_args={"check_same_thread": False})
-    Base.metadata.create_all(engine)
-    worker_sessions = []
-
-    class TrackedSession(Session):
-        closed = False
-
-        def close(self):
-            self.closed = True
-            super().close()
-
-    factory = sessionmaker(engine, class_=TrackedSession, expire_on_commit=False)
-
-    def worker_session():
-        db = factory()
-        worker_sessions.append(db)
-        return db
-
-    monkeypatch.setattr(background_tasks, "SessionLocal", worker_session)
-    with Session(engine) as db:
-        user = User(username="async-user", password_hash="hash")
-        db.add(user)
+def seed_report(factory):
+    with factory() as db:
+        job = AnalysisJob(user_id=1, jd_id=1, title='Engineer')
+        db.add(job)
+        db.flush()
+        candidate = AnalysisCandidate(job_id=job.id, resume_id=1)
+        db.add(candidate)
+        db.flush()
+        report = CandidateReport(run_id=job.id, candidate_id=candidate.id, candidate_name='Ada', filename='resume.txt',
+            job_profile=JobProfile(job_title='Engineer', summary='APIs', criteria=[dict(criterion_id='api', name='API', description='Build APIs', importance='must', weight=100, evidence_query='API')]), resume_profile=ResumeProfile(candidate_name='Ada'),
+            evaluations=[], total_score=0, recommendation='hold', summary='Insufficient evidence')
+        db.add(MatchResult(job_id=job.id, candidate_id=candidate.id, resume_id=1, jd_id=1,
+            report_json=report.model_dump(mode='json')))
         db.commit()
-        user_id = user.id
-    yield engine, user_id, worker_sessions
-    engine.dispose()
+        return job.id, candidate.id
 
 
-@pytest.mark.asyncio
-async def test_async_upload_saves_file_before_accepting_and_uses_own_session(background_db, tmp_path, monkeypatch):
-    engine, user_id, workers = background_db
-    request_db = Session(engine)
-    path = tmp_path / "resume.txt"
-    path.write_text("Candidate resume text for asynchronous extraction.")
-    stored = StoredUpload("resume.txt", path, path.stat().st_size, "async-upload")
-    monkeypatch.setattr(documents.anyio.from_thread, "run", lambda *args: stored)
-    calls = []
-    monkeypatch.setattr(documents, "_parse_profile", lambda *args: calls.append("parsed") or {"candidate_name": "Ada"})
-    monkeypatch.setattr(documents, "get_rag_store", lambda: SimpleNamespace(replace_document_chunks=lambda **kwargs: None))
-    background = BackgroundTasks()
-    upload = UploadFile(filename="resume.txt", file=BytesIO(b"already saved bytes"))
-
-    response = documents.upload_documents(
-        document_type="resume", files=[upload], task_id="async-upload", current_user=SimpleNamespace(id=user_id),
-        db=request_db, prefer="respond-async", background_tasks=background,
-    )
-
-    assert response.status_code == 202
-    assert json.loads(response.body) == {"taskId": "async-upload"}
-    assert progress_hub.is_owned_by("async-upload", user_id)
-    assert calls == [] and workers == []
-    await upload.close()
-    request_db.close()
-    await background()
-
-    assert calls == ["parsed"]
-    assert len(workers) == 1 and workers[0] is not request_db and workers[0].closed
-    with Session(engine) as db:
-        row = db.query(Resume).one()
-        assert row.file_path == str(path)
-        assert row.parse_status == "success"
-    terminal = progress_hub._history["async-upload"][-1]
-    assert terminal.status == "success"
-    assert terminal.data["documents"][0]["filename"] == "resume.txt"
-
-
-@pytest.mark.asyncio
-async def test_async_upload_failure_reaches_sse_and_cleans_saved_file(background_db, tmp_path, monkeypatch):
-    engine, user_id, workers = background_db
-    path = tmp_path / "bad.txt"
-    path.write_text("Candidate resume text for asynchronous extraction.")
-    stored = StoredUpload("bad.txt", path, path.stat().st_size, "bad-upload")
-    monkeypatch.setattr(documents.anyio.from_thread, "run", lambda *args: stored)
-
-    def fail(*args):
-        raise ValueError("profile extraction failed")
-
-    monkeypatch.setattr(documents, "_parse_profile", fail)
-    background = BackgroundTasks()
-    with Session(engine) as db:
-        response = documents.upload_documents(
-            document_type="resume", files=[UploadFile(filename="bad.txt", file=BytesIO())], task_id="async-failed",
-            current_user=SimpleNamespace(id=user_id), db=db, prefer="respond-async", background_tasks=background,
-        )
-    assert response.status_code == 202
-    await background()
-    terminal = progress_hub._history["async-failed"][-1]
-    assert terminal.status == "failed" and "profile extraction failed" in terminal.message
-    assert workers[0].closed
-    assert not path.exists()
-    with Session(engine) as db:
-        assert db.query(Resume).count() == 0
+@pytest.mark.parametrize('operation,kind', [('match', 'match_analysis'), ('questions', 'question_generation'),
+    ('reparse', 'document_parse'), ('saved_job', 'document_parse'), ('followup', 'answer_followup')])
+def test_long_routes_persist_accepted_input_without_running_models(parse_app, monkeypatch, operation, kind):
+    from backend.routes import runs, jobs
+    from backend.agents.harness import AgentHarness
+    client, factory, originals = parse_app
+    client.app.include_router(runs.router)
+    client.app.include_router(jobs.router)
+    def forbidden(*args, **kwargs):
+        raise AssertionError('API acceptance must not call a model')
+    monkeypatch.setattr(AgentHarness, 'run_schema', forbidden)
+    if operation == 'match':
+        path, payload = '/api/runs', {'jd_document_id': 'jd:1', 'resume_document_ids': ['resume:1'], 'taskId': 'request-key'}
+    elif operation == 'questions':
+        job_id, candidate_id = seed_report(factory)
+        path, payload = f'/api/runs/{job_id}/candidates/{candidate_id}/questions?task_id=request-key&question_count=3', None
+    elif operation == 'reparse':
+        path, payload = '/api/documents/jd:1/parse?task_id=request-key', None
+    elif operation == 'saved_job':
+        path, payload = '/api/jobs/1/parse?task_id=request-key', None
+    else:
+        path, payload = '/api/followups/analyze?task_id=request-key', {'question': 'What did you build?', 'answer': 'An API'}
+    response = client.post(path, json=payload, headers={'Prefer': 'respond-async'})
+    assert response.status_code == 202, response.text
+    assert set(response.json()) == {'taskId'}
+    run_id = response.json()['taskId']
+    assert run_id != 'request-key'
+    with factory() as db:
+        run = db.get(AgentRun, run_id)
+        assert run.kind == kind and run.status == 'queued'
+        assert run.request_id == 'request-key' and run.result_json is None
+        if operation == 'match':
+            assert len(run.input_json['candidateIds']) == 1
+        if operation == 'questions':
+            assert run.input_json['questionCount'] == 3 and run.input_json['reportSnapshot']['candidate_name'] == 'Ada'
+    again = client.post(path, json=payload, headers={'Prefer': 'respond-async'})
+    assert again.json() == response.json()
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize("operation", ["run", "questions", "reparse"])
-async def test_long_routes_accept_before_background_work(background_db, monkeypatch, operation):
-    engine, user_id, workers = background_db
-    calls = []
-
-    class Analysis:
-        def __init__(self, db):
-            assert db in workers
-
-        def analyze_document_ids(self, **kwargs):
-            calls.append(kwargs)
-            return AnalyzeResponse(run_id=7, job_title="Backend", candidates=[], task_id=kwargs["task_id"])
-
-        def generate_questions(self, **kwargs):
-            calls.append(kwargs)
-            raise ValueError("question generation failed")
-
-    monkeypatch.setattr(runs, "AnalysisService", Analysis)
-    with Session(engine) as db:
-        row = Resume(user_id=user_id, filename="resume.txt", file_path="saved.txt", raw_text="old", structured_data={})
-        db.add(row)
-        db.commit()
-        row_id = row.id
-        background = BackgroundTasks()
-        common = dict(current_user=SimpleNamespace(id=user_id), db=db, prefer="respond-async", background_tasks=background)
-        if operation == "run":
-            response = runs.create_run(AnalyzeRequest(jd_document_id="jd:1", resume_document_ids=["resume:1"]), **common)
-        elif operation == "questions":
-            response = runs.generate_candidate_questions(7, 8, task_id="async-questions", question_count=3, **common)
-        else:
-            monkeypatch.setattr(documents, "extract_stored_pages", lambda *args, **kwargs: calls.append("extracted") or (_ for _ in ()).throw(ValueError("extract failed")))
-            response = documents.reparse_document(f"resume:{row_id}", task_id="async-reparse", **common)
-        assert response.status_code == 202
-        task_id = json.loads(response.body)["taskId"]
-        assert isinstance(task_id, str) and task_id
-        assert progress_hub.is_owned_by(task_id, user_id)
-        assert calls == [] and workers == []
-    await background()
-    assert calls
-    assert len(workers) == 1 and workers[0].closed
-    if operation != "run":
-        assert progress_hub._history[task_id][-1].status == "failed"
-
-
-def test_http_prefer_header_accepts_without_changing_sync_response(background_db, monkeypatch):
-    engine, user_id, workers = background_db
-
-    class Analysis:
-        def __init__(self, db):
-            pass
-
-        def analyze_document_ids(self, **kwargs):
-            return AnalyzeResponse(run_id=7, job_title="Backend", candidates=[], task_id=kwargs["task_id"])
-
-    monkeypatch.setattr(runs, "AnalysisService", Analysis)
-    app = FastAPI()
-    app.include_router(runs.router)
-    app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(id=user_id)
-
-    def request_db():
-        with Session(engine) as db:
-            yield db
-
-    app.dependency_overrides[get_db] = request_db
-    with TestClient(app) as client:
-        payload = {"jd_document_id": "jd:1", "resume_document_ids": ["resume:1"]}
-        accepted = client.post("/api/runs", json=payload, headers={"Prefer": "respond-async"})
-        sync = client.post("/api/runs", json=payload)
-    assert accepted.status_code == 202 and set(accepted.json()) == {"taskId"}
-    assert sync.status_code == 200 and sync.json()["run_id"] == 7
-
-
-@pytest.mark.asyncio
-async def test_followup_async_submission_publishes_own_complete_model_result(background_db, monkeypatch):
-    from backend.schemas.workflow import FollowUpAnalysisRequest, FollowUpAnalysisResponse
-
-    engine, user_id, workers = background_db
-    result = FollowUpAnalysisResponse(
-        follow_up="Which part did you implement?", reason="Clarify ownership", evidence=["project scope"],
-        risks=["unclear role"], current_ability="Needs more evidence", next_suggestion="Ask for an example",
-    )
-    calls = []
-
-    class Harness:
-        def __init__(self, *, user_id):
-            assert user_id > 0
-
-        def run_schema(self, **kwargs):
-            calls.append(kwargs)
-            assert kwargs["schema"] is FollowUpAnalysisResponse
-            return result
-
-    monkeypatch.setattr(documents, "AgentHarness", Harness)
-    background = BackgroundTasks()
-    with Session(engine) as db:
-        response = documents.analyze_followup(
-            FollowUpAnalysisRequest(question="What did you build?", answer="A backend service"),
-            current_user=SimpleNamespace(id=user_id), db=db, prefer="respond-async",
-            background_tasks=background, task_id="async-followup",
-        )
-    assert response.status_code == 202
-    assert json.loads(response.body) == {"taskId": "async-followup"}
-    assert calls == [] and workers == []
-    await background()
-    assert len(calls) == 1 and workers[0].closed
-    assert progress_hub.is_owned_by("async-followup", user_id)
-    terminal = progress_hub._history["async-followup"][-1]
-    assert terminal.status == "success"
-    assert terminal.data == result.model_dump(mode="json")
+def test_upload_request_key_conflict_is_rejected_before_new_file(parse_app):
+    from backend.tests.test_document_tasks import upload
+    client, factory, originals = parse_app
+    first = upload(client, 'used-key')
+    assert first.status_code == 202
+    conflicting = client.post('/api/documents', data={'document_type': 'jd', 'task_id': 'used-key'},
+        files={'files': ('job.txt', b'API engineer posting with enough original text.')}, headers={'Prefer': 'respond-async'})
+    assert conflicting.status_code == 409
+    assert len(list(originals.iterdir())) == 1

@@ -9,7 +9,7 @@ vi.mock('../api/jobs', () => fixtures.api)
 vi.mock('../services/sse', () => ({ closeTaskProgress: vi.fn(), subscribeTaskProgress: (_id: string, callbacks: any) => callbacks.onMessage({ taskId: 'parse-3', status: 'running', progress: 100, stage: 'llm_analyze', message: '分析中' }) }))
 const job = { id: 3, title: '平台工程师', company: '松果科技', status: 'saved', parseStatus: 'pending', text: '开发可靠的业务平台', primaryResumeId: null, primaryResume: null }
 const mountView = (progress = false) => mount(JobsView, { global: { stubs: { RouterLink: { props: ['to'], template: '<a :href="typeof to === \'string\' ? to : to.path"><slot /></a>' }, TaskProgress: !progress } } })
-beforeEach(() => { fixtures.auth = reactive({ token: 'a', isAuthenticated: true }); vi.resetAllMocks(); fixtures.api.fetchJobs.mockResolvedValue({ items: [], hasMore: false }); fixtures.api.fetchJobMatches.mockResolvedValue({ items: [], hasMore: false }); fixtures.api.fetchJob.mockResolvedValue(job) })
+beforeEach(() => { localStorage.clear(); fixtures.auth = reactive({ token: 'a', isAuthenticated: true }); vi.resetAllMocks(); fixtures.api.fetchJobs.mockResolvedValue({ items: [], hasMore: false }); fixtures.api.fetchJobMatches.mockResolvedValue({ items: [], hasMore: false }); fixtures.api.fetchJob.mockResolvedValue(job) })
 describe('job center', () => {
  it('preserves raw pasted text after capture fails', async () => {
   fixtures.api.captureJob.mockRejectedValue(new Error('收藏失败，请重试')); const w = mountView(); await flushPromises()
@@ -29,4 +29,15 @@ describe('job center', () => {
   fixtures.api.fetchJobs.mockResolvedValue({ items: [], hasMore: true }); const w = mountView(); await flushPromises(); await w.findAll('button').find(b => b.text() === '下一页')!.trigger('click'); await flushPromises(); await w.get('select[aria-label="岗位状态"]').setValue('archived'); await flushPromises()
   expect(fixtures.api.fetchJobs).toHaveBeenLastCalledWith(expect.objectContaining({ status: 'archived', offset: 0 })); w.unmount()
  })
+})
+
+it('reopens a saved job parse without submitting another task', async () => {
+ localStorage.setItem('username', 'owner')
+ localStorage.setItem('resumate:active-job-parses:owner', JSON.stringify({ '3': 'saved-parse' }))
+ fixtures.api.fetchJobs.mockResolvedValue({ items: [job], hasMore: false })
+ const w = mountView(true); await flushPromises()
+ expect(w.get('[aria-label="岗位详情"]').text()).toContain('开发可靠的业务平台')
+ expect(w.findAll('button').find(b => b.text() === '正在解析…')?.attributes('disabled')).toBeDefined()
+ expect(fixtures.api.parseJob).not.toHaveBeenCalled()
+ w.unmount()
 })

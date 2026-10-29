@@ -1,0 +1,56 @@
+{
+  "services": {
+    "api": {
+      "image": "resumate-t11-worker:latest",
+      "volumes": [
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-draft-after-commit/data:/app/data",
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/source/backend:/app/backend:ro"
+      ],
+      "environment": {
+        "AGENT_STATE_DIR": "/app/data/agent",
+        "RESUMATE_RECOVERY_POINT": "recovery-draft-after-commit",
+        "LANGCHAIN_TRACING_V2": "false"
+      },
+      "command": [
+        "uvicorn",
+        "backend.tests.recovery_api_fixture:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ]
+    },
+    "worker": {
+      "image": "resumate-t11-worker:latest",
+      "volumes": [
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-draft-after-commit/data:/app/data",
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/source/backend:/app/backend:ro"
+      ],
+      "environment": {
+        "AGENT_STATE_DIR": "/app/data/agent",
+        "RESUMATE_RECOVERY_POINT": "recovery-draft-after-commit",
+        "LANGCHAIN_TRACING_V2": "false"
+      },
+      "command": [
+        "celery",
+        "-A",
+        "backend.tests.recovery_worker_fixture:app",
+        "worker",
+        "--loglevel=INFO",
+        "--concurrency=1"
+      ]
+    },
+    "scheduler": {
+      "image": "resumate-t11-worker:latest",
+      "volumes": [
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-draft-after-commit/data:/app/data",
+        "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/source/backend:/app/backend:ro"
+      ],
+      "environment": {
+        "AGENT_STATE_DIR": "/app/data/agent",
+        "RESUMATE_RECOVERY_POINT": "recovery-draft-after-commit",
+        "LANGCHAIN_TRACING_V2": "false"
+      }
+    }
+  }
+}

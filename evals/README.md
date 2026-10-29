@@ -1,4 +1,4 @@
-# T13：本地任务评测
+# T13 / T14：本地任务评测
 
 默认使用合成输入和确定性模型；生产 `create_run → claim_run → run_agent → answer_action`、工具事务与 SqliteSaver 均真实执行。每案在独立子进程、SQLite 数据库与 checkpoint 目录内运行，不发布到现有队列。
 
@@ -7,7 +7,9 @@ uv run python -m evals.run --suite core --mode stub --output artifacts/evals/cor
 uv run python -m evals.run --suite core --mode stub --cases normal-api,ask-metric --output artifacts/evals/smoke
 ```
 
-12 案涵盖正常定制 3、补问 2、拒绝/取消 2、工具失败 2、重复保存 1、来源冲突 1、长上下文 1。故障与重放只在评测 harness 注入。长案必须观察实际 SDK 摘要、文件读取、补问后的 checkpoint 重开与必保留上下文；缺覆盖会失败。
+原 12 案涵盖正常定制 3、补问 2、拒绝/取消 2、工具失败 2、重复保存 1、来源冲突 1、长上下文 1。故障与重放只在评测 harness 注入。长案必须观察实际 SDK 摘要、文件读取、补问后的 checkpoint 重开与必保留上下文；缺覆盖会失败。
+
+T14 扩展后 `core` 共 24 案；未显式提供本轮真实 Compose 证据时，完整 stub 为 20 执行、4 未执行，退出码 2。具体调用见末尾 T14 小节。
 
 每次执行创建唯一 invocation 子目录：
 
@@ -83,3 +85,31 @@ uv run pytest backend/tests/test_eval_budget.py backend/tests/test_eval_runner.p
 ```
 
 这些检查分别检测网络前限额、摘要/重试计数与未知费用、隔离/真实暂停恢复、回滚与取消、手工注入重复版本/错引用/错 before/漏回答的验证器失效。它们不代替 T14 的进程崩溃恢复实验。
+
+## T14：持久化长任务与真实进程恢复
+
+`core` 保留原 12 条 tailoring 记录和判定器，并加入 `cases/recovery.jsonl` 中的 12 条记录。每条新增记录显式指定运行器：
+
+- 8 条 `durable` 案在独立子进程里调用真实 `create_run → claim_run → handler`，解析上传还通过真实 HTTP 路由接受文件。数据库、原件、SQL 向量表均位于该案例的隔离目录；仅结构化模型响应和 embedding 使用确定性夹具。产物包含具体响应、模型调用次数、完整相关 SQL 行和只读判定结果。
+- 4 条 `compose` 案分别在模型未返回、草稿已提交、checkpoint 已完成但 Run 未终止、回答已提交但未投递时实际杀死 worker。普通 stub 不启动 Docker，也不把历史集成测试结果当作本轮执行。
+
+未提供真实崩溃证据时，完整 `core --mode stub` 应报告 **20 executed / 4 not_run**，退出码 **2**。可以单独运行八条任务案例：
+
+```sh
+python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-tasks \
+  --cases parse-upload-stable-identity,parse-reparse-saved-job,match-partial-candidate-replay,question-result-replay,followup-result-replay,cancel-recovery,source-deleted-or-reassigned,business-write-rollback
+```
+
+八案覆盖上传稳定身份、文件重解析与粘贴岗位、部分候选恢复、旧题目结果重放、回答分析重放、取消后恢复、源删除/归属变化、四类业务最终事务回滚。此运行器的 SQL oracle 使用隔离 SQLite；MySQL 的真实验证由对应 focused 双库集成测试记录，不能从 SQLite eval 结果推断 MySQL 已执行。`--mode live` 的这八案尚未实现，明确返回 `not_run / durable_live_not_implemented`，不绕过原 T13 的价格与预算协议。
+
+真实崩溃实验先约定一份 JSON 上下文，格式为 `{invocation_id, cases:[{id,input}]}`；四条 `input` 必须与当前 `recovery.jsonl` 的 Compose 输入逐字段一致。集成测试读取 `RESUMATE_RECOVERY_CONTEXT`，把实际进程与 SQL 证据写到 `RESUMATE_RECOVERY_EVIDENCE`。证据包含相同 invocation、case ID、输入、是否实际执行、通过/失败、SIGKILL、恢复前后 Run/attempt/epoch、模型开始次数、版本/操作/事件及原始证据路径。评估命令必须显式提供两份文件：
+
+```sh
+python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-complete \
+  --recovery-context /tmp/task-14-eval-context.json \
+  --recovery-evidence /tmp/task-14-recovery-evidence.json
+```
+
+只有 invocation、case ID 与输入精确对应，而且该进程场景实际执行并满足恢复 oracle，才计为通过。缺证据为 `requires_compose`；其他 invocation 或不同输入为 `recovery_evidence_mismatch`，保持 `not_run`。完整报告可以计入 24 案的前提是本轮四个真实崩溃实验也确实通过。原始 12 案仍按原来的隔离、预算、事实来源和人工语义审阅约束执行。
+
+这些结果证明业务持久化和恢复边界。它们不证明真实模型语义质量，也不证明模型只计费一次。旧 Harness 的 usage 仍是用户级记录，未自动关联 T13 的 Run/attempt/epoch；被杀死的未完成调用 usage 未知，不能记成零。

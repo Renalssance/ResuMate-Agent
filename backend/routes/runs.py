@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from backend.auth.security import get_current_user
@@ -7,9 +7,10 @@ from backend.db.models import User
 from backend.rag import get_rag_store
 from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import AnalyzeRequest, AnalyzeResponse, CandidateReport, EvidenceSearchRequest, EvidenceSearchResponse, RunSummary
-from backend.services.analysis import AnalysisService
+from backend.services.analysis import parse_document_id
+from backend.schemas.agent_runs import RunCreate
+from uuid import uuid4
 from backend.services.background_tasks import submit_task
-from backend.services.progress import progress_hub
 
 router = APIRouter(prefix="/api/runs", tags=["runs"])
 
@@ -20,23 +21,15 @@ def create_run(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     prefer: str = Header(""),
-    background_tasks: BackgroundTasks = None,
 ):
-    task_id = progress_hub.create_task("task_match", user_id=current_user.id, task_id=request.task_id)
-    if prefer == "respond-async":
-        return submit_task(
-            background_tasks, task_id, current_user.id, create_run,
-            request=request.model_copy(update={"task_id": task_id}),
-        )
     try:
-        return AnalysisService(db=db).analyze_document_ids(
-            user_id=current_user.id,
-            jd_document_id=request.jd_document_id,
-            resume_document_ids=request.resume_document_ids,
-            task_id=task_id,
-        )
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        jd_id = parse_document_id(request.jd_document_id, "jd")
+        resume_ids = [parse_document_id(value, "resume") for value in request.resume_document_ids]
+        durable = RunCreate(kind="match_analysis", jdId=jd_id, resumeIds=resume_ids,
+                            requestId=request.task_id or str(uuid4()))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return submit_task(db, current_user.id, durable, prefer=prefer)
 
 
 @router.get("", response_model=list[RunSummary])
@@ -69,27 +62,10 @@ def generate_candidate_questions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     prefer: str = Header(""),
-    background_tasks: BackgroundTasks = None,
 ):
-    task_id = progress_hub.create_task("task_questions", user_id=current_user.id, task_id=task_id)
-    if prefer == "respond-async":
-        return submit_task(
-            background_tasks, task_id, current_user.id, generate_candidate_questions,
-            run_id=run_id, candidate_id=candidate_id, task_id=task_id, question_count=question_count,
-        )
-    try:
-        return AnalysisService(db=db).generate_questions(
-            user_id=current_user.id,
-            run_id=run_id,
-            candidate_id=candidate_id,
-            task_id=task_id,
-            question_count=question_count,
-        )
-    except ValueError as exc:
-        status_code = 404 if str(exc) == "candidate report not found" else 400
-        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return submit_task(db, current_user.id, RunCreate(
+        kind="question_generation", analysisJobId=run_id, candidateId=candidate_id,
+        questionCount=question_count, requestId=task_id or str(uuid4())), prefer=prefer)
 
 
 @router.delete("/{run_id}/candidates/{candidate_id}")

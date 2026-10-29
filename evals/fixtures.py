@@ -20,6 +20,7 @@ def load_cases(suite='core'):
     if suite != 'core':
         raise ValueError('Only suite core is available')
     cases = [json.loads(line) for line in (Path(__file__).parent / 'cases' / 'core.jsonl').read_text().splitlines() if line.strip()]
+    cases.extend(json.loads(line) for line in (Path(__file__).parent / 'cases' / 'recovery.jsonl').read_text().splitlines() if line.strip())
     for case in cases:
         if case.get('long'):
             _long_input(case)

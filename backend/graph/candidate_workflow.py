@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, Callable, TypedDict
 
 from langgraph.graph import END, StateGraph
 
 from backend.agents.harness import AgentHarness
-from backend.repositories.runs import SqlAlchemyRunRepository
 from backend.schemas.workflow import (
     CandidateReport,
     CriterionEvaluation,
@@ -16,7 +15,6 @@ from backend.schemas.workflow import (
 )
 from backend.services.documents import DocumentChunk
 from backend.services.llm_validation import hydrate_match_evaluation
-from backend.services.progress import progress_hub
 
 if TYPE_CHECKING:
     from backend.rag.chroma import ChromaRagStore
@@ -29,8 +27,8 @@ class CandidateState(TypedDict, total=False):
     candidate_id: int
     jd_document_id: int
     resume_document_id: int
-    job: Any
-    candidate: Any
+    job_data: dict
+    resume_data: dict
     filename: str
     jd_chunks: list[DocumentChunk]
     resume_chunks: list[DocumentChunk]
@@ -60,10 +58,13 @@ def recommendation_for_score(score: float) -> Recommendation:
 
 
 class CandidateAnalysisGraph:
-    def __init__(self, *, harness: AgentHarness, rag_store: ChromaRagStore | MySQLRagStore, repository: SqlAlchemyRunRepository) -> None:
+    def __init__(self, *, harness: AgentHarness, rag_store: ChromaRagStore | MySQLRagStore,
+                 progress_callback: Callable[..., None] | None = None,
+                 guard: Callable[[], None] | None = None) -> None:
         self.harness = harness
         self.rag_store = rag_store
-        self.repository = repository
+        self.progress_callback = progress_callback
+        self.guard = guard
         self.graph = self._build_graph()
 
     def run(self, state: CandidateState) -> CandidateReport:
@@ -76,36 +77,34 @@ class CandidateAnalysisGraph:
         builder.add_node("retrieve_evidence", self.retrieve_evidence)
         builder.add_node("evaluate_match", self.evaluate_match)
         builder.add_node("calculate_score", self.calculate_score)
-        builder.add_node("persist_report", self.persist_report)
+        builder.add_node("build_report", self.build_report)
         builder.set_entry_point("load_structured_profiles")
         # The LLM evaluates criterion-level evidence only; deterministic Python
         # code applies weighting and recommendation thresholds in later nodes.
         builder.add_edge("load_structured_profiles", "retrieve_evidence")
         builder.add_edge("retrieve_evidence", "evaluate_match")
         builder.add_edge("evaluate_match", "calculate_score")
-        builder.add_edge("calculate_score", "persist_report")
-        builder.add_edge("persist_report", END)
+        builder.add_edge("calculate_score", "build_report")
+        builder.add_edge("build_report", END)
         return builder.compile()
 
     def load_structured_profiles(self, state: CandidateState) -> CandidateState:
-        progress_hub.publish(
-            state.get("task_id"),
+        self._publish(
             stage="load_jd",
             status="running",
             progress=10,
             message="Loading structured JD profile",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        job_data = state["job"].jd.structured_data if state["job"].jd else None
-        progress_hub.publish(
-            state.get("task_id"),
+        job_data = state["job_data"]
+        self._publish(
             stage="load_resume",
             status="running",
             progress=20,
             message="Loading structured resume profile",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
-        resume_data = state["candidate"].resume.structured_data
+        resume_data = state["resume_data"]
         if not job_data or not resume_data:
             raise ValueError("A structured JD or resume is missing; reparse the document")
         state["job_profile"] = JobProfile.model_validate(job_data)
@@ -113,8 +112,7 @@ class CandidateAnalysisGraph:
         return state
 
     def retrieve_evidence(self, state: CandidateState) -> CandidateState:
-        progress_hub.publish(
-            state.get("task_id"),
+        self._publish(
             stage="chroma_search",
             status="running",
             progress=35,
@@ -123,6 +121,8 @@ class CandidateAnalysisGraph:
         )
         evidence_by_criterion: dict[str, list[dict[str, Any]]] = {}
         for criterion in state["job_profile"].criteria:
+            if self.guard:
+                self.guard()
             evidence = self.rag_store.search_resume_evidence(
                 user_id=state["user_id"],
                 document_id=state["resume_document_id"],
@@ -134,8 +134,7 @@ class CandidateAnalysisGraph:
         return state
 
     def evaluate_match(self, state: CandidateState) -> CandidateState:
-        progress_hub.publish(
-            state.get("task_id"),
+        self._publish(
             stage="llm_match",
             status="running",
             progress=58,
@@ -167,8 +166,7 @@ class CandidateAnalysisGraph:
         return state
 
     def calculate_score(self, state: CandidateState) -> CandidateState:
-        progress_hub.publish(
-            state.get("task_id"),
+        self._publish(
             stage="score",
             status="running",
             progress=72,
@@ -179,9 +177,8 @@ class CandidateAnalysisGraph:
         state["recommendation"] = recommendation_for_score(state["total_score"])
         return state
 
-    def persist_report(self, state: CandidateState) -> CandidateState:
-        progress_hub.publish(
-            state.get("task_id"),
+    def build_report(self, state: CandidateState) -> CandidateState:
+        self._publish(
             stage="local_save",
             status="running",
             progress=84,
@@ -217,16 +214,19 @@ class CandidateAnalysisGraph:
             ambiguity_followups=[],
         )
         state["report"] = report
-        self.repository.save_report(job=state["job"], candidate=state["candidate"], report=report)
-        progress_hub.publish(
-            state.get("task_id"),
+        self._publish(
             stage="chroma_save",
             status="running",
             progress=92,
-            message="Saving match report",
+            message="Candidate report ready",
             data={"run_id": state.get("run_id"), "candidate_id": state.get("candidate_id")},
         )
         return state
+
+    def _publish(self, **event) -> None:
+        callback = getattr(self, "progress_callback", None)
+        if callback:
+            callback(**event)
 
     @staticmethod
     def _build_summary(state: CandidateState) -> str:

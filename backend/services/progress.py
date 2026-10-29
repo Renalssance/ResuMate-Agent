@@ -1,105 +1,38 @@
-from __future__ import annotations
+"""Scoped SQL progress; no process-local ownership, task execution or history."""
+from sqlalchemy import select
 
-import asyncio
-from collections import defaultdict
-from uuid import uuid4
-
-from fastapi import HTTPException
-
-from backend.schemas.workflow import SseProgressEvent, TaskStatus
+from backend.db.agent_models import AgentRunEvent
+from backend.db.database import SessionLocal
+from backend.services.agent_runs import guard_execution
+from backend.services.run_events import append_event
 
 
-TERMINAL_STATUSES: set[TaskStatus] = {"success", "failed"}
+def append_progress(db, run_id: str, epoch: int, *, stage: str, progress: int, message: str,
+                    status: str = 'running', document_id: str | None = None,
+                    filename: str | None = None, stage_progress: int | None = None,
+                    current: int | None = None, total: int | None = None,
+                    data: dict | None = None) -> AgentRunEvent:
+    """Append in the caller's business transaction; caller owns the commit."""
+    guard_execution(db, run_id, epoch)
+    previous = db.scalar(select(AgentRunEvent).where(
+        AgentRunEvent.run_id == run_id, AgentRunEvent.type == 'task.progress',
+    ).order_by(AgentRunEvent.seq.desc()).limit(1).with_for_update())
+    overall = max(0, min(100, progress), previous.payload['overall_progress'] if previous else 0)
+    return append_event(db, run_id, 'task.progress', {
+        'stage': stage, 'status': status, 'progress': overall, 'overall_progress': overall,
+        'message': message, 'document_id': document_id, 'filename': filename,
+        'stage_progress': None if stage_progress is None else max(0, min(100, stage_progress)),
+        'current': current, 'total': total, 'data': data or {},
+    })
 
 
-class TaskProgressHub:
-    def __init__(self) -> None:
-        self._history: dict[str, list[SseProgressEvent]] = defaultdict(list)
-        self._queues: dict[str, list[tuple[asyncio.AbstractEventLoop, asyncio.Queue[SseProgressEvent]]]] = defaultdict(list)
-        self._last_progress: dict[str, int] = defaultdict(int)
-        self._owners: dict[str, int] = {}
+class TaskProgress:
+    def __init__(self, run_id: str, epoch: int, session_factory=None):
+        self.run_id, self.epoch = run_id, epoch
+        self.session_factory = session_factory or SessionLocal
 
-    def create_task(self, prefix: str = "task", *, user_id: int, task_id: str = "") -> str:
-        task_id = task_id or f"{prefix}_{uuid4().hex}"
-        owner_id = self._owners.get(task_id)
-        if owner_id is not None and owner_id != user_id:
-            raise HTTPException(status_code=404, detail="task not found")
-        if owner_id is None:
-            self._owners[task_id] = user_id
-            self._history[task_id] = []
-            self._last_progress[task_id] = 0
-        return task_id
-
-    def is_owned_by(self, task_id: str, user_id: int) -> bool:
-        return self._owners.get(task_id) == user_id
-
-    def publish(
-        self,
-        task_id: str | None,
-        *,
-        stage: str,
-        status: TaskStatus,
-        progress: int,
-        message: str,
-        document_id: str | None = None,
-        filename: str | None = None,
-        stage_progress: int | None = None,
-        current: int | None = None,
-        total: int | None = None,
-        data: dict | None = None,
-    ) -> None:
-        if not task_id:
-            return
-        clamped_progress = max(0, min(100, progress))
-        overall_progress = max(self._last_progress[task_id], clamped_progress)
-        self._last_progress[task_id] = overall_progress
-        event = SseProgressEvent(
-            task_id=task_id,
-            document_id=document_id,
-            filename=filename,
-            stage=stage,
-            status=status,
-            progress=overall_progress,
-            overall_progress=overall_progress,
-            stage_progress=None if stage_progress is None else max(0, min(100, stage_progress)),
-            current=current,
-            total=total,
-            message=message,
-            data=data or {},
-        )
-        self._history[task_id].append(event)
-        for loop, queue in list(self._queues.get(task_id, [])):
-            loop.call_soon_threadsafe(queue.put_nowait, event)
-
-    async def stream(self, task_id: str):
-        # 立即发送一个空注释，确保 HTTP 响应头能被 BaseHTTPMiddleware 立即发给客户端
-        yield ": heartbeat\n\n"
-        queue: asyncio.Queue[SseProgressEvent] = asyncio.Queue()
-        loop = asyncio.get_running_loop()
-        item = (loop, queue)
-        self._queues[task_id].append(item)
-        try:
-            for event in self._history.get(task_id, []):
-                yield self._format(event)
-                if event.status in TERMINAL_STATUSES:
-                    return
-            while True:
-                try:
-                    event = await asyncio.wait_for(queue.get(), timeout=15)
-                except asyncio.TimeoutError:
-                    yield ": heartbeat\n\n"
-                    continue
-                yield self._format(event)
-                if event.status in TERMINAL_STATUSES:
-                    return
-        finally:
-            queues = self._queues.get(task_id, [])
-            if item in queues:
-                queues.remove(item)
-
-    @staticmethod
-    def _format(event: SseProgressEvent) -> str:
-        return f"data: {event.model_dump_json(by_alias=True)}\n\n"
-
-
-progress_hub = TaskProgressHub()
+    def publish(self, **event) -> None:
+        """Use only outside an active write transaction; only nonterminal events."""
+        with self.session_factory() as db:
+            append_progress(db, self.run_id, self.epoch, **event)
+            db.commit()

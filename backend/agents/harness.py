@@ -6,7 +6,7 @@ import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Callable, TypeVar
 
 from openai import OpenAI
 from pydantic import BaseModel, ValidationError
@@ -25,7 +25,7 @@ from backend.services.llm_settings import (
     resolve_effective_llm_settings,
     usage_from_response,
 )
-from backend.services.progress import progress_hub
+from backend.services.agent_runs import RunError
 
 logger = logging.getLogger(__name__)
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
@@ -37,7 +37,8 @@ MAX_REFLECTIONS = 2
 class AgentHarness:
     """Single entry point for OpenAI-compatible structured LLM calls."""
 
-    def __init__(self, user_id: int | None = None) -> None:
+    def __init__(self, user_id: int | None = None, *, guard: Callable[[], None] | None = None,
+                 progress_callback: Callable[..., None] | None = None) -> None:
         self.user_id = user_id
         settings = resolve_effective_llm_settings(user_id)
         self.model = settings.model
@@ -51,7 +52,8 @@ class AgentHarness:
         if user_id and not settings.base_url:
             raise RuntimeError("请先在模型设置中配置 Base URL")
         self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None, max_retries=0)
-        self.progress_hub = progress_hub
+        self.guard = guard
+        self.progress_callback = progress_callback
 
     @staticmethod
     def load_prompt(name: str) -> str:
@@ -131,6 +133,8 @@ class AgentHarness:
                         attempt,
                         max_tokens=max_tokens,
                     )
+                except RunError:
+                    raise
                 except Exception as exc:
                     fallback_succeeded = False
                     fallback_response_format = self._fallback_response_format(response_format, exc)
@@ -151,6 +155,8 @@ class AgentHarness:
                                 attempt,
                                 max_tokens=max_tokens,
                             )
+                        except RunError:
+                            raise
                         except Exception as fallback_exc:
                             exc = fallback_exc
                         else:
@@ -322,6 +328,8 @@ class AgentHarness:
                         },
                     ]
             raise RuntimeError("structured LLM call exhausted without a result")
+        except RunError:
+            raise
         except Exception as exc:
             log_llm_error(task, exc, metadata)
             self._publish_agent_progress(
@@ -433,6 +441,9 @@ class AgentHarness:
                 "extra_body": request_kwargs.get("extra_body"),
             },
         )
+        guard = getattr(self, "guard", None)
+        if guard:
+            guard()
         return self.client.chat.completions.create(**request_kwargs)
 
     def _record_usage_response(self, task: str, response, elapsed_ms: int) -> None:
@@ -534,10 +545,10 @@ class AgentHarness:
         level: str,
         message: str,
     ) -> None:
-        if not task_id:
+        callback = getattr(self, "progress_callback", None)
+        if callback is None:
             return
-        self.progress_hub.publish(
-            task_id,
+        callback(
             stage=stage or "llm_analyze",
             status="running",
             progress=progress if progress is not None else 0,

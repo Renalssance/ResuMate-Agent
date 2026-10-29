@@ -1,14 +1,15 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Query
+from uuid import uuid4
+
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
-from backend.routes.documents import parse_saved_job_text
+from backend.schemas.agent_runs import RunCreate
 from backend.schemas.jobs import JobCreate, JobStatus, JobUpdate
 from backend.services import jobs
 from backend.services.background_tasks import submit_task
-from backend.services.progress import progress_hub
 
 router = APIRouter(prefix='/api/jobs', tags=['jobs'])
 
@@ -42,8 +43,8 @@ def list_matches(job_id: int, limit: int = Query(20, ge=1, le=100), offset: int 
 
 
 @router.post('/{job_id}/parse', status_code=202)
-def parse_job(job_id: int, background_tasks: BackgroundTasks, task_id: str = Query(''),
+def parse_job(job_id: int, task_id: str = Query(''),
               current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     jobs.find_job(db, current_user.id, job_id)
-    task_id = progress_hub.create_task('task_parse', user_id=current_user.id, task_id=task_id)
-    return submit_task(background_tasks, task_id, current_user.id, parse_saved_job_text, job_id=job_id, task_id=task_id)
+    return submit_task(db, current_user.id, RunCreate(kind='document_parse', request_id=task_id or str(uuid4()),
+        document_id=f'jd:{job_id}', parse_mode='saved_job'), prefer='respond-async')

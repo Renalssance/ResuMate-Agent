@@ -1,0 +1,121 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/composables/useDocumentParseTasks.spec.ts src/views/AgentTaskView.spec.ts src/stores/question.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/stores/question.spec.ts (1 test | 1 failed) 5ms
+   × restores the accepted task result even if a newer run replaced the current candidate report 5ms
+ ❯ src/composables/useDocumentParseTasks.spec.ts (4 tests | 1 failed) 7ms
+   × restores an accepted upload after closing and reopening the document page 4ms
+ ❯ src/views/AgentTaskView.spec.ts (14 tests | 4 failed) 56ms
+   × shows saved document_parse output without waiting for a nonexistent resume draft 3ms
+   × shows saved match_analysis output without waiting for a nonexistent resume draft 1ms
+   × shows saved question_generation output without waiting for a nonexistent resume draft 1ms
+   × shows saved answer_followup output without waiting for a nonexistent resume draft 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/composables/useDocumentParseTasks.spec.ts > restores an accepted upload after closing and reopening the document page
+AssertionError: expected undefined to be '很长的中文简历文件名.txt' // Object.is equality
+
+- Expected:
+"很长的中文简历文件名.txt"
+
++ Received:
+undefined
+
+ ❯ src/composables/useDocumentParseTasks.spec.ts:69:60
+     67|   const subscribe = vi.fn((_id: string, _callbacks: any) => ({ close()…
+     68|   const restored = createDocumentUploadQueue({ subscribe })
+     69|   expect(restored.tasks.get('persisted-upload')?.filename).toBe('很长的中文…
+       |                                                            ^
+     70|   expect(subscribe.mock.calls[0]?.[0]).toBe('persisted-upload')
+     71|   subscribe.mock.calls[0]?.[1].onMessage({ taskId: 'persisted-upload',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/stores/question.spec.ts > restores the accepted task result even if a newer run replaced the current candidate report
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'accepted-question-run' ]
+
+Number of calls: 0
+
+ ❯ src/stores/question.spec.ts:15:24
+     13|  const store = useQuestionStore()
+     14|  await (store.restoreQuestionSet as any)({ id: 'jd:1', filename: '岗位.t…
+     15|  expect(fetchAgentRun).toHaveBeenCalledWith('accepted-question-run')
+       |                        ^
+     16|  expect(fetchCandidateReportApi).not.toHaveBeenCalled()
+     17|  expect(store.questionSets[0]?.questions[0]?.title).toBe('旧任务原题')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > shows saved document_parse output without waiting for a nonexistent resume draft
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '恢复后的简历.txt'
+
+Expected: "恢复后的简历.txt"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。材料已生成投递材料处理进度正在获取任务进度材料已完成，正在读取草稿。重新读取材料"
+
+ ❯ src/views/AgentTaskView.spec.ts:81:25
+     79|  await router.push('/agent/tasks/long-run'); await router.isReady()
+     80|  const wrapper = mount(AgentTaskView, { global: { plugins: [router] } …
+     81|  expect(wrapper.text()).toContain(visible)
+       |                         ^
+     82|  expect(wrapper.text()).not.toContain('正在读取草稿')
+     83|  expect(wrapper.text()).not.toContain('材料已生成')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > shows saved match_analysis output without waiting for a nonexistent resume draft
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '示例求职者'
+
+Expected: "示例求职者"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。材料已生成投递材料处理进度正在获取任务进度材料已完成，正在读取草稿。重新读取材料"
+
+ ❯ src/views/AgentTaskView.spec.ts:81:25
+     79|  await router.push('/agent/tasks/long-run'); await router.isReady()
+     80|  const wrapper = mount(AgentTaskView, { global: { plugins: [router] } …
+     81|  expect(wrapper.text()).toContain(visible)
+       |                         ^
+     82|  expect(wrapper.text()).not.toContain('正在读取草稿')
+     83|  expect(wrapper.text()).not.toContain('材料已生成')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > shows saved question_generation output without waiting for a nonexistent resume draft
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '请说明一次接口故障的定位过程'
+
+Expected: "请说明一次接口故障的定位过程"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。材料已生成投递材料处理进度正在获取任务进度材料已完成，正在读取草稿。重新读取材料"
+
+ ❯ src/views/AgentTaskView.spec.ts:81:25
+     79|  await router.push('/agent/tasks/long-run'); await router.isReady()
+     80|  const wrapper = mount(AgentTaskView, { global: { plugins: [router] } …
+     81|  expect(wrapper.text()).toContain(visible)
+       |                         ^
+     82|  expect(wrapper.text()).not.toContain('正在读取草稿')
+     83|  expect(wrapper.text()).not.toContain('材料已生成')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > shows saved answer_followup output without waiting for a nonexistent resume draft
+AssertionError: expected '准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务…' to contain '当时如何确认恢复？'
+
+Expected: "当时如何确认恢复？"
+Received: "准备投递材料选择目标岗位和主简历，准备一份可核对的投递材料。离开页面后任务会继续。目标岗位请选择岗位主简历请选择简历开始准备请先在文档管理上传并解析岗位和简历。我的任务刷新任务选择岗位和简历，开始准备第一份材料。材料已生成投递材料处理进度正在获取任务进度材料已完成，正在读取草稿。重新读取材料"
+
+ ❯ src/views/AgentTaskView.spec.ts:81:25
+     79|  await router.push('/agent/tasks/long-run'); await router.isReady()
+     80|  const wrapper = mount(AgentTaskView, { global: { plugins: [router] } …
+     81|  expect(wrapper.text()).toContain(visible)
+       |                         ^
+     82|  expect(wrapper.text()).not.toContain('正在读取草稿')
+     83|  expect(wrapper.text()).not.toContain('材料已生成')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  6 failed | 13 passed (19)
+   Start at  02:37:39
+   Duration  1.06s (transform 579ms, setup 0ms, import 900ms, tests 68ms, environment 1.62s)

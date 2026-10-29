@@ -1,0 +1,638 @@
+{
+  "case_id": "recovery-checkpoint-before-terminal",
+  "category": "process_recovery",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "recovery-checkpoint-before-terminal",
+    "category": "process_recovery",
+    "runner": "compose",
+    "input": {
+      "kind": "tailoring",
+      "resume": {
+        "filename": "synthetic.txt",
+        "raw_text": "Built an API",
+        "structured_data": {
+          "self_summary": "Built an API"
+        }
+      },
+      "job": {
+        "title": "Engineer",
+        "raw_text": "API development"
+      },
+      "breakpoint": "recovery-checkpoint-before-terminal"
+    }
+  },
+  "compose": {
+    "invocation_id": "f635af81-ed6d-4a40-92d9-7628d7be6d04",
+    "source": {
+      "base_commit": "26d1a35",
+      "backend_snapshot_path": "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/source/backend",
+      "mount": "/app/backend",
+      "image": "resumate-t11-worker:latest",
+      "description": "Current backend source copied once before all four cases; image supplies dependencies only"
+    },
+    "started_at": "2026-10-29T19:05:19.858835+00:00",
+    "completed_at": "2026-10-29T19:07:33.581491+00:00",
+    "case_id": "recovery-checkpoint-before-terminal",
+    "input": {
+      "kind": "tailoring",
+      "resume": {
+        "filename": "synthetic.txt",
+        "raw_text": "Built an API",
+        "structured_data": {
+          "self_summary": "Built an API"
+        }
+      },
+      "job": {
+        "title": "Engineer",
+        "raw_text": "API development"
+      },
+      "breakpoint": "recovery-checkpoint-before-terminal"
+    },
+    "executed": true,
+    "status": "pass",
+    "project": "resumate-recovery-13dc25f28f",
+    "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+    "observed": {
+      "barrier": {
+        "point": "recovery-checkpoint-before-terminal",
+        "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+        "epoch": 1
+      },
+      "before": {
+        "run": {
+          "id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+          "session_id": "63a92e8c-87d1-49a8-8470-d4e48acbae8e",
+          "status": "running",
+          "attempt": 1,
+          "epoch": 1,
+          "heartbeat_at": "2026-10-29T19:05:42.368553",
+          "output_refs": [],
+          "error_code": null
+        },
+        "versions": [
+          {
+            "id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3",
+            "structured_content": {
+              "resume": {
+                "self_summary": "Built an API"
+              },
+              "changes": [
+                {
+                  "section": "/self_summary",
+                  "before": "Built an API",
+                  "after": "Built an API。负责 API 和数据库设计。",
+                  "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-29T19:05:19.847181",
+                      "section": "/self_summary",
+                      "sourceRefs": []
+                    }
+                  ],
+                  "requires_input": false,
+                  "id": "2c060b67-849d-4ed7-821e-89f168705336",
+                  "status": "pending"
+                }
+              ],
+              "inputVersions": {
+                "resume": "2026-10-29T19:05:19.847181",
+                "jd": "2026-10-29T19:05:19.846666",
+                "memories": [],
+                "facts": []
+              }
+            },
+            "fact_refs": [
+              {
+                "kind": "resume",
+                "resumeId": 1,
+                "inputVersion": "2026-10-29T19:05:19.847181",
+                "section": "/self_summary",
+                "sourceRefs": []
+              }
+            ]
+          }
+        ],
+        "operations": [
+          {
+            "id": 1,
+            "operation_key": "draft:1:initial",
+            "status": "succeeded",
+            "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+          }
+        ],
+        "actions": [],
+        "events": [
+          {
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 3,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0"
+            }
+          },
+          {
+            "seq": 4,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 5,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial"
+            }
+          },
+          {
+            "seq": 6,
+            "type": "artifact.created",
+            "payload": {
+              "artifact_id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3",
+              "kind": "resume_version"
+            }
+          },
+          {
+            "seq": 7,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial",
+              "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+            }
+          },
+          {
+            "seq": 8,
+            "type": "assistant.delta",
+            "payload": {
+              "text": "请审阅草稿"
+            }
+          }
+        ],
+        "checkpoint": {
+          "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+          "next": [],
+          "interrupts": [],
+          "message_count": 6
+        },
+        "model_starts": [
+          {
+            "phase": [],
+            "started_at": 1793300742.342366,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context"
+            ],
+            "started_at": 1793300742.352969,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context",
+              "create_resume_draft"
+            ],
+            "started_at": 1793300742.367934,
+            "pid": 8
+          }
+        ]
+      },
+      "run_before": {
+        "id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+        "session_id": "63a92e8c-87d1-49a8-8470-d4e48acbae8e",
+        "status": "running",
+        "attempt": 1,
+        "epoch": 1,
+        "heartbeat_at": "2026-10-29T19:05:42.368553",
+        "output_refs": [],
+        "error_code": null,
+        "execution_epoch": 1
+      },
+      "model_starts_before": 3,
+      "checkpoint_before": {
+        "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+        "next": [],
+        "interrupts": [],
+        "message_count": 6
+      },
+      "kill_signal": "SIGKILL",
+      "killed_service": "worker",
+      "killed_container": "f2fe1223ee5079dbe21ccb943c31ac5da1e8dea676dca69cb1775a7c092f8bba",
+      "killed_state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 137,
+        "Error": "",
+        "StartedAt": "2026-10-29T19:05:25.692468926Z",
+        "FinishedAt": "2026-10-29T19:05:46.289877421Z"
+      },
+      "killed_at": "2026-10-29T19:05:46.385313+00:00",
+      "after": {
+        "run": {
+          "id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+          "session_id": "63a92e8c-87d1-49a8-8470-d4e48acbae8e",
+          "status": "succeeded",
+          "attempt": 2,
+          "epoch": 2,
+          "heartbeat_at": "2026-10-29T19:07:27.289562",
+          "output_refs": [
+            {
+              "type": "resume_version",
+              "id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+            }
+          ],
+          "error_code": null
+        },
+        "versions": [
+          {
+            "id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3",
+            "structured_content": {
+              "resume": {
+                "self_summary": "Built an API"
+              },
+              "changes": [
+                {
+                  "section": "/self_summary",
+                  "before": "Built an API",
+                  "after": "Built an API。负责 API 和数据库设计。",
+                  "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-29T19:05:19.847181",
+                      "section": "/self_summary",
+                      "sourceRefs": []
+                    }
+                  ],
+                  "requires_input": false,
+                  "id": "2c060b67-849d-4ed7-821e-89f168705336",
+                  "status": "pending"
+                }
+              ],
+              "inputVersions": {
+                "resume": "2026-10-29T19:05:19.847181",
+                "jd": "2026-10-29T19:05:19.846666",
+                "memories": [],
+                "facts": []
+              }
+            },
+            "fact_refs": [
+              {
+                "kind": "resume",
+                "resumeId": 1,
+                "inputVersion": "2026-10-29T19:05:19.847181",
+                "section": "/self_summary",
+                "sourceRefs": []
+              }
+            ]
+          }
+        ],
+        "operations": [
+          {
+            "id": 1,
+            "operation_key": "draft:1:initial",
+            "status": "succeeded",
+            "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+          }
+        ],
+        "actions": [],
+        "events": [
+          {
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 3,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0"
+            }
+          },
+          {
+            "seq": 4,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 5,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial"
+            }
+          },
+          {
+            "seq": 6,
+            "type": "artifact.created",
+            "payload": {
+              "artifact_id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3",
+              "kind": "resume_version"
+            }
+          },
+          {
+            "seq": 7,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial",
+              "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+            }
+          },
+          {
+            "seq": 8,
+            "type": "assistant.delta",
+            "payload": {
+              "text": "请审阅草稿"
+            }
+          },
+          {
+            "seq": 9,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 10,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 11,
+            "type": "run.status",
+            "payload": {
+              "status": "succeeded",
+              "error_code": null
+            }
+          }
+        ],
+        "checkpoint": {
+          "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+          "next": [],
+          "interrupts": [],
+          "message_count": 6
+        },
+        "model_starts": [
+          {
+            "phase": [],
+            "started_at": 1793300742.342366,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context"
+            ],
+            "started_at": 1793300742.352969,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context",
+              "create_resume_draft"
+            ],
+            "started_at": 1793300742.367934,
+            "pid": 8
+          }
+        ]
+      },
+      "completed_at": "2026-10-29T19:07:30.018806+00:00",
+      "run_after": {
+        "id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+        "session_id": "63a92e8c-87d1-49a8-8470-d4e48acbae8e",
+        "status": "succeeded",
+        "attempt": 2,
+        "epoch": 2,
+        "heartbeat_at": "2026-10-29T19:07:27.289562",
+        "output_refs": [
+          {
+            "type": "resume_version",
+            "id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+          }
+        ],
+        "error_code": null,
+        "execution_epoch": 2
+      },
+      "model_starts_after": 3,
+      "version_ids": [
+        "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+      ],
+      "operation_rows": [
+        {
+          "id": 1,
+          "operation_key": "draft:1:initial",
+          "status": "succeeded",
+          "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+        }
+      ],
+      "action_rows": [],
+      "checkpoint": {
+        "run_id": "c7e99cd0-58d1-4c6e-a7a7-ee869fe5835c",
+        "next": [],
+        "interrupts": [],
+        "message_count": 6
+      },
+      "events": [
+        {
+          "seq": 1,
+          "type": "run.status",
+          "payload": {
+            "status": "queued",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 2,
+          "type": "run.status",
+          "payload": {
+            "status": "running",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 3,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-0"
+          }
+        },
+        {
+          "seq": 4,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-0",
+            "result_ref": null
+          }
+        },
+        {
+          "seq": 5,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "create_resume_draft",
+            "operation_key": "draft:1:initial"
+          }
+        },
+        {
+          "seq": 6,
+          "type": "artifact.created",
+          "payload": {
+            "artifact_id": "837bf310-119f-4f1f-96ff-6b5afa96dfc3",
+            "kind": "resume_version"
+          }
+        },
+        {
+          "seq": 7,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "create_resume_draft",
+            "operation_key": "draft:1:initial",
+            "result_ref": "837bf310-119f-4f1f-96ff-6b5afa96dfc3"
+          }
+        },
+        {
+          "seq": 8,
+          "type": "assistant.delta",
+          "payload": {
+            "text": "请审阅草稿"
+          }
+        },
+        {
+          "seq": 9,
+          "type": "run.status",
+          "payload": {
+            "status": "queued",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 10,
+          "type": "run.status",
+          "payload": {
+            "status": "running",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 11,
+          "type": "run.status",
+          "payload": {
+            "status": "succeeded",
+            "error_code": null
+          }
+        }
+      ],
+      "killed_live_equivalent_usage": "unknown; deterministic fixture start counts do not establish paid-provider usage"
+    },
+    "artifacts": [
+      "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal/before-kill.json",
+      "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal/after-recovery.json",
+      "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal/compose.log",
+      "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal/commands.log",
+      "/tmp/task-14-recovery-artifacts-f635af81-8w07lg1j/recovery-checkpoint-before-terminal/compose.yaml"
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "actual_process_kill",
+        "passed": true,
+        "reason": "Worker was killed at the named boundary",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "sql_converged",
+        "passed": true,
+        "reason": "The same persisted Run converged to success",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "one_saved_unit",
+        "passed": true,
+        "reason": "Exactly one draft version, operation and artifact event survived",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "execution_advanced",
+        "passed": true,
+        "reason": "Recovery claimed a new attempt and epoch",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "checkpoint_no_new_model",
+        "passed": true,
+        "reason": "Reopening completed checkpoint required no new model call",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      }
+    ],
+    "limitations": [
+      "Process recovery evidence uses a deterministic model; interrupted provider usage is unknown."
+    ]
+  },
+  "semantic": {
+    "status": "not_applicable",
+    "reason": "Deterministic process recovery does not evaluate model semantics."
+  }
+}

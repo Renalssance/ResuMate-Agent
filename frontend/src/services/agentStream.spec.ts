@@ -238,3 +238,31 @@ it('notifies the workspace when an idle stream reconnects with an authoritative 
   expect(connected.mock.calls.map(([value]) => value.status)).toEqual(['running', 'waiting_input'])
   subscription.close(); await subscription.done
 })
+
+
+it('closes an offline-stalled transport and resumes the Run viewer from its durable cursor', async () => {
+  const cancelled = vi.fn()
+  const fetcher = respond(
+    Response.json(snapshot({ kind: 'document_parse', lastSeq: 1 })), stream(frame(event(1)), true, cancelled),
+    Response.json(snapshot({ kind: 'document_parse', status: 'succeeded', lastSeq: 2 })), stream(frame(event(1)) + terminal(2)),
+  )
+  const received: number[] = [], errors = vi.fn(), connected = vi.fn()
+  const subscription = subscribeRun({ runId, onEvent: value => received.push(value.seq), onError: errors, onConnected: connected })
+  try {
+    await vi.advanceTimersByTimeAsync(0)
+    expect(received).toEqual([1])
+    window.dispatchEvent(new Event('offline'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(cancelled).toHaveBeenCalledTimes(1)
+    expect(errors).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(1000)
+    await subscription.done
+    expect(fetcher.mock.calls[3]?.[0]).toBe('/api/agent/runs/run-1/events?after=1')
+    expect(received).toEqual([1, 2])
+    expect(connected.mock.calls.map(([value]) => value.status)).toEqual(['running', 'succeeded'])
+    window.dispatchEvent(new Event('offline'))
+    await vi.advanceTimersByTimeAsync(15000)
+    expect(fetcher).toHaveBeenCalledTimes(4)
+    expect(errors).toHaveBeenCalledTimes(1)
+  } finally { subscription.close(); await subscription.done }
+})

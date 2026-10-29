@@ -1,0 +1,1594 @@
+{
+  "case_id": "question-result-replay",
+  "category": "durable_task",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "question-result-replay",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "first-new-first-replay",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+      "29022ab5-6ce5-4bc7-9c30-631f6522d806"
+    ],
+    "coverage": {
+      "original_question": "Original question",
+      "current_question": "New explicit question",
+      "replayed_question": "Original question",
+      "calls_on_replay": 0
+    },
+    "model_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      },
+      {
+        "task": "plan_question_blueprint",
+        "candidate": null
+      },
+      {
+        "task": "generate_question_batch",
+        "candidate": null
+      },
+      {
+        "task": "generate_ambiguity_followups",
+        "candidate": null
+      },
+      {
+        "task": "plan_question_blueprint",
+        "candidate": null
+      },
+      {
+        "task": "generate_question_batch",
+        "candidate": null
+      },
+      {
+        "task": "generate_ambiguity_followups",
+        "candidate": null
+      }
+    ],
+    "model": "synthetic-durable-task-fixture",
+    "database": "isolated SQLite",
+    "source_directory": "/private/tmp/task-14-evals-final/20261029T190922Z-c087a1b3/state/question-result-replay/originals"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "user_id": 1,
+        "session_id": "0abb4e46-0e47-478e-9dfe-76a8708dc8e6",
+        "request_id": "863e3105-28db-47f1-8ce4-63d1bb23e1c4",
+        "kind": "match_analysis",
+        "status": "succeeded",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1
+          ],
+          "analysisJobId": 1,
+          "candidateIds": [
+            1
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-29T19:09:40.491834",
+          "resumes": {
+            "1": "2026-10-29T19:09:40.492304"
+          }
+        },
+        "result_json": {
+          "run_id": 1,
+          "job_title": "API Engineer",
+          "candidates": [
+            {
+              "candidate_id": 1,
+              "candidate_name": "First",
+              "filename": "first.txt",
+              "total_score": 0.0,
+              "recommendation": "reject",
+              "top_strengths": [
+                "API"
+              ]
+            }
+          ],
+          "taskId": "d7012aaa-61e9-42b8-894d-8f5801435705"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:40.528323",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "match_analysis",
+            "id": 1
+          }
+        ],
+        "created_at": "2026-10-29T19:09:40.502900",
+        "updated_at": "2026-10-29T19:09:40.528947"
+      },
+      {
+        "id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "user_id": 1,
+        "session_id": "155577a3-e17b-4d41-8b7f-8941e300a285",
+        "request_id": "910741a9-0e58-4f2e-a85c-ccbe8d8b6183",
+        "kind": "question_generation",
+        "status": "succeeded",
+        "input_json": {
+          "analysisJobId": 1,
+          "candidateId": 1,
+          "questionCount": 1,
+          "resumeId": 1,
+          "jdId": 1,
+          "reportSnapshot": {
+            "run_id": 1,
+            "candidate_id": 1,
+            "candidate_name": "First",
+            "filename": "first.txt",
+            "job_profile": {
+              "job_title": "API Engineer",
+              "summary": "Build APIs",
+              "responsibilities": [],
+              "criteria": [
+                {
+                  "criterion_id": "api",
+                  "name": "API",
+                  "description": "Build APIs",
+                  "importance": "must",
+                  "weight": 100.0,
+                  "evidence_query": "API"
+                }
+              ],
+              "interview_focus": []
+            },
+            "resume_profile": {
+              "candidate_name": "First",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "",
+              "certifications": [],
+              "languages": [],
+              "quality": {},
+              "structured_ambiguities": [],
+              "source_refs": []
+            },
+            "evaluations": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "weight": 100.0,
+                "score": 0,
+                "status": "no_evidence",
+                "reason": "Need concrete citation",
+                "evidence_chunk_ids": [],
+                "missing_evidence": [
+                  "API evidence"
+                ],
+                "risk": "",
+                "evidence": []
+              }
+            ],
+            "total_score": 0.0,
+            "recommendation": "reject",
+            "top_strengths": [
+              "API"
+            ],
+            "warnings": [
+              "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+            ],
+            "summary": "First matched API Engineer with score 0 and recommendation reject.",
+            "formal_questions": [],
+            "ambiguity_followups": []
+          }
+        },
+        "input_versions": {
+          "resume": "2026-10-29T19:09:40.492304",
+          "jd": "2026-10-29T19:09:40.491834"
+        },
+        "result_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。",
+            "未找到可用于引用的简历证据，已保存面试题，但题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [
+            {
+              "question": "Original question",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ],
+          "ambiguity_followups": [
+            {
+              "question": "Clarify 0",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 1",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 2",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ]
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:40.541589",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview_questions",
+            "id": "1:1"
+          }
+        ],
+        "created_at": "2026-10-29T19:09:40.532175",
+        "updated_at": "2026-10-29T19:09:40.541991"
+      },
+      {
+        "id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "user_id": 1,
+        "session_id": "cac1a85c-af0e-4094-85b5-a2e4ef3dfff1",
+        "request_id": "f119e320-c19b-4afc-8d9b-e75b1eee0c7d",
+        "kind": "question_generation",
+        "status": "succeeded",
+        "input_json": {
+          "analysisJobId": 1,
+          "candidateId": 1,
+          "questionCount": 1,
+          "resumeId": 1,
+          "jdId": 1,
+          "reportSnapshot": {
+            "run_id": 1,
+            "candidate_id": 1,
+            "candidate_name": "First",
+            "filename": "first.txt",
+            "job_profile": {
+              "job_title": "API Engineer",
+              "summary": "Build APIs",
+              "responsibilities": [],
+              "criteria": [
+                {
+                  "criterion_id": "api",
+                  "name": "API",
+                  "description": "Build APIs",
+                  "importance": "must",
+                  "weight": 100.0,
+                  "evidence_query": "API"
+                }
+              ],
+              "interview_focus": []
+            },
+            "resume_profile": {
+              "candidate_name": "First",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "",
+              "certifications": [],
+              "languages": [],
+              "quality": {},
+              "structured_ambiguities": [],
+              "source_refs": []
+            },
+            "evaluations": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "weight": 100.0,
+                "score": 0,
+                "status": "no_evidence",
+                "reason": "Need concrete citation",
+                "evidence_chunk_ids": [],
+                "missing_evidence": [
+                  "API evidence"
+                ],
+                "risk": "",
+                "evidence": []
+              }
+            ],
+            "total_score": 0.0,
+            "recommendation": "reject",
+            "top_strengths": [
+              "API"
+            ],
+            "warnings": [
+              "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。",
+              "未找到可用于引用的简历证据，已保存面试题，但题目依据可能不完整。"
+            ],
+            "summary": "First matched API Engineer with score 0 and recommendation reject.",
+            "formal_questions": [
+              {
+                "question": "Original question",
+                "question_type": "gap_validation",
+                "difficulty": "medium",
+                "assessment_points": [
+                  "API evidence"
+                ],
+                "related_criteria": [
+                  "api"
+                ],
+                "evidence_chunk_ids": [],
+                "reference_answer_direction": "Explain actual responsibility",
+                "scoring_rubric": [
+                  "Concrete evidence"
+                ],
+                "suggested_followups": [
+                  "How was it verified?"
+                ]
+              }
+            ],
+            "ambiguity_followups": [
+              {
+                "question": "Clarify 0",
+                "question_type": "gap_validation",
+                "difficulty": "medium",
+                "assessment_points": [
+                  "API evidence"
+                ],
+                "related_criteria": [
+                  "api"
+                ],
+                "evidence_chunk_ids": [],
+                "reference_answer_direction": "Explain actual responsibility",
+                "scoring_rubric": [
+                  "Concrete evidence"
+                ],
+                "suggested_followups": [
+                  "How was it verified?"
+                ]
+              },
+              {
+                "question": "Clarify 1",
+                "question_type": "gap_validation",
+                "difficulty": "medium",
+                "assessment_points": [
+                  "API evidence"
+                ],
+                "related_criteria": [
+                  "api"
+                ],
+                "evidence_chunk_ids": [],
+                "reference_answer_direction": "Explain actual responsibility",
+                "scoring_rubric": [
+                  "Concrete evidence"
+                ],
+                "suggested_followups": [
+                  "How was it verified?"
+                ]
+              },
+              {
+                "question": "Clarify 2",
+                "question_type": "gap_validation",
+                "difficulty": "medium",
+                "assessment_points": [
+                  "API evidence"
+                ],
+                "related_criteria": [
+                  "api"
+                ],
+                "evidence_chunk_ids": [],
+                "reference_answer_direction": "Explain actual responsibility",
+                "scoring_rubric": [
+                  "Concrete evidence"
+                ],
+                "suggested_followups": [
+                  "How was it verified?"
+                ]
+              }
+            ]
+          }
+        },
+        "input_versions": {
+          "resume": "2026-10-29T19:09:40.492304",
+          "jd": "2026-10-29T19:09:40.491834"
+        },
+        "result_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。",
+            "未找到可用于引用的简历证据，已保存面试题，但题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [
+            {
+              "question": "New explicit question",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ],
+          "ambiguity_followups": [
+            {
+              "question": "Clarify 0",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 1",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 2",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ]
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:40.553560",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview_questions",
+            "id": "1:1"
+          }
+        ],
+        "created_at": "2026-10-29T19:09:40.545014",
+        "updated_at": "2026-10-29T19:09:40.553896"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "0abb4e46-0e47-478e-9dfe-76a8708dc8e6",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:40.502636"
+      },
+      {
+        "id": "155577a3-e17b-4d41-8b7f-8941e300a285",
+        "user_id": 1,
+        "purpose": "question_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:40.532077"
+      },
+      {
+        "id": "cac1a85c-af0e-4094-85b5-a2e4ef3dfff1",
+        "user_id": 1,
+        "purpose": "question_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:40.544917"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "operation_key": "match:1",
+        "tool_name": "match_report",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      },
+      {
+        "id": 2,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "operation_key": "questions",
+        "tool_name": "interview_questions",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      },
+      {
+        "id": 3,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "operation_key": "questions",
+        "tool_name": "interview_questions",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.504069"
+      },
+      {
+        "id": 2,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.506051"
+      },
+      {
+        "id": 3,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.514653"
+      },
+      {
+        "id": 4,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.515472"
+      },
+      {
+        "id": 5,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.516438"
+      },
+      {
+        "id": 6,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.519203"
+      },
+      {
+        "id": 7,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.520986"
+      },
+      {
+        "id": 8,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.521915"
+      },
+      {
+        "id": 9,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.522658"
+      },
+      {
+        "id": 10,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 10,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "match_report"
+        },
+        "created_at": "2026-10-29T19:09:40.525985"
+      },
+      {
+        "id": 11,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Saved candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": 1,
+          "total": 1,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:40.526595"
+      },
+      {
+        "id": 12,
+        "run_id": "d7012aaa-61e9-42b8-894d-8f5801435705",
+        "seq": 12,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.529197"
+      },
+      {
+        "id": 13,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.532618"
+      },
+      {
+        "id": 14,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.533583"
+      },
+      {
+        "id": 15,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Generating interview questions from saved match context",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-29T19:09:40.535496"
+      },
+      {
+        "id": 16,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "rubric",
+          "status": "running",
+          "progress": 82,
+          "overall_progress": 82,
+          "message": "Validated question rubric and follow-up prompts",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-29T19:09:40.538579"
+      },
+      {
+        "id": 17,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 5,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "interview_questions"
+        },
+        "created_at": "2026-10-29T19:09:40.541451"
+      },
+      {
+        "id": 18,
+        "run_id": "ac70be61-1084-4c22-bbcb-50ef0df2eeb6",
+        "seq": 6,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.542236"
+      },
+      {
+        "id": 19,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.545477"
+      },
+      {
+        "id": 20,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.546611"
+      },
+      {
+        "id": 21,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Generating interview questions from saved match context",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-29T19:09:40.548352"
+      },
+      {
+        "id": 22,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "rubric",
+          "status": "running",
+          "progress": 82,
+          "overall_progress": 82,
+          "message": "Validated question rubric and follow-up prompts",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-29T19:09:40.551427"
+      },
+      {
+        "id": 23,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 5,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "interview_questions"
+        },
+        "created_at": "2026-10-29T19:09:40.553445"
+      },
+      {
+        "id": 24,
+        "run_id": "29022ab5-6ce5-4bc7-9c30-631f6522d806",
+        "seq": 6,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:40.554119"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-29T19:09:40.492303",
+        "updated_at": "2026-10-29T19:09:40.492304"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-29T19:09:40.492304",
+        "updated_at": "2026-10-29T19:09:40.492305"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-29T19:09:40.491832",
+        "updated_at": "2026-10-29T19:09:40.491834"
+      }
+    ],
+    "analysis_jobs": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "completed",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-29T19:09:40.500813",
+        "updated_at": "2026-10-29T19:09:40.500816"
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "resume_id": 1,
+        "status": "completed",
+        "note": "",
+        "created_at": "2026-10-29T19:09:40.501196",
+        "updated_at": "2026-10-29T19:09:40.501196"
+      }
+    ],
+    "match_results": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "overall_score": 0.0,
+        "recommendation": "reject",
+        "reason": "First matched API Engineer with score 0 and recommendation reject.",
+        "dimension_scores": {
+          "API": 0
+        },
+        "matched_skills": [],
+        "missing_skills": [],
+        "strengths": [
+          "API"
+        ],
+        "gaps": [
+          "API evidence"
+        ],
+        "report_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。",
+            "未找到可用于引用的简历证据，已保存面试题，但题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [
+            {
+              "question": "New explicit question",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ],
+          "ambiguity_followups": [
+            {
+              "question": "Clarify 0",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 1",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            },
+            {
+              "question": "Clarify 2",
+              "question_type": "gap_validation",
+              "difficulty": "medium",
+              "assessment_points": [
+                "API evidence"
+              ],
+              "related_criteria": [
+                "api"
+              ],
+              "evidence_chunk_ids": [],
+              "reference_answer_direction": "Explain actual responsibility",
+              "scoring_rubric": [
+                "Concrete evidence"
+              ],
+              "suggested_followups": [
+                "How was it verified?"
+              ]
+            }
+          ]
+        },
+        "created_at": "2026-10-29T19:09:40.525367",
+        "updated_at": "2026-10-29T19:09:40.525367"
+      }
+    ],
+    "question_sets": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "questions": [
+          {
+            "question": "New explicit question",
+            "question_type": "gap_validation",
+            "difficulty": "medium",
+            "assessment_points": [
+              "API evidence"
+            ],
+            "related_criteria": [
+              "api"
+            ],
+            "evidence_chunk_ids": [],
+            "reference_answer_direction": "Explain actual responsibility",
+            "scoring_rubric": [
+              "Concrete evidence"
+            ],
+            "suggested_followups": [
+              "How was it verified?"
+            ]
+          }
+        ],
+        "created_at": "2026-10-29T19:09:40.540772",
+        "updated_at": "2026-10-29T19:09:40.540773"
+      }
+    ],
+    "followup_sets": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "questions": [
+          {
+            "question": "Clarify 0",
+            "question_type": "gap_validation",
+            "difficulty": "medium",
+            "assessment_points": [
+              "API evidence"
+            ],
+            "related_criteria": [
+              "api"
+            ],
+            "evidence_chunk_ids": [],
+            "reference_answer_direction": "Explain actual responsibility",
+            "scoring_rubric": [
+              "Concrete evidence"
+            ],
+            "suggested_followups": [
+              "How was it verified?"
+            ]
+          },
+          {
+            "question": "Clarify 1",
+            "question_type": "gap_validation",
+            "difficulty": "medium",
+            "assessment_points": [
+              "API evidence"
+            ],
+            "related_criteria": [
+              "api"
+            ],
+            "evidence_chunk_ids": [],
+            "reference_answer_direction": "Explain actual responsibility",
+            "scoring_rubric": [
+              "Concrete evidence"
+            ],
+            "suggested_followups": [
+              "How was it verified?"
+            ]
+          },
+          {
+            "question": "Clarify 2",
+            "question_type": "gap_validation",
+            "difficulty": "medium",
+            "assessment_points": [
+              "API evidence"
+            ],
+            "related_criteria": [
+              "api"
+            ],
+            "evidence_chunk_ids": [],
+            "reference_answer_direction": "Explain actual responsibility",
+            "scoring_rubric": [
+              "Concrete evidence"
+            ],
+            "suggested_followups": [
+              "How was it verified?"
+            ]
+          }
+        ],
+        "created_at": "2026-10-29T19:09:40.540571",
+        "updated_at": "2026-10-29T19:09:40.540572"
+      }
+    ],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as succeeded under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "immutable_result_present",
+        "passed": true,
+        "reason": "Successful task responses are stored on their own Run",
+        "evidence_refs": [
+          "runs.result_json"
+        ]
+      },
+      {
+        "name": "old_response_is_immutable",
+        "passed": true,
+        "reason": "Older task returns its old question after a new explicit task replaces the current set",
+        "evidence_refs": [
+          "runs",
+          "question_sets",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "one_current_question_set",
+        "passed": true,
+        "reason": "Current question tables contain one set, while each explicit Run has its own operation",
+        "evidence_refs": [
+          "question_sets",
+          "followup_sets",
+          "operations"
+        ]
+      }
+    ],
+    "limitations": [
+      "Deterministic service execution is not a real worker process kill or real-model quality measurement.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

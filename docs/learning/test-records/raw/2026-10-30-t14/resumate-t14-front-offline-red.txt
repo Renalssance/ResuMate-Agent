@@ -1,0 +1,28 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/services/sse.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/services/sse.spec.ts (7 tests | 1 failed) 166ms
+   × closes a stalled transport on the browser offline event and resumes from the durable cursor 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/sse.spec.ts > closes a stalled transport on the browser offline event and resumes from the durable cursor
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ src/services/sse.spec.ts:142:27
+    140|   window.dispatchEvent(new Event('offline'))
+    141|   await vi.advanceTimersByTimeAsync(0)
+    142|   expect(first.cancelled).toHaveBeenCalledTimes(1)
+       |                           ^
+    143|   expect(reconnect).toHaveBeenCalledTimes(1)
+    144|   expect(error).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  02:53:35
+   Duration  746ms (transform 31ms, setup 0ms, import 41ms, tests 166ms, environment 469ms)

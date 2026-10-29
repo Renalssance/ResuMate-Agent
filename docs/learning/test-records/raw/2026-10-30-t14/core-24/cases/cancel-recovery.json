@@ -1,0 +1,916 @@
+{
+  "case_id": "cancel-recovery",
+  "category": "durable_task",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "cancel-recovery",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "queued-stale-and-between-question-calls",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "b7ccf242-9eaa-42c6-8ef2-c6ca518d4aa0",
+      "c1b17cb2-a1bf-40e7-9dfe-a426b0b2ef4f",
+      "7b49d254-b07d-43e1-acf3-2125d52ef852"
+    ],
+    "coverage": {
+      "queued_claim_blocked": true,
+      "calls_at_cancel": 2,
+      "model_calls_after_cancel": 0
+    },
+    "model_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      },
+      {
+        "task": "plan_question_blueprint",
+        "candidate": null
+      }
+    ],
+    "model": "synthetic-durable-task-fixture",
+    "database": "isolated SQLite",
+    "source_directory": "/private/tmp/task-14-evals-final/20261029T190922Z-c087a1b3/state/cancel-recovery/originals"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "b7ccf242-9eaa-42c6-8ef2-c6ca518d4aa0",
+        "user_id": 1,
+        "session_id": "5d13f8ab-9f74-454f-8009-d362b0ff79c9",
+        "request_id": "2b936ef9-2937-4cd4-a87b-45c7da223850",
+        "kind": "answer_followup",
+        "status": "cancelled",
+        "input_json": {
+          "followup": {
+            "question": "How?",
+            "answer": "Validated API fields in a test environment.",
+            "jd_context": {},
+            "resume_context": {},
+            "question_context": {},
+            "history": []
+          }
+        },
+        "input_versions": {},
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 0,
+        "heartbeat_at": null,
+        "cancel_requested_at": "2026-10-29T19:09:42.559662",
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-29T19:09:42.556322",
+        "updated_at": "2026-10-29T19:09:42.560357"
+      },
+      {
+        "id": "c1b17cb2-a1bf-40e7-9dfe-a426b0b2ef4f",
+        "user_id": 1,
+        "session_id": "6bcd6231-3ac4-4e16-b291-ede1cfa0308b",
+        "request_id": "a549b5e4-d09e-4cf5-9ac4-80d3fe21ed1d",
+        "kind": "answer_followup",
+        "status": "cancelled",
+        "input_json": {
+          "followup": {
+            "question": "How?",
+            "answer": "Validated API fields in a test environment.",
+            "jd_context": {},
+            "resume_context": {},
+            "question_context": {},
+            "history": []
+          }
+        },
+        "input_versions": {},
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:08:02.563838",
+        "cancel_requested_at": "2026-10-29T19:09:42.563361",
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-29T19:09:42.558506",
+        "updated_at": "2026-10-29T19:09:42.565536"
+      },
+      {
+        "id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "user_id": 1,
+        "session_id": "f46d6ed9-4762-429b-ad27-706076711bfa",
+        "request_id": "fe2c9631-44f5-463c-8160-b99b4985b3ce",
+        "kind": "match_analysis",
+        "status": "succeeded",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1
+          ],
+          "analysisJobId": 1,
+          "candidateIds": [
+            1
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-29T19:09:42.548165",
+          "resumes": {
+            "1": "2026-10-29T19:09:42.548567"
+          }
+        },
+        "result_json": {
+          "run_id": 1,
+          "job_title": "API Engineer",
+          "candidates": [
+            {
+              "candidate_id": 1,
+              "candidate_name": "First",
+              "filename": "first.txt",
+              "total_score": 0.0,
+              "recommendation": "reject",
+              "top_strengths": [
+                "API"
+              ]
+            }
+          ],
+          "taskId": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:42.592663",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "match_analysis",
+            "id": 1
+          }
+        ],
+        "created_at": "2026-10-29T19:09:42.568658",
+        "updated_at": "2026-10-29T19:09:42.593210"
+      },
+      {
+        "id": "7b49d254-b07d-43e1-acf3-2125d52ef852",
+        "user_id": 1,
+        "session_id": "a8cc71b5-aa5f-4f2f-8fb3-8cbe8d54165f",
+        "request_id": "689c694a-2d88-40fd-ba6b-b0ffda95f45d",
+        "kind": "question_generation",
+        "status": "cancelled",
+        "input_json": {
+          "analysisJobId": 1,
+          "candidateId": 1,
+          "questionCount": 1,
+          "resumeId": 1,
+          "jdId": 1,
+          "reportSnapshot": {
+            "run_id": 1,
+            "candidate_id": 1,
+            "candidate_name": "First",
+            "filename": "first.txt",
+            "job_profile": {
+              "job_title": "API Engineer",
+              "summary": "Build APIs",
+              "responsibilities": [],
+              "criteria": [
+                {
+                  "criterion_id": "api",
+                  "name": "API",
+                  "description": "Build APIs",
+                  "importance": "must",
+                  "weight": 100.0,
+                  "evidence_query": "API"
+                }
+              ],
+              "interview_focus": []
+            },
+            "resume_profile": {
+              "candidate_name": "First",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "",
+              "certifications": [],
+              "languages": [],
+              "quality": {},
+              "structured_ambiguities": [],
+              "source_refs": []
+            },
+            "evaluations": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "weight": 100.0,
+                "score": 0,
+                "status": "no_evidence",
+                "reason": "Need concrete citation",
+                "evidence_chunk_ids": [],
+                "missing_evidence": [
+                  "API evidence"
+                ],
+                "risk": "",
+                "evidence": []
+              }
+            ],
+            "total_score": 0.0,
+            "recommendation": "reject",
+            "top_strengths": [
+              "API"
+            ],
+            "warnings": [
+              "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+            ],
+            "summary": "First matched API Engineer with score 0 and recommendation reject.",
+            "formal_questions": [],
+            "ambiguity_followups": []
+          }
+        },
+        "input_versions": {
+          "resume": "2026-10-29T19:09:42.548567",
+          "jd": "2026-10-29T19:09:42.548165"
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:42.603760",
+        "cancel_requested_at": "2026-10-29T19:09:42.602230",
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-29T19:09:42.596860",
+        "updated_at": "2026-10-29T19:09:42.604145"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "5d13f8ab-9f74-454f-8009-d362b0ff79c9",
+        "user_id": 1,
+        "purpose": "answer_followup",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:42.555987"
+      },
+      {
+        "id": "6bcd6231-3ac4-4e16-b291-ede1cfa0308b",
+        "user_id": 1,
+        "purpose": "answer_followup",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:42.558404"
+      },
+      {
+        "id": "f46d6ed9-4762-429b-ad27-706076711bfa",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:42.568581"
+      },
+      {
+        "id": "a8cc71b5-aa5f-4f2f-8fb3-8cbe8d54165f",
+        "user_id": 1,
+        "purpose": "question_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:42.596760"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "operation_key": "match:1",
+        "tool_name": "match_report",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "b7ccf242-9eaa-42c6-8ef2-c6ca518d4aa0",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.557547"
+      },
+      {
+        "id": 2,
+        "run_id": "c1b17cb2-a1bf-40e7-9dfe-a426b0b2ef4f",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.558964"
+      },
+      {
+        "id": 3,
+        "run_id": "b7ccf242-9eaa-42c6-8ef2-c6ca518d4aa0",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "cancelled",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.560895"
+      },
+      {
+        "id": 4,
+        "run_id": "c1b17cb2-a1bf-40e7-9dfe-a426b0b2ef4f",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.563017"
+      },
+      {
+        "id": 5,
+        "run_id": "c1b17cb2-a1bf-40e7-9dfe-a426b0b2ef4f",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "cancelled",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.565780"
+      },
+      {
+        "id": 6,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.569054"
+      },
+      {
+        "id": 7,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.570053"
+      },
+      {
+        "id": 8,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.578610"
+      },
+      {
+        "id": 9,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.579477"
+      },
+      {
+        "id": 10,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.580448"
+      },
+      {
+        "id": 11,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.583194"
+      },
+      {
+        "id": 12,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.584856"
+      },
+      {
+        "id": 13,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.585656"
+      },
+      {
+        "id": 14,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.586315"
+      },
+      {
+        "id": 15,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 10,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "match_report"
+        },
+        "created_at": "2026-10-29T19:09:42.589848"
+      },
+      {
+        "id": 16,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Saved candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": 1,
+          "total": 1,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-29T19:09:42.590477"
+      },
+      {
+        "id": 17,
+        "run_id": "96b7ba2d-b640-48f7-b67d-ea4ec6b9fe13",
+        "seq": 12,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.593471"
+      },
+      {
+        "id": 18,
+        "run_id": "7b49d254-b07d-43e1-acf3-2125d52ef852",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.597287"
+      },
+      {
+        "id": 19,
+        "run_id": "7b49d254-b07d-43e1-acf3-2125d52ef852",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.598321"
+      },
+      {
+        "id": 20,
+        "run_id": "7b49d254-b07d-43e1-acf3-2125d52ef852",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Generating interview questions from saved match context",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-29T19:09:42.600947"
+      },
+      {
+        "id": 21,
+        "run_id": "7b49d254-b07d-43e1-acf3-2125d52ef852",
+        "seq": 4,
+        "type": "run.status",
+        "payload": {
+          "status": "cancelled",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:42.604383"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-29T19:09:42.548566",
+        "updated_at": "2026-10-29T19:09:42.548567"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-29T19:09:42.548568",
+        "updated_at": "2026-10-29T19:09:42.548568"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-29T19:09:42.548164",
+        "updated_at": "2026-10-29T19:09:42.548165"
+      }
+    ],
+    "analysis_jobs": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "completed",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-29T19:09:42.567219",
+        "updated_at": "2026-10-29T19:09:42.567219"
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "resume_id": 1,
+        "status": "completed",
+        "note": "",
+        "created_at": "2026-10-29T19:09:42.567526",
+        "updated_at": "2026-10-29T19:09:42.567527"
+      }
+    ],
+    "match_results": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "overall_score": 0.0,
+        "recommendation": "reject",
+        "reason": "First matched API Engineer with score 0 and recommendation reject.",
+        "dimension_scores": {
+          "API": 0
+        },
+        "matched_skills": [],
+        "missing_skills": [],
+        "strengths": [
+          "API"
+        ],
+        "gaps": [
+          "API evidence"
+        ],
+        "report_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [],
+          "ambiguity_followups": []
+        },
+        "created_at": "2026-10-29T19:09:42.589197",
+        "updated_at": "2026-10-29T19:09:42.589197"
+      }
+    ],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as cancelled under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "no_success_after_stop",
+        "passed": true,
+        "reason": "Stopped units publish neither operation nor final result",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "queued_stale_question_cancel",
+        "passed": true,
+        "reason": "Queued cancellation fences claims, stale cancellation converges, question cancellation stops the next call",
+        "evidence_refs": [
+          "runs",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "no_cancelled_questions",
+        "passed": true,
+        "reason": "No question business rows survive a cancelled task",
+        "evidence_refs": [
+          "question_sets",
+          "followup_sets"
+        ]
+      }
+    ],
+    "limitations": [
+      "Deterministic service execution is not a real worker process kill or real-model quality measurement.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

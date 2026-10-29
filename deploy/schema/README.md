@@ -37,3 +37,11 @@ RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock uv run pytest back
 记忆正文及来源在用户删除时清空；Session 两个时间戳区分“已停止使用”和“工作副本已清除”。它们不替代业务版本历史。沿用上述备份与 DDL 部分执行恢复要求。
 
 定向验证 `backend/tests/test_memory_settings_models.py` 会先模拟 T11 结构，再执行 SQLite 启动升级或实际 MySQL SQL，验证旧行保留及新列空值；测试使用独立临时数据库。
+
+## T14：持久长任务响应
+
+在已执行 001、002、003 的 MySQL 库中，一次执行 `004_long_task_results.sql`，只给 `agent_runs` 增加可空 JSON `result_json`。空库完整顺序为 `deploy/cloudbase/mysql-schema.sql` → 001 → 002 → 003 → 004；不要重复执行基础建表脚本。旧 Run、事件和关联保持原值，旧结果为 NULL；本次迁移不从后来改写的业务表猜测历史响应。SQLite 由 `ensure_sqlite_schema()` 补列，可重复启动。
+
+解析、匹配、问题生成、追问的原成功 HTTP 响应在业务写入、操作记录、事件与终态的同一事务保存。成功 Run 重放读取自己的响应，后来的显式问题生成不会替换旧 Run 的结果。仍沿用上述备份、检查目标结构及 DDL 部分执行恢复方式，无自动 MySQL DDL。
+
+定向验证 `backend/tests/test_long_task_core.py::test_old_database_upgrade_preserves_existing_run` 会模拟立即前一版结构，在临时 SQLite/MySQL 库运行真实升级，确认旧 Run 保留且结果为 NULL。本地验证不代表已执行远程 CloudBase 升级。

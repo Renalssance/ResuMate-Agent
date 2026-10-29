@@ -34,6 +34,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { activeTaskKey, readActiveTask, saveActiveTask } from '../services/activeTasks'
 import { useAuthStore } from '../stores/auth'
 import { useDocumentStore } from '../stores/document'
 import { captureJob, fetchJob, fetchJobMatches, fetchJobs, parseJob, updateJob, type Job, type JobDetail, type JobMatch } from '../api/jobs'
@@ -47,6 +48,30 @@ const selectedId = ref<number | null>(null), detail = ref<JobDetail | null>(null
 const editForm = reactive({ title: '', company: '', status: 'saved', primaryResumeId: '' })
 const matches = ref<JobMatch[]>([]), matchesMore = ref(false), matchesLoading = ref(false), matchesError = ref('')
 let context = 0, listRequest = 0, detailRequest = 0, matchRequest = 0
+let restoredParse: { jobId: number; taskId: string; key: string } | null = null
+function forgetParse(key: string, jobId: number, taskId: string) {
+ const active = readActiveTask<Record<string, string>>(key) || {}
+ if (active[jobId] !== taskId) return
+ delete active[jobId]
+ if (Object.keys(active).length) saveActiveTask(key, active)
+ else localStorage.removeItem(key)
+}
+function restoreParse(jobId: number) {
+ const key = activeTaskKey('job-parses'), taskId = readActiveTask<Record<string, string>>(key)?.[jobId]
+ if (!taskId) return
+ restoredParse = { jobId, taskId, key }; parsing.value = true; task.start(taskId)
+}
+watch(task.status, async status => {
+ const active = restoredParse
+ if (!active || active.taskId !== task.taskId.value || !['success', 'failed'].includes(status)) return
+ restoredParse = null
+ forgetParse(active.key, active.jobId, active.taskId)
+ const scope = context, mine = detailRequest
+ parsing.value = false
+ if (status === 'failed') parseError.value = task.errorReason.value || task.message.value
+ try { const job = await fetchJob(active.jobId); if (scope === context && mine === detailRequest) { setDetail(job); await Promise.all([loadJobs(), documents.loadDocuments()]) } }
+ catch (error) { if (scope === context && mine === detailRequest) detailError.value = message(error) }
+})
 const parsed = computed(() => ['success', 'success_with_warnings'].includes(detail.value?.parseStatus || ''))
 const safeSourceUrl = computed(() => /^https?:\/\//i.test(detail.value?.sourceUrl || '') ? detail.value!.sourceUrl : null)
 const documentNumber = (id: string) => Number(id.split(':').pop())
@@ -59,13 +84,13 @@ async function loadJobs() { const scope = context, mine = ++listRequest; loading
 function search() { offset.value = 0; void loadJobs() }
 function changePage(amount: number) { offset.value = Math.max(0, offset.value + amount); void loadJobs() }
 function setDetail(job: JobDetail) { detail.value = job; Object.assign(editForm, { title: job.title, company: job.company || '', status: job.status, primaryResumeId: job.primaryResumeId ? String(job.primaryResumeId) : '' }) }
-async function openJob(id: number) { const scope = context, mine = ++detailRequest; selectedId.value = id; detail.value = null; detailError.value = ''; detailNotice.value = ''; parseError.value = ''; detailLoading.value = true; saving.value = false; parsing.value = false; task.reset(); matches.value = []; matchesMore.value = false; void loadMatches(); try { const job = await fetchJob(id); if (scope === context && mine === detailRequest) setDetail(job) } catch (e) { if (scope === context && mine === detailRequest) detailError.value = message(e) } finally { if (scope === context && mine === detailRequest) detailLoading.value = false } }
+async function openJob(id: number) { const scope = context, mine = ++detailRequest; selectedId.value = id; detail.value = null; detailError.value = ''; detailNotice.value = ''; parseError.value = ''; detailLoading.value = true; saving.value = false; parsing.value = false; restoredParse = null; task.reset(); matches.value = []; matchesMore.value = false; void loadMatches(); try { const job = await fetchJob(id); if (scope === context && mine === detailRequest) { setDetail(job); restoreParse(id) } } catch (e) { if (scope === context && mine === detailRequest) detailError.value = message(e) } finally { if (scope === context && mine === detailRequest) detailLoading.value = false } }
 async function loadMatches(append: boolean | Event = false) { const scope = context, id = selectedId.value, mine = ++matchRequest; if (!id) return; matchesLoading.value = true; matchesError.value = ''; try { const result = await fetchJobMatches(id, append === true ? matches.value.length : 0); if (scope === context && id === selectedId.value && mine === matchRequest) { matches.value = append === true ? [...matches.value, ...result.items] : result.items; matchesMore.value = result.hasMore } } catch (e) { if (scope === context && id === selectedId.value && mine === matchRequest) matchesError.value = message(e) } finally { if (scope === context && id === selectedId.value && mine === matchRequest) matchesLoading.value = false } }
 async function capture() { if (capturing.value) return; const scope = context; capturing.value = true; captureError.value = ''; notice.value = ''; try { const result = await captureJob({ ...captureForm }); if (scope !== context) return; Object.assign(captureForm, { title: '', company: '', sourceUrl: '', text: '' }); notice.value = result.created ? '岗位已收藏。解析后可以开始匹配。' : '已打开之前收藏的岗位。'; offset.value = 0; await Promise.all([loadJobs(), openJob(result.job.id)]) } catch (e) { if (scope === context) captureError.value = message(e) } finally { if (scope === context) capturing.value = false } }
 async function saveDetail() { if (!detail.value || saving.value) return; const scope = context, id = detail.value.id, mine = detailRequest; saving.value = true; detailError.value = ''; detailNotice.value = ''; try { const job = await updateJob(id, { ...editForm, primaryResumeId: editForm.primaryResumeId ? Number(editForm.primaryResumeId) : null }); if (scope !== context || mine !== detailRequest) return; setDetail(job); detailNotice.value = '岗位资料已保存。'; await loadJobs() } catch (e) { if (scope === context && mine === detailRequest) detailError.value = message(e) } finally { if (scope === context && mine === detailRequest) saving.value = false } }
-async function startParse() { if (!detail.value || parsing.value) return; const scope = context, id = detail.value.id, mine = detailRequest; parsing.value = true; parseError.value = ''; task.reset(); try { await parseJob(id, taskId => { if (scope === context && mine === detailRequest) task.start(taskId) }); const job = await fetchJob(id); if (scope !== context || mine !== detailRequest) return; setDetail(job); await Promise.all([loadJobs(), documents.loadDocuments()]) } catch (e) { if (scope === context && mine === detailRequest) { parseError.value = message(e); task.failManual('岗位解析未完成，请稍后重试。'); try { const current = await fetchJob(id); if (scope === context && mine === detailRequest) { detail.value = current; await loadJobs() } } catch { /* 保留解析失败原因，稍后仍可重新读取岗位。 */ } } } finally { if (scope === context && mine === detailRequest) parsing.value = false } }
+async function startParse() { if (!detail.value || parsing.value) return; const scope = context, id = detail.value.id, mine = detailRequest, key = activeTaskKey('job-parses'); let acceptedId = ''; parsing.value = true; parseError.value = ''; task.reset(); try { await parseJob(id, taskId => { acceptedId = taskId; saveActiveTask(key, { ...(readActiveTask<Record<string, string>>(key) || {}), [id]: taskId }); if (scope === context && mine === detailRequest) task.start(taskId) }); const job = await fetchJob(id); if (scope !== context || mine !== detailRequest) return; setDetail(job); await Promise.all([loadJobs(), documents.loadDocuments()]) } catch (e) { if (scope === context && mine === detailRequest) { parseError.value = message(e); task.failManual('岗位解析未完成，请稍后重试。'); try { const current = await fetchJob(id); if (scope === context && mine === detailRequest) { detail.value = current; await loadJobs() } } catch { /* 保留解析失败原因，稍后仍可重新读取岗位。 */ } } } finally { if (acceptedId) forgetParse(key, id, acceptedId); if (scope === context && mine === detailRequest) parsing.value = false } }
 watch(status, search)
-watch(() => auth.token, () => { context++; listRequest++; detailRequest++; matchRequest++; jobs.value = []; detail.value = null; selectedId.value = null; matches.value = []; captureError.value = ''; listError.value = ''; detailError.value = ''; notice.value = ''; capturing.value = false; loading.value = false; detailLoading.value = false; query.value = ''; status.value = ''; offset.value = 0; Object.assign(captureForm, { title: '', company: '', sourceUrl: '', text: '' }); task.reset(); if (auth.token) { void loadJobs(); void documents.loadDocuments() } }, { immediate: true })
+watch(() => auth.token, () => { context++; listRequest++; detailRequest++; matchRequest++; jobs.value = []; detail.value = null; selectedId.value = null; matches.value = []; captureError.value = ''; listError.value = ''; detailError.value = ''; notice.value = ''; capturing.value = false; loading.value = false; detailLoading.value = false; query.value = ''; status.value = ''; offset.value = 0; Object.assign(captureForm, { title: '', company: '', sourceUrl: '', text: '' }); task.reset(); if (auth.token) { void loadJobs(); void documents.loadDocuments(); const active = readActiveTask<Record<string, string>>(activeTaskKey('job-parses')); const id = Object.keys(active || {})[0]; if (id) void openJob(Number(id)) } }, { immediate: true })
 onBeforeUnmount(() => { context++; listRequest++; detailRequest++; matchRequest++ })
 </script>
 <style scoped>

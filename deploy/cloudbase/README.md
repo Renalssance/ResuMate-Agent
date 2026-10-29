@@ -58,6 +58,9 @@ tcb db execute --env-id dev-d0g73fv8v22380036 --sql "SELECT TABLE_NAME FROM info
 
 应用云端启动只连接并检查已初始化的用户表，不自动执行 DDL。后续结构变更须显式执行相应 SQL。现有 MySQL 不需要迁移或替换为新数据库产品。
 
+当前开发版本还使用 `deploy/schema/001_agent_and_versions.sql`、`002_jobs_primary_resume.sql`、`003_context_and_memory.sql` 和 `004_long_task_results.sql`。新空库在基础脚本后依次执行这四个增量；已有库先检查实际执行进度，只补未执行部分，详见 [增量结构说明](../schema/README.md)。T14 的 004 仅执行 `ALTER TABLE agent_runs ADD COLUMN result_json JSON NULL`，旧行保留且结果为 NULL，不改写旧业务响应。需要备份并检查真实列结构；MySQL DDL 可能部分成功，不得用忽略错误或重复初始化替代检查。此更改已在本地临时 SQLite/MySQL 验证，尚未应用到远程 CloudBase。
+
+
 ## 2. 配置服务端运行变量
 
 参考 `runtime.env.example`。本地用于部署的真实配置可放仓库根目录 `.env.cloudbase`（已被 Git 和源码包排除），权限设为 `600`。将用户原有的模型、API Key、Base URL 和 embedding 配置写入这个部署配置，保留本地 `.env`；服务端的默认模型参数与设置页的个人配置继续生效。
@@ -102,9 +105,11 @@ tcb cloudrun deploy --env-id dev-d0g73fv8v22380036 --service-name resumate-agent
 
 `tcb cloudrun deploy` 没有环境变量参数。通过控制台或 Manager SDK 的 `serverConfig.EnvParams` 注入密钥，勿写入镜像，也勿编造 `--env` 参数。发布时同时检查真实 CPU/内存配置，CLI 示例本身不设置这些资源。
 
-现有任务进度和限流计数保存在内存，因此当前必须固定单实例、单 worker。更新服务前等待解析、匹配和问题生成结束；进程重启会中断进行中的任务，已完成的数据和原文件持久保存。日志写 stdout 进入云托管日志；本地轮转日志不作为业务持久数据。
+当前开发版本的解析、匹配、问题生成和追问均通过持久 AgentRun、SQL 事件与 worker 执行。API 和 worker 需共享数据库、Redis 及已有单机运行目录；worker 使用共享文件锁与扫描器恢复未完成任务。限流计数仍在 API 内存，部署继续保持单实例。原部署版本记录不代表新架构已经上线；升级时须同步准备 worker、扫描器与相应数据卷。日志写 stdout 进入云托管日志；本地轮转日志不作为业务持久数据。
 
-云托管普通请求的超时为 60 秒。前端的文档上传/重解析、匹配、问题生成发送 `Prefer: respond-async`，接口先返回 `202 {"taskId":"..."}`；后台使用独立数据库会话执行原业务，前端通过 `/api/tasks/{taskId}/events` 的终态数据取得原结果。追问分析接口也支持同一提交方式。未发送该请求头的 API 调用保持同步协议，长模型调用仍可能受到网关超时限制。进度与聊天 SSE 每 15 秒发送空闲心跳。
+云托管普通请求的超时为 60 秒。前端的文档上传/重解析、匹配、问题生成和追问发送 `Prefer: respond-async`，接口在 Run 及输入提交后返回 `202 {"taskId":"<服务端UUID>"}`。客户端旧 taskId 只作为该用户的请求去重键。队列暂不可用时 SQL queued 状态仍由扫描器恢复；API 不执行模型。`/api/tasks/{taskId}/events` 按 Run 归属鉴权，使用 `after` 或 `Last-Event-ID` 从 SQL 游标重放进度与原始结果，空闲时每 15 秒发送心跳。未发送请求头的调用提交同一任务，释放请求数据库连接后最多等待 45 秒；完成返回原响应，失败返回带任务标识的 HTTP 400，未完成返回 `202 {taskId,status,code:"task_pending"}` 和任务地址。保存岗位解析保持始终异步。
+
+已接受的上传在失败或取消后保留文档行与原文件，以便重试/重解析；状态标记 failed/cancelled，明确删除文档才负责删除原件。云存储本地缓存可以在接受后清理，worker 从持久 `cloud://` 引用重新下载。文件保存后、Run 接受前的失败仍清理新建且未被引用的文件。
 
 ## 4. HTTPS 和验收
 

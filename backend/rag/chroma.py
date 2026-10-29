@@ -87,7 +87,7 @@ class ChromaRagStore:
         return collection
 
     def replace_document_chunks(
-        self, *, user_id: int, document_id: int, chunks: list[DocumentChunk]
+        self, *, user_id: int, document_id: int, chunks: list[DocumentChunk], before_write=None
     ) -> None:
         if not chunks:
             return
@@ -107,6 +107,8 @@ class ChromaRagStore:
         vectors = self.embedding_client.embed_many(texts)
         if len(vectors) != len(chunks) or not vectors or not vectors[0]:
             raise RuntimeError("Embedding service returned invalid vectors")
+        if before_write is not None:
+            before_write()
         collection = self._collection_for_dimension(len(vectors[0]))
         existing_ids = set(collection.get(where=where, include=[])["ids"])
         new_ids = [chunk.id for chunk in chunks]

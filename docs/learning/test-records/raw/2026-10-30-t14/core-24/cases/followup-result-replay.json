@@ -1,0 +1,321 @@
+{
+  "case_id": "followup-result-replay",
+  "category": "durable_task",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "followup-result-replay",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "same-run-twice",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "b0b0d3e1-cd40-4923-a200-6594b5950efb"
+    ],
+    "coverage": {
+      "original_result": {
+        "follow_up": "Original question",
+        "reason": "Need concrete evidence",
+        "evidence": [],
+        "risks": [],
+        "current_ability": "Pending verification",
+        "next_suggestion": "Give an example"
+      },
+      "replay_result": {
+        "follow_up": "Original question",
+        "reason": "Need concrete evidence",
+        "evidence": [],
+        "risks": [],
+        "current_ability": "Pending verification",
+        "next_suggestion": "Give an example"
+      },
+      "calls_on_replay": 0
+    },
+    "model_calls": [
+      {
+        "task": "followup.analyze_answer",
+        "candidate": null
+      }
+    ],
+    "model": "synthetic-durable-task-fixture",
+    "database": "isolated SQLite",
+    "source_directory": "/private/tmp/task-14-evals-final/20261029T190922Z-c087a1b3/state/followup-result-replay/originals"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "user_id": 1,
+        "session_id": "58a0556d-064d-45e0-90ee-31a7f75f05f7",
+        "request_id": "68a2f259-dde6-48da-ac94-9531dc907a9c",
+        "kind": "answer_followup",
+        "status": "succeeded",
+        "input_json": {
+          "followup": {
+            "question": "How?",
+            "answer": "Validated API fields in a test environment.",
+            "jd_context": {},
+            "resume_context": {},
+            "question_context": {},
+            "history": []
+          }
+        },
+        "input_versions": {},
+        "result_json": {
+          "follow_up": "Original question",
+          "reason": "Need concrete evidence",
+          "evidence": [],
+          "risks": [],
+          "current_ability": "Pending verification",
+          "next_suggestion": "Give an example"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-29T19:09:41.528747",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "answer_followup",
+            "id": "b0b0d3e1-cd40-4923-a200-6594b5950efb"
+          }
+        ],
+        "created_at": "2026-10-29T19:09:41.522216",
+        "updated_at": "2026-10-29T19:09:41.529503"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "58a0556d-064d-45e0-90ee-31a7f75f05f7",
+        "user_id": 1,
+        "purpose": "answer_followup",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-29T19:09:41.521927"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "operation_key": "answer_followup",
+        "tool_name": "answer_followup",
+        "status": "succeeded",
+        "result_ref": "b0b0d3e1-cd40-4923-a200-6594b5950efb"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:41.523633"
+      },
+      {
+        "id": 2,
+        "run_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:41.525467"
+      },
+      {
+        "id": 3,
+        "run_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "seq": 3,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+          "kind": "answer_followup"
+        },
+        "created_at": "2026-10-29T19:09:41.528617"
+      },
+      {
+        "id": 4,
+        "run_id": "b0b0d3e1-cd40-4923-a200-6594b5950efb",
+        "seq": 4,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-29T19:09:41.529765"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-29T19:09:41.514600",
+        "updated_at": "2026-10-29T19:09:41.514601"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-29T19:09:41.514602",
+        "updated_at": "2026-10-29T19:09:41.514602"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-29T19:09:41.514188",
+        "updated_at": "2026-10-29T19:09:41.514189"
+      }
+    ],
+    "analysis_jobs": [],
+    "candidates": [],
+    "match_results": [],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as succeeded under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "immutable_result_present",
+        "passed": true,
+        "reason": "Successful task responses are stored on their own Run",
+        "evidence_refs": [
+          "runs.result_json"
+        ]
+      },
+      {
+        "name": "followup_immutable",
+        "passed": true,
+        "reason": "Repeated followup delivery returns its stored response without another model call",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "output.coverage"
+        ]
+      }
+    ],
+    "limitations": [
+      "Deterministic service execution is not a real worker process kill or real-model quality measurement.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

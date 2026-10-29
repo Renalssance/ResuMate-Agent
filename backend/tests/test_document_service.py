@@ -659,3 +659,11 @@ def test_missing_ocr_extra_has_install_instruction(monkeypatch):
     monkeypatch.setattr(pdf_ocr, "_import_rapidocr", lambda: (_ for _ in ()).throw(ImportError()))
     with pytest.raises(RuntimeError, match="uv sync --extra ocr"):
         pdf_ocr._get_ocr_engine()
+
+
+@pytest.mark.asyncio
+async def test_upload_uses_runtime_storage_root_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv('DOCUMENT_STORAGE_ROOT', str(tmp_path / 'isolated-originals'))
+    stored = await store_upload(_upload('resume.txt', b'Candidate experience from original input.'))
+    assert stored.path.parent == tmp_path / 'isolated-originals'
+    assert stored.path.read_bytes() == b'Candidate experience from original input.'

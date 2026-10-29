@@ -1,0 +1,301 @@
+{"at": "2026-10-29T19:07:40.112447+00:00", "command": ["up", "-d", "--no-build", "--wait"], "exit_code": 0}
+ Network resumate-recovery-e533e70406_default Creating
+ Network resumate-recovery-e533e70406_default Creating
+ Volume resumate-recovery-e533e70406_redis-data Creating
+ Volume resumate-recovery-e533e70406_redis-data Creating
+ Volume resumate-recovery-e533e70406_redis-data Created
+ Volume resumate-recovery-e533e70406_redis-data Created
+ Network resumate-recovery-e533e70406_default Created
+ Network resumate-recovery-e533e70406_default Created
+ Container resumate-recovery-e533e70406-redis-1 Creating
+ Container resumate-recovery-e533e70406-api-1 Creating
+ Container resumate-recovery-e533e70406-api-1 Created
+ Container resumate-recovery-e533e70406-redis-1 Created
+ Container resumate-recovery-e533e70406-scheduler-1 Creating
+ Container resumate-recovery-e533e70406-worker-1 Creating
+ Container resumate-recovery-e533e70406-worker-1 Created
+ Container resumate-recovery-e533e70406-scheduler-1 Created
+ Container resumate-recovery-e533e70406-api-1 Starting
+ Container resumate-recovery-e533e70406-redis-1 Starting
+ Container resumate-recovery-e533e70406-api-1 Started
+ Container resumate-recovery-e533e70406-redis-1 Started
+ Container resumate-recovery-e533e70406-redis-1 Waiting
+ Container resumate-recovery-e533e70406-redis-1 Waiting
+ Container resumate-recovery-e533e70406-api-1 Waiting
+ Container resumate-recovery-e533e70406-redis-1 Healthy
+ Container resumate-recovery-e533e70406-scheduler-1 Starting
+ Container resumate-recovery-e533e70406-redis-1 Healthy
+ Container resumate-recovery-e533e70406-api-1 Healthy
+ Container resumate-recovery-e533e70406-worker-1 Starting
+ Container resumate-recovery-e533e70406-scheduler-1 Started
+ Container resumate-recovery-e533e70406-worker-1 Started
+ Container resumate-recovery-e533e70406-redis-1 Waiting
+ Container resumate-recovery-e533e70406-worker-1 Waiting
+ Container resumate-recovery-e533e70406-scheduler-1 Waiting
+ Container resumate-recovery-e533e70406-api-1 Waiting
+ Container resumate-recovery-e533e70406-worker-1 Healthy
+ Container resumate-recovery-e533e70406-scheduler-1 Healthy
+ Container resumate-recovery-e533e70406-api-1 Healthy
+ Container resumate-recovery-e533e70406-redis-1 Healthy
+
+{"at": "2026-10-29T19:07:59.309130+00:00", "command": ["exec", "-T", "api", "python", "-c", "import json; from backend.tests.recovery_worker_fixture import inspect_recovery; print(json.dumps(inspect_recovery('3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3'), ensure_ascii=False))"], "exit_code": 0}
+{"run": {"id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "session_id": "ccc47949-d30b-4627-806f-c0314836250e", "status": "waiting_input", "attempt": 1, "epoch": 1, "heartbeat_at": "2026-10-29T19:07:56.140273", "output_refs": [], "error_code": null}, "versions": [], "operations": [], "actions": [{"id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "interrupt_id": "95377983330c5a18c0133974b58116c5", "status": "pending", "response": null}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-0", "result_ref": null}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"action_id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "kind": "input"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}], "checkpoint": {"run_id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "next": ["tools"], "interrupts": ["95377983330c5a18c0133974b58116c5"], "message_count": 4}, "model_starts": [{"phase": [], "started_at": 1793300876.1238225, "pid": 8}, {"phase": ["get_application_context"], "started_at": 1793300876.1338148, "pid": 8}]}
+
+{"at": "2026-10-29T19:08:02.923657+00:00", "command": ["stop", "-t", "5", "worker"], "exit_code": 0}
+ Container resumate-recovery-e533e70406-worker-1 Stopping
+ Container resumate-recovery-e533e70406-worker-1 Stopped
+
+{"at": "2026-10-29T19:08:06.603119+00:00", "command": ["exec", "-T", "api", "python", "-c", "import json; from backend.tests.recovery_worker_fixture import inspect_recovery; print(json.dumps(inspect_recovery('3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3'), ensure_ascii=False))"], "exit_code": 0}
+{"run": {"id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "session_id": "ccc47949-d30b-4627-806f-c0314836250e", "status": "queued", "attempt": 1, "epoch": 1, "heartbeat_at": "2026-10-29T19:07:56.140273", "output_refs": [], "error_code": null}, "versions": [], "operations": [], "actions": [{"id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "interrupt_id": "95377983330c5a18c0133974b58116c5", "status": "answered", "response": {"decision": "submit", "answers": {"experience": "负责 API 和数据库设计。"}}}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-0", "result_ref": null}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"action_id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "kind": "input"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}, {"seq": 8, "type": "run.status", "payload": {"status": "queued", "error_code": null}}], "checkpoint": {"run_id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "next": ["tools"], "interrupts": ["95377983330c5a18c0133974b58116c5"], "message_count": 4}, "model_starts": [{"phase": [], "started_at": 1793300876.1238225, "pid": 8}, {"phase": ["get_application_context"], "started_at": 1793300876.1338148, "pid": 8}]}
+
+{"at": "2026-10-29T19:08:06.679482+00:00", "command": ["ps", "-a", "-q", "api"], "exit_code": 0}
+48c9eee2c819855fdd56f3a1e1bef3c9e8a0c3739f90cc0caaaa03cef091b89d
+
+{"at": "2026-10-29T19:08:06.865658+00:00", "command": ["kill", "-s", "SIGKILL", "api"], "exit_code": 0}
+ Container resumate-recovery-e533e70406-api-1 Killing
+ Container resumate-recovery-e533e70406-api-1 Killed
+
+{"at": "2026-10-29T19:08:13.141490+00:00", "command": ["up", "-d", "--no-build", "--wait", "api", "worker"], "exit_code": 0}
+ Container resumate-recovery-e533e70406-redis-1 Running
+ Container resumate-recovery-e533e70406-api-1 Starting
+ Container resumate-recovery-e533e70406-api-1 Started
+ Container resumate-recovery-e533e70406-api-1 Waiting
+ Container resumate-recovery-e533e70406-redis-1 Waiting
+ Container resumate-recovery-e533e70406-redis-1 Healthy
+ Container resumate-recovery-e533e70406-api-1 Healthy
+ Container resumate-recovery-e533e70406-worker-1 Starting
+ Container resumate-recovery-e533e70406-worker-1 Started
+ Container resumate-recovery-e533e70406-worker-1 Waiting
+ Container resumate-recovery-e533e70406-api-1 Waiting
+ Container resumate-recovery-e533e70406-redis-1 Waiting
+ Container resumate-recovery-e533e70406-worker-1 Healthy
+ Container resumate-recovery-e533e70406-api-1 Healthy
+ Container resumate-recovery-e533e70406-redis-1 Healthy
+
+{"at": "2026-10-29T19:08:20.027084+00:00", "command": ["exec", "-T", "api", "python", "-c", "import json; from backend.tests.recovery_worker_fixture import inspect_recovery; print(json.dumps(inspect_recovery('3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3'), ensure_ascii=False))"], "exit_code": 0}
+{"run": {"id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "session_id": "ccc47949-d30b-4627-806f-c0314836250e", "status": "succeeded", "attempt": 1, "epoch": 2, "heartbeat_at": "2026-10-29T19:08:16.469317", "output_refs": [{"type": "resume_version", "id": "85bd0cb2-c170-45cc-9a4a-0c41e6e3203a"}], "error_code": null}, "versions": [{"id": "85bd0cb2-c170-45cc-9a4a-0c41e6e3203a", "structured_content": {"resume": {"self_summary": "Built an API"}, "changes": [{"section": "/self_summary", "before": "Built an API", "after": "Built an API。负责 API 和数据库设计。", "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。", "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:07:33.631495", "section": "/self_summary", "sourceRefs": []}, {"kind": "applicant_answer", "actionId": "0d2782b3-b83c-4b71-ac18-2cb0393716df"}], "requires_input": false, "id": "a6843441-348e-463d-b0b4-903ea9b5f75f", "status": "pending"}], "inputVersions": {"resume": "2026-10-29T19:07:33.631495", "jd": "2026-10-29T19:07:33.631183", "memories": [], "facts": []}}, "fact_refs": [{"kind": "resume", "resumeId": 1, "inputVersion": "2026-10-29T19:07:33.631495", "section": "/self_summary", "sourceRefs": []}, {"kind": "applicant_answer", "actionId": "0d2782b3-b83c-4b71-ac18-2cb0393716df"}]}], "operations": [{"id": 1, "operation_key": "draft:1:initial", "status": "succeeded", "result_ref": "85bd0cb2-c170-45cc-9a4a-0c41e6e3203a"}], "actions": [{"id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "interrupt_id": "95377983330c5a18c0133974b58116c5", "status": "answered", "response": {"decision": "submit", "answers": {"experience": "负责 API 和数据库设计。"}}}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-0", "result_ref": null}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"action_id": "0d2782b3-b83c-4b71-ac18-2cb0393716df", "kind": "input"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}, {"seq": 8, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 9, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 10, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 11, "type": "tool.completed", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1", "result_ref": null}}, {"seq": 12, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-2"}}, {"seq": 13, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "operation_key": "call-2", "result_ref": null}}, {"seq": 14, "type": "tool.started", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial"}}, {"seq": 15, "type": "artifact.created", "payload": {"artifact_id": "85bd0cb2-c170-45cc-9a4a-0c41e6e3203a", "kind": "resume_version"}}, {"seq": 16, "type": "tool.completed", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial", "result_ref": "85bd0cb2-c170-45cc-9a4a-0c41e6e3203a"}}, {"seq": 17, "type": "assistant.delta", "payload": {"text": "请审阅草稿"}}, {"seq": 18, "type": "run.status", "payload": {"status": "succeeded", "error_code": null}}], "checkpoint": {"run_id": "3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3", "next": [], "interrupts": [], "message_count": 10}, "model_starts": [{"phase": [], "started_at": 1793300876.1238225, "pid": 8}, {"phase": ["get_application_context"], "started_at": 1793300876.1338148, "pid": 8}, {"phase": ["get_application_context", "ask_applicant"], "started_at": 1793300896.437386, "pid": 8}, {"phase": ["get_application_context", "ask_applicant", "get_application_context"], "started_at": 1793300896.448187, "pid": 8}, {"phase": ["get_application_context", "ask_applicant", "get_application_context", "create_resume_draft"], "started_at": 1793300896.4654186, "pid": 8}]}
+
+{"at": "2026-10-29T19:08:20.089791+00:00", "command": ["logs", "--no-color"], "exit_code": 0}
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-29 19:07:40
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-29 19:07:40,938: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-29 19:07:55,959: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-29 19:08:10,943: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+api-1        | 2026-10-29 19:07:36,659 | INFO | backend.app | Creating FastAPI app
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@1910a6c62157 v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-29 19:07:42
+worker-1     | - *** --- * ---
+api-1        | INFO:     Started server process [1]
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffffab1916a0
+api-1        | INFO:     Waiting for application startup.
+api-1        | 2026-10-29 19:07:36,679 | INFO | backend.app | Startup: initializing database
+api-1        | 2026-10-29 19:07:36,683 | INFO | backend.app | Startup: database initialized
+api-1        | INFO:     Application startup complete.
+api-1        | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+api-1        | 2026-10-29 19:07:39,067 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:07:39,068 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+redis-1      | 1:C 29 Oct 2026 19:07:33.944 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+api-1        | INFO:     127.0.0.1:42348 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:40,115 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+redis-1      | 1:C 29 Oct 2026 19:07:33.944 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 29 Oct 2026 19:07:33.944 * Configuration loaded
+redis-1      | 1:M 29 Oct 2026 19:07:33.944 * monotonic clock: POSIX clock_gettime
+redis-1      | 1:M 29 Oct 2026 19:07:33.944 * Running mode=standalone, port=6379.
+redis-1      | 1:M 29 Oct 2026 19:07:33.945 * Server initialized
+redis-1      | 1:M 29 Oct 2026 19:07:33.947 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+redis-1      | 1:M 29 Oct 2026 19:07:33.948 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+api-1        | 2026-10-29 19:07:40,150 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=34
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+redis-1      | 1:M 29 Oct 2026 19:07:33.948 * Ready to accept connections tcp
+api-1        | 2026-10-29 19:07:41,162 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+worker-1     | - ** ---------- .> results:     disabled://
+api-1        | 2026-10-29 19:07:41,164 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=2
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:42,168 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:42,170 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:43,182 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+api-1        | 2026-10-29 19:07:43,189 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=6
+worker-1     | --- ***** -----
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:44,198 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:44,200 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . resumate.execute_run
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-29 19:07:42,256: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-29 19:07:42,257: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-29 19:07:43,270: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-29 19:07:43,290: INFO/MainProcess] celery@1910a6c62157 ready.
+worker-1     | [2026-10-29 19:07:55,972: INFO/MainProcess] Task resumate.recover_runs[074288d2-dda2-46e4-a9ca-b8ffc3da7029] received
+worker-1     | [2026-10-29 19:07:56,019: INFO/ForkPoolWorker-1] Task resumate.recover_runs[074288d2-dda2-46e4-a9ca-b8ffc3da7029] succeeded in 0.046342500000037035s: 1
+worker-1     | [2026-10-29 19:07:56,020: INFO/MainProcess] Task resumate.execute_run[64728be3-9701-438c-a1bc-271195a0d12d] received
+api-1        | 2026-10-29 19:07:44,240 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:07:44,240 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:42358 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:45,209 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:45,215 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:46,227 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:46,232 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:47,243 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:47,248 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+worker-1     | [2026-10-29 19:07:56,143: INFO/ForkPoolWorker-1] Task resumate.execute_run[64728be3-9701-438c-a1bc-271195a0d12d] succeeded in 0.12240462499994464s: None
+worker-1     |
+worker-1     | worker: Warm shutdown (MainProcess)
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@1910a6c62157 v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-29 19:08:15
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffff96c04980
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . resumate.execute_run
+api-1        | 2026-10-29 19:07:48,264 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:48,269 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:49,281 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-29 19:08:15,255: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-29 19:08:15,257: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-29 19:08:16,265: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-29 19:08:16,284: INFO/MainProcess] celery@1910a6c62157 ready.
+api-1        | 2026-10-29 19:07:49,284 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:49,412 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:07:49,413 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:37396 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:50,290 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:50,298 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:51,305 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:51,311 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:52,323 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:52,329 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+worker-1     | [2026-10-29 19:08:16,287: INFO/MainProcess] Task resumate.recover_runs[6ab78df2-0933-4280-b571-2f8a92d751b8] received
+api-1        | 2026-10-29 19:07:53,343 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:53,351 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:54,359 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:54,364 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:54,587 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:07:54,587 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:37410 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:55,376 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+worker-1     | [2026-10-29 19:08:16,336: INFO/ForkPoolWorker-1] Task resumate.recover_runs[6ab78df2-0933-4280-b571-2f8a92d751b8] succeeded in 0.04801970800008348s: 1
+worker-1     | [2026-10-29 19:08:16,337: INFO/MainProcess] Task resumate.execute_run[5ff41dec-f131-4a19-8701-f9d3b8382d23] received
+worker-1     | [2026-10-29 19:08:16,472: INFO/ForkPoolWorker-1] Task resumate.execute_run[5ff41dec-f131-4a19-8701-f9d3b8382d23] succeeded in 0.1347946249998131s: None
+api-1        | 2026-10-29 19:07:55,384 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:56,399 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:07:56,406 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:59282 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:07:59,767 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:07:59,769 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api-1        | INFO:     127.0.0.1:36382 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:02,926 | INFO | backend.app | Request start | method=POST path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3/actions/0d2782b3-b83c-4b71-ac18-2cb0393716df client=172.18.0.1
+api-1        | 2026-10-29 19:08:04,919 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:08:04,920 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:36398 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:09,832 | INFO | backend.app | Creating FastAPI app
+api-1        | INFO:     Started server process [1]
+api-1        | INFO:     Waiting for application startup.
+api-1        | 2026-10-29 19:08:09,852 | INFO | backend.app | Startup: initializing database
+api-1        | 2026-10-29 19:08:09,857 | INFO | backend.app | Startup: database initialized
+api-1        | INFO:     Application startup complete.
+api-1        | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1        | 2026-10-29 19:08:12,216 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:08:12,217 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:51750 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:13,142 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:08:13,167 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=24
+api-1        | INFO:     172.18.0.1:61356 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:14,179 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:08:14,183 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:61356 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:15,196 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:08:15,198 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:61356 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:16,202 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:08:16,208 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=6
+api-1        | INFO:     172.18.0.1:61356 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:17,224 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 client=172.18.0.1
+api-1        | 2026-10-29 19:08:17,232 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:61356 - "GET /api/agent/runs/3f60f1ff-09ce-4a1c-8d51-0f0eb1c546f3 HTTP/1.1" 200 OK
+api-1        | 2026-10-29 19:08:17,408 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-29 19:08:17,408 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:51754 - "GET /healthz HTTP/1.1" 200 OK
+
+{"at": "2026-10-29T19:08:23.479984+00:00", "command": ["down", "-v", "--remove-orphans"], "exit_code": 0}
+ Container resumate-recovery-e533e70406-scheduler-1 Stopping
+ Container resumate-recovery-e533e70406-worker-1 Stopping
+ Container resumate-recovery-e533e70406-scheduler-1 Stopped
+ Container resumate-recovery-e533e70406-scheduler-1 Removing
+ Container resumate-recovery-e533e70406-scheduler-1 Removed
+ Container resumate-recovery-e533e70406-worker-1 Stopped
+ Container resumate-recovery-e533e70406-worker-1 Removing
+ Container resumate-recovery-e533e70406-worker-1 Removed
+ Container resumate-recovery-e533e70406-redis-1 Stopping
+ Container resumate-recovery-e533e70406-api-1 Stopping
+ Container resumate-recovery-e533e70406-redis-1 Stopped
+ Container resumate-recovery-e533e70406-redis-1 Removing
+ Container resumate-recovery-e533e70406-redis-1 Removed
+ Container resumate-recovery-e533e70406-api-1 Stopped
+ Container resumate-recovery-e533e70406-api-1 Removing
+ Container resumate-recovery-e533e70406-api-1 Removed
+ Network resumate-recovery-e533e70406_default Removing
+ Volume resumate-recovery-e533e70406_redis-data Removing
+ Volume resumate-recovery-e533e70406_redis-data Removed
+ Network resumate-recovery-e533e70406_default Removed

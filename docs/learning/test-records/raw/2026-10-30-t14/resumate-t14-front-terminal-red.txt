@@ -1,0 +1,39 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/agent/RunTimeline.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/components/agent/RunTimeline.spec.ts (3 tests | 3 failed) 15ms
+   × does not present a stale in-flight percentage after succeeded 12ms
+   × does not present a stale in-flight percentage after failed 1ms
+   × does not present a stale in-flight percentage after cancelled 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/agent/RunTimeline.spec.ts > does not present a stale in-flight percentage after succeeded
+ FAIL  src/components/agent/RunTimeline.spec.ts > does not present a stale in-flight percentage after failed
+ FAIL  src/components/agent/RunTimeline.spec.ts > does not present a stale in-flight percentage after cancelled
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/components/agent/RunTimeline.spec.ts:12:53
+     10|  ] as RunEvent[]
+     11|  const wrapper = mount(RunTimeline, { props: { events, status, kind: '…
+     12|  expect(wrapper.find('.current-progress').exists()).toBe(false)
+       |                                                     ^
+     13|  expect(wrapper.find('.phase-list').exists()).toBe(true)
+     14| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  02:54:47
+   Duration  750ms (transform 161ms, setup 0ms, import 205ms, tests 15ms, environment 458ms)

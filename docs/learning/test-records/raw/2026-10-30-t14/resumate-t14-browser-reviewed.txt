@@ -1,0 +1,18 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-XrrjTA
+
+Running 10 tests using 1 worker
+
+(node:30888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/agent-run.spec.ts:22:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (6.2s)
+  ✓   2 [chromium] › tests/e2e/agent-run.spec.ts:70:1 › 测试入口准备的真实暂停任务可从新页面继续 (3.2s)
+  ✓   3 [chromium] › tests/e2e/agent-run.spec.ts:80:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 (5.3s)
+  ✓   4 [chromium] › tests/e2e/agent-run.spec.ts:109:1 › 提交后离开页面不会隐式取消 worker，返回可读取产物 (5.3s)
+  ✓   5 [chromium] › tests/e2e/agent-run.spec.ts:125:1 › 等待补问时可明确取消任务 (2.2s)
+  ✓   6 [chromium] › tests/e2e/agent-run.spec.ts:135:1 › worker 正在执行时明确取消，最终停止且不生成材料 (1.6s)
+  ✓   7 [chromium] › tests/e2e/agent-run.spec.ts:147:1 › 事件网络断线显示重连，任务保持等待并在恢复后继续 (6.5s)
+  ✓   8 [chromium] › tests/e2e/recovery.spec.ts:36:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 (5.2s)
+  ✓   9 [chromium] › tests/e2e/recovery.spec.ts:124:1 › 保存岗位解析在刷新及网络断开后恢复进度 (2.1s)
+  ✓  10 [chromium] › tests/e2e/recovery.spec.ts:147:1 › 解析失败和取消保留原件，回答分析显示保存的结果 (1.0s)
+
+  10 passed (46.0s)

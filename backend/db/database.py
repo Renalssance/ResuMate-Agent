@@ -249,6 +249,7 @@ def ensure_sqlite_schema(engine: Engine) -> None:
         # T12 keeps unknown model capacity explicit and records pending graph cleanup.
         for table, additions in {
             'user_llm_settings': {'context_window_tokens': 'INTEGER'},
+            'agent_runs': {'result_json': 'JSON'},
             'agent_sessions': {'context_invalidated_at': 'DATETIME', 'checkpoint_deleted_at': 'DATETIME'},
         }.items():
             columns = {row[1] for row in connection.execute(text(f'PRAGMA table_info({table})'))}

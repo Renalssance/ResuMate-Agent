@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchCandidateReportApi, generateCandidateQuestionsApi } from '../api/runs'
+import { generateCandidateQuestionsApi } from '../api/runs'
+import { fetchAgentRun } from '../api/agentRuns'
+import { readAccessToken } from '../services/authToken'
 import { getReportForMatch } from './match'
 import type { DocumentRecord } from '../types/document'
 import type { MatchResult } from '../types/match'
@@ -23,18 +25,20 @@ export const useQuestionStore = defineStore('question', () => {
   }
 
   async function createQuestionSet(jd: DocumentRecord, resume: DocumentRecord, count: number, match: MatchResult, taskId = '', onAccepted?: (taskId: string) => void) {
+    const token = readAccessToken()
     loading.value = true
     error.value = ''
     try {
       const sourceReport = await generateQuestionsForMatch(match, taskId, count, onAccepted)
+      if (token !== readAccessToken()) return
       const created = buildQuestionSetFromReport(jd, resume, sourceReport.formal_questions, count, match, sourceReport)
       questionSets.value = [created, ...questionSets.value]
       return { questionSetId: created.id }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : String(err)
+      if (token === readAccessToken()) error.value = err instanceof Error ? err.message : String(err)
       throw err
     } finally {
-      loading.value = false
+      if (token === readAccessToken()) loading.value = false
     }
   }
 
@@ -42,19 +46,23 @@ export const useQuestionStore = defineStore('question', () => {
     questionSets.value = questionSets.value.filter((set) => set.id !== id)
   }
 
-  async function restoreQuestionSet(jd: DocumentRecord, resume: DocumentRecord, count: number, match: MatchResult) {
+  async function restoreQuestionSet(jd: DocumentRecord, resume: DocumentRecord, count: number, match: MatchResult, taskId: string) {
+    const token = readAccessToken()
     loading.value = true
     error.value = ''
     try {
-      const sourceReport = await fetchQuestionsForMatch(match)
+      const snapshot = await fetchAgentRun(taskId)
+      if (token !== readAccessToken()) return
+      if (snapshot.status !== 'succeeded' || !snapshot.result) throw new Error('这项出题任务尚未完成，请查看任务进度。')
+      const sourceReport = snapshot.result as unknown as CandidateReport
       const restored = buildQuestionSetFromReport(jd, resume, sourceReport.formal_questions, count, match, sourceReport)
       questionSets.value = [restored, ...questionSets.value]
       return { questionSetId: restored.id }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : String(err)
+      if (token === readAccessToken()) error.value = err instanceof Error ? err.message : String(err)
       throw err
     } finally {
-      loading.value = false
+      if (token === readAccessToken()) loading.value = false
     }
   }
 
@@ -65,12 +73,6 @@ async function generateQuestionsForMatch(match: MatchResult, taskId = '', questi
   const [runId, candidateId] = match.id.split(':')
   if (!runId || !candidateId) throw new Error('Selected match does not identify a backend candidate report.')
   return generateCandidateQuestionsApi(runId, candidateId, taskId, questionCount, onAccepted)
-}
-
-async function fetchQuestionsForMatch(match: MatchResult): Promise<CandidateReport> {
-  const [runId, candidateId] = match.id.split(':')
-  if (!runId || !candidateId) throw new Error('Selected match does not identify a backend candidate report.')
-  return fetchCandidateReportApi(runId, candidateId)
 }
 
 export function buildQuestionSetFromReport(

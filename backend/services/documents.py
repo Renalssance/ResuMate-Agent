@@ -6,6 +6,9 @@ import re
 import tempfile
 import hashlib
 from dataclasses import dataclass
+from datetime import timezone
+
+from backend.schemas.workflow import DocumentParseResult
 from pathlib import Path
 from typing import Callable
 from uuid import uuid4
@@ -153,7 +156,7 @@ async def _write_upload_chunks(file: UploadFile, stream, filename: str) -> tuple
 
 async def store_and_extract_upload(
     file: UploadFile,
-    storage_root: str | Path = DOCUMENT_DIR,
+    storage_root: str | Path | None = None,
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> StoredDocument:
     stored = await store_upload(file, storage_root=storage_root)
@@ -178,10 +181,10 @@ async def store_and_extract_upload(
 
 async def store_upload(
     file: UploadFile,
-    storage_root: str | Path = DOCUMENT_DIR,
+    storage_root: str | Path | None = None,
 ) -> StoredUpload:
     filename = _safe_filename(file.filename or "")
-    directory = Path(storage_root)
+    directory = Path(storage_root or os.getenv("DOCUMENT_STORAGE_ROOT") or DOCUMENT_DIR)
     directory.mkdir(parents=True, exist_ok=True)
     path: Path | None = None
     try:
@@ -778,3 +781,33 @@ def _append_chunk(
         )
     )
     return chunk_index + 1
+
+
+def _utc_isoformat(value) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def document_record(document_type: str, row) -> DocumentParseResult:
+    succeeded = str(row.parse_status or "") in {"success", "success_with_warnings"}
+    return DocumentParseResult(
+        id=f"{document_type}:{row.id}",
+        type=document_type,
+        filename=row.filename if document_type == "resume" else (row.filename or row.title),
+        size=row.document_size,
+        raw_text=row.raw_text,
+        parsed_content=row.structured_data or {},
+        parse_status=row.parse_status,
+        created_at=_utc_isoformat(row.created_at),
+        vectorized=succeeded and (document_type == "resume" or bool(row.file_path)),
+        local_stored=bool(row.file_path),
+    )
+
+
+def profile_parse_status(kind: str, content: dict) -> str:
+    if kind != "resume":
+        return "success"
+    quality = content.get("quality") if isinstance(content, dict) else {}
+    status = quality.get("status") if isinstance(quality, dict) else ""
+    return str(status or "success")

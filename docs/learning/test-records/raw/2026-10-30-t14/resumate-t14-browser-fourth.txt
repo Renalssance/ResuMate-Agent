@@ -1,0 +1,47 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-m7UR6e
+
+Running 3 tests using 1 worker
+
+(node:28823) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/recovery.spec.ts:35:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 (4.9s)
+  ✘  2 [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 (1.3m)
+(node:29177) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/e2e/recovery.spec.ts:142:1 › 解析失败和取消保留原件，回答分析显示保存的结果 (1.1s)
+
+
+  1) [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 ───────────────────────────
+
+    Test timeout of 75000ms exceeded.
+
+    Error: page.waitForResponse: Test timeout of 75000ms exceeded.
+
+      123 |   await page.goto('/jobs')
+      124 |   await page.locator(`[data-job-id="${jobId}"]`).click()
+    > 125 |   pauseModel()
+          |               ^
+      126 |   const accepted = page.waitForResponse(r => r.url().endsWith(`/api/jobs/${jobId}/parse`) && r.request().method() === 'POST')
+      127 |   await page.getByRole('button', { name: '解析岗位', exact: true }).click()
+      128 |   const taskId = (await (await accepted).json()).taskId
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/recovery.spec.ts:125:25
+
+    Error: locator.click: Test timeout of 75000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '解析岗位', exact: true })
+
+
+      124 |   await page.locator(`[data-job-id="${jobId}"]`).click()
+      125 |   pauseModel()
+    > 126 |   const accepted = page.waitForResponse(r => r.url().endsWith(`/api/jobs/${jobId}/parse`) && r.request().method() === 'POST')
+          |                                                                 ^
+      127 |   await page.getByRole('button', { name: '解析岗位', exact: true }).click()
+      128 |   const taskId = (await (await accepted).json()).taskId
+      129 |   await modelStarted()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/recovery.spec.ts:126:65
+
+    Error Context: test-results/recovery-保存岗位解析在刷新及网络断开后恢复进度-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/e2e/recovery.spec.ts:119:1 › 保存岗位解析在刷新及网络断开后恢复进度 ────────────────────────────
+  2 passed (1.5m)

@@ -93,3 +93,64 @@ async def stream_events(session_factory, user_id: int, run_id: str, after: int):
             yield ': heartbeat\n\n'
             last_sent = monotonic()
         await asyncio.sleep(0.5)
+
+
+def _task_projection(event: dict, run: AgentRun, latest_status_seq: int) -> dict | None:
+    """Project only progress and the current terminal lifecycle into the old API."""
+    from backend.schemas.workflow import SseProgressEvent
+    if event['type'] == 'task.progress':
+        return SseProgressEvent(task_id=run.id, **event['payload']).model_dump(mode='json', by_alias=True)
+    if (event['type'] != 'run.status' or event['seq'] != latest_status_seq
+            or run.status not in TERMINAL_STATUSES or event['payload']['status'] != run.status):
+        return None
+    succeeded = run.status == RunStatus.SUCCEEDED
+    cancelled = run.status == RunStatus.CANCELLED
+    data = run.result_json or {}
+    if succeeded and run.kind == 'document_parse':
+        data = {'documents': data['documents']} if run.input_json['parseMode'] == 'upload' else {'document': data}
+    if not succeeded:
+        data = {'code': 'cancelled' if cancelled else run.error_code or 'task_failed'}
+    return SseProgressEvent(
+        task_id=run.id, stage='completed' if succeeded else 'cancelled' if cancelled else 'failed',
+        status='success' if succeeded else 'failed', progress=100, overall_progress=100,
+        message='任务已完成' if succeeded else '任务已取消' if cancelled else run.error_code or '任务执行失败',
+        document_id=run.input_json.get('documentId'), data=data,
+    ).model_dump(mode='json', by_alias=True)
+
+
+def _read_task_page(session_factory, user_id: int, run_id: str, after: int):
+    from backend.services.agent_runs import get_run
+    with session_factory() as db:
+        events, done = read_page(db, user_id, run_id, after)
+        run = get_run(db, user_id, run_id)
+        latest_status_seq = db.scalar(select(func.max(AgentRunEvent.seq)).where(
+            AgentRunEvent.run_id == run_id, AgentRunEvent.type == 'run.status')) or 0
+        frames = [(event['seq'], _task_projection(event, run, latest_status_seq)) for event in events]
+        return frames, done
+
+
+async def stream_task_events(session_factory, user_id: int, run_id: str, after: int):
+    """Legacy data frames retain SQL event IDs, including intentional filtered gaps."""
+    from backend.services.agent_runs import RunError
+    yield ': connected\n\n'
+    last_sent = monotonic()
+    while True:
+        try:
+            frames, done = await run_in_threadpool(_read_task_page, session_factory, user_id, run_id, after)
+        except RunError as error:
+            if error.code == 'cursor_reset':
+                yield 'event: reset\ndata: {"code":"cursor_reset"}\n\n'
+            return
+        for seq, payload in frames:
+            after = seq  # Advance even when a full page has no legacy-visible event.
+            if payload is not None:
+                yield f'id: {seq}\ndata: {json.dumps(payload, ensure_ascii=False, separators=(",", ":"))}\n\n'
+                last_sent = monotonic()
+        if done:
+            return
+        if len(frames) == 100:
+            continue
+        if monotonic() - last_sent >= 15:
+            yield ': heartbeat\n\n'
+            last_sent = monotonic()
+        await asyncio.sleep(0.5)

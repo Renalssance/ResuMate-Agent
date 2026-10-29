@@ -1,0 +1,11 @@
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/composables/useDocumentParseTasks.spec.ts src/services/agentStream.spec.ts src/composables/useTaskSse.spec.ts src/services/sse.spec.ts src/stores/agentRun.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+
+ Test Files  5 passed (5)
+      Tests  43 passed (43)
+   Start at  03:01:05
+   Duration  780ms (transform 276ms, setup 0ms, import 547ms, tests 332ms, environment 2.06s)

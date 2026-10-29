@@ -61,18 +61,18 @@ export const PARSE_STEPS: StepTemplate[] = [
 export const MATCH_STEPS: StepTemplate[] = [
   { key: 'load_jd', label: '加载 JD' },
   { key: 'load_resume', label: '加载简历' },
-  { key: 'milvus_search', label: 'RAG 检索证据' },
+  { key: 'chroma_search', label: '检索匹配证据' },
   { key: 'llm_match', label: 'Agent 分析' },
   { key: 'score', label: '匹配度打分' },
-  { key: 'vectorize', label: '向量化入库' },
+  { key: 'save', label: '保存匹配结果' },
   // { key: 'milvus_save', label: '向量入库' },
 ]
 
 export const QUESTION_STEPS: StepTemplate[] = [
   { key: 'load_context', label: '加载 JD 与简历' },
-  { key: 'retrieve_evidence', label: 'RAG 检索证据' },
+  { key: 'retrieve_evidence', label: '读取匹配证据' },
   // { key: 'analyze_gaps', label: '分析岗位重点和能力缺口' },
   { key: 'generate_questions', label: 'Agent 生成试题' },
   // { key: 'rubric', label: '生成评分标准' },
-  { key: 'save', label: '向量化入库' },
+  { key: 'save', label: '保存题目结果' },
 ]

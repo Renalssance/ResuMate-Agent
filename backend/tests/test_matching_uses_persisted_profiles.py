@@ -15,7 +15,6 @@ def _graph(rag_store):
     return CandidateAnalysisGraph(
         harness=SimpleNamespace(),
         rag_store=rag_store,
-        repository=SimpleNamespace(),
     )
 
 
@@ -45,8 +44,8 @@ def test_matching_loads_sqlite_profiles_without_parsing_or_rag_profile_reads():
         "run_id": 11,
         "candidate_id": 13,
         "resume_document_id": 21,
-        "job": job,
-        "candidate": candidate,
+        "job_data": job.jd.structured_data,
+        "resume_data": candidate.resume.structured_data,
     }
 
     result = _graph(rag_store).load_structured_profiles(state)
@@ -59,8 +58,8 @@ def test_matching_loads_sqlite_profiles_without_parsing_or_rag_profile_reads():
 def test_matching_requires_persisted_profiles():
     state = {
         "user_id": 7,
-        "job": SimpleNamespace(jd=SimpleNamespace(structured_data=None)),
-        "candidate": SimpleNamespace(resume=SimpleNamespace(structured_data=None)),
+        "job_data": None,
+        "resume_data": None,
     }
 
     with pytest.raises(ValueError, match="structured JD or resume is missing"):

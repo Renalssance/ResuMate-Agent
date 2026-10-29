@@ -37,3 +37,20 @@ def test_saved_match_is_in_immediate_summary_without_expiring_session():
         assert db.query(MatchResult).count() == 1
         assert repository.get_run(user_id=user.id, run_id=job.id).candidates[0].total_score == 85
     engine.dispose()
+
+
+def test_new_analysis_group_rolls_back_with_its_acceptance_transaction():
+    from backend.db.models import AnalysisJob, AnalysisCandidate
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    with Session(engine) as db:
+        user = User(username="rollback-analysis", password_hash="unused")
+        db.add(user); db.flush()
+        jd = JobDescription(user_id=user.id, title="Backend", raw_text="Python")
+        resume = Resume(user_id=user.id, filename="resume.txt", raw_text="Python")
+        db.add_all([jd, resume]); db.commit()
+        SqlAlchemyRunRepository(db).create_run(user_id=user.id, jd=jd, resumes=[resume])
+        db.rollback()
+        assert db.query(AnalysisJob).count() == 0
+        assert db.query(AnalysisCandidate).count() == 0
+    engine.dispose()

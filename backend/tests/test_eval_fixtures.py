@@ -5,7 +5,7 @@ from evals.fixtures import load_cases, make_model
 
 
 def test_core_categories_and_frontend_facts_are_distinct():
-    cases = load_cases()
+    cases = [case for case in load_cases() if not case.get("runner")]
     assert len(cases) == 12
     assert Counter(case['category'] for case in cases) == {
         'normal': 3, 'clarification': 2, 'refusal_cancel': 2, 'tool_failure': 2,

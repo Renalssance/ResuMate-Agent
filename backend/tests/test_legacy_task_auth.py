@@ -1,143 +1,88 @@
-from types import SimpleNamespace
+import json
 
 import pytest
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from backend.auth.security import create_access_token
-from backend.db.database import Base, get_db
-from backend.db.models import User
+from backend.db.database import get_db
 from backend.routes import tasks
-from backend.services.analysis import AnalysisService
-from backend.services.progress import TaskProgressHub
+from backend.schemas.agent_runs import RunCreate, RunStatus
+from backend.services import agent_runs, progress
+from backend.tests.career_fixtures import career_db, career_engine
+from backend.tests.test_long_task_core import followup_request
 
 
 @pytest.fixture
-def task_client(tmp_path, monkeypatch):
-    engine = create_engine(f"sqlite:///{tmp_path / 'tasks.db'}", connect_args={"check_same_thread": False})
-    Base.metadata.create_all(engine)
-    with Session(engine) as db:
-        owner = User(username="owner", password_hash="hash")
-        other = User(username="other", password_hash="hash")
-        db.add_all([owner, other])
-        db.commit()
-        owner_id, other_id = owner.id, other.id
-    hub = TaskProgressHub()
-    monkeypatch.setattr(tasks, "progress_hub", hub)
+def task_client(career_db, career_engine):
     app = FastAPI()
     app.include_router(tasks.router)
-
     def request_db():
-        with Session(engine) as db:
+        with Session(career_engine, autoflush=False, expire_on_commit=False) as db:
             yield db
-
     app.dependency_overrides[get_db] = request_db
     with TestClient(app) as client:
-        yield client, hub, owner_id, other_id, engine
-    engine.dispose()
+        yield client
 
 
-def test_task_registration_preserves_owner_history_and_rejects_another_user():
-    hub = TaskProgressHub()
-    task_id = hub.create_task("parse", user_id=1, task_id="client-generated")
-    hub.publish(task_id, stage="extract", status="running", progress=30, message="Extracting")
-
-    assert task_id == "client-generated"
-    assert hub.create_task("parse", user_id=1, task_id=task_id) == task_id
-    assert hub.is_owned_by(task_id, 1)
-    assert not hub.is_owned_by(task_id, 2)
-    assert not hub.is_owned_by("unknown", 1)
-    assert len(hub._history[task_id]) == 1
-    with pytest.raises(HTTPException) as error:
-        hub.create_task("parse", user_id=2, task_id=task_id)
-    assert error.value.status_code == 404
-    assert hub.is_owned_by(task_id, 1)
-    assert len(hub._history[task_id]) == 1
+def headers(username='alice'):
+    return {'Authorization': f'Bearer {create_access_token(username, "user")}'}
 
 
-def test_legacy_task_events_require_token_and_owner_before_streaming(task_client):
-    client, hub, owner_id, other_id, _ = task_client
-    task_id = hub.create_task("parse", user_id=owner_id)
-    hub.publish(task_id, stage="completed", status="success", progress=100, message="Private result")
-    owner_headers = {"Authorization": f"Bearer {create_access_token('owner', 'user')}"}
-    other_headers = {"Authorization": f"Bearer {create_access_token('other', 'user')}"}
-
-    assert client.get(f"/api/tasks/{task_id}/events").status_code == 401
-    assert client.get(f"/api/tasks/{task_id}/events", headers=other_headers).status_code == 404
-    assert client.get("/api/tasks/unknown/events", headers=owner_headers).status_code == 404
-    response = client.get(f"/api/tasks/{task_id}/events", headers=owner_headers)
+def test_legacy_task_events_require_token_and_sql_owner_before_streaming(task_client, career_db):
+    run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+    epoch = agent_runs.claim_run(career_db, run_id)
+    agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json={'follow_up': '私有回答'})
+    url = f'/api/tasks/{run_id}/events'
+    assert task_client.get(url).status_code == 401
+    assert task_client.get(url, headers=headers('bob')).status_code == 404
+    assert task_client.get('/api/tasks/unknown/events', headers=headers()).status_code == 404
+    response = task_client.get(url, headers=headers())
     assert response.status_code == 200
-    assert response.headers["content-type"].startswith("text/event-stream")
-    assert '"message":"Private result"' in response.text
+    assert '"follow_up":"私有回答"' in response.text
     assert '"status":"success"' in response.text
+    assert 'id: 3\ndata: ' in response.text
+    assert 'data: ' not in task_client.get(url, headers={**headers(), 'Last-Event-ID': '3'}).text
+    assert task_client.get(url + '?after=99', headers=headers()).status_code == 409
 
 
-@pytest.mark.parametrize("operation", ["analysis", "questions"])
-def test_sync_analysis_registers_caller_task_before_publishing(monkeypatch, operation):
-    from backend.services import analysis
-
-    hub = TaskProgressHub()
-    monkeypatch.setattr(analysis, "progress_hub", hub)
-    service = AnalysisService.__new__(AnalysisService)
-    service.repository = SimpleNamespace(get_candidate_report=lambda **kwargs: None)
-    task_id = f"sync-{operation}"
-
-    with pytest.raises(ValueError):
-        if operation == "analysis":
-            service.analyze_document_ids(user_id=17, jd_document_id="invalid", resume_document_ids=[], task_id=task_id)
-        else:
-            service.generate_questions(user_id=17, run_id=1, candidate_id=1, task_id=task_id)
-    assert hub.is_owned_by(task_id, 17)
-    assert hub._history[task_id][-1].status == "failed"
-
-
-@pytest.mark.parametrize("operation", ["upload", "reparse", "run", "questions", "followup"])
-@pytest.mark.parametrize("prefer", ["", "respond-async"])
-def test_submission_rejects_another_users_task_id_before_work(monkeypatch, operation, prefer):
-    from io import BytesIO
-    from fastapi import BackgroundTasks, UploadFile
-    from backend.routes import documents, runs
-    from backend.schemas.workflow import AnalyzeRequest, FollowUpAnalysisRequest
-
-    hub = TaskProgressHub()
-    task_id = hub.create_task(user_id=1, task_id="owned-task")
-    monkeypatch.setattr(documents, "progress_hub", hub)
-    monkeypatch.setattr(runs, "progress_hub", hub)
-    monkeypatch.setattr(documents, "_find_document", lambda *args: ("resume", object()))
-    common = dict(current_user=SimpleNamespace(id=2), db=object(), prefer=prefer, background_tasks=BackgroundTasks())
-    with pytest.raises(HTTPException) as error:
-        if operation == "upload":
-            documents.upload_documents(document_type="resume", files=[UploadFile(filename="resume.txt", file=BytesIO(b"text"))], task_id=task_id, **common)
-        elif operation == "reparse":
-            documents.reparse_document("resume:1", task_id=task_id, **common)
-        elif operation == "run":
-            runs.create_run(AnalyzeRequest(jd_document_id="jd:1", resume_document_ids=["resume:1"], task_id=task_id), **common)
-        elif operation == "questions":
-            runs.generate_candidate_questions(1, 1, task_id=task_id, question_count=3, **common)
-        else:
-            documents.analyze_followup(FollowUpAnalysisRequest(question="What?", answer="This"), task_id=task_id, **common)
-    assert error.value.status_code == 404
-    assert hub.is_owned_by(task_id, 1)
-    assert hub._history[task_id] == []
-    assert common["background_tasks"].tasks == []
-
-
-def test_legacy_stream_releases_auth_database_connection_before_yielding(task_client, monkeypatch):
-    client, hub, owner_id, _, engine = task_client
-    task_id = hub.create_task("parse", user_id=owner_id)
+def test_legacy_stream_closes_auth_session_before_yielding(task_client, career_db, career_engine, monkeypatch):
+    run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+    career_db.close()
     checked_out = []
+    async def finite_stream(factory, user_id, task_id, after):
+        checked_out.append(career_engine.pool.checkedout())
+        yield ': connected\n\n'
+        checked_out.append(career_engine.pool.checkedout())
+    monkeypatch.setattr(tasks.run_events, 'stream_task_events', finite_stream)
+    response = task_client.get(f'/api/tasks/{run_id}/events', headers=headers())
+    assert response.status_code == 200 and checked_out == [0, 0]
 
-    async def finite_stream(_task_id):
-        checked_out.append(engine.pool.checkedout())
-        yield ": heartbeat\n\n"
-        checked_out.append(engine.pool.checkedout())
 
-    monkeypatch.setattr(hub, "stream", finite_stream)
-    headers = {"Authorization": f"Bearer {create_access_token('owner', 'user')}"}
-    response = client.get(f"/api/tasks/{task_id}/events", headers=headers)
+@pytest.mark.parametrize('mode,result,expected_key', [
+    ('upload', {'documents': [{'id': 'resume:1', 'filename': '原件.txt'}], 'taskId': 'saved'}, 'documents'),
+    ('reparse', {'id': 'resume:1', 'filename': '原件.txt'}, 'document'),
+    ('saved_job', {'id': 'jd:1', 'vectorized': False}, 'document'),
+])
+def test_legacy_terminal_projection_preserves_document_result_shape(task_client, career_db, mode, result, expected_key):
+    document_id = 'jd:1' if mode == 'saved_job' else 'resume:1'
+    run_id = agent_runs.create_run(career_db, 1, RunCreate(kind='document_parse', documentId=document_id,
+        parseMode=mode, requestId='shape')).id
+    epoch = agent_runs.claim_run(career_db, run_id)
+    progress.append_progress(career_db, run_id, epoch, stage='extract', progress=50, message='处理')
+    agent_runs.finish_run(career_db, run_id, epoch, RunStatus.SUCCEEDED, result_json=result)
+    response = task_client.get(f'/api/tasks/{run_id}/events?after=2', headers=headers())
+    frames = [json.loads(line[6:]) for line in response.text.splitlines() if line.startswith('data: ')]
+    assert [frame['status'] for frame in frames] == ['running', 'success']
+    assert frames[-1]['data'][expected_key] == (result['documents'] if mode == 'upload' else result)
+    assert 'id: 3\ndata: ' in response.text and 'id: 4\ndata: ' in response.text
 
-    assert response.status_code == 200
-    assert response.text == ": heartbeat\n\n"
-    assert checked_out == [0, 0]
+
+def test_cancelled_legacy_stream_is_terminal_failed_with_cancelled_stage(task_client, career_db):
+    run_id = agent_runs.create_run(career_db, 1, followup_request()).id
+    agent_runs.cancel_run(career_db, 1, run_id)
+    response = task_client.get(f'/api/tasks/{run_id}/events', headers=headers())
+    terminal = json.loads(next(line[6:] for line in response.text.splitlines() if line.startswith('data: ')))
+    assert terminal['status'] == 'failed' and terminal['stage'] == 'cancelled'
+    assert terminal['message'] == '任务已取消' and terminal['data']['code'] == 'cancelled'

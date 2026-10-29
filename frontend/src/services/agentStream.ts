@@ -15,6 +15,7 @@ export interface RunSnapshot {
   errorCode: string | null
   cancelRequested: boolean
   outputRefs: unknown[]
+  result?: Record<string, unknown> | null
   actions: { actionId: string; kind: 'input' | 'approval'; payload: Record<string, unknown>; revision: number }[]
 }
 export interface RunEvent {
@@ -63,7 +64,10 @@ function waitForRetry(delay: number, signal: AbortSignal): Promise<void> {
 export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   const controller = new AbortController()
   const { signal } = controller
-  const close = () => controller.abort()
+  let transport: AbortController | undefined
+  const close = () => { controller.abort(); transport?.abort() }
+  const offline = () => transport?.abort()
+  window.addEventListener('offline', offline)
   if (options.signal?.aborted) close()
   else options.signal?.addEventListener('abort', close, { once: true })
 
@@ -74,7 +78,7 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   let retry = 0
 
   async function get(endpoint: string, accept: string): Promise<Response> {
-    const response = await fetch(endpoint, { signal, headers: { ...buildAuthHeaders(), Accept: accept } })
+    const response = await fetch(endpoint, { signal: transport!.signal, headers: { ...buildAuthHeaders(), Accept: accept } })
     if (response.ok) return response
     const body = await response.json().catch(() => ({}))
     const retryAfter = response.headers.get('Retry-After')
@@ -90,6 +94,7 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   async function consume(): Promise<void> {
     while (!signal.aborted) {
       let retryAfterMs: number | undefined
+      transport = new AbortController()
       try {
         // A retry may have completed while disconnected; refresh the replay boundary.
         const initialSnapshot = !snapshot
@@ -119,8 +124,9 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
           if (event.type === 'run.status' && terminalStatuses.has(String(event.payload.status)) && cursor >= snapshot!.lastSeq) {
             throw terminalStream
           }
-        }, signal)
-        if (terminalStatuses.has(snapshot.status) && cursor >= snapshot.lastSeq) return
+        }, transport.signal)
+        if (signal.aborted || (terminalStatuses.has(snapshot.status) && cursor >= snapshot.lastSeq)) return
+        options.onError?.(new Error('实时连接已中断，正在重新连接'))
       } catch (error) {
         if (signal.aborted || error === terminalStream) return
         if (error === resetStream || (error instanceof RunStreamError && error.status === 409 && error.code === 'cursor_reset')) {
@@ -138,6 +144,9 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
     }
   }
 
-  const done = consume().finally(() => options.signal?.removeEventListener('abort', close))
+  const done = consume().finally(() => {
+    options.signal?.removeEventListener('abort', close)
+    window.removeEventListener('offline', offline)
+  })
   return { close, done }
 }

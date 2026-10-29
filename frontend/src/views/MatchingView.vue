@@ -152,6 +152,7 @@
 
 <script setup lang="ts">
 import { Eye, Trash2, X } from '@lucide/vue'
+import { activeTaskKey, readActiveTask, saveActiveTask } from '../services/activeTasks'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -170,6 +171,8 @@ const documentStore = useDocumentStore()
 const route = useRoute(), auth = useAuthStore()
 const matchStore = useMatchStore()
 const task = useTaskSse(MATCH_STEPS)
+interface ActiveMatch { taskId: string; jdId: string; resumeIds: string[] }
+let matchStorageKey = activeTaskKey('match-task')
 
 const selectedJdId = ref('')
 const selectedResumeIds = ref<string[]>([])
@@ -186,7 +189,13 @@ const detailGroups = computed(() => (
 
 watch(() => auth.token, () => {
   selectedJdId.value = ''; selectedResumeIds.value = []; selectedResult.value = null
-  if (auth.token) { void documentStore.loadDocuments(); void matchStore.loadMatches() }
+  task.reset()
+  matchStorageKey = activeTaskKey('match-task')
+  if (auth.token) {
+    void documentStore.loadDocuments(); void matchStore.loadMatches()
+    const active = readActiveTask<ActiveMatch>(matchStorageKey)
+    if (active) { selectedJdId.value = active.jdId; selectedResumeIds.value = active.resumeIds; task.start(active.taskId) }
+  }
 }, { immediate: true })
 watch([() => route.query.jdId, () => route.query.resumeId, () => documentStore.parsedJds, () => documentStore.parsedResumes], () => {
   const jd = String(route.query.jdId || ''), resume = String(route.query.resumeId || '')
@@ -199,6 +208,9 @@ watch([() => route.query.matchId, () => matchStore.results], () => {
 }, { immediate: true })
 
 watch(task.status, async (status) => {
+  if (status === 'success' || status === 'failed') {
+    if (readActiveTask<ActiveMatch>(matchStorageKey)?.taskId === task.taskId.value) localStorage.removeItem(matchStorageKey)
+  }
   if (status !== 'success') return
   await matchStore.loadMatches()
   selectedResult.value = matchStore.results[0] || null
@@ -216,9 +228,13 @@ async function runMatch() {
   const resumes = documentStore.parsedResumes.filter((item) => selectedResumeIds.value.includes(item.id))
   if (!jd || !resumes.length) return
   const taskId = createId('task_match')
+  const storageKey = matchStorageKey
   task.startManual(taskId, '正在提交匹配任务')
   try {
-    await matchStore.createMatch(jd, resumes, taskId, task.start)
+    await matchStore.createMatch(jd, resumes, taskId, acceptedId => {
+      saveActiveTask(storageKey, { taskId: acceptedId, jdId: jd.id, resumeIds: resumes.map(resume => resume.id) })
+      task.start(acceptedId)
+    })
     selectedResult.value = matchStore.results[0] || null
   } catch (err) {
     task.failManual(err instanceof Error ? err.message : String(err))

@@ -24,7 +24,7 @@ class SqlAlchemyRunRepository:
         self.db.flush()
         for resume in resumes:
             self.db.add(AnalysisCandidate(job_id=job.id, resume_id=resume.id, status="pending"))
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(job)
         return job
 
@@ -93,7 +93,7 @@ class SqlAlchemyRunRepository:
         candidate.status = "completed"
         if all(item.status == "completed" for item in job.candidates):
             job.status = "completed"
-        self.db.commit()
+        self.db.flush()
 
     def save_questions(
         self,
@@ -138,13 +138,13 @@ class SqlAlchemyRunRepository:
         )
         followups.questions = [item.model_dump(mode="json") for item in question_set.ambiguity_followups]
         self.db.add_all([candidate.match_result, formal, followups])
-        self.db.commit()
+        self.db.flush()
         return report
 
     def mark_candidate_failed(self, candidate: AnalysisCandidate, detail: str) -> None:
         candidate.status = "failed"
         candidate.note = detail[:2000]
-        self.db.commit()
+        self.db.flush()
 
     def delete_candidate(self, *, user_id: int, run_id: int, candidate_id: int) -> bool:
         job = self._job(user_id, run_id)

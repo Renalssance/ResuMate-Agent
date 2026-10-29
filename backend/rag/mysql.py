@@ -87,7 +87,7 @@ class MySQLRagStore:
             )
 
     def replace_document_chunks(
-        self, *, user_id: int, document_id: int, chunks: list[DocumentChunk]
+        self, *, user_id: int, document_id: int, chunks: list[DocumentChunk], before_write=None
     ) -> None:
         if not chunks:
             return
@@ -108,6 +108,8 @@ class MySQLRagStore:
             or any(len(vector) != len(vectors[0]) for vector in vectors)
         ):
             raise RuntimeError("Embedding service returned invalid vectors")
+        if before_write is not None:
+            before_write()
         with self.session_factory() as session, session.begin():
             self._check_contract(session, len(vectors[0]))
             existing = {

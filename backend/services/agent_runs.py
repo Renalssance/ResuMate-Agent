@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from backend.db.agent_models import AgentAction, AgentRun, AgentRunEvent, AgentSession
 from backend.db.career_models import ResumeVersion
-from backend.db.models import JobDescription, Resume, utcnow
+from backend.db.models import AnalysisCandidate, AnalysisJob, JobDescription, Resume, utcnow
 from backend.schemas.agent_runs import ActionResponse, RunCreate, RunStatus
 from backend.services.run_events import append_event
 
@@ -51,6 +51,10 @@ def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
         from backend.services.resume_export import pdf_artifact
         artifact = pdf_artifact(run)
         return [artifact] if artifact else []
+    if run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
+        return []
+    if run.kind != 'tailoring':
+        raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
     versions = list(db.scalars(select(ResumeVersion).where(
         ResumeVersion.run_id == run_id, ResumeVersion.user_id == user_id,
     ).order_by(ResumeVersion.created_at.desc(), ResumeVersion.id.desc())))
@@ -62,7 +66,14 @@ def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
 
 
 def _public_input(run: AgentRun) -> dict:
-    keys = ('resumeVersionId',) if run.kind == 'resume_export' else ('jdId', 'resumeId')
+    keys = {
+        'tailoring': ('jdId', 'resumeId'),
+        'resume_export': ('resumeVersionId',),
+        'document_parse': ('documentId', 'parseMode'),
+        'match_analysis': ('jdId', 'resumeIds', 'analysisJobId'),
+        'question_generation': ('analysisJobId', 'candidateId', 'questionCount'),
+        'answer_followup': ('followup',),
+    }.get(run.kind, ())
     return {key: run.input_json.get(key) for key in keys}
 
 
@@ -77,20 +88,117 @@ def _input_versions(db: Session, user_id: int, jd_id: int, resume_id: int) -> di
 
 
 def _request_input(request: RunCreate) -> dict:
+    if request.kind == 'tailoring':
+        return {'jdId': request.jd_id, 'resumeId': request.resume_id}
     if request.kind == 'resume_export':
         return {'resumeVersionId': request.resume_version_id}
-    return {'jdId': request.jd_id, 'resumeId': request.resume_id}
+    if request.kind == 'document_parse':
+        return {'documentId': request.document_id, 'parseMode': request.parse_mode}
+    if request.kind == 'match_analysis':
+        return {'jdId': request.jd_id, 'resumeIds': request.resume_ids}
+    if request.kind == 'question_generation':
+        return {'analysisJobId': request.analysis_job_id, 'candidateId': request.candidate_id,
+                'questionCount': request.question_count}
+    if request.kind == 'answer_followup':
+        return {'followup': request.followup.model_dump(mode='json')}
+    raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
 
 
 def _existing_request(db: Session, user_id: int, request: RunCreate) -> AgentRun | None:
     run = db.scalar(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.request_id == request.request_id))
+    inputs = _request_input(request)
     if run is not None and (
         run.kind != request.kind
-        or _public_input(run) != _request_input(request)
+        or {key: run.input_json.get(key) for key in inputs} != inputs
         or (request.session_id is not None and run.session_id != request.session_id)
     ):
         raise RunError(409, 'request_conflict', '该 requestId 已用于另一项请求')
     return run
+
+
+def find_upload_run(db: Session, user_id: int, request_id: str, document_type: str) -> AgentRun | None:
+    """Resolve an upload request key before storing another original file."""
+    run = db.scalar(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.request_id == request_id))
+    if run is not None and (run.kind != 'document_parse' or run.input_json.get('parseMode') != 'upload'
+                           or not run.input_json.get('documentId', '').startswith(document_type + ':')):
+        raise RunError(409, 'request_conflict', '该 requestId 已用于另一项请求')
+    return run
+
+
+def _owned_source(db: Session, model, identifier: int, user_id: int):
+    row = db.scalar(select(model).where(model.id == identifier, model.user_id == user_id)
+                    .execution_options(populate_existing=True).with_for_update())
+    if row is None:
+        raise RunError(404, 'not_found', '任务来源不存在或已不属于当前用户')
+    return row
+
+
+def require_task_sources(db: Session, run: AgentRun) -> None:
+    """Refresh the fixed business identities inside the worker's guarded transaction."""
+    inputs = run.input_json
+    if run.kind == 'document_parse':
+        kind, identifier = inputs['documentId'].split(':')
+        _owned_source(db, Resume if kind == 'resume' else JobDescription, int(identifier), run.user_id)
+    elif run.kind == 'match_analysis':
+        job = _owned_source(db, AnalysisJob, inputs['analysisJobId'], run.user_id)
+        _owned_source(db, JobDescription, inputs['jdId'], run.user_id)
+        if job.jd_id != inputs['jdId']:
+            raise RunError(404, 'not_found', '匹配岗位已删除或改变')
+        for candidate_id, resume_id in zip(inputs['candidateIds'], inputs['resumeIds'], strict=True):
+            _owned_source(db, Resume, resume_id, run.user_id)
+            candidate = db.scalar(select(AnalysisCandidate).where(
+                AnalysisCandidate.id == candidate_id, AnalysisCandidate.job_id == job.id,
+                AnalysisCandidate.resume_id == resume_id).execution_options(populate_existing=True).with_for_update())
+            if candidate is None:
+                raise RunError(404, 'not_found', '匹配候选人已删除或改变')
+    elif run.kind == 'question_generation':
+        job = _owned_source(db, AnalysisJob, inputs['analysisJobId'], run.user_id)
+        _owned_source(db, JobDescription, inputs['jdId'], run.user_id)
+        _owned_source(db, Resume, inputs['resumeId'], run.user_id)
+        candidate = db.scalar(select(AnalysisCandidate).where(
+            AnalysisCandidate.id == inputs['candidateId'], AnalysisCandidate.job_id == job.id,
+            AnalysisCandidate.resume_id == inputs['resumeId']).execution_options(populate_existing=True).with_for_update())
+        if candidate is None or job.jd_id != inputs['jdId']:
+            raise RunError(404, 'not_found', '面试题来源已删除或改变')
+    elif run.kind == 'answer_followup':
+        return
+    else:
+        raise RunError(400, 'unsupported_run_kind', '不支持的长任务类型')
+
+
+def _capture_task_inputs(db: Session, user_id: int, request: RunCreate, inputs: dict) -> dict:
+    if request.kind == 'document_parse':
+        kind, identifier = request.document_id.split(':')
+        row = _owned_source(db, Resume if kind == 'resume' else JobDescription, int(identifier), user_id)
+        inputs['sourceRef'] = row.file_path
+        return {'document': row.updated_at.replace(tzinfo=None).isoformat()}
+    if request.kind == 'match_analysis':
+        jd = _owned_source(db, JobDescription, request.jd_id, user_id)
+        resumes = [_owned_source(db, Resume, identifier, user_id) for identifier in request.resume_ids]
+        from backend.repositories.runs import SqlAlchemyRunRepository
+        job = SqlAlchemyRunRepository(db).create_run(user_id=user_id, jd=jd, resumes=resumes)
+        candidates = {candidate.resume_id: candidate.id for candidate in job.candidates}
+        inputs.update(analysisJobId=job.id, candidateIds=[candidates[resume.id] for resume in resumes])
+        return {'jd': jd.updated_at.replace(tzinfo=None).isoformat(),
+                'resumes': {str(resume.id): resume.updated_at.replace(tzinfo=None).isoformat() for resume in resumes}}
+    if request.kind == 'question_generation':
+        job = _owned_source(db, AnalysisJob, request.analysis_job_id, user_id)
+        candidate = db.scalar(select(AnalysisCandidate).where(
+            AnalysisCandidate.id == request.candidate_id, AnalysisCandidate.job_id == job.id).with_for_update())
+        if candidate is None or job.jd_id is None:
+            raise RunError(404, 'not_found', '候选人或岗位不存在')
+        resume = _owned_source(db, Resume, candidate.resume_id, user_id)
+        jd = _owned_source(db, JobDescription, job.jd_id, user_id)
+        from backend.repositories.runs import SqlAlchemyRunRepository
+        report = SqlAlchemyRunRepository(db).get_candidate_report(user_id=user_id, run_id=job.id, candidate_id=candidate.id)
+        if report is None:
+            raise RunError(404, 'not_found', '匹配报告不存在')
+        inputs.update(resumeId=resume.id, jdId=jd.id, reportSnapshot=report.model_dump(mode='json'))
+        return {'resume': resume.updated_at.replace(tzinfo=None).isoformat(),
+                'jd': jd.updated_at.replace(tzinfo=None).isoformat()}
+    if request.kind == 'answer_followup':
+        return {}
+    raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
 
 
 def require_valid_session(db: Session, run: AgentRun) -> None:
@@ -122,7 +230,7 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         from backend.services.resume_export import read_confirmed_version
         version = read_confirmed_version(db, user_id, request.resume_version_id)
         versions = {'resumeVersion': version.revision}
-    else:
+    elif request.kind == 'tailoring':
         from backend.services.memory import capture_memory_ids
         memory_ids = capture_memory_ids(db, user_id)
         versions = _input_versions(db, user_id, request.jd_id, request.resume_id)
@@ -132,6 +240,10 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
             db, user_id, source_document_id=request.resume_id, confirmed_only=True)]
         from backend.agent_runtime.context import capture_context
         inputs['contextSnapshot'] = capture_context(db, user_id, request.jd_id, request.resume_id, versions)
+    elif request.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
+        versions = _capture_task_inputs(db, user_id, request, inputs)
+    else:
+        raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
     if request.session_id:
         session = db.scalar(select(AgentSession).where(AgentSession.id == request.session_id, AgentSession.user_id == user_id))
         if session is None:
@@ -165,6 +277,16 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
     return run
 
 
+def _mark_stopped_document(db: Session, run: AgentRun, status: RunStatus) -> None:
+    # Queued cancellation and exhausted recovery never enter the parse handler.
+    if run.kind != 'document_parse' or status not in (RunStatus.FAILED, RunStatus.CANCELLED):
+        return
+    kind, identifier = run.input_json['documentId'].split(':')
+    model = Resume if kind == 'resume' else JobDescription
+    db.execute(update(model).where(model.id == int(identifier), model.user_id == run.user_id)
+               .values(parse_status=status.value))
+
+
 def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
     if run.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.CANCELLED):
@@ -183,6 +305,7 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
             AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
         ).values(active_run_id=None))
     if stopped.rowcount == 1:
+        _mark_stopped_document(db, run, RunStatus.CANCELLED)
         append_event(db, run.id, 'run.status', {'status': RunStatus.CANCELLED})
     # A running call stops cooperatively in T04/T05. Do not claim it stopped here.
     db.commit()
@@ -199,9 +322,13 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         from backend.services.resume_export import read_confirmed_version
         read_confirmed_version(db, user_id, run.input_json['resumeVersionId'],
                                revision=run.input_versions['resumeVersion'])
-    else:
+    elif run.kind == 'tailoring':
         from backend.agent_runtime.context import read_context
         read_context(db, run)
+    elif run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
+        require_task_sources(db, run)
+    else:
+        raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
     _claim_session(db, user_id, run.session_id, run.id, kind=run.kind)
     run.status = RunStatus.QUEUED
     run.attempt += 1
@@ -234,7 +361,7 @@ def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
         'attempt': run.attempt, 'lastSeq': last_seq, 'errorCode': run.error_code,
         'sessionInvalidated': run.kind == 'tailoring' and invalidated_at is not None,
         'cancelRequested': run.cancel_requested_at is not None,
-        'outputRefs': run.output_refs,
+        'outputRefs': run.output_refs, 'result': run.result_json,
         'actions': [{'actionId': a.id, 'kind': a.kind, 'payload': a.payload, 'revision': 1} for a in actions],
     }
 
@@ -334,7 +461,7 @@ def heartbeat_run(db: Session, run_id: str, epoch: int) -> bool:
 
 def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
                *, error_code: str | None = None, output_refs: list | None = None,
-               retry: bool = False) -> None:
+               retry: bool = False, result_json: dict | None = None) -> None:
     # First acquire a write lock also on SQLite; read cancellation under that lock.
     changed = db.execute(update(AgentRun).where(
         AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
@@ -352,10 +479,13 @@ def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
                       'session_context_invalidated' if run.error_code == 'session_context_invalidated' else None)
     if output_refs is not None and run.status != RunStatus.CANCELLED:
         run.output_refs = output_refs
+    if result_json is not None and run.status == RunStatus.SUCCEEDED and run.result_json is None:
+        run.result_json = result_json
     if run.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.CANCELLED):
         db.execute(update(AgentSession).where(
             AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
         ).values(active_run_id=None))
+    _mark_stopped_document(db, run, run.status)
     append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
     db.commit()
 
@@ -385,6 +515,7 @@ def recover_stale_runs(db: Session, now=None) -> int:
             run.status = RunStatus.QUEUED
             run.attempt += 1
             run.heartbeat_at = None
+        _mark_stopped_document(db, run, run.status)
         append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
         recovered += 1
     db.commit()

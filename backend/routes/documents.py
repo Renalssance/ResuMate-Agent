@@ -1,66 +1,27 @@
 from __future__ import annotations
 
-import copy
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import anyio
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Header, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
-from backend.agents.harness import AgentHarness
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import JobDescription, Resume, User
 from backend.rag import get_rag_store
-from backend.schemas.workflow import (
-    DocumentParseResponse,
-    DocumentParseResult,
-    DocumentType,
-    FollowUpAnalysisRequest,
-    FollowUpAnalysisResponse,
-    JobProfile,
-    ResumeProfile,
-    StructuredDataUpdate,
-)
+from backend.schemas.agent_runs import RunCreate
+from backend.schemas.workflow import (DocumentParseResponse, DocumentParseResult, DocumentType,
+    FollowUpAnalysisRequest, FollowUpAnalysisResponse, StructuredDataUpdate)
 from backend.services.analysis import parse_document_id
+from backend.services.agent_runs import RunError, find_upload_run
 from backend.services.background_tasks import submit_task
-from backend.services.documents import (
-    chunk_pages,
-    cleanup_upload_cache,
-    delete_stored_file,
-    detect_multiple_positions,
-    extract_stored_pages,
-    persisted_upload_path,
-    store_upload,
-)
-from backend.services.llm_validation import validate_resume_source_refs
-from backend.services.progress import progress_hub
-from backend.services.resume_postprocess import postprocess_resume_profile
+from backend.services.documents import (cleanup_upload_cache, delete_stored_file,
+    document_record as _record, profile_parse_status as _parse_status, persisted_upload_path, store_upload)
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
-
-
-def _utc_isoformat(value) -> str:
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _record(document_type: str, row) -> DocumentParseResult:
-    succeeded = str(row.parse_status or "") in {"success", "success_with_warnings"}
-    return DocumentParseResult(
-        id=f"{document_type}:{row.id}",
-        type=document_type,
-        filename=row.filename if document_type == "resume" else (row.filename or row.title),
-        size=row.document_size,
-        raw_text=row.raw_text,
-        parsed_content=row.structured_data or {},
-        parse_status=row.parse_status,
-        created_at=_utc_isoformat(row.created_at),
-        vectorized=succeeded and (document_type == "resume" or bool(row.file_path)),
-        local_stored=bool(row.file_path),
-    )
 
 
 def _find_document(db: Session, user_id: int, document_id: str):
@@ -75,275 +36,47 @@ def _find_document(db: Session, user_id: int, document_id: str):
     return kind, row
 
 
-def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks, task_id: str = "", user_id: int | None = None):
-    harness = AgentHarness(user_id=user_id)
-    if kind == "jd":
-        if detect_multiple_positions(raw_text):
-            raise ValueError("MULTIPLE_POSITIONS_DETECTED: please split the JD before parsing")
-        profile = harness.run_schema(
-            task="document.parse_jd", prompt_name="parse_jd", schema=JobProfile,
-            variables={"jd_text": raw_text[:24000]},
-            task_id=task_id,
-            progress_stage="llm_analyze",
-            progress=45,
-        )
-        content = profile.model_dump(mode="json")
-        content["title"] = profile.job_title
-        return content
-    payload = [
-        {"chunk_id": chunk.id, "page_number": chunk.page_number, "section": chunk.section, "text": chunk.text}
-        for chunk in chunks
-    ]
-    profile = harness.run_schema(
-        task="document.parse_resume", prompt_name="parse_resume", schema=ResumeProfile,
-        variables={"filename": filename, "chunks_json": payload},
-        task_id=task_id,
-        progress_stage="llm_analyze",
-        progress=45,
-    )
-    profile = postprocess_resume_profile(profile, chunks)
-    validate_resume_source_refs(profile, chunks)
-    content = profile.model_dump(mode="json")
-    content["name"] = profile.candidate_name
-    return content
-
-
-def _parse_status(kind: DocumentType, content: dict) -> str:
-    if kind != "resume":
-        return "success"
-    quality = content.get("quality") if isinstance(content, dict) else {}
-    status = quality.get("status") if isinstance(quality, dict) else ""
-    return str(status or "success")
-
-
-def _cached_structured_data(db: Session, model, *, user_id: int, content_hash: str) -> dict | None:
-    if not content_hash:
-        return None
-    rows = (
-        db.query(model)
-        .filter(
-            model.user_id == user_id,
-            model.content_hash == content_hash,
-            model.parse_status.in_(("success", "success_with_warnings")),
-            model.structured_data.isnot(None),
-        )
-        .order_by(model.created_at.desc())
-        .all()
-    )
-    for row in rows:
-        if isinstance(row.structured_data, dict) and row.structured_data:
-            return copy.deepcopy(row.structured_data)
-    return None
-
-
 @router.post("", response_model=DocumentParseResponse)
 def upload_documents(
-    document_type: DocumentType = Form(...),
-    files: list[UploadFile] = File(...),
-    task_id: str = Form(""),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-    prefer: str = Header(""),
-    background_tasks: BackgroundTasks = None,
+    document_type: DocumentType = Form(...), files: list[UploadFile] = File(...), task_id: str = Form(""),
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db), prefer: str = Header(""),
 ):
     if len(files) != 1:
         raise HTTPException(status_code=422, detail="exactly one file is required per document parsing task")
-    task_id = progress_hub.create_task("task_parse", user_id=current_user.id, task_id=task_id)
+    request_id = task_id or str(uuid4())
+    user_id = current_user.id
     try:
-        # Finish reading UploadFile before FastAPI closes the request's files.
+        existing = find_upload_run(db, user_id, request_id, document_type)
+    except RunError as exc:
+        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+    if existing is not None:
+        return submit_task(db, user_id, RunCreate(kind="document_parse", request_id=request_id,
+            document_id=existing.input_json["documentId"], parse_mode="upload"), prefer=prefer)
+    stored = None
+    try:
+        # Persist the original before request-owned UploadFile is closed.
         stored = anyio.from_thread.run(store_upload, files[0])
-    except Exception as exc:
-        progress_hub.publish(task_id, stage="failed", status="failed", progress=100, message=str(exc))
-        raise HTTPException(status_code=400, detail=f"{files[0].filename}: {exc}") from exc
-    if prefer == "respond-async":
-        return submit_task(
-            background_tasks, task_id, current_user.id, _parse_saved_upload,
-            stored=stored, document_type=document_type, task_id=task_id,
-        )
-    return _parse_saved_upload(stored, document_type, task_id, current_user, db)
-
-
-def _parse_saved_upload(stored, document_type: DocumentType, task_id: str, current_user: User, db: Session):
-    row = None
-    row_committed = False
-    rag_store = None
-    try:
-        progress_hub.publish(
-            task_id,
-            stage="server_save",
-            status="running",
-            progress=12,
-            filename=stored.filename,
-            message=f"Saved {stored.filename} on server",
-            data={"filename": stored.filename, "size": stored.size},
-        )
-        pages = extract_stored_pages(
-            stored.path,
-            stored.filename,
-            progress_callback=lambda current, total: progress_hub.publish(
-                task_id,
-                stage="extract",
-                status="running",
-                progress=12 + round((current / max(total, 1)) * 20),
-                stage_progress=round((current / max(total, 1)) * 100),
-                current=current,
-                total=total,
-                filename=stored.filename if stored else None,
-                message=f"Extracting text page {current}/{total}",
-            ),
-        )
-        raw_text = "\n".join(page.text for page in pages).strip()
-        if document_type == "resume":
-            cached_structured_data = _cached_structured_data(
-                db, Resume, user_id=current_user.id, content_hash=stored.content_hash
-            )
-            row = Resume(
-                user_id=current_user.id, filename=stored.filename, file_path=persisted_upload_path(stored),
-                content_hash=stored.content_hash, raw_text=raw_text, structured_data={},
-                document_size=stored.size, parse_status="running",
-            )
-        else:
-            cached_structured_data = _cached_structured_data(
-                db, JobDescription, user_id=current_user.id, content_hash=stored.content_hash
-            )
-            row = JobDescription(
-                user_id=current_user.id, title=Path(stored.filename).stem, company="",
-                filename=stored.filename, file_path=persisted_upload_path(stored), raw_text=raw_text,
-                content_hash=stored.content_hash, structured_data={},
-                document_size=stored.size, parse_status="running",
-            )
+        fields = dict(user_id=user_id, filename=stored.filename, file_path=persisted_upload_path(stored),
+            content_hash=stored.content_hash, raw_text="", structured_data={},
+            document_size=stored.size, parse_status="pending")
+        row = Resume(**fields) if document_type == "resume" else JobDescription(
+            **fields, title=Path(stored.filename).stem, company="")
         db.add(row)
         db.flush()
-        db.commit()
-        row_committed = True
-        chunks = chunk_pages(
-            pages=pages, run_id=0, candidate_id=row.id, document_type=document_type, filename=stored.filename,
-        )
-        progress_hub.publish(
-            task_id,
-            stage="llm_analyze",
-            status="running",
-            progress=45,
-            document_id=f"{document_type}:{row.id}",
-            filename=stored.filename,
-            message=(
-                f"Reusing cached {document_type} structured data"
-                if cached_structured_data
-                else f"Structuring {document_type} with LLM"
-            ),
-            data={"document_id": f"{document_type}:{row.id}", "cached": bool(cached_structured_data)},
-        )
-        row.structured_data = cached_structured_data or _parse_profile(
-            document_type, stored.filename, raw_text, chunks, task_id, current_user.id
-        )
-        if document_type == "jd":
-            row.title = str(row.structured_data.get("job_title") or row.structured_data.get("title") or row.title)
-        rag_store = get_rag_store()
-        progress_hub.publish(
-            task_id,
-            stage="embedding",
-            status="running",
-            progress=65,
-            document_id=f"{document_type}:{row.id}",
-            filename=stored.filename,
-            message=f"Generating embeddings for {stored.filename}",
-            data={"chunk_count": len(chunks)},
-        )
-        rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
-        progress_hub.publish(
-            task_id,
-            stage="chroma_save",
-            status="running",
-            progress=78,
-            document_id=f"{document_type}:{row.id}",
-            filename=stored.filename,
-            message=f"Saving {document_type} vectors to vector table",
-            data={"document_id": f"{document_type}:{row.id}"},
-        )
-        row.parse_status = _parse_status(document_type, row.structured_data)
-        progress_hub.publish(
-            task_id,
-            stage="local_save",
-            status="running",
-            progress=92,
-            document_id=f"{document_type}:{row.id}",
-            filename=stored.filename,
-            message=f"Saving {document_type} record to database",
-            data={"document_id": f"{document_type}:{row.id}"},
-        )
-        db.commit()
-        db.refresh(row)
-        result = _record(document_type, row)
-        progress_hub.publish(
-            task_id,
-            stage="completed",
-            status="success",
-            progress=100,
-            document_id=result.id,
-            filename=result.filename,
-            message="Document parsing completed",
-            data={"documents": [result.model_dump(mode="json")]},
-        )
+        return submit_task(db, user_id, RunCreate(kind="document_parse", request_id=request_id,
+            document_id=f"{document_type}:{row.id}", parse_mode="upload"), prefer=prefer)
     except Exception as exc:
         db.rollback()
-        if rag_store is not None and row is not None and row.id is not None:
-            try:
-                rag_store.delete_document(user_id=current_user.id, document_type=document_type, document_id=row.id)
-            except Exception:
-                pass
-        if row_committed and row is not None:
-            try:
-                db.delete(row)
-                db.commit()
-            except Exception:
-                db.rollback()
-        if stored:
+        # A synchronous wait can fail after acceptance. Its original is still a retry input.
+        accepted = find_upload_run(db, user_id, request_id, document_type)
+        if stored is not None and accepted is None:
             delete_stored_file(persisted_upload_path(stored))
-        progress_hub.publish(
-            task_id,
-            stage="failed",
-            status="failed",
-            progress=100,
-            filename=stored.filename,
-            message=f"{stored.filename}: {exc}",
-        )
-        raise HTTPException(status_code=400, detail=f"{stored.filename}: {exc}") from exc
+        if isinstance(exc, HTTPException):
+            raise
+        raise HTTPException(status_code=400, detail=f"{files[0].filename}: {exc}") from exc
     finally:
-        if stored:
+        if stored is not None:
             cleanup_upload_cache(stored)
-    return DocumentParseResponse(documents=[result], task_id=task_id)
-
-
-def parse_saved_job_text(job_id: int, task_id: str, current_user: User, db: Session):
-    """Parse a saved posting directly; pasted jobs have no original file."""
-    row = db.query(JobDescription).filter_by(id=job_id, user_id=current_user.id).first()
-    if row is None:
-        raise HTTPException(status_code=404, detail="job not found")
-    document_id = f"jd:{row.id}"
-    try:
-        row.parse_status = "running"
-        db.commit()
-        progress_hub.publish(task_id, stage="llm_analyze", status="running", progress=45,
-                             document_id=document_id, filename=row.filename or row.title,
-                             message="Structuring saved job text with LLM")
-        row.structured_data = _parse_profile("jd", row.filename or row.title, row.raw_text, [], task_id, current_user.id)
-        row.parse_status = "success"
-        row.updated_at = datetime.now(timezone.utc)
-        db.commit()
-        db.refresh(row)
-        # Matching retrieves resume evidence, so JD text needs no embedding call.
-        result = _record("jd", row).model_copy(update={"vectorized": False})
-        progress_hub.publish(task_id, stage="completed", status="success", progress=100,
-                             document_id=document_id, filename=result.filename,
-                             message="Saved job parsing completed", data={"document": result.model_dump(mode="json")})
-        return result
-    except Exception as exc:
-        db.rollback()
-        row.parse_status = "failed"
-        db.commit()
-        progress_hub.publish(task_id, stage="failed", status="failed", progress=100,
-                             document_id=document_id, filename=row.filename or row.title, message=str(exc))
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("", response_model=list[DocumentParseResult])
@@ -379,114 +112,13 @@ def update_document_structured_data(
 
 
 @router.post("/{document_id}/parse", response_model=DocumentParseResult)
-def reparse_document(
-    document_id: str,
-    task_id: str = Query(""),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-    prefer: str = Header(""),
-    background_tasks: BackgroundTasks = None,
+def reparse_document(document_id: str, task_id: str = Query(""),
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db), prefer: str = Header(""),
 ):
     kind, row = _find_document(db, current_user.id, document_id)
-    task_id = progress_hub.create_task("task_parse", user_id=current_user.id, task_id=task_id)
-    if prefer == "respond-async":
-        return submit_task(
-            background_tasks, task_id, current_user.id, reparse_document,
-            document_id=document_id, task_id=task_id,
-        )
-    if kind == "jd" and not row.file_path:
-        return parse_saved_job_text(row.id, task_id, current_user, db)
-    try:
-        pages = extract_stored_pages(
-            row.file_path,
-            row.filename,
-            progress_callback=lambda current, total: progress_hub.publish(
-                task_id,
-                stage="extract",
-                status="running",
-                progress=12 + round((current / max(total, 1)) * 20),
-                document_id=document_id,
-                filename=row.filename,
-                stage_progress=round((current / max(total, 1)) * 100),
-                current=current,
-                total=total,
-                message=f"Re-extracting page {current}/{total}",
-            ),
-        )
-        chunks = chunk_pages(pages=pages, run_id=0, candidate_id=row.id, document_type=kind, filename=row.filename)
-        row.raw_text = "\n\n".join(page.text for page in pages)
-        progress_hub.publish(
-            task_id,
-            stage="llm_analyze",
-            status="running",
-            progress=45,
-            document_id=document_id,
-            filename=row.filename,
-            message=f"Re-structuring {kind} with LLM",
-        )
-        row.structured_data = _parse_profile(kind, row.filename, row.raw_text, chunks, task_id, current_user.id)
-        rag_store = get_rag_store()
-        progress_hub.publish(
-            task_id,
-            stage="embedding",
-            status="running",
-            progress=65,
-            document_id=document_id,
-            filename=row.filename,
-            message=f"Regenerating embeddings for {row.filename}",
-        )
-        rag_store.replace_document_chunks(user_id=current_user.id, document_id=row.id, chunks=chunks)
-        progress_hub.publish(
-            task_id,
-            stage="chroma_save",
-            status="running",
-            progress=78,
-            document_id=document_id,
-            filename=row.filename,
-            message=f"Replacing {kind} vectors in vector table",
-        )
-        row.parse_status = _parse_status(kind, row.structured_data)
-        progress_hub.publish(
-            task_id,
-            stage="local_save",
-            status="running",
-            progress=92,
-            document_id=document_id,
-            filename=row.filename,
-            message=f"Saving {kind} record to database",
-        )
-        db.commit()
-        db.refresh(row)
-        result = _record(kind, row)
-        progress_hub.publish(
-            task_id,
-            stage="completed",
-            status="success",
-            progress=100,
-            document_id=result.id,
-            filename=result.filename,
-            message="Document reparse completed",
-            data={"document": result.model_dump(mode="json")},
-        )
-        return result
-    except Exception as exc:
-        db.rollback()
-        row.parse_status = "failed"
-        try:
-            db.add(row)
-            db.commit()
-        except Exception:
-            db.rollback()
-        progress_hub.publish(
-            task_id,
-            stage="failed",
-            status="failed",
-            progress=100,
-            document_id=document_id,
-            filename=row.filename,
-            message=str(exc),
-        )
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    mode = "saved_job" if kind == "jd" and not row.file_path else "reparse"
+    return submit_task(db, current_user.id, RunCreate(kind="document_parse", request_id=task_id or str(uuid4()),
+        document_id=document_id, parse_mode=mode), prefer=prefer)
 
 
 @router.delete("/{document_id}")
@@ -518,31 +150,9 @@ followup_router = APIRouter(prefix="/api", tags=["followups"])
 
 
 @followup_router.post("/followups/analyze", response_model=FollowUpAnalysisResponse)
-def analyze_followup(
-    request: FollowUpAnalysisRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-    task_id: str = Query(""),
-    prefer: str = Header(""),
-    background_tasks: BackgroundTasks = None,
+def analyze_followup(request: FollowUpAnalysisRequest,
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db),
+    task_id: str = Query(""), prefer: str = Header(""),
 ):
-    if task_id or prefer == "respond-async":
-        task_id = progress_hub.create_task("task_followup", user_id=current_user.id, task_id=task_id)
-    if prefer == "respond-async":
-        return submit_task(
-            background_tasks, task_id, current_user.id, analyze_followup,
-            request=request, task_id=task_id,
-        )
-    try:
-        result = AgentHarness(user_id=current_user.id).run_schema(
-            task="followup.analyze_answer", prompt_name="generate_followup",
-            schema=FollowUpAnalysisResponse, variables=request.model_dump(mode="json"),
-        )
-        if task_id:
-            progress_hub.publish(
-                task_id, stage="completed", status="success", progress=100,
-                message="Follow-up analysis completed", data=result.model_dump(mode="json"),
-            )
-        return result
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return submit_task(db, current_user.id, RunCreate(kind="answer_followup", request_id=task_id or str(uuid4()),
+        followup=request), prefer=prefer)

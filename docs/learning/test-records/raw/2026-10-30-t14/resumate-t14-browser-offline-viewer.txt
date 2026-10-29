@@ -1,0 +1,9 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-K5Akre
+
+Running 1 test using 1 worker
+
+(node:31256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/agent-run.spec.ts:147:1 › 事件网络断线显示重连，任务保持等待并在恢复后继续 (8.0s)
+
+  1 passed (14.7s)

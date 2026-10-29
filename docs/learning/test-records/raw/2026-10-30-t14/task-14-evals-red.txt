@@ -1,0 +1,34 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_core_adds_exactly_twelve_explicit_runners_without_changing_originals ___
+
+    def test_core_adds_exactly_twelve_explicit_runners_without_changing_originals():
+        cases = load_cases()
+        originals = [json.loads(line) for line in Path('evals/cases/core.jsonl').read_text().splitlines()]
+>       assert len(cases) == 24
+E       AssertionError: assert 12 == 24
+E        +  where 12 = len([{'category': 'normal', 'expected': {'draft_count': 1, 'statuses': ['succeeded']}, 'facts': [], 'id': 'normal-api', .....，请勿添加。'}, 'category': 'refusal_cancel', 'expected': {'draft_count': 1, 'statuses': ['succeeded', 'failed']}, ...}, ...])
+
+backend/tests/test_eval_long_tasks.py:19: AssertionError
+_______ test_crash_cases_without_this_invocation_evidence_remain_not_run _______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-182/test_crash_cases_without_this_0')
+
+    def test_crash_cases_without_this_invocation_evidence_remain_not_run(tmp_path):
+        process, report, invocation = launch(tmp_path, '--mode', 'stub', '--cases', ','.join(CRASH_IDS))
+        assert process.returncode == 2
+        assert report['counts'] == {'pass': 0, 'fail': 0, 'incomplete': 0, 'not_run': 4}
+>       assert {item['error_code'] for item in report['results']} == {'requires_compose'}
+E       AssertionError: assert {'configuration_error'} == {'requires_compose'}
+E
+E         Extra items in the left set:
+E         'configuration_error'
+E         Extra items in the right set:
+E         'requires_compose'
+E         Use -v to get more diff
+
+backend/tests/test_eval_long_tasks.py:29: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_long_tasks.py::test_core_adds_exactly_twelve_explicit_runners_without_changing_originals
+FAILED backend/tests/test_eval_long_tasks.py::test_crash_cases_without_this_invocation_evidence_remain_not_run
+2 failed, 3 deselected in 0.43s
