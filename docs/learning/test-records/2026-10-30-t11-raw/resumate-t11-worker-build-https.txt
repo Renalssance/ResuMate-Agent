@@ -390,7 +390,28 @@
 #10 19.67 debconf: delaying package configuration, since apt-utils is not installed
 #10 19.69 Fetched 91.3 MB in 8s (10.9 MB/s)
 #10 19.71 Selecting previously unselected package fonts-ipafont-gothic.
-#10 19.71 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6695 files and directories currently installed.)
+#10 19.71 (Reading database ...
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6695 files and directories currently installed.)
 #10 19.73 Preparing to unpack .../000-fonts-ipafont-gothic_00303-23_all.deb ...
 #10 19.73 Unpacking fonts-ipafont-gothic (00303-23) ...
 #10 19.88 Selecting previously unselected package at-spi2-common.
@@ -885,7 +906,28 @@
 #10 91.95 debconf: delaying package configuration, since apt-utils is not installed
 #10 91.97 Fetched 138 kB in 39s (3518 B/s)
 #10 91.98 Selecting previously unselected package fonts-noto-cjk.
-#10 91.98 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 8658 files and directories currently installed.)
+#10 91.98 (Reading database ...
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 8658 files and directories currently installed.)
 #10 91.98 Preparing to unpack .../fonts-noto-cjk_1%3a20220127+repack1-1_all.deb ...
 #10 91.99 Unpacking fonts-noto-cjk (1:20220127+repack1-1) ...
 #10 92.89 Setting up fonts-noto-cjk (1:20220127+repack1-1) ...

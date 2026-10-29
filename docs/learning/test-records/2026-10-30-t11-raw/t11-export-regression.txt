@@ -27,9 +27,9 @@ run_client = <starlette.testclient.TestClient object at 0x115af8e90>
         artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
 >       assert artifacts == [result]
 E       AssertionError: assert [{'basedOnOld..., ...}], ...}] == [{'basedOnOld..., ...}], ...}]
-E         
+E
 E         At index 0 diff: {'kind': 'resume_version', 'id': 'e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf', 'runId': '04f6730f-7792-424c-b3f7-8153573288c5', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'resume': {'self_summary': 'Built APIs', 'work_experience': [{'company': 'Actual company', 'description': 'Built reliable APIs', 'source_refs': [{'page_number': 0, 'section': 'work_experience', 'text': 'Built reliable APIs', 'chunk_id': 'resume:1:0'}]}], 'projects': [{'name': 'Actual project', 'description': 'Designed an API', 'source_refs': []}]}, 'cha...
-E         
+E
 E         ...Full output truncated (2 lines hidden), use '-vv' to show
 
 backend/tests/test_resume_versions.py:54: AssertionError
@@ -84,9 +84,9 @@ run_client = <starlette.testclient.TestClient object at 0x115acc350>
         artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
 >       assert artifacts == [result]
 E       AssertionError: assert [{'basedOnOld..., ...}], ...}] == [{'basedOnOld..., ...}], ...}]
-E         
+E
 E         At index 0 diff: {'kind': 'resume_version', 'id': '2bd53db3-07b5-4848-8445-b5e279020cb7', 'runId': 'aabd8344-e638-4daf-a099-94fc4ef2e576', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'resume': {'projects': [{'name': 'Actual project', 'description': 'Designed an API', 'source_refs': []}], 'self_summary': 'Built APIs', 'work_experience': [{'company': 'Actual company', 'description': 'Built reliable APIs', 'source_refs': [{'text': 'Built reliable APIs', 'section': 'work_experience', 'chunk_id': 'resume:1:0', 'page_number': 0}]}]}, 'cha...
-E         
+E
 E         ...Full output truncated (2 lines hidden), use '-vv' to show
 
 backend/tests/test_resume_versions.py:54: AssertionError
@@ -144,9 +144,9 @@ run_client = <starlette.testclient.TestClient object at 0x116312ab0>
         assert detail['structuredContent'] == {'summary': 'Historical draft'}
 >       assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [detail]
 E       AssertionError: assert [{'basedOnOld...fs': [], ...}] == [{'basedOnOld...fs': [], ...}]
-E         
+E
 E         At index 0 diff: {'kind': 'resume_version', 'id': '9fc33003-01c2-4d62-93aa-bed8a50ff1d7', 'runId': 'fc5d247c-2f70-4749-a7f3-6fc0abc8fad0', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'summary': 'Historical draft'}, 'factRefs': [], 'createdAt': '2026-10-29T17:03:04.702971+00:00', 'basedOnOldInput': True, 'changedInputs': ['resume'], 'sources': [], 'reviewable': False} != {'id': '9fc33003-01c2-4d62-93aa-bed8a50ff1d7', 'runId': 'fc5d247c-2f70-4749-a7f3-6fc0abc8fad0', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structur...
-E         
+E
 E         ...Full output truncated (2 lines hidden), use '-vv' to show
 
 backend/tests/test_resume_versions.py:187: AssertionError
@@ -198,9 +198,9 @@ run_client = <starlette.testclient.TestClient object at 0x1163c5f40>
         assert detail['structuredContent'] == {'summary': 'Historical draft'}
 >       assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [detail]
 E       AssertionError: assert [{'basedOnOld...fs': [], ...}] == [{'basedOnOld...fs': [], ...}]
-E         
+E
 E         At index 0 diff: {'kind': 'resume_version', 'id': 'c4db64ab-7630-4b4b-a3ce-9e5a9109be19', 'runId': 'a224e7fe-dc0c-47fd-8f12-65046f421ca6', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'summary': 'Historical draft'}, 'factRefs': [], 'createdAt': '2026-10-29T17:03:05+00:00', 'basedOnOldInput': True, 'changedInputs': ['resume'], 'sources': [], 'reviewable': False} != {'id': 'c4db64ab-7630-4b4b-a3ce-9e5a9109be19', 'runId': 'a224e7fe-dc0c-47fd-8f12-65046f421ca6', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredConte...
-E         
+E
 E         ...Full output truncated (2 lines hidden), use '-vv' to show
 
 backend/tests/test_resume_versions.py:187: AssertionError
@@ -237,21 +237,21 @@ INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/run
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
 
 backend/app.py:44
-  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
           on_event is deprecated, use lifespan event handlers instead.
-  
+
           Read more about it in the
           [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
-          
+
     @app.on_event("startup")
 
 .venv/lib/python3.12/site-packages/fastapi/applications.py:4599
-  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
           on_event is deprecated, use lifespan event handlers instead.
-  
+
           Read more about it in the
           [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
-          
+
     return self.router.on_event(event_type)
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html

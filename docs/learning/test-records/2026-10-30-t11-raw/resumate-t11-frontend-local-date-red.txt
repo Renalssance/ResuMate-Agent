@@ -1,0 +1,32 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run --reporter=dot src/views/ApplicationsView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+··x
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > defaults a new application to the local calendar day during early morning hours
+AssertionError: expected '2026-10-29' to be '2026-10-30' // Object.is equality
+
+Expected: "2026-10-30"
+Received: "2026-10-29"
+
+ ❯ src/views/ApplicationsView.spec.ts:65:76
+     63|  const { wrapper } = await setup('')
+     64|  await wrapper.findAll('button').find(button => button.text() === '新增投…
+     65|  expect(wrapper.get<HTMLInputElement>('input[type="date"]').element.va…
+       |                                                                            ^
+     66|  wrapper.unmount()
+     67| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  01:03:36
+   Duration  1.02s (transform 170ms, setup 0ms, import 320ms, tests 165ms, environment 463ms)

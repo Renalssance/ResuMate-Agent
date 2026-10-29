@@ -1,0 +1,32 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run --reporter=dot src/components/resume/ResumePreview.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+····x
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/resume/ResumePreview.spec.ts > shows independent structured metrics in unchanged experience without duplicating description or bullet text
+AssertionError: expected '简历预览当前表述工作经历示例团队接口延迟降低 30%。维护 12 个服务。…' to contain '吞吐 3倍'
+
+Expected: "吞吐 3倍"
+Received: "简历预览当前表述工作经历示例团队接口延迟降低 30%。维护 12 个服务。项目经历简历助手"
+
+ ❯ src/components/resume/ResumePreview.spec.ts:41:25
+     39|   ] }], projects: [{ name: '简历助手', metrics: [{ raw_text: '文档处理提速 2 倍。'…
+     40|  } } })
+     41|  expect(wrapper.text()).toContain('吞吐 3倍'); expect(wrapper.text()).toC…
+       |                         ^
+     42|  expect(wrapper.text().match(/接口延迟降低 30%/g)).toHaveLength(1); expect(w…
+     43| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  01:04:39
+   Duration  723ms (transform 68ms, setup 0ms, import 116ms, tests 17ms, environment 500ms)

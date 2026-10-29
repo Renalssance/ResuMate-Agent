@@ -1,0 +1,90 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run --reporter=dot src/views/ResumeEditorView.spec.ts src/views/AgentTaskView.spec.ts src/views/ApplicationsView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+stderr | src/views/AgentTaskView.spec.ts > task workspace actions > does not offer a cancelled pending question as a live continue action
+[Vue Router warn]: No match found for location with path "/documents"
+
+stderr | src/views/AgentTaskView.spec.ts > downloads a completed PDF with Bearer authentication and offers its confirmed source version
+[Vue Router warn]: No match found for location with path "/documents"
+
+·x··xxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/AgentTaskView.spec.ts > downloads a completed PDF with Bearer authentication and offers its confirmed source version
+TypeError: Cannot read properties of undefined (reading 'resume')
+ ❯ reviewChanges src/utils/resumeReview.ts:21:25
+     19|   if (!artifact || artifact.reviewable === false) return null
+     20|   const content = artifact.structuredContent
+     21|   if (!isRecord(content.resume) || !isRecord(content.inputVersions) ||…
+       |                         ^
+     22|   return content.changes.every(change => isRecord(change) && typeof ch…
+     23|     && typeof change.before === 'string' && (typeof change.after === '…
+ ❯ ComputedRefImpl.fn src/components/agent/ArtifactCard.vue:49:32
+ ❯ refreshComputed node_modules/@vue/reactivity/dist/reactivity.cjs.js:418:28
+ ❯ ComputedRefImpl.get value [as value] node_modules/@vue/reactivity/dist/reactivity.cjs.js:1739:5
+ ❯ unref node_modules/@vue/reactivity/dist/reactivity.cjs.js:1564:45
+ ❯ Object.get node_modules/@vue/reactivity/dist/reactivity.cjs.js:1570:64
+ ❯ Proxy._sfc_render src/components/agent/ArtifactCard.vue:8:21
+ ❯ renderComponentRoot node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:4558:16
+ ❯ ReactiveEffect.componentUpdateFn [as fn] node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:6085:46
+ ❯ ReactiveEffect.run node_modules/@vue/reactivity/dist/reactivity.cjs.js:264:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > associates an existing record and renders its immutable snapshot while preserving legacy records
+AssertionError: expected '投递公司1累计0流程中公司去重 · 共 1 条投递测评0累计0流程中累计占…' to contain '关联已确认版本'
+
+Expected: "关联已确认版本"
+Received: "投递公司1累计0流程中公司去重 · 共 1 条投递测评0累计0流程中累计占总投递0%笔试0累计0流程中累计占总投递0%面试0累计0流程中累计占总投递0%已挂0累计累计占总投递0%通过0累计累计占总投递0% · 累计记录共 0 家公司 · 0 条投递红色表示有未完成的测评、笔试或面试日程暂无累计记录该分类下还没有公司和岗位。日程日历按日期查看笔试、面试和测评安排。今天2026年10月一二三四五六日282930123456789101112131415161718192021222324252627282930今天31110月30日星期五0 项日程当天暂无日程选择其他日期，或在投递记录中添加新的日程。投递记录用“记录状态”追加测评、笔试、面试和结果节点。导出记录新增投递状态全部流程中已挂通过搜索示例公司产品经理已投投递2026/10/30简历旧投递简历.pdf来源未记录打开编辑记录日程时间线删除"
+
+ ❯ src/views/ApplicationsView.spec.ts:30:25
+     28|  const { wrapper, router } = await setup()
+     29|  expect(wrapper.text()).toContain('旧投递简历.pdf')
+     30|  expect(wrapper.text()).toContain('关联已确认版本')
+       |                         ^
+     31|  await wrapper.get('select[aria-label="已有投递"]').setValue('10')
+     32|  await wrapper.findAll('button').find(button => button.text() === '关联到…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > creates a record atomically with the chosen confirmed version and retains the selection after a failed request
+TypeError: Cannot read properties of undefined (reading 'trigger')
+ ❯ src/views/ApplicationsView.spec.ts:44:76
+     42| it('creates a record atomically with the chosen confirmed version and …
+     43|  const { wrapper } = await setup()
+     44|  await wrapper.findAll('button').find(button => button.text() === '新建投…
+       |                                                                            ^
+     45|  expect(wrapper.find('.application-form .application-resume select').e…
+     46|  await wrapper.get('.application-company input').setValue('新的公司')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/views/ResumeEditorView.spec.ts > exports the confirmed version with an idempotency key and navigates to its task, while association preserves the version and job
+AssertionError: expected undefined to be '/applications?resumeVersionId=v1&jdId…' // Object.is equality
+
+- Expected:
+"/applications?resumeVersionId=v1&jdId=2"
+
++ Received:
+undefined
+
+ ❯ src/views/ResumeEditorView.spec.ts:49:42
+     47|  const { wrapper, router } = await setup()
+     48|  const association = wrapper.findAll('a').find(link => link.text() ===…
+     49|  expect(association?.attributes('href')).toBe('/applications?resumeVer…
+       |                                          ^
+     50|  const exportButton = wrapper.findAll('button').find(button => button.…
+     51|  expect(exportButton).toBeDefined()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  4 failed | 3 passed (7)
+   Start at  00:58:03
+   Duration  1.14s (transform 692ms, setup 0ms, import 1.17s, tests 157ms, environment 1.60s)

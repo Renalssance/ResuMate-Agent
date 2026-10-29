@@ -1,0 +1,684 @@
+FFFFFFFFFFFFFFFFFFFF....                                                 [100%]
+=================================== FAILURES ===================================
+_____ test_create_application_with_submission_is_one_saved_record[sqlite] ______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10fbb9130>
+career_db = <sqlalchemy.orm.session.Session object at 0x10fa738c0>
+
+    def test_create_application_with_submission_is_one_saved_record(submission_material, run_client, career_db):
+        record = _create_application(run_client, jd_id=1, resume_version_id='confirmed-a')
+>       assert record['submitted_snapshot'] is not None
+E       assert None is not None
+
+backend/tests/test_application_submission.py:130: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,296 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,344 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=48
+2026-10-30 00:59:33,345 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=48
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+______ test_create_application_with_submission_is_one_saved_record[mysql] ______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x11049be60>
+career_db = <sqlalchemy.orm.session.Session object at 0x11038fb60>
+
+    def test_create_application_with_submission_is_one_saved_record(submission_material, run_client, career_db):
+        record = _create_application(run_client, jd_id=1, resume_version_id='confirmed-a')
+>       assert record['submitted_snapshot'] is not None
+E       assert None is not None
+
+backend/tests/test_application_submission.py:130: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,653 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,658 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:59:33,658 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+______ test_create_requires_paired_submission_identifiers[sqlite-extra0] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1130d3f50>
+career_db = <sqlalchemy.orm.session.Session object at 0x1100fb5f0>
+extra = {'jd_id': 1}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:33.721060Z"}],"schedules":[],"created_at":"2026-10-29T16:59:33.720757Z","updated_at":"2026-10-29T16:59:33.720758Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,719 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,722 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:33,722 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+______ test_create_requires_paired_submission_identifiers[sqlite-extra1] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113117890>
+career_db = <sqlalchemy.orm.session.Session object at 0x10accff20>
+extra = {'resume_version_id': 'confirmed-a'}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:33.747462Z"}],"schedules":[],"created_at":"2026-10-29T16:59:33.747169Z","updated_at":"2026-10-29T16:59:33.747170Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,745 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,748 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:33,749 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+______ test_create_requires_paired_submission_identifiers[sqlite-extra2] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1101e4f80>
+career_db = <sqlalchemy.orm.session.Session object at 0x113117230>
+extra = {'jd_id': None, 'resume_version_id': 'confirmed-a'}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:33.773526Z"}],"schedules":[],"created_at":"2026-10-29T16:59:33.773238Z","updated_at":"2026-10-29T16:59:33.773239Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,771 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,774 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:33,775 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+______ test_create_requires_paired_submission_identifiers[sqlite-extra3] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x11313f3b0>
+career_db = <sqlalchemy.orm.session.Session object at 0x11030a000>
+extra = {'jd_id': 1, 'resume_version_id': None}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:33.801895Z"}],"schedules":[],"created_at":"2026-10-29T16:59:33.801489Z","updated_at":"2026-10-29T16:59:33.801491Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:33,798 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:33,803 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=5
+2026-10-30 00:59:33,804 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=5
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_______ test_create_requires_paired_submission_identifiers[mysql-extra0] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1130af290>
+career_db = <sqlalchemy.orm.session.Session object at 0x1130d0ef0>
+extra = {'jd_id': 1}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:34Z"}],"schedules":[],"created_at":"2026-10-29T16:59:34Z","updated_at":"2026-10-29T16:59:34Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,053 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,057 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:34,058 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_______ test_create_requires_paired_submission_identifiers[mysql-extra1] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1131eb3e0>
+career_db = <sqlalchemy.orm.session.Session object at 0x1130af2f0>
+extra = {'resume_version_id': 'confirmed-a'}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:34Z"}],"schedules":[],"created_at":"2026-10-29T16:59:34Z","updated_at":"2026-10-29T16:59:34Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,337 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,343 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=5
+2026-10-30 00:59:34,343 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=5
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_______ test_create_requires_paired_submission_identifiers[mysql-extra2] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113254650>
+career_db = <sqlalchemy.orm.session.Session object at 0x1130d3c50>
+extra = {'jd_id': None, 'resume_version_id': 'confirmed-a'}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35Z","updated_at":"2026-10-29T16:59:35Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,605 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,609 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:59:34,609 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_______ test_create_requires_paired_submission_identifiers[mysql-extra3] _______
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1132e57f0>
+career_db = <sqlalchemy.orm.session.Session object at 0x11316f860>
+extra = {'jd_id': 1, 'resume_version_id': None}
+
+    @pytest.mark.parametrize('extra', [
+        {'jd_id': 1}, {'resume_version_id': 'confirmed-a'},
+        {'jd_id': None, 'resume_version_id': 'confirmed-a'},
+        {'jd_id': 1, 'resume_version_id': None},
+    ])
+    def test_create_requires_paired_submission_identifiers(submission_material, run_client, career_db, extra):
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30', **extra,
+        })
+>       assert response.status_code == 422, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35Z","updated_at":"2026-10-29T16:59:35Z"}
+E       assert 200 == 422
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:149: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,896 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,902 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=5
+2026-10-30 00:59:34,902 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=5
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+____ test_create_rolls_back_when_submission_is_rejected[sqlite-extra0-409] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113337da0>
+career_db = <sqlalchemy.orm.session.Session object at 0x113256300>
+extra = {'resume_version_id': 'draft'}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:34.968879Z"}],"schedules":[],"created_at":"2026-10-29T16:59:34.968550Z","updated_at":"2026-10-29T16:59:34.968551Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,966 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,970 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:34,970 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+____ test_create_rolls_back_when_submission_is_rejected[sqlite-extra1-409] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x11330a450>
+career_db = <sqlalchemy.orm.session.Session object at 0x11321f620>
+extra = {'jd_id': 2}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:34.994816Z"}],"schedules":[],"created_at":"2026-10-29T16:59:34.994525Z","updated_at":"2026-10-29T16:59:34.994526Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:34,992 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:34,996 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:34,996 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+____ test_create_rolls_back_when_submission_is_rejected[sqlite-extra2-404] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x11338acf0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10f9418e0>
+extra = {'jd_id': 3, 'resume_version_id': 'foreign'}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35.020888Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35.020579Z","updated_at":"2026-10-29T16:59:35.020580Z"}
+E       assert 200 == 404
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,018 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,022 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:35,023 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_____ test_create_rolls_back_when_submission_is_rejected[mysql-extra0-409] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1133b66f0>
+career_db = <sqlalchemy.orm.session.Session object at 0x1132a5d90>
+extra = {'resume_version_id': 'draft'}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35Z","updated_at":"2026-10-29T16:59:35Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,304 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,308 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:35,308 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_____ test_create_rolls_back_when_submission_is_rejected[mysql-extra1-409] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113336630>
+career_db = <sqlalchemy.orm.session.Session object at 0x10f9418e0>
+extra = {'jd_id': 2}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:36Z"}],"schedules":[],"created_at":"2026-10-29T16:59:36Z","updated_at":"2026-10-29T16:59:36Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,574 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,578 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:59:35,578 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_____ test_create_rolls_back_when_submission_is_rejected[mysql-extra2-404] _____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113487050>
+career_db = <sqlalchemy.orm.session.Session object at 0x1132a4da0>
+extra = {'jd_id': 3, 'resume_version_id': 'foreign'}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3, 'resume_version_id': 'foreign'}, 404),
+    ])
+    def test_create_rolls_back_when_submission_is_rejected(submission_material, run_client, career_db, extra, status):
+        from backend.db.models import JobApplicationStatusEvent
+        response = run_client.post('/api/applications', headers=headers(), json={
+            'company': 'Invalid submission', 'position': 'Engineer', 'applied_date': '2026-10-30',
+            'jd_id': 1, 'resume_version_id': 'confirmed-a', **extra,
+        })
+>       assert response.status_code == status, response.text
+E       AssertionError: {"company":"Invalid submission","position":"Engineer","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"","id":1,"resume_filename":"","jd_id":null,"resume_version_id":null,"submitted_snapshot":null,"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:36Z"}],"schedules":[],"created_at":"2026-10-29T16:59:36Z","updated_at":"2026-10-29T16:59:36Z"}
+E       assert 200 == 404
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:165: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,884 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,888 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:59:35,889 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+_________ test_patch_cannot_change_submitted_original_resume[sqlite-2] _________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1134b5f40>
+resume_id = 2
+
+    @pytest.mark.parametrize('resume_id', [2, None])
+    def test_patch_cannot_change_submitted_original_resume(submission_material, run_client, resume_id):
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id']).json()
+        changed = run_client.patch(f"/api/applications/{application['id']}", headers=headers(), json={
+            'resume_id': resume_id, 'notes': 'This entire edit must fail',
+        })
+>       assert changed.status_code == 409, changed.text
+E       AssertionError: {"company":"示例公司","position":"后端开发","applied_date":"2026-10-30","resume_id":2,"status":"applied","job_url":"","source":"","notes":"This entire edit must fail","id":1,"resume_filename":"another-resume.txt","jd_id":1,"resume_version_id":"confirmed-a","submitted_snapshot":{"resumeVersionId":"confirmed-a","revision":3,"jdId":1,"structuredContent":{"resume":{"candidate_name":"林同学","self_summary":"已确认的 API 项目经历"},"changes":[],"inputVersions":{"resume":"fixed-source"}},"factRefs":[{"kind":"resume","resumeId":1,"inputVersion":"fixed-source","section":"/self_summary","sourceRefs":[]}],"submittedAt":"2026-10-29T16:59:35.954437Z"},"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35.949870Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35.949561Z","updated_at":"2026-10-29T16:59:35.959010Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:178: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,947 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,951 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:35,951 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:59:35,952 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:59:35,956 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+2026-10-30 00:59:35,956 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+2026-10-30 00:59:35,957 | INFO | backend.app | Request start | method=PATCH path=/api/applications/1 client=testclient
+2026-10-30 00:59:35,960 | INFO | backend.app | Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=2
+2026-10-30 00:59:35,960 | INFO | httpx | HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/applications/1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+_______ test_patch_cannot_change_submitted_original_resume[sqlite-None] ________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x113580cb0>
+resume_id = None
+
+    @pytest.mark.parametrize('resume_id', [2, None])
+    def test_patch_cannot_change_submitted_original_resume(submission_material, run_client, resume_id):
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id']).json()
+        changed = run_client.patch(f"/api/applications/{application['id']}", headers=headers(), json={
+            'resume_id': resume_id, 'notes': 'This entire edit must fail',
+        })
+>       assert changed.status_code == 409, changed.text
+E       AssertionError: {"company":"示例公司","position":"后端开发","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"This entire edit must fail","id":1,"resume_filename":"","jd_id":1,"resume_version_id":"confirmed-a","submitted_snapshot":{"resumeVersionId":"confirmed-a","revision":3,"jdId":1,"structuredContent":{"resume":{"candidate_name":"林同学","self_summary":"已确认的 API 项目经历"},"changes":[],"inputVersions":{"resume":"fixed-source"}},"factRefs":[{"kind":"resume","resumeId":1,"inputVersion":"fixed-source","section":"/self_summary","sourceRefs":[]}],"submittedAt":"2026-10-29T16:59:35.988085Z"},"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:35.984153Z"}],"schedules":[],"created_at":"2026-10-29T16:59:35.983869Z","updated_at":"2026-10-29T16:59:35.991686Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:178: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:35,982 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:35,985 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:35,986 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:59:35,986 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:59:35,989 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=3
+2026-10-30 00:59:35,990 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+2026-10-30 00:59:35,990 | INFO | backend.app | Request start | method=PATCH path=/api/applications/1 client=testclient
+2026-10-30 00:59:35,992 | INFO | backend.app | Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=2
+2026-10-30 00:59:35,992 | INFO | httpx | HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/applications/1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+_________ test_patch_cannot_change_submitted_original_resume[mysql-2] __________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1134515b0>
+resume_id = 2
+
+    @pytest.mark.parametrize('resume_id', [2, None])
+    def test_patch_cannot_change_submitted_original_resume(submission_material, run_client, resume_id):
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id']).json()
+        changed = run_client.patch(f"/api/applications/{application['id']}", headers=headers(), json={
+            'resume_id': resume_id, 'notes': 'This entire edit must fail',
+        })
+>       assert changed.status_code == 409, changed.text
+E       AssertionError: {"company":"示例公司","position":"后端开发","applied_date":"2026-10-30","resume_id":2,"status":"applied","job_url":"","source":"","notes":"This entire edit must fail","id":1,"resume_filename":"another-resume.txt","jd_id":1,"resume_version_id":"confirmed-a","submitted_snapshot":{"jdId":1,"factRefs":[{"kind":"resume","section":"/self_summary","resumeId":1,"sourceRefs":[],"inputVersion":"fixed-source"}],"revision":3,"submittedAt":"2026-10-29T16:59:36.265894Z","resumeVersionId":"confirmed-a","structuredContent":{"resume":{"self_summary":"已确认的 API 项目经历","candidate_name":"林同学"},"changes":[],"inputVersions":{"resume":"fixed-source"}}},"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:36Z"}],"schedules":[],"created_at":"2026-10-29T16:59:36Z","updated_at":"2026-10-29T16:59:36Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:178: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:36,258 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:36,262 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:59:36,263 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:59:36,263 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:59:36,268 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+2026-10-30 00:59:36,268 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+2026-10-30 00:59:36,269 | INFO | backend.app | Request start | method=PATCH path=/api/applications/1 client=testclient
+2026-10-30 00:59:36,272 | INFO | backend.app | Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=3
+2026-10-30 00:59:36,273 | INFO | httpx | HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/applications/1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+________ test_patch_cannot_change_submitted_original_resume[mysql-None] ________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x1135074a0>
+resume_id = None
+
+    @pytest.mark.parametrize('resume_id', [2, None])
+    def test_patch_cannot_change_submitted_original_resume(submission_material, run_client, resume_id):
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id']).json()
+        changed = run_client.patch(f"/api/applications/{application['id']}", headers=headers(), json={
+            'resume_id': resume_id, 'notes': 'This entire edit must fail',
+        })
+>       assert changed.status_code == 409, changed.text
+E       AssertionError: {"company":"示例公司","position":"后端开发","applied_date":"2026-10-30","resume_id":null,"status":"applied","job_url":"","source":"","notes":"This entire edit must fail","id":1,"resume_filename":"","jd_id":1,"resume_version_id":"confirmed-a","submitted_snapshot":{"jdId":1,"factRefs":[{"kind":"resume","section":"/self_summary","resumeId":1,"sourceRefs":[],"inputVersion":"fixed-source"}],"revision":3,"submittedAt":"2026-10-29T16:59:36.537928Z","resumeVersionId":"confirmed-a","structuredContent":{"resume":{"self_summary":"已确认的 API 项目经历","candidate_name":"林同学"},"changes":[],"inputVersions":{"resume":"fixed-source"}}},"status_events":[{"id":1,"status":"applied","changed_at":"2026-10-30T00:00:00Z","note":"","created_at":"2026-10-29T16:59:37Z"}],"schedules":[],"created_at":"2026-10-29T16:59:37Z","updated_at":"2026-10-29T16:59:37Z"}
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_application_submission.py:178: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:59:36,531 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:59:36,534 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:59:36,535 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:59:36,535 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:59:36,540 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+2026-10-30 00:59:36,541 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+2026-10-30 00:59:36,541 | INFO | backend.app | Request start | method=PATCH path=/api/applications/1 client=testclient
+2026-10-30 00:59:36,545 | INFO | backend.app | Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=3
+2026-10-30 00:59:36,545 | INFO | httpx | HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/applications/1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/applications/1 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/applications/1 "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_application_submission.py::test_create_application_with_submission_is_one_saved_record[sqlite]
+FAILED backend/tests/test_application_submission.py::test_create_application_with_submission_is_one_saved_record[mysql]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[sqlite-extra0]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[sqlite-extra1]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[sqlite-extra2]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[sqlite-extra3]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[mysql-extra0]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[mysql-extra1]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[mysql-extra2]
+FAILED backend/tests/test_application_submission.py::test_create_requires_paired_submission_identifiers[mysql-extra3]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[sqlite-extra0-409]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[sqlite-extra1-409]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[sqlite-extra2-404]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[mysql-extra0-409]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[mysql-extra1-409]
+FAILED backend/tests/test_application_submission.py::test_create_rolls_back_when_submission_is_rejected[mysql-extra2-404]
+FAILED backend/tests/test_application_submission.py::test_patch_cannot_change_submitted_original_resume[sqlite-2]
+FAILED backend/tests/test_application_submission.py::test_patch_cannot_change_submitted_original_resume[sqlite-None]
+FAILED backend/tests/test_application_submission.py::test_patch_cannot_change_submitted_original_resume[mysql-2]
+FAILED backend/tests/test_application_submission.py::test_patch_cannot_change_submitted_original_resume[mysql-None]
+20 failed, 4 passed, 22 deselected, 7 warnings in 4.94s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

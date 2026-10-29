@@ -1,0 +1,32 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run --reporter=dot src/components/agent/RunDisplay.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+···x
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/agent/RunDisplay.spec.ts > names export progress as PDF generation instead of resume preparation
+AssertionError: expected '处理进度正在准备材料已生成' to contain '正在导出 PDF'
+
+Expected: "正在导出 PDF"
+Received: "处理进度正在准备材料已生成"
+
+ ❯ src/components/agent/RunDisplay.spec.ts:27:25
+     25|   { runId: 'r', seq: 2, createdAt: '', type: 'run.status', payload: { …
+     26|  ] } })
+     27|  expect(wrapper.text()).toContain('正在导出 PDF'); expect(wrapper.text()).…
+       |                         ^
+     28| })
+     29|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  01:01:29
+   Duration  3.04s (transform 469ms, setup 0ms, import 613ms, tests 22ms, environment 2.30s)

@@ -1,0 +1,445 @@
+FsFsFsFFFFFFFsssssssFs                                                   [100%]
+=================================== FAILURES ===================================
+____ test_submission_freezes_version_and_duplicate_returns_original[sqlite] ____
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10d7339e0>
+
+    def test_submission_freezes_version_and_duplicate_returns_original(submission_material, run_client):
+        content, references = submission_material
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id'])
+>       assert first.status_code == 200, first.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:58: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:58,787 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:58,795 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=8
+2026-10-30 00:57:58,796 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:58,796 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:58,797 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:58,797 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=8
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+___________ test_submission_replaces_old_original_link_once[sqlite] ____________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10d9f7740>
+
+    def test_submission_replaces_old_original_link_once(submission_material, run_client):
+        application = _create_application(run_client, resume_id=2)
+        assert application['resume_filename'] == 'another-resume.txt'
+        attached = _attach(run_client, application['id'])
+>       assert attached.status_code == 200, attached.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:80: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:58,869 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:58,873 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=4
+2026-10-30 00:57:58,874 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:58,874 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:58,874 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:58,875 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=4
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_____________ test_submission_rejects_replacement_version[sqlite] ______________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10e1f8ef0>
+
+    def test_submission_rejects_replacement_version(submission_material, run_client):
+        application = _create_application(run_client)
+        first = _attach(run_client, application['id'])
+>       assert first.status_code == 200, first.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:88: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:58,893 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:58,935 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=41
+2026-10-30 00:57:58,935 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:58,936 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:58,936 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:58,936 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=41
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra0-409] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10e16bec0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d7b4290>
+extra = {'resume_version_id': 'draft'}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 409
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:58,956 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:58,960 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:58,961 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:58,961 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:58,961 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:58,961 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra1-409] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x10dfaeb70>
+career_db = <sqlalchemy.orm.session.Session object at 0x10dfaf7d0>
+extra = {'jd_id': 2}, status = 409
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 409
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:58,979 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:58,983 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:58,984 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:58,984 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:58,984 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:58,985 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra2-404] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110ed5e20>
+career_db = <sqlalchemy.orm.session.Session object at 0x110f03bf0>
+extra = {'jd_id': 3}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,002 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,006 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,006 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,006 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,007 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,007 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra3-404] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110ed6450>
+career_db = <sqlalchemy.orm.session.Session object at 0x110ed63c0>
+extra = {'resume_version_id': 'foreign'}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,025 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,028 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,028 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,029 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,029 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,029 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra4-404] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110f7e8a0>
+career_db = <sqlalchemy.orm.session.Session object at 0x110f7f680>
+extra = {'resume_version_id': 'missing'}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,047 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,051 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,051 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,052 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,052 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,052 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra5-404] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110f91880>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d632f00>
+extra = {'jd_id': 999}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,071 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,074 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,075 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,075 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,075 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,076 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+_ test_submission_checks_owned_confirmed_matching_material[sqlite-extra6-404] __
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110f7ec00>
+career_db = <sqlalchemy.orm.session.Session object at 0x110f7ed50>
+extra = {'user': 'bob'}, status = 404
+
+    @pytest.mark.parametrize(('extra', 'status'), [
+        ({'resume_version_id': 'draft'}, 409),
+        ({'jd_id': 2}, 409),
+        ({'jd_id': 3}, 404),
+        ({'resume_version_id': 'foreign'}, 404),
+        ({'resume_version_id': 'missing'}, 404),
+        ({'jd_id': 999}, 404),
+        ({'user': 'bob'}, 404),
+    ])
+    def test_submission_checks_owned_confirmed_matching_material(submission_material, run_client, career_db, extra, status):
+        application = _create_application(run_client)
+        response = _attach(run_client, application['id'], **extra)
+>       assert response.status_code == status, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_application_submission.py:106: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,095 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,099 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,099 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,100 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,100 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,100 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+__________ test_concurrent_submissions_keep_only_one_material[sqlite] __________
+
+submission_material = ({'changes': [], 'inputVersions': {'resume': 'fixed-source'}, 'resume': {'candidate_name': '林同学', 'self_summary': '已确认的 API 项目经历'}}, [{'inputVersion': 'fixed-source', 'kind': 'resume', 'resumeId': 1, 'section': '/self_summary', ...}])
+run_client = <starlette.testclient.TestClient object at 0x110ff60c0>
+
+    def test_concurrent_submissions_keep_only_one_material(submission_material, run_client):
+        application = _create_application(run_client)
+        with ThreadPoolExecutor(max_workers=2) as workers:
+            responses = list(workers.map(
+                lambda version: _attach(run_client, application['id'], resume_version_id=version),
+                ['confirmed-a', 'confirmed-b'],
+            ))
+>       assert sorted(response.status_code for response in responses) == [200, 409]
+E       assert [405, 405] == [200, 409]
+E
+E         At index 0 diff: 405 != 200
+E         Use -v to get more diff
+
+backend/tests/test_application_submission.py:121: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:59,121 | INFO | backend.app | Request start | method=POST path=/api/applications client=testclient
+2026-10-30 00:57:59,124 | INFO | backend.app | Request end | method=POST path=/api/applications status=200 duration_ms=3
+2026-10-30 00:57:59,124 | INFO | httpx | HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+2026-10-30 00:57:59,125 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,125 | INFO | backend.app | Request start | method=PUT path=/api/applications/1/submission client=testclient
+2026-10-30 00:57:59,125 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,125 | INFO | backend.app | Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+2026-10-30 00:57:59,125 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+2026-10-30 00:57:59,126 | INFO | httpx | HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/applications client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/applications status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/applications "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:63 Request start | method=PUT path=/api/applications/1/submission client=testclient
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     backend.app:app.py:76 Request end | method=PUT path=/api/applications/1/submission status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+INFO     httpx:_client.py:1025 HTTP Request: PUT http://testserver/api/applications/1/submission "HTTP/1.1 405 Method Not Allowed"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_application_submission.py::test_submission_freezes_version_and_duplicate_returns_original[sqlite]
+FAILED backend/tests/test_application_submission.py::test_submission_replaces_old_original_link_once[sqlite]
+FAILED backend/tests/test_application_submission.py::test_submission_rejects_replacement_version[sqlite]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra0-409]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra1-409]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra2-404]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra3-404]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra4-404]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra5-404]
+FAILED backend/tests/test_application_submission.py::test_submission_checks_owned_confirmed_matching_material[sqlite-extra6-404]
+FAILED backend/tests/test_application_submission.py::test_concurrent_submissions_keep_only_one_material[sqlite]
+11 failed, 11 skipped, 7 warnings in 1.27s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

@@ -1,0 +1,3 @@
+
+> resumate-agent-frontend@0.1.0 lint
+> vue-tsc --noEmit
