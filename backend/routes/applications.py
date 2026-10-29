@@ -11,8 +11,11 @@ from backend.schemas.applications import (
     ApplicationRecord,
     ApplicationScheduleCreate,
     ApplicationStatusEventCreate,
+    ApplicationSubmission,
     ApplicationUpdate,
 )
+
+from backend.services.applications import attach_submission
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 
@@ -61,6 +64,9 @@ def _record(row: JobApplication) -> ApplicationRecord:
         applied_date=row.applied_date,
         resume_id=row.resume_id,
         resume_filename=row.resume.filename if row.resume else "",
+        jd_id=row.jd_id,
+        resume_version_id=row.resume_version_id,
+        submitted_snapshot=row.submitted_snapshot,
         status=row.status,
         job_url=row.job_url,
         source=row.source,
@@ -185,9 +191,18 @@ def create_application(
     db: Session = Depends(get_db),
 ):
     _find_resume(db, current_user.id, request.resume_id)
-    row = JobApplication(user_id=current_user.id, **request.model_dump())
+    row = JobApplication(
+        user_id=current_user.id,
+        **request.model_dump(exclude={"jd_id", "resume_version_id"}),
+    )
     db.add(row)
     db.flush()
+    if request.jd_id is not None:
+        try:
+            row = attach_submission(db, current_user.id, row.id, request.jd_id, request.resume_version_id)
+        except HTTPException:
+            db.rollback()
+            raise
     _append_status_event(
         db,
         row,
@@ -195,6 +210,19 @@ def create_application(
         changed_at=datetime.combine(request.applied_date, time(), timezone.utc),
         touch_application=False,
     )
+    db.commit()
+    db.refresh(row)
+    return _record(row)
+
+
+@router.put("/{application_id}/submission", response_model=ApplicationRecord)
+def submit_application(
+    application_id: int,
+    request: ApplicationSubmission,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    row = attach_submission(db, current_user.id, application_id, request.jd_id, request.resume_version_id)
     db.commit()
     db.refresh(row)
     return _record(row)
@@ -210,6 +238,8 @@ def update_application(
     row = _find_application(db, current_user.id, application_id)
     data = request.model_dump(exclude_unset=True)
     if "resume_id" in data:
+        if row.submitted_snapshot is not None and data["resume_id"] != row.resume_id:
+            raise HTTPException(status_code=409, detail="已关联提交材料，不能替换原简历")
         _find_resume(db, current_user.id, data["resume_id"])
     status = data.pop("status", None)
     for field, value in data.items():

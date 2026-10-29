@@ -1,4 +1,4 @@
-import type { ArtifactReference, ReviewDecision, RunArtifact, TailoringChange } from '../api/agentRuns'
+import type { ArtifactReference, ReviewDecision, ResumeVersionArtifact, TailoringChange } from '../api/agentRuns'
 
 export const resumeLabels: Record<string, string> = {
   self_summary: '个人简介', summary: '个人简介', content: '材料内容', answer: '补充经历', experience: '相关经历', work_experience: '工作经历', projects: '项目经历', bullets: '经历要点', target_role: '目标岗位', company: '公司', role: '岗位名称', description: '经历说明', period: '时间', highlights: '经历要点',
@@ -15,7 +15,7 @@ export function referenceKey(reference: ArtifactReference) {
   return `resume:${reference.resumeId}:${reference.inputVersion}:${reference.section}`
 }
 export function isRecord(value: unknown): value is Record<string, unknown> { return Boolean(value) && !Array.isArray(value) && typeof value === 'object' }
-export function reviewChanges(artifact: RunArtifact | null): TailoringChange[] | null {
+export function reviewChanges(artifact: Pick<ResumeVersionArtifact, 'structuredContent' | 'reviewable'> | null): TailoringChange[] | null {
   if (!artifact || artifact.reviewable === false) return null
   const content = artifact.structuredContent
   if (!isRecord(content.resume) || !isRecord(content.inputVersions) || !Array.isArray(content.changes)) return null
@@ -31,7 +31,7 @@ export function decisionsFor(changes: TailoringChange[]): Record<string, ReviewD
 export function sameDecision(a: ReviewDecision | undefined, b: ReviewDecision | undefined) {
   return a?.status === b?.status && (a?.status !== 'edited' || a.editedText === b?.editedText)
 }
-export function projectResume(artifact: RunArtifact | null, decisions: Record<string, ReviewDecision>): Record<string, unknown> {
+export function projectResume(artifact: Pick<ResumeVersionArtifact, 'structuredContent' | 'reviewable'> | null, decisions: Record<string, ReviewDecision>): Record<string, unknown> {
   if (!artifact) return {}
   const changes = reviewChanges(artifact)
   if (!changes) return artifact.structuredContent
@@ -47,7 +47,7 @@ export function projectResume(artifact: RunArtifact | null, decisions: Record<st
       const record = target as Record<string, unknown>
       record[field] = text
       // Original parsed bullets are evidence, not a fallback for a deliberate replacement.
-      if (field === 'description' && (decision?.status === 'accepted' || decision?.status === 'edited')) delete record.bullets
+      if (field === 'description' && (decision?.status === 'accepted' || decision?.status === 'edited')) { delete record.bullets; delete record.metrics }
     }
   }
   return resume

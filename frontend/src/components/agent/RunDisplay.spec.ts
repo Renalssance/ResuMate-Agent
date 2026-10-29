@@ -18,3 +18,11 @@ it('does not show an interrupted tool as still processing after task cancellatio
  const wrapper = mount(RunTimeline, { props: { status: 'cancelled', events: [{ runId: 'r', seq: 1, createdAt: '', type: 'tool.started', payload: { tool_name: 'ask_applicant', operation_key: 'call' } }] } })
  expect(wrapper.text()).toContain('已停止'); expect(wrapper.text()).not.toContain('处理中')
 })
+
+it('names export progress as PDF generation instead of resume preparation', () => {
+ const wrapper = mount(RunTimeline, { props: { kind: 'resume_export', status: 'succeeded', events: [
+  { runId: 'r', seq: 1, createdAt: '', type: 'run.status', payload: { status: 'running' } },
+  { runId: 'r', seq: 2, createdAt: '', type: 'run.status', payload: { status: 'succeeded' } },
+ ] } })
+ expect(wrapper.text()).toContain('正在导出 PDF'); expect(wrapper.text()).toContain('PDF 已导出')
+})

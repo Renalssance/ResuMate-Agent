@@ -12,6 +12,12 @@
             <div class="review-progress"><span>{{ store.reviewedCount }} / {{ store.changes.length }} 项已审阅</span><span v-if="store.dirty" class="unsaved-state">有未保存修改</span><span v-else>{{ confirmed ? '已确认' : '已保存' }}</span></div>
             <div v-if="!confirmed" class="save-actions"><button class="button-secondary" type="button" :disabled="!store.canSave" @click="store.save()">{{ store.busy ? '处理中…' : '保存草稿' }}</button><button class="button-primary" type="button" :disabled="!store.canConfirm" @click="store.confirm()">确认版本</button></div>
           </div>
+          <div v-if="confirmed" class="confirmed-actions">
+            <button class="button-primary" type="button" :disabled="exporting" @click="exportPdf">{{ exporting ? '正在提交导出…' : '导出 PDF' }}</button>
+            <RouterLink class="button-secondary" :to="{ path: '/applications', query: { resumeVersionId: versionId, jdId: store.serverSnapshot.jdId } }">关联投递</RouterLink>
+            <p>导出与投递均使用这个已确认版本。</p>
+          </div>
+          <p v-if="exportError" class="error-message editor-message" role="alert">{{ exportError }}</p>
           <p v-if="store.reviewable && !confirmed" class="toolbar-help">{{ store.busy ? '正在保存，编辑操作暂时锁定。' : store.dirty ? '先保存修改，再确认版本。' : store.reviewedCount < store.changes.length ? '逐项审阅并保存后，即可确认这个版本。' : '已完成审阅。确认后，此版本将不可修改。' }}</p>
         </section>
         <p v-if="store.notice" class="editor-message success-message" role="status">{{ store.notice }}</p>
@@ -50,16 +56,32 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
-import { onBeforeRouteLeave, onBeforeRouteUpdate, RouterLink, useRoute } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, RouterLink, useRoute, useRouter } from 'vue-router'
+import { exportResumeVersion } from '../api/resumeVersions'
 import { useResumeEditorStore } from '../stores/resumeEditor'
 import { useAuthStore } from '../stores/auth'
 import { decisionsFor, projectResume, resumeLabels, reviewChanges, reviewLabels, sectionLabel } from '../utils/resumeReview'
 import { formatStructuredEntries } from '../utils/structuredDisplay'
 import ChangeReview from '../components/resume/ChangeReview.vue'
 import ResumePreview from '../components/resume/ResumePreview.vue'
-const route = useRoute(), auth = useAuthStore(), store = useResumeEditorStore()
+const route = useRoute(), router = useRouter(), auth = useAuthStore(), store = useResumeEditorStore()
 const versionId = computed(() => String(route.params.versionId || ''))
+const exporting = ref(false), exportError = ref('')
+let exportIntent: { versionId: string; requestId: string } | undefined
+async function exportPdf() {
+  if (!confirmed.value || exporting.value) return
+  const id = versionId.value
+  if (exportIntent?.versionId !== id) exportIntent = { versionId: id, requestId: crypto.randomUUID() }
+  exporting.value = true; exportError.value = ''
+  try {
+    const run = await exportResumeVersion(id, exportIntent.requestId)
+    if (versionId.value !== id) return
+    exportIntent = undefined
+    await router.push(`/agent/tasks/${run.runId}`)
+  } catch (cause) { if (versionId.value === id) exportError.value = cause instanceof Error ? cause.message : '暂时无法导出，请重试' }
+  finally { exporting.value = false }
+}
 const confirmed = computed(() => store.serverSnapshot?.status === 'confirmed')
 const serverChanges = computed(() => reviewChanges(store.conflictLatest) || [])
 const serverPreview = computed(() => projectResume(store.conflictLatest, decisionsFor(serverChanges.value)))
@@ -86,6 +108,9 @@ onBeforeUnmount(() => { window.removeEventListener('beforeunload', beforeUnload)
 .review-progress { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-size: 13px; color: var(--color-text-secondary); }
 .review-progress > span:first-child { color: var(--color-primary); font-weight: 600; }
 .unsaved-state { color: var(--color-warning); }
+.confirmed-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.confirmed-actions a { text-decoration: none; }
+.confirmed-actions p { flex-basis: 100%; margin: 0; font-size: 12px; line-height: 1.7; color: var(--color-text-secondary); }
 .save-actions,.conflict-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .toolbar-help,.review-footnote { margin: 12px 0 0; font-size: 12px; line-height: 1.7; color: var(--color-text-secondary); }
 .editor-message { padding: 16px 20px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.8; margin: 0; }

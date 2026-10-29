@@ -57,3 +57,9 @@ T09 最终完整后端 508 passed / 2 skipped，前端 67 passed + 实际文案�
 T09 已提交 `c4327de`。按[局部合同](../superpowers/plans/2026-10-30-t10-resume-review.md)实现独立版本的接受/拒绝/本人编辑、revision 冲突与确认冻结。用户要求实际截图继续适用，双页面冲突必须真实联调。
 
 T10 完整后端 552 passed / 2 expected skipped，前端 87 passed、原有测试与构建通过，完整真实浏览器 15 passed / 1.1m。六张桌面/手机/冲突/错误截图已逐张查看；预览遗漏与明确清空恢复旧要点已修复并回归。详见[第十课](10-resume-review-and-conflicts.md)与[T10 测试记录](test-records/2026-10-30-t10.md)。接续 T11，PDF 依赖与中文字体必须在本单元的真实 Linux worker 验证，不推迟到发布阶段。
+
+## T11：中文 PDF 与投递快照（完成确定性验收）
+
+T10 已提交 `de744e7`。按[实施合同](../superpowers/plans/2026-10-30-t11-export-and-submission.md)分为导出 Run、投递快照、前端入口与真实运行验收。PDF 使用已确认的冻结内容；主简历修改/删除不重写历史材料。运行依赖固定 Python Playwright 1.64.1、Jinja2 3.1.6、Debian Noto CJK 字体，依赖安装和真实渲染结果仍需记录。
+
+最终完整后端626 passed / 3 expected skipped，前端94 passed/原有测试/构建通过，完整真实浏览器17 passed / 1.4m；实际Linux worker PDF最终1 passed / 14.31s。最终两页1218字与逐页图实际查看，7张页面图检查，手机动作/本地日期/独立metrics真实缺口均修复。过程、原始日志和教学存于[第十一课](11-pdf-and-submission-snapshots.md)与[T11记录](test-records/2026-10-30-t11.md)。继续T12上下文与记忆；不以这些确定性结果替代真实模型评测。

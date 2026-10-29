@@ -54,6 +54,9 @@ def test_applications_create_list_update_and_delete_for_current_user(tmp_path):
     assert body["position"] == "后端开发工程师"
     assert body["applied_date"] == date(2026, 8, 18).isoformat()
     assert body["status"] == "applied"
+    assert body["jd_id"] is None
+    assert body["resume_version_id"] is None
+    assert body["submitted_snapshot"] is None
     assert body["status_events"][0]["status"] == "applied"
 
     current_user["id"] = 2

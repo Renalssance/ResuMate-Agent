@@ -117,7 +117,7 @@ def test_artifacts_include_owned_drafts_before_run_finishes(workspace_client, ca
     response = workspace_client.get('/api/agent/runs/run-draft/artifacts', headers=headers())
     assert response.status_code == 200
     assert response.json() == [{
-        'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
+        'kind': 'resume_version', 'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
         'status': 'draft', 'structuredContent': {'summary': 'API development'},
         'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00',
         'basedOnOldInput': False, 'changedInputs': [], 'sources': [], 'reviewable': False,

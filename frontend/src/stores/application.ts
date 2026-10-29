@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
+  attachApplicationSubmissionApi,
   createApplicationApi,
   createApplicationScheduleApi,
   createApplicationStatusEventApi,
@@ -69,6 +70,16 @@ export const useApplicationStore = defineStore('application', () => {
     }
   }
 
+  async function attachSubmission(id: number, jdId: number, resumeVersionId: string) {
+    saving.value = true; error.value = ''
+    try {
+      upsertApplication(toApplicationRecord(await attachApplicationSubmissionApi(id, { jd_id: jdId, resume_version_id: resumeVersionId })))
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : String(err)
+      throw err
+    } finally { saving.value = false }
+  }
+
   async function updateStatus(id: number, status: ApplicationStatus) {
     await updateApplication(id, { status })
   }
@@ -124,6 +135,7 @@ export const useApplicationStore = defineStore('application', () => {
     passedCount,
     loadApplications,
     createApplication,
+    attachSubmission,
     updateApplication,
     updateStatus,
     createStatusEvent,
@@ -142,6 +154,9 @@ export function toApplicationRecord(record: BackendJobApplicationRecord): JobApp
     id: record.id,
     resumeId: record.resume_id,
     resumeFilename: record.resume_filename,
+    jdId: record.jd_id ?? null,
+    resumeVersionId: record.resume_version_id ?? null,
+    submittedSnapshot: record.submitted_snapshot ?? null,
     company: record.company,
     position: record.position,
     appliedDate: record.applied_date,

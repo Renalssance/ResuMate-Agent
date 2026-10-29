@@ -18,6 +18,7 @@ uv sync --frozen --group dev
 npm --prefix frontend ci
 npm ci
 npx playwright install chromium
+uv run python -m playwright install chromium
 
 uv run pytest backend/tests -q
 npm --prefix frontend test
@@ -27,7 +28,7 @@ npm run test:e2e
 node --test extension/tests/*.test.mjs
 ```
 
-浏览器用例自动启动独立的 4173 端口前端。当前用例验证注册页本地校验，无须启动后端，无须真实账号或模型密钥。它不代表完整登录链路已经做过端到端测试。端口占用会失败，不复用来源不明的开发服务。
+浏览器用例自动启动独立的 4173 前端、4174 API、原生 worker 与专属 Redis 容器，使用临时 SQL/checkpoint/exports 目录和合成账户；只替换模型，真实执行任务、审阅、PDF 和投递流程。运行前需 Docker 已启动、Python/Node 依赖与 Chromium 已安装。端口占用会失败，不复用来源不明的开发服务。真实模型质量仍须单独评测。
 
 Vitest 只收集 `src/**/*.spec.ts`；已有 `*.test.ts` / `*.test.mjs` 保留在原 `npm test` 入口，避免把 Node 自执行测试误当作 Vitest 套件。
 
@@ -86,3 +87,19 @@ npm --prefix frontend run test:unit
 ```
 
 详见[第六课：持久事件与 SSE](learning/06-durable-events-and-sse.md)及[T06 测试记录](learning/test-records/2026-10-29-t06.md)。Compose 故障实验现在同时验证实际网络 SSE：断线、worker 崩溃、按游标补齐、唯一产物事件。新任务界面与实际操作闭环仍在 T07 验收。
+
+## T11：中文 PDF 与投递快照
+
+Python Playwright 固定为1.64.1，模板依赖 Jinja2 3.1.6；锁文件随项目保存。两个 Dockerfile 都安装该版本对应的 Chromium 与 Debian Bookworm `fonts-noto-cjk=1:20220127+repack1-1`，模板指定 `Noto Sans CJK SC`。本机开发也应安装同一包的 Regular/Bold 字体（macOS 放 `~/Library/Fonts`）；本次从实测镜像的 `/usr/share/fonts/opentype/noto/NotoSansCJK-{Regular,Bold}.ttc` 复制安装，未依赖默认系统字体回退做最终验收。
+
+`RESUME_EXPORT_DIR` 默认 `data/exports`。API 与 worker 需要相同持久目录；Compose 已设 `/app/data/exports` 并共享 `backend-data` 卷。不要把该目录作为公开静态文件目录，下载通过鉴权 API。
+
+```sh
+docker build -f deploy/worker.Dockerfile -t resumate-t11-worker .
+RESUMATE_PDF_COMPOSE_TEST=1 uv run pytest backend/tests/test_resume_export_compose.py -q -s
+npm run test:e2e -- resume-export.spec.ts
+```
+
+Linux 测试只创建测试自己的 Compose 项目和合成确认版本，输出 PDF、逐页 PNG、提取文本与日志，结束时清理自身容器/卷。测试默认显式跳过，不把普通单元套件的通过当作 Linux PDF 已验收。浏览器成功路径实际打印并下载；进行中/一次失败由专用测试 worker 控制，不是产品开关。
+
+详见[第十一课](learning/11-pdf-and-submission-snapshots.md)及[T11 测试记录](learning/test-records/2026-10-30-t11.md)。

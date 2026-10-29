@@ -1,12 +1,12 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import type { RunArtifact } from '../../api/agentRuns'
+import type { ResumeVersionArtifact } from '../../api/agentRuns'
 import ArtifactCard from './ArtifactCard.vue'
 
 const resumeRef = { kind: 'resume', resumeId: 1, inputVersion: '2026-10-30T00:00:00+00:00', section: '/work_experience/0/description', sourceRefs: ['resume.pdf:p2'] }
 const factRef = { kind: 'profile_fact', factId: 'fact-v2', revision: 2 }
 const answerRef = { kind: 'applicant_answer', actionId: 'action-1' }
-function artifact(): RunArtifact {
+function artifact(): ResumeVersionArtifact {
   return {
     id: 'draft-1', runId: 'run-1', resumeId: 1, jdId: 2, revision: 1, status: 'draft', createdAt: '',
     factRefs: [resumeRef, factRef, answerRef],
@@ -21,7 +21,7 @@ function artifact(): RunArtifact {
       { reference: answerRef, label: '本次补充回答', content: { question: '无关问题', answers: { answer: '未被此建议引用的回答' } } },
     ],
     basedOnOldInput: false, changedInputs: [],
-  } as RunArtifact
+  } as ResumeVersionArtifact
 }
 
 describe('evidence-based tailoring material', () => {

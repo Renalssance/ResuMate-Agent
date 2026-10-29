@@ -16,12 +16,12 @@
 | M2 / T08 | 岗位中心、事实版本、来源撤回 | 完成；后端 442、前端 63、真实浏览器 11 项通过；7 张截图已查看 |
 | M2 / T09 | 固定输入、有来源字段建议 | 完成确定性验收；508 后端、67 前端、真实浏览器与截图通过；语义评测待执行 |
 | M2 / T10 | 修改审阅与并发确认 | 完成；552 后端、87 前端、15 浏览器通过，6 张截图实际查看 |
-| M2 / T11 | PDF、投递快照 | 开发中 |
+| M2 / T11 | PDF、投递快照 | 完成；626 后端、94 前端、17 浏览器通过；真实 Linux 中文两页 PDF 与截图已查看 |
 | M3 / T12–T14 | 上下文、记忆、观测、恢复、AI 评测 | 待开发 |
 | M4 / T15–T16、T20–T21 | 扩展收藏、多轮面试、Redis、WebSocket | 待开发 |
 | M5 / T17–T19 | 性能、安全回归、部署、整体验收 | 待开发 |
 
-最新结果见 [T10 测试记录](test-records/2026-10-30-t10.md)，包含真实浏览器联调与桌面/手机截图。T06 的真实 Compose 事件恢复实验单独运行，1 passed / 140.85s。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
+最新结果见 [T11 测试记录](test-records/2026-10-30-t11.md)，包含真实浏览器联调与桌面/手机截图。T06 的真实 Compose 事件恢复实验单独运行，1 passed / 140.85s。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
 
 ## 已有资料
 
@@ -37,6 +37,8 @@
 - [第八课：岗位中心与可追溯事实](08-jobs-and-confirmed-facts.md)
 - [第九课：固定输入与有来源的简历建议](09-evidence-based-tailoring.md)
 - [第十课：逐项审阅、冲突与版本冻结](10-resume-review-and-conflicts.md)
+- [第十一课：中文 PDF 与不可变投递快照](11-pdf-and-submission-snapshots.md)
+- [T11 测试、截图与 PDF 记录](test-records/2026-10-30-t11.md)
 - [T10 测试、截图与修复记录](test-records/2026-10-30-t10.md)
 - [T09 测试、截图与修复记录](test-records/2026-10-30-t09.md)
 - [T08 测试、截图与修复记录](test-records/2026-10-30-t08.md)

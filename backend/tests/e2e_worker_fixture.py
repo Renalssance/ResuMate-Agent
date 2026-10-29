@@ -30,3 +30,28 @@ class BrowserDraftModel(DraftModel):
 
 
 factory.model_for_user = lambda user_id: BrowserDraftModel()
+
+
+# PDF browser acceptance uses the real renderer; only the test process can
+# pause it or fail once to expose actionable running/error UI states.
+import os
+from pathlib import Path
+from backend.services import resume_export
+
+_real_render_pdf = resume_export.render_pdf
+
+
+def browser_render_pdf(content, output_path):
+    state = Path(os.environ['AGENT_STATE_DIR']).parent
+    failure = state / 'pdf-fail-once'
+    if failure.exists():
+        failure.unlink()
+        raise RuntimeError('Synthetic one-time PDF rendering failure')
+    pause = state / 'pdf-pause'
+    deadline = time.monotonic() + 20
+    while pause.exists() and time.monotonic() < deadline:
+        time.sleep(0.1)
+    return _real_render_pdf(content, output_path)
+
+
+resume_export.render_pdf = browser_render_pdf

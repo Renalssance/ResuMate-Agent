@@ -1,0 +1,16 @@
+WARN Retry attempt #0. Sleeping 1.24889946s before the next attempt
+WARN Retry attempt #0. Sleeping 1.430916313s before the next attempt
+WARN Fixing invalid version specifier by removing trailing comma (before: `>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*,`; after: `>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*`)
+WARN Fixing invalid version specifier by removing trailing comma (before: `>=3.6,`; after: `>=3.6`)
+WARN Fixing invalid version specifier by removing trailing comma (before: `>=3.7,`; after: `>=3.7`)
+Resolved 191 packages in 2.71s
+WARN Retry attempt #0. Sleeping 1.00939303s before the next attempt
+Downloading playwright (41.2MiB)
+ Downloaded playwright
+Prepared 5 packages in 2.91s
+Installed 5 packages in 6ms
+ + greenlet==3.3.2
+ + jinja2==3.1.6
+ + markupsafe==3.0.3
+ + playwright==1.64.1
+ + pyee==14.0.0

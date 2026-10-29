@@ -1,5 +1,20 @@
 <template>
   <div class="page-stack applications-page">
+    <section v-if="submissionVersionId" class="card submission-choice" aria-label="关联已确认版本">
+      <div class="section-head"><div><p class="submission-eyebrow">本次投递材料</p><h2>关联已确认版本</h2><p>选择一条投递记录，保存本次提交的固定材料。</p></div><RouterLink v-if="selectedVersion" class="button-secondary" :to="`/resume-versions/${selectedVersion.id}`">返回确认版本</RouterLink></div>
+      <p v-if="submissionLoading" role="status">正在读取确认版本…</p>
+      <p v-if="submissionError" class="error-note" role="alert">{{ submissionError }}</p>
+      <template v-if="selectedVersion">
+        <div class="submission-fixed"><strong>已确认版本 · 第 {{ selectedVersion.revision }} 版</strong><p>关联后会保留提交时的正文；以后更新主简历不会改变这份记录。</p></div>
+        <details class="submission-preview"><summary>查看将要关联的材料</summary><ResumePreview :resume="confirmedContent(selectedVersion.structuredContent)" title="本次固定材料" /></details>
+        <div class="submission-options">
+          <div><h3>记录一次新投递</h3><p>填写公司和岗位，同时保存这份材料。</p><button class="button-primary" type="button" :disabled="store.saving" @click="beginNewSubmission">新建投递并关联</button></div>
+          <form @submit.prevent="attachExistingSubmission"><h3>关联到已有投递</h3><label class="form-field"><span>已有投递</span><select v-model="existingApplicationId" aria-label="已有投递" required :disabled="store.saving"><option value="">请选择投递记录</option><option v-for="application in availableSubmissions" :key="application.id" :value="application.id">{{ application.company }} · {{ application.position }}</option></select></label><p v-if="!availableSubmissions.length">暂无可关联的记录，可以新建投递。</p><button class="button-secondary" type="submit" :disabled="!existingApplicationId || store.saving">{{ store.saving ? '正在关联…' : '关联到此投递' }}</button></form>
+        </div>
+        <p v-if="store.error" class="error-note" role="alert">{{ store.error }}</p>
+      </template>
+    </section>
+    <p v-if="submissionNotice" class="submission-notice" role="status">{{ submissionNotice }}</p>
     <section class="stats-grid application-stats-grid">
       <button
         class="metric-card application-metric total"
@@ -289,7 +304,8 @@
               </option>
             </select>
           </label>
-          <label class="form-field application-field application-resume">
+          <div v-if="selectedVersion" class="form-field application-field application-resume submission-fixed"><span>本次固定材料</span><strong>已确认版本 · 第 {{ selectedVersion.revision }} 版</strong></div>
+          <label v-else class="form-field application-field application-resume">
             <span>关联简历</span>
             <select v-model="form.resume_id">
               <option :value="null">不关联</option>
@@ -314,7 +330,7 @@
             <button class="button-secondary" type="button" :disabled="store.saving" @click="resetForm">取消</button>
             <button class="button-primary" type="submit" :disabled="store.saving">
               <Plus class="app-icon" aria-hidden="true" />
-              <span>{{ store.saving ? '保存中...' : '添加记录' }}</span>
+              <span>{{ store.saving ? '保存中...' : selectedVersion ? '添加并关联' : '添加记录' }}</span>
             </button>
           </div>
         </form>
@@ -363,7 +379,7 @@
                 </div>
                 <div>
                   <dt>简历</dt>
-                  <dd :title="application.resumeFilename || '未关联'">{{ application.resumeFilename || '未关联' }}</dd>
+                  <dd :title="submissionLabel(application)">{{ submissionLabel(application) }}</dd>
                 </div>
                 <div>
                   <dt>来源</dt>
@@ -380,6 +396,7 @@
                 <ExternalLink class="app-icon" aria-hidden="true" />
                 <span>打开</span>
               </button>
+              <button v-if="application.submittedSnapshot" class="action-button" type="button" @click="toggleSubmission(application.id)"><span>{{ expandedSubmissions.has(application.id) ? '收起提交时材料' : '查看提交时材料' }}</span></button>
               <button class="action-button" type="button" @click="startEdit(application)">
                 <Pencil class="app-icon" aria-hidden="true" />
                 <span>编辑</span>
@@ -403,6 +420,11 @@
             </div>
           </div>
 
+          <section v-if="application.submittedSnapshot && expandedSubmissions.has(application.id)" class="submission-history" aria-label="提交时材料">
+            <div class="section-head"><div><h3>提交时材料</h3><p>{{ submissionLabel(application) }} · {{ formatDateTime(application.submittedSnapshot.submittedAt) }}</p></div><RouterLink class="button-secondary" :to="`/resume-versions/${application.submittedSnapshot.resumeVersionId}`">查看确认版本</RouterLink></div>
+            <p class="submission-history-note">以下正文保留自关联时，不随主简历更新。</p>
+            <ResumePreview :resume="confirmedContent(application.submittedSnapshot.structuredContent)" title="提交时的简历正文" />
+          </section>
           <div v-if="editingId === application.id" class="inline-form-panel application-entry-panel">
             <div class="section-head compact">
               <div>
@@ -424,7 +446,8 @@
                 <span>投递日期</span>
                 <input v-model="form.applied_date" required type="date" />
               </label>
-              <label class="form-field application-field application-resume">
+              <div v-if="application.submittedSnapshot" class="form-field application-field application-resume submission-fixed"><span>提交时材料</span><strong>{{ submissionLabel(application) }}</strong><small>已固定，编辑记录不会更换材料。</small></div>
+              <label v-else class="form-field application-field application-resume">
                 <span>关联简历</span>
                 <select v-model="form.resume_id">
                   <option :value="null">不关联</option>
@@ -552,7 +575,12 @@
 <script setup lang="ts">
 import { buildSearchIndex, matchesSearch } from '../utils/search'
 import { ArrowLeft, ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CircleDot, ExternalLink, ListTree, Pencil, Plus, Save, Trash2, X } from '@lucide/vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { fetchResumeVersion } from '../api/resumeVersions'
+import type { ResumeVersionArtifact } from '../api/agentRuns'
+import { decisionsFor, projectResume, reviewChanges } from '../utils/resumeReview'
+import ResumePreview from '../components/resume/ResumePreview.vue'
 import EmptyState from '../components/EmptyState.vue'
 import { useApplicationStore } from '../stores/application'
 import { useDocumentStore } from '../stores/document'
@@ -579,6 +607,63 @@ import {
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
+const route = useRoute(), router = useRouter()
+const submissionVersionId = computed(() => String(route.query.resumeVersionId || ''))
+const selectedVersion = ref<ResumeVersionArtifact | null>(null)
+const submissionLoading = ref(false), submissionError = ref(''), submissionNotice = ref('')
+const existingApplicationId = ref<number | ''>('')
+const expandedSubmissions = ref<Set<number>>(new Set())
+const availableSubmissions = computed(() => store.applications.filter(item => !item.submittedSnapshot || item.resumeVersionId === selectedVersion.value?.id))
+let selectionGeneration = 0
+watch([submissionVersionId, () => route.query.jdId], async ([id, jdId]) => {
+  const generation = ++selectionGeneration
+  selectedVersion.value = null; submissionError.value = ''; existingApplicationId.value = ''
+  submissionLoading.value = Boolean(id)
+  if (!id) return
+  try {
+    const version = await fetchResumeVersion(id)
+    if (generation !== selectionGeneration) return
+    if (version.status !== 'confirmed') throw new Error('请先确认简历版本，再关联投递。')
+    if (Number(jdId) !== version.jdId) throw new Error('所选岗位与简历版本不一致，请从确认版本重新进入。')
+    selectedVersion.value = version
+  } catch (cause) { if (generation === selectionGeneration) submissionError.value = cause instanceof Error ? cause.message : '无法读取确认版本，请重试' }
+  finally { if (generation === selectionGeneration) submissionLoading.value = false }
+}, { immediate: true })
+function confirmedContent(structuredContent: Record<string, unknown>) {
+  const artifact = { structuredContent }
+  const changes = reviewChanges(artifact)
+  if (!changes) return structuredContent.resume && typeof structuredContent.resume === 'object' && !Array.isArray(structuredContent.resume) ? structuredContent.resume as Record<string, unknown> : structuredContent
+  return projectResume(artifact, decisionsFor(changes))
+}
+function submissionLabel(application: JobApplicationRecord) {
+  return application.submittedSnapshot ? `已确认版本 · 第 ${application.submittedSnapshot.revision} 版` : application.resumeFilename || '未关联'
+}
+function toggleSubmission(id: number) {
+  const next = new Set(expandedSubmissions.value)
+  if (next.has(id)) next.delete(id); else next.add(id)
+  expandedSubmissions.value = next
+}
+async function clearSubmissionSelection() {
+  const { resumeVersionId: _version, jdId: _jd, ...query } = route.query
+  await router.replace({ query })
+}
+async function beginNewSubmission() {
+  if (store.saving || !selectedVersion.value) return
+  resetForm(); clearStatusDraft(); clearScheduleDraft()
+  showApplicationForm.value = true
+  await nextTick()
+  document.querySelector('.application-entry-panel')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+}
+async function attachExistingSubmission() {
+  if (store.saving || !selectedVersion.value || !existingApplicationId.value) return
+  try {
+    const id = Number(existingApplicationId.value)
+    await store.attachSubmission(id, selectedVersion.value.jdId, selectedVersion.value.id)
+    submissionNotice.value = '投递材料已关联，提交时的正文已保存。'
+    resetForm()
+    await clearSubmissionSelection()
+  } catch { /* Keep the selected material and record for retry. */ }
+}
 const metricDialog = ref<HTMLDialogElement | null>(null)
 const selectedMetric = ref<{ key: ApplicationMetricKey; label: string } | null>(null)
 const metricDetailRecords = computed(() => selectedMetric.value
@@ -737,8 +822,13 @@ async function submitApplication() {
       resetForm()
       return
     }
-    await store.createApplication({ ...form })
+    const version = selectedVersion.value
+    await store.createApplication({ ...form, ...(version ? { resume_id: version.resumeId, jd_id: version.jdId, resume_version_id: version.id } : {}) })
     resetForm()
+    if (version) {
+      submissionNotice.value = '投递记录已添加，提交时的正文已保存。'
+      await clearSubmissionSelection()
+    }
   } catch {
     // The store exposes the request error; keep this form open with its draft.
   }
@@ -893,7 +983,7 @@ function emptyForm(): JobApplicationPayload {
   return {
     company: '',
     position: '',
-    applied_date: new Date().toISOString().slice(0, 10),
+    applied_date: formatLocalDateKey(new Date()),
     resume_id: null,
     status: 'applied',
     job_url: '',
@@ -951,3 +1041,20 @@ function localDateTimeInput(date: Date) {
   return local.toISOString().slice(0, 16)
 }
 </script>
+
+<style scoped>
+.submission-choice { display: grid; gap: 20px; border: 1px solid var(--color-primary-border); min-width: 0; overflow-wrap: anywhere; }
+.submission-choice .section-head { margin: 0; align-items: flex-start; } .submission-choice h2 { color: var(--color-primary); font-size: 22px; line-height: 1.5; }
+.submission-choice h3,.submission-history h3 { margin: 0; font-size: 15px; line-height: 1.6; } .submission-choice p,.submission-history p { margin: 6px 0 0; font-size: 13px; line-height: 1.8; color: var(--color-text-secondary); }
+.submission-choice .error-note { color: var(--color-danger); }
+.submission-choice .submission-eyebrow { margin: 0 0 8px; font-size: 12px; } .submission-choice a,.submission-history a { text-decoration: none; }
+.submission-fixed { display: grid; gap: 6px; padding: 16px; border-radius: 8px; background: var(--color-primary-light); color: var(--color-primary); font-size: 13px; line-height: 1.7; min-width: 0; }
+.submission-fixed strong { font-size: 13px; } .submission-fixed small { font-size: 12px; color: var(--color-text-secondary); } .submission-fixed p { margin: 0; }
+.submission-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.submission-options > * { display: grid; align-content: start; justify-items: start; gap: 12px; border-top: 1px solid var(--color-border); padding-top: 20px; min-width: 0; }
+.submission-options .form-field { width: 100%; min-width: 0; } .submission-options select { width: 100%; min-width: 0; } .submission-options p { margin: 0; }
+.submission-preview { min-width: 0; } .submission-preview summary { font-size: 13px; line-height: 1.8; color: var(--color-primary); cursor: pointer; padding: 8px 0; } .submission-preview .resume-preview { margin-top: 12px; }
+.submission-notice { border: 1px solid var(--color-primary-border); border-radius: 8px; background: var(--surface-panel); padding: 16px 20px; color: var(--color-success); font-size: 13px; line-height: 1.8; }
+.submission-history { display: grid; gap: 16px; padding: 24px; margin-top: 20px; border-top: 1px solid var(--color-border); min-width: 0; overflow-wrap: anywhere; } .submission-history .section-head { margin: 0; }
+@media (max-width: 767px) { .application-record-main .application-record-actions { justify-self: stretch; flex-wrap: wrap; overflow-x: visible; } .application-record-main .application-open-placeholder { display: none; } .submission-choice { padding: 20px; } .submission-choice h2 { font-size: 20px; } .submission-options { grid-template-columns: minmax(0, 1fr); gap: 20px; } .submission-history { padding: 16px 0 0; } .submission-choice .section-head,.submission-history .section-head { flex-direction: column; gap: 12px; align-items: flex-start; } }
+</style>

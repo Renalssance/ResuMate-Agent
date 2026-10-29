@@ -2,22 +2,22 @@ import { createPinia, setActivePinia } from 'pinia'
 import { reactive } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useResumeEditorStore } from './resumeEditor'
-import type { RunArtifact } from '../api/agentRuns'
+import type { ResumeVersionArtifact } from '../api/agentRuns'
 const auth = vi.hoisted(() => ({ value: null as null | { token: string } }))
 vi.mock('./auth', () => ({ useAuthStore: () => auth.value }))
 
-function version(revision = 1): RunArtifact {
+function version(revision = 1): ResumeVersionArtifact {
  return { id: 'v1', runId: 'r1', resumeId: 1, jdId: 2, revision, status: 'draft', reviewable: true, createdAt: '', factRefs: [], sources: [], structuredContent: {
   resume: { candidate_name: '林夏', self_summary: '原始简介', work_experience: [{ company: '小店', description: '原始经历' }], projects: [{ description: '' }] }, inputVersions: { resume: 'v1' }, changes: [
    { id: 'summary', section: '/self_summary', before: '原始简介', after: '建议简介', reason: '突出职责', fact_refs: [], requires_input: false, status: 'pending' },
    { id: 'work', section: '/work_experience/0/description', before: '原始经历', after: '建议经历', reason: '突出经历', fact_refs: [], requires_input: false, status: 'pending' },
    { id: 'missing', section: '/projects/0/description', before: '', after: null, reason: '补充职责', fact_refs: [], requires_input: true, status: 'pending' },
   ],
- } } as RunArtifact
+ } } as ResumeVersionArtifact
 }
 function response(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }) }
-function saved(base: RunArtifact, decisions: unknown[], revision = 2) {
- const result = JSON.parse(JSON.stringify(base)) as RunArtifact
+function saved(base: ResumeVersionArtifact, decisions: unknown[], revision = 2) {
+ const result = JSON.parse(JSON.stringify(base)) as ResumeVersionArtifact
  result.revision = revision
  result.structuredContent.changes = (result.structuredContent.changes as Record<string, unknown>[]).map((change, i) => ({ ...change, ...(decisions[i] as object) }))
  return result

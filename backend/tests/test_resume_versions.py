@@ -51,7 +51,7 @@ def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db
     assert run_client.get('/api/resume-versions/' + version_id, headers=headers('bob')).status_code == 404
     assert run_client.get('/api/resume-versions/' + version_id).status_code == 401
     artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
-    assert artifacts == [result]
+    assert artifacts == [{'kind': 'resume_version', **result}]
 
 
 @pytest.mark.parametrize('patch', [
@@ -184,4 +184,4 @@ def test_legacy_draft_reports_changed_input_without_inventing_sources(career_db,
     assert detail['changedInputs'] == ['resume']
     assert detail['sources'] == []
     assert detail['structuredContent'] == {'summary': 'Historical draft'}
-    assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [detail]
+    assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [{'kind': 'resume_version', **detail}]

@@ -1,0 +1,266 @@
+......FFFFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+____ test_export_captures_only_confirmed_version_and_reuses_request[sqlite] ____
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10d881640>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d60ce90>
+run_client = <starlette.testclient.TestClient object at 0x10dfdbda0>
+
+    def test_export_captures_only_confirmed_version_and_reuses_request(confirmed, career_db, run_client):
+        response = run_client.post('/api/agent/runs', headers=headers(), json={
+            'kind': 'resume_export', 'resumeVersionId': confirmed.id, 'requestId': 'export-1'})
+>       assert response.status_code == 202, response.text
+E       AssertionError: {"code":"invalid_request","message":"请求字段无效","requestId":"013b5c00-e6a3-41ed-bf53-1855c53a2621"}
+E       assert 422 == 202
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+backend/tests/test_resume_export.py:57: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:11,921 | INFO | backend.app | Request start | method=POST path=/api/agent/runs client=testclient
+2026-10-30 00:57:11,923 | INFO | backend.app | Request end | method=POST path=/api/agent/runs status=422 duration_ms=2
+2026-10-30 00:57:11,924 | INFO | httpx | HTTP Request: POST http://testserver/api/agent/runs "HTTP/1.1 422 Unprocessable Entity"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/agent/runs status=422 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/agent/runs "HTTP/1.1 422 Unprocessable Entity"
+____ test_export_captures_only_confirmed_version_and_reuses_request[mysql] _____
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10def9190>
+career_db = <sqlalchemy.orm.session.Session object at 0x10def8f80>
+run_client = <starlette.testclient.TestClient object at 0x10def9220>
+
+    def test_export_captures_only_confirmed_version_and_reuses_request(confirmed, career_db, run_client):
+        response = run_client.post('/api/agent/runs', headers=headers(), json={
+            'kind': 'resume_export', 'resumeVersionId': confirmed.id, 'requestId': 'export-1'})
+>       assert response.status_code == 202, response.text
+E       AssertionError: {"code":"invalid_request","message":"请求字段无效","requestId":"f1bcdc6f-99e5-434b-b095-79d5ee6698bc"}
+E       assert 422 == 202
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+backend/tests/test_resume_export.py:57: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:12,287 | INFO | backend.app | Request start | method=POST path=/api/agent/runs client=testclient
+2026-10-30 00:57:12,293 | INFO | backend.app | Request end | method=POST path=/api/agent/runs status=422 duration_ms=6
+2026-10-30 00:57:12,294 | INFO | httpx | HTTP Request: POST http://testserver/api/agent/runs "HTTP/1.1 422 Unprocessable Entity"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/agent/runs status=422 duration_ms=6
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/agent/runs "HTTP/1.1 422 Unprocessable Entity"
+__________ test_draft_and_foreign_versions_are_not_exportable[sqlite] __________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10def8830>
+career_db = <sqlalchemy.orm.session.Session object at 0x10d75d160>
+run_client = <starlette.testclient.TestClient object at 0x10e20aed0>
+
+    def test_draft_and_foreign_versions_are_not_exportable(confirmed, career_db, run_client):
+        url = f'/api/resume-versions/{confirmed.id}/export'
+>       assert run_client.post(url, headers=headers('bob'), json={'requestId': 'foreign'}).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = post('/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export', headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3OTQzMn0.FOMX7Zw7HP9DAxUyu46eoIOgz8TF5d9l0XFgmkTPTu0'}, json={'requestId': 'foreign'})
+E        +      where post = <starlette.testclient.TestClient object at 0x10e20aed0>.post
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3OTQzMn0.FOMX7Zw7HP9DAxUyu46eoIOgz8TF5d9l0XFgmkTPTu0'} = headers('bob')
+
+backend/tests/test_resume_export.py:78: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:12,395 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export client=testclient
+2026-10-30 00:57:12,395 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export status=405 duration_ms=0
+2026-10-30 00:57:12,396 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/af0e8952-8d7a-4cab-997e-cd932883cb79/export "HTTP/1.1 405 Method Not Allowed"
+__________ test_draft_and_foreign_versions_are_not_exportable[mysql] ___________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10d71bbf0>
+career_db = <sqlalchemy.orm.session.Session object at 0x10e2095e0>
+run_client = <starlette.testclient.TestClient object at 0x10def9700>
+
+    def test_draft_and_foreign_versions_are_not_exportable(confirmed, career_db, run_client):
+        url = f'/api/resume-versions/{confirmed.id}/export'
+>       assert run_client.post(url, headers=headers('bob'), json={'requestId': 'foreign'}).status_code == 404
+E       AssertionError: assert 405 == 404
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+E        +    where <Response [405 Method Not Allowed]> = post('/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export', headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3OTQzMn0.FOMX7Zw7HP9DAxUyu46eoIOgz8TF5d9l0XFgmkTPTu0'}, json={'requestId': 'foreign'})
+E        +      where post = <starlette.testclient.TestClient object at 0x10def9700>.post
+E        +      and   {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2IiLCJyb2xlIjoidXNlciIsImV4cCI6MTc5MzM3OTQzMn0.FOMX7Zw7HP9DAxUyu46eoIOgz8TF5d9l0XFgmkTPTu0'} = headers('bob')
+
+backend/tests/test_resume_export.py:78: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:57:12,637 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export client=testclient
+2026-10-30 00:57:12,637 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export status=405 duration_ms=0
+2026-10-30 00:57:12,637 | INFO | httpx | HTTP Request: POST http://testserver/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export "HTTP/1.1 405 Method Not Allowed"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export status=405 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/resume-versions/13334885-2bbc-459c-b702-508359bda652/export "HTTP/1.1 405 Method Not Allowed"
+_____ test_retry_uses_frozen_version_after_main_documents_deleted[sqlite] ______
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10e2426f0>
+career_db = <sqlalchemy.orm.session.Session object at 0x108a59c10>
+
+    def test_retry_uses_frozen_version_after_main_documents_deleted(confirmed, career_db):
+>       run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_resume_export.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+version_id = '41acc7ed-0fa4-4534-8788-44fa948bffc1', request_id = 'export-1'
+
+    def export_request(version_id, request_id='export-1'):
+>       return RunCreate(kind='resume_export', resumeVersionId=version_id, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' [type=literal_error, input_value='resume_export', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       jdId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeVersionId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='41acc7ed-0fa4-4534-8788-44fa948bffc1', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_resume_export.py:38: ValidationError
+______ test_retry_uses_frozen_version_after_main_documents_deleted[mysql] ______
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x110e17b90>
+career_db = <sqlalchemy.orm.session.Session object at 0x10e071be0>
+
+    def test_retry_uses_frozen_version_after_main_documents_deleted(confirmed, career_db):
+>       run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_resume_export.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+version_id = '1a3a2042-337a-4dba-b89b-5083db077475', request_id = 'export-1'
+
+    def export_request(version_id, request_id='export-1'):
+>       return RunCreate(kind='resume_export', resumeVersionId=version_id, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' [type=literal_error, input_value='resume_export', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       jdId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeVersionId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='1a3a2042-337a-4dba-b89b-5083db077475', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_resume_export.py:38: ValidationError
+______________ test_retry_refuses_changed_frozen_revision[sqlite] ______________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x10e20a210>
+career_db = <sqlalchemy.orm.session.Session object at 0x108a5af60>
+
+    def test_retry_refuses_changed_frozen_revision(confirmed, career_db):
+>       run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_resume_export.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+version_id = '7c1ddc17-0a67-4e56-8352-3faf2b8f1b94', request_id = 'export-1'
+
+    def export_request(version_id, request_id='export-1'):
+>       return RunCreate(kind='resume_export', resumeVersionId=version_id, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' [type=literal_error, input_value='resume_export', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       jdId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeVersionId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='7c1ddc17-0a67-4e56-8352-3faf2b8f1b94', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_resume_export.py:38: ValidationError
+______________ test_retry_refuses_changed_frozen_revision[mysql] _______________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x110e6f920>
+career_db = <sqlalchemy.orm.session.Session object at 0x10e1aaae0>
+
+    def test_retry_refuses_changed_frozen_revision(confirmed, career_db):
+>       run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_resume_export.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+version_id = '77478dea-3cde-48e9-b376-0739a5438bb2', request_id = 'export-1'
+
+    def export_request(version_id, request_id='export-1'):
+>       return RunCreate(kind='resume_export', resumeVersionId=version_id, requestId=request_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 4 validation errors for RunCreate
+E       kind
+E         Input should be 'tailoring' [type=literal_error, input_value='resume_export', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/literal_error
+E       jdId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeId
+E         Field required [type=missing, input_value={'kind': 'resume_export',...'requestId': 'export-1'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.12/v/missing
+E       resumeVersionId
+E         Extra inputs are not permitted [type=extra_forbidden, input_value='77478dea-3cde-48e9-b376-0739a5438bb2', input_type=str]
+E           For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden
+
+backend/tests/test_resume_export.py:38: ValidationError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_export.py::test_export_captures_only_confirmed_version_and_reuses_request[sqlite]
+FAILED backend/tests/test_resume_export.py::test_export_captures_only_confirmed_version_and_reuses_request[mysql]
+FAILED backend/tests/test_resume_export.py::test_draft_and_foreign_versions_are_not_exportable[sqlite]
+FAILED backend/tests/test_resume_export.py::test_draft_and_foreign_versions_are_not_exportable[mysql]
+FAILED backend/tests/test_resume_export.py::test_retry_uses_frozen_version_after_main_documents_deleted[sqlite]
+FAILED backend/tests/test_resume_export.py::test_retry_uses_frozen_version_after_main_documents_deleted[mysql]
+FAILED backend/tests/test_resume_export.py::test_retry_refuses_changed_frozen_revision[sqlite]
+FAILED backend/tests/test_resume_export.py::test_retry_refuses_changed_frozen_revision[mysql]
+8 failed, 6 passed, 7 warnings in 2.86s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

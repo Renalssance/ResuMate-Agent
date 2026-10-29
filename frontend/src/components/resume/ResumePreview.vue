@@ -31,7 +31,17 @@ function entries(value: unknown, type: string): Entry[] {
   return value.map(item => {
     if (!isRecord(item)) return { heading: '', meta: '', lines: textList(item) }
     if (type === 'education') return { heading: join(item.school, item.degree, item.major), meta: text(item.years) || join(item.start_date, item.end_date), lines: [join(item.college, item.lab, item.research_direction), ...textList(item.courses).map(line => `课程：${line}`), ...textList(item.papers), ...textList(item.achievements), item.gpa ? `GPA：${text(item.gpa)}` : '', item.rank ? `排名：${text(item.rank)}` : '', item.advisor ? `导师：${text(item.advisor)}` : ''].filter(Boolean) }
-    if (type === 'work_experience' || type === 'projects') return { heading: type === 'projects' ? join(item.name, item.role) : join(item.company, item.title || item.role), meta: text(item.duration) || text(item.period) || join(item.start_date, item.end_date), lines: [text(item.description), ...(Array.isArray(item.bullets) ? item.bullets.map(bullet => isRecord(bullet) ? text(bullet.raw_text) : text(bullet)).filter(line => line && line !== text(item.description)) : []), ...textList(item.technologies).length ? [`技术：${textList(item.technologies).join('、')}`] : []].filter(Boolean) }
+    if (type === 'work_experience' || type === 'projects') {
+      const lines = [text(item.description), ...(Array.isArray(item.bullets) ? item.bullets.map(bullet => isRecord(bullet) ? text(bullet.raw_text) : text(bullet)).filter(line => line && line !== text(item.description)) : [])].filter(Boolean)
+      for (const metric of Array.isArray(item.metrics) ? item.metrics : []) {
+        if (!isRecord(metric)) continue
+        const value = text(metric.raw_text) || [text(metric.name), `${text(metric.value)}${text(metric.unit)}`].filter(Boolean).join(' ')
+        if (value && !lines.some(line => line.includes(value))) lines.push(value)
+      }
+      const technologies = textList(item.technologies)
+      if (technologies.length) lines.push(`技术：${technologies.join('、')}`)
+      return { heading: type === 'projects' ? join(item.name, item.role) : join(item.company, item.title || item.role), meta: text(item.duration) || text(item.period) || join(item.start_date, item.end_date), lines }
+    }
     return { heading: '', meta: '', lines: [join(item.name, item.proficiency_claim, item.level)].filter(Boolean) }
   }).filter(item => item.heading || item.meta || item.lines.length)
 }

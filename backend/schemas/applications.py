@@ -35,7 +35,19 @@ class ApplicationBase(BaseModel):
 
 
 class ApplicationCreate(ApplicationBase):
-    pass
+    jd_id: int | None = None
+    resume_version_id: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_submission_pair(self):
+        if (self.jd_id is None) != (self.resume_version_id is None):
+            raise ValueError("jd_id and resume_version_id must be provided together")
+        return self
+
+
+class ApplicationSubmission(BaseModel):
+    jd_id: int
+    resume_version_id: str
 
 
 class ApplicationUpdate(BaseModel):
@@ -111,6 +123,9 @@ class ApplicationRecord(ApplicationBase):
 
     id: int
     resume_filename: str = ""
+    jd_id: int | None = None
+    resume_version_id: str | None = None
+    submitted_snapshot: dict | None = None
     status_events: list[ApplicationStatusEventRecord] = Field(default_factory=list)
     schedules: list[ApplicationScheduleRecord] = Field(default_factory=list)
     created_at: datetime

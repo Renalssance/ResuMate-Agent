@@ -42,10 +42,10 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { reviewChanges, reviewLabels } from '../../utils/resumeReview'
-import type { ArtifactReference, RunArtifact, TailoringChange } from '../../api/agentRuns'
+import type { ArtifactReference, ResumeVersionArtifact, TailoringChange } from '../../api/agentRuns'
 import FactReference from '../resume/FactReference.vue'
 import { formatStructuredEntries } from '../../utils/structuredDisplay'
-const props = defineProps<{ artifact: RunArtifact }>()
+const props = defineProps<{ artifact: ResumeVersionArtifact }>()
 const changes = computed(() => reviewChanges(props.artifact))
 const entries = computed(() => formatStructuredEntries(props.artifact.structuredContent).map(entry => ({ ...entry, groups: entry.groups.map((group, index) => ({ ...group, title: group.title ? `${labels[entry.key] || entry.label} ${index + 1}` : '' })) })))
 const inputLabels: Record<string, string> = { resume: '简历', jd: '岗位', facts: '已确认事实' }

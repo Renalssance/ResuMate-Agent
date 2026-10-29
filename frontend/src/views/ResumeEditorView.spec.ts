@@ -10,7 +10,7 @@ vi.mock('../stores/auth', () => ({ useAuthStore: () => auth.value }))
 const artifact = { id: 'v1', runId: 'r1', resumeId: 1, jdId: 2, revision: 1, status: 'draft', reviewable: true, createdAt: '', factRefs: [], sources: [], structuredContent: { resume: { self_summary: '原文' }, inputVersions: {}, changes: [{ id: 'c1', section: '/self_summary', before: '原文', after: '建议', reason: '突出职责', fact_refs: [], requires_input: false, status: 'pending' }] } }
 const response = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status })
 async function setup() {
- const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/resume-versions/:versionId', component: ResumeEditorView }, { path: '/agent/tasks/:runId?', component: { template: '<p>材料准备</p>' } }] })
+ const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/resume-versions/:versionId', component: ResumeEditorView }, { path: '/agent/tasks/:runId?', component: { template: '<p>材料准备</p>' } }, { path: '/applications', component: { template: '<p>投递记录</p>' } }] })
  await router.push('/resume-versions/v1'); await router.isReady()
  const pinia = createPinia(); const wrapper = mount({ template: '<RouterView />' }, { global: { plugins: [pinia, router] } }); await flushPromises()
  return { router, wrapper, store: useResumeEditorStore(pinia) }
@@ -40,4 +40,18 @@ describe('resume editor page', () => {
   expect(wrapper.text()).toContain('重新准备材料'); expect(wrapper.text()).toContain('历史材料原文'); expect(wrapper.findAll('button').some(button => button.text() === '保存草稿')).toBe(false)
   wrapper.unmount()
  })
+})
+
+it('exports the confirmed version with an idempotency key and navigates to its task, while association preserves the version and job', async () => {
+ vi.mocked(fetch).mockResolvedValueOnce(response({ ...artifact, status: 'confirmed' }))
+ const { wrapper, router } = await setup()
+ const association = wrapper.findAll('a').find(link => link.text() === '关联投递')
+ expect(association?.attributes('href')).toBe('/applications?resumeVersionId=v1&jdId=2')
+ const exportButton = wrapper.findAll('button').find(button => button.text() === '导出 PDF')
+ expect(exportButton).toBeDefined()
+ vi.mocked(fetch).mockResolvedValueOnce(response({ runId: 'pdf-run', status: 'queued' }, 202))
+ await exportButton!.trigger('click'); await flushPromises()
+ expect(fetch).toHaveBeenLastCalledWith('/api/resume-versions/v1/export', expect.objectContaining({ method: 'POST', body: expect.stringMatching(/"requestId":"[^" ]+"/) }))
+ expect(router.currentRoute.value.path).toBe('/agent/tasks/pdf-run')
+ wrapper.unmount()
 })

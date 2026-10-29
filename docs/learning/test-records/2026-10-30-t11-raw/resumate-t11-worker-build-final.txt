@@ -1,0 +1,51 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from worker.Dockerfile
+#1 transferring dockerfile: 823B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm
+#2 DONE 2.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 356B 0.0s done
+#3 DONE 0.0s
+
+#4 [1/8] FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337
+#4 resolve public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 56.09kB 0.0s done
+#5 DONE 0.1s
+
+#6 [2/8] WORKDIR /app
+#6 CACHED
+
+#7 [3/8] RUN pip install --no-cache-dir uv==0.12.5
+#7 CACHED
+
+#8 [4/8] COPY pyproject.toml uv.lock README.md ./
+#8 CACHED
+
+#9 [5/8] RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources
+#9 CACHED
+
+#10 [6/8] RUN uv sync --locked --no-dev --no-install-project     && python -m playwright install --with-deps chromium     && apt-get install -y --no-install-recommends fonts-noto-cjk=1:20220127+repack1-1     && rm -rf /var/lib/apt/lists/*
+#10 CACHED
+
+#11 [7/8] COPY backend/ ./backend/
+#11 DONE 0.2s
+
+#12 [8/8] RUN mkdir -p /app/data/agent /app/data/exports
+#12 DONE 1.4s
+
+#13 exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:c118981467b62ffb8a52fe303059edaa73769b313e39a358a3df207aae918830 done
+#13 exporting config sha256:49bf0ba5722c0221c514d37330ec62e478f8bf916b4451d36db95ccbb34dd5c1 done
+#13 exporting attestation manifest sha256:abda58c04ad0a4d2f8e53c06aae5ad7cf0bd7260358b0e41dc95d6902dfc3a8a done
+#13 exporting manifest list sha256:4f047695743f3c2482cea1b68c1deaff331582bc20d7a4bf6ed648f8a0edc267 done
+#13 naming to docker.io/library/resumate-t11-worker:latest done
+#13 unpacking to docker.io/library/resumate-t11-worker:latest 0.0s done
+#13 DONE 0.1s

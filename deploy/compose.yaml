@@ -8,6 +8,7 @@ services:
       dockerfile: deploy/worker.Dockerfile
     environment:
       DATABASE_URL: sqlite:////app/data/resumate.db
+      RESUME_EXPORT_DIR: /app/data/exports
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY for the local API}
       ADMIN_INVITE_CODE: ${ADMIN_INVITE_CODE:-}
@@ -37,6 +38,7 @@ services:
       dockerfile: deploy/worker.Dockerfile
     environment:
       DATABASE_URL: sqlite:////app/data/resumate.db
+      RESUME_EXPORT_DIR: /app/data/exports
       REDIS_URL: redis://redis:6379/0
       AGENT_STATE_DIR: /app/data/agent
       LANGCHAIN_TRACING_V2: 'false'

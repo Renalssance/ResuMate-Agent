@@ -71,7 +71,8 @@ def main():
         probe.bind(('127.0.0.1', 0))
         redis_port = probe.getsockname()[1]
     env = dict(os.environ, DATABASE_URL=f'sqlite:///{STATE / "resumate.db"}',
-               AGENT_STATE_DIR=str(STATE / 'agent'), JWT_SECRET_KEY=uuid4().hex,
+               AGENT_STATE_DIR=str(STATE / 'agent'), RESUME_EXPORT_DIR=str(STATE / 'exports'),
+               JWT_SECRET_KEY=uuid4().hex,
                REDIS_URL=f'redis://127.0.0.1:{redis_port}/0',
                CLOUDBASE_ENV_ID='', CLOUD_STORAGE_PROVIDER='local',
                LANGSMITH_TRACING='false', LOG_LEVEL='WARNING',

@@ -17,12 +17,21 @@ export interface TailoringChange {
   id: string; section: string; before: string; after: string | null; reason: string
   fact_refs: ArtifactReference[]; requires_input: boolean; status: ReviewStatus; editedText?: string
 }
-export interface RunArtifact {
+export interface ResumeVersionArtifact {
+  kind?: 'resume_version'
   id: string; runId: string; resumeId: number; jdId: number; revision: number; status: string
   structuredContent: Record<string, unknown>; factRefs: unknown[]; createdAt: string
   reviewable?: boolean; sources?: ArtifactSource[]; basedOnOldInput?: boolean; changedInputs?: string[]
 }
-export interface CreateAgentRun { kind: 'tailoring'; jdId: number; resumeId: number; requestId: string }
+export interface ResumePdfArtifact {
+  kind: 'resume_pdf'; id: string; runId: string; resumeVersionId: string; revision: number
+  filename: string; downloadUrl: string; createdAt: string
+}
+export type RunArtifact = ResumeVersionArtifact | ResumePdfArtifact
+export type CreateAgentRun =
+  | { kind: 'tailoring'; jdId: number; resumeId: number; requestId: string }
+  | { kind: 'resume_export'; resumeVersionId: string; requestId: string }
+
 export interface ActionAnswer { decision: 'submit' | 'approve' | 'reject'; answers: Record<string, string>; expectedRevision: number }
 export interface RunAccepted { runId: string; status: RunStatus }
 export class AgentRunError extends Error {
@@ -49,4 +58,17 @@ export const retryAgentRun = (id: string) => runRequest<RunAccepted>(`${runPath(
 export const runStatusLabel: Record<RunStatus, string> = {
   queued: '等待开始', running: '正在准备', waiting_input: '等待你补充信息', waiting_approval: '等待你审阅',
   succeeded: '材料已生成', failed: '任务失败', cancelled: '任务已取消',
+}
+
+export async function downloadResumePdf(runId: string): Promise<Blob> {
+  const response = await fetch(`/api/agent/runs${runPath(runId)}/download`, { headers: { ...buildAuthHeaders(), Accept: 'application/pdf' } })
+  if (!response.ok) {
+    const data = await response.json()
+    throw new AgentRunError(response.status, data.code || 'request_failed', data.message || data.detail || '下载失败，请重试')
+  }
+  return response.blob()
+}
+export function taskStatusLabel(status: RunStatus, kind?: string) {
+  if (kind !== 'resume_export') return runStatusLabel[status]
+  return ({ queued: '等待导出', running: '正在导出 PDF', succeeded: 'PDF 已导出', failed: 'PDF 导出失败', cancelled: '导出已取消' } as Partial<Record<RunStatus, string>>)[status] || runStatusLabel[status]
 }

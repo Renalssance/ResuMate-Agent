@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -56,6 +56,13 @@ def list_runs(limit: int = Query(default=20, ge=1, le=50), offset: int = Query(d
 @router.get('/{run_id}/artifacts')
 def artifacts(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return agent_runs.run_artifacts(db, user.id, run_id)
+
+
+@router.get('/{run_id}/download')
+def download(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    from backend.services.resume_export import download_file
+    path, filename = download_file(db, user.id, run_id)
+    return FileResponse(path, media_type='application/pdf', filename=filename)
 
 
 @router.get('/{run_id}')

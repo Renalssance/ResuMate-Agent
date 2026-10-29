@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
 
 class RunStatus(StrEnum):
@@ -116,10 +116,20 @@ RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
 class RunCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
     session_id: str | None = Field(default=None, alias='sessionId', min_length=1, max_length=36)
-    kind: Literal['tailoring']
-    jd_id: int = Field(alias='jdId', gt=0)
-    resume_id: int = Field(alias='resumeId', gt=0)
+    kind: Literal['tailoring', 'resume_export']
+    jd_id: int | None = Field(default=None, alias='jdId', gt=0)
+    resume_id: int | None = Field(default=None, alias='resumeId', gt=0)
+    resume_version_id: str | None = Field(default=None, alias='resumeVersionId', min_length=1, max_length=36)
     request_id: str = Field(alias='requestId', min_length=1, max_length=100)
+
+    @model_validator(mode='after')
+    def validate_inputs(self):
+        if self.kind == 'tailoring':
+            if self.jd_id is None or self.resume_id is None or 'resume_version_id' in self.model_fields_set:
+                raise ValueError('准备材料需要岗位和简历，不能混用已确认版本')
+        elif self.resume_version_id is None or {'jd_id', 'resume_id'} & self.model_fields_set:
+            raise ValueError('导出需要已确认版本，不能混用原始简历或岗位')
+        return self
 
 
 class RunAccepted(BaseModel):

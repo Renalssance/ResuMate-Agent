@@ -26,7 +26,8 @@
 | T08 | 完成确定性验收 | 岗位、事实版本与来源撤回；后端 442、前端 63、真实浏览器 11 项通过，7 张截图已实际查看 |
 | T09 | 完成确定性验收 | 固定输入、逐字段建议与三类来源；508 后端、67 前端通过，旧资料真实浏览器场景及桌面/手机图已查看；语义评测仍待执行 |
 | T10 | 完成确定性验收 | 552 后端、87 前端、15 浏览器通过；冲突与确认冻结、6 张实际截图验收完成 |
-| T11–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
+| T11 | 完成确定性验收 | 626 后端、94 前端、17 浏览器通过；真实 Linux PDF 1 passed，两页1218字及逐页图已查看 |
+| T12–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
 
 T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
 
@@ -463,13 +464,15 @@ def test_claim_requires_existing_fact(draft_validator, facts):
 **文件：** 新增 backend/services/resume_export.py、backend/templates/resume.html、backend/tests/test_resume_export.py；修改 backend/routes/applications.py、backend/schemas/agent_runs.py、backend/worker_tasks.py、frontend/src/views/ApplicationsView.vue、Dockerfile。
 **接口：** `export_resume_version(user_id, version_id) -> artifact_id`；`attach_submission(user_id, application_id, jd_id, version_id)`。
 
-- [ ] 首版只做一套中文可用的简历模板，使用 Playwright/Chromium 打印；安装并固定可用字体。
-- [ ] 模板按结构化字段渲染且转义文本；禁止任意 HTML/脚本/外链资源进入渲染器。
-- [ ] 导出在 worker 内执行；本单元引入导出 kind 时同步扩展 `RunCreate` 的输入校验和 worker 派发，验证导出任务不会进入 tailoring 执行器。下载校验归属；重复导出可以返回已有同版本产物。当前仅支持 tailoring，不提前建设通用任务框架。
-- [ ] 投递关联不可变提交版本；修改主简历不改变历史投递材料。
-- [ ] 检查 PDF 文本可提取、中文可读、两页样例无裁切和字段缺失；保存渲染预览供人工一次审阅。
+- [x] 首版只做一套中文可用的简历模板，使用 Playwright/Chromium 打印；安装并固定可用字体。
+- [x] 模板按结构化字段渲染且转义文本；禁止任意 HTML/脚本/外链资源进入渲染器。
+- [x] 导出在 worker 内执行；本单元引入导出 kind 时同步扩展 `RunCreate` 的输入校验和 worker 派发，验证导出任务不会进入 tailoring 执行器。下载校验归属；重复导出可以返回已有同版本产物。当前仅支持 tailoring，不提前建设通用任务框架。
+- [x] 投递关联不可变提交版本；修改主简历不改变历史投递材料。
+- [x] 检查 PDF 文本可提取、中文可读、两页样例无裁切和字段缺失；保存渲染预览供人工一次审阅。
 
 **验证：** `uv run pytest backend/tests/test_resume_export.py -q` 和一个端到端下载流程。失败会产生不可用申请材料，修正字体/模板/关联逻辑。不要把 PDF 关键词分数包装成真实 ATS 通过率。
+
+执行记录：[T11 测试、截图及 PDF](../../learning/test-records/2026-10-30-t11.md)。实际 Compose worker 镜像与根 Dockerfile 同步补齐运行依赖。
 
 ### T12：上下文预算与可维护业务记忆
 
@@ -702,7 +705,7 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 ## 11. 开始执行的顺序
 
-T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。T06 持久事件、鉴权 SSE、断线续接及联合崩溃回放已经通过。T07 任务 UI、真实服务联调和截图检查已完成；T08 岗位、T09 有来源建议、T10 审阅确认已完成确定性验收；下一步推进 T11 导出与投递快照。在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
+T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。T06 持久事件、鉴权 SSE、断线续接及联合崩溃回放已经通过。T07 任务 UI、真实服务联调和截图检查已完成；T08 岗位、T09 有来源建议、T10 审阅确认已完成确定性验收；T11 导出与投递快照现已完成，下一步推进 T12 上下文预算与可维护记忆。在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
 
 T12/T13/T14 按上下文、评测与故障恢复依赖推进。M4 完成 T15，并依次完成 T20、T16、T21，再进入包含实时链路的 T17–T19。M1 验收通过前，不启动批量抓取、复杂编辑器或额外 Agent 角色；原有产品范围与 21 个任务 ID 保持不变。
 

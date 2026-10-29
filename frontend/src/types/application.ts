@@ -36,10 +36,22 @@ export interface ApplicationSchedule {
   updatedAt: string
 }
 
+export interface SubmittedSnapshot {
+  resumeVersionId: string
+  revision: number
+  jdId: number
+  structuredContent: Record<string, unknown>
+  factRefs: unknown[]
+  submittedAt: string
+}
+
 export interface JobApplicationRecord {
   id: number
   resumeId: number | null
   resumeFilename: string
+  jdId?: number | null
+  resumeVersionId?: string | null
+  submittedSnapshot?: SubmittedSnapshot | null
   company: string
   position: string
   appliedDate: string
@@ -58,6 +70,8 @@ export interface JobApplicationPayload {
   position: string
   applied_date: string
   resume_id?: number | null
+  jd_id?: number | null
+  resume_version_id?: string | null
   status: ApplicationStatus
   job_url?: string
   source?: string
@@ -82,6 +96,9 @@ export interface BackendJobApplicationRecord extends JobApplicationPayload {
   id: number
   resume_id: number | null
   resume_filename: string
+  jd_id: number | null
+  resume_version_id: string | null
+  submitted_snapshot: SubmittedSnapshot | null
   job_url: string
   source: string
   notes: string

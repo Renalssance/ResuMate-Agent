@@ -1,0 +1,408 @@
+FFFFFFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+______________________ test_real_renderer_prints_text_pdf ______________________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_real_renderer_prints_text0')
+
+    def test_real_renderer_prints_text_pdf(tmp_path):
+        import pymupdf
+        from backend.services import resume_export
+        path = tmp_path / 'resume.pdf'
+>       resume_export.render_pdf({'resume': {'candidate_name': 'Lin', 'self_summary': 'Frozen confirmed resume'}}, path)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'render_pdf'. Did you mean: 'render_html'?
+
+backend/tests/test_resume_export.py:174: AttributeError
+_ test_worker_exports_frozen_material_without_model_and_exposes_owned_download[sqlite] _
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x111082d50>
+career_db = <sqlalchemy.orm.session.Session object at 0x110dc18e0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_worker_exports_frozen_mat0/career.db)
+run_client = <starlette.testclient.TestClient object at 0x111813dd0>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_worker_exports_frozen_mat0/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1115df380>
+
+    def test_worker_exports_frozen_material_without_model_and_exposes_owned_download(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch):
+        service, worker, directory = export_runtime
+        from backend.agent_runtime import runner
+        def no_model(*args, **kwargs):
+            pytest.fail('PDF export entered the model runner')
+        monkeypatch.setattr(runner, 'run_agent', no_model)
+        version_id = confirmed.id
+        run_id = agent_runs.create_run(career_db, 1, export_request(version_id)).id
+        career_db.delete(career_db.get(Resume, 1))
+        career_db.commit()
+        def print_frozen(content, target):
+            assert content['resume']['self_summary'] == '确认后的接口开发经历'
+            assert target.name == f'.{run_id}.tmp.pdf'
+            # A separate writer must work while the slow browser print is active.
+            with Session(career_engine) as db:
+                assert agent_runs.heartbeat_run(db, run_id, 1)
+            target.write_bytes(b'%PDF-frozen-material')
+        monkeypatch.setattr(service, 'render_pdf', print_frozen, raising=False)
+>       worker.execute_run.run(run_id)
+
+backend/tests/test_resume_export.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/worker_tasks.py:66: in execute_run
+    run_agent(run_id, epoch)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('08083fd7-efd9-4453-83e5-69f01378d94f', 1), kwargs = {}
+
+    def no_model(*args, **kwargs):
+>       pytest.fail('PDF export entered the model runner')
+E       Failed: PDF export entered the model runner
+
+backend/tests/test_resume_export.py:198: Failed
+_ test_worker_exports_frozen_material_without_model_and_exposes_owned_download[mysql] _
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114937b90>
+career_db = <sqlalchemy.orm.session.Session object at 0x1116f6000>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_79ab278812344ed9ac105b3526cc4675?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x11492e570>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_worker_exports_frozen_mat1/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1116f67b0>
+
+    def test_worker_exports_frozen_material_without_model_and_exposes_owned_download(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch):
+        service, worker, directory = export_runtime
+        from backend.agent_runtime import runner
+        def no_model(*args, **kwargs):
+            pytest.fail('PDF export entered the model runner')
+        monkeypatch.setattr(runner, 'run_agent', no_model)
+        version_id = confirmed.id
+        run_id = agent_runs.create_run(career_db, 1, export_request(version_id)).id
+        career_db.delete(career_db.get(Resume, 1))
+        career_db.commit()
+        def print_frozen(content, target):
+            assert content['resume']['self_summary'] == '确认后的接口开发经历'
+            assert target.name == f'.{run_id}.tmp.pdf'
+            # A separate writer must work while the slow browser print is active.
+            with Session(career_engine) as db:
+                assert agent_runs.heartbeat_run(db, run_id, 1)
+            target.write_bytes(b'%PDF-frozen-material')
+        monkeypatch.setattr(service, 'render_pdf', print_frozen, raising=False)
+>       worker.execute_run.run(run_id)
+
+backend/tests/test_resume_export.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/worker_tasks.py:66: in execute_run
+    run_agent(run_id, epoch)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('1b823df7-9bd2-471d-8eb9-0f9ef62c08e8', 1), kwargs = {}
+
+    def no_model(*args, **kwargs):
+>       pytest.fail('PDF export entered the model runner')
+E       Failed: PDF export entered the model runner
+
+backend/tests/test_resume_export.py:198: Failed
+__ test_incomplete_export_never_exposes_file_or_success_event[sqlite-cancel] ___
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x1149632c0>
+career_db = <sqlalchemy.orm.session.Session object at 0x1146eaba0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e0/career.db)
+run_client = <starlette.testclient.TestClient object at 0x114962d80>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e0/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114cec140>
+outcome = 'cancel'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+__ test_incomplete_export_never_exposes_file_or_success_event[sqlite-failure] __
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114ceef90>
+career_db = <sqlalchemy.orm.session.Session object at 0x1146e8530>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e1/career.db)
+run_client = <starlette.testclient.TestClient object at 0x114ceef60>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e1/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114cecfe0>
+outcome = 'failure'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+___ test_incomplete_export_never_exposes_file_or_success_event[sqlite-lost] ____
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114d27b30>
+career_db = <sqlalchemy.orm.session.Session object at 0x114d27d10>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e2/career.db)
+run_client = <starlette.testclient.TestClient object at 0x114d27c80>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e2/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114d26840>
+outcome = 'lost'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+___ test_incomplete_export_never_exposes_file_or_success_event[mysql-cancel] ___
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114d48d70>
+career_db = <sqlalchemy.orm.session.Session object at 0x114cec230>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_9d1a4f90d6214518ac0f67232ca26fb2?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x114d27950>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e3/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114d24500>
+outcome = 'cancel'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+__ test_incomplete_export_never_exposes_file_or_success_event[mysql-failure] ___
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114cec830>
+career_db = <sqlalchemy.orm.session.Session object at 0x114de5400>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_68b04d93bee147e78077eeaa764ea2d0?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x114de54f0>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e4/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114de5460>
+outcome = 'failure'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+____ test_incomplete_export_never_exposes_file_or_success_event[mysql-lost] ____
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114d5b980>
+career_db = <sqlalchemy.orm.session.Session object at 0x114e1a180>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_d054b44252204852b214a1bfeefc2818?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+run_client = <starlette.testclient.TestClient object at 0x114e0b770>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_incomplete_export_never_e5/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114de4920>
+outcome = 'lost'
+
+    @pytest.mark.parametrize('outcome', ['cancel', 'failure', 'lost'])
+    def test_incomplete_export_never_exposes_file_or_success_event(
+            confirmed, career_db, career_engine, run_client, export_runtime, monkeypatch, outcome):
+        service, _, directory = export_runtime
+        run_id = agent_runs.create_run(career_db, 1, export_request(confirmed.id)).id
+        epoch = agent_runs.claim_run(career_db, run_id)
+        def interrupted_print(content, path):
+            path.write_bytes(b'%PDF-incomplete')
+            if outcome == 'failure':
+                raise RuntimeError('Browser unavailable')
+            with Session(career_engine) as db:
+                if outcome == 'cancel':
+                    agent_runs.cancel_run(db, 1, run_id)
+                else:
+                    run = db.get(AgentRun, run_id)
+                    run.execution_epoch += 1
+                    db.commit()
+        monkeypatch.setattr(service, 'render_pdf', interrupted_print, raising=False)
+>       service.run_resume_export(run_id, epoch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'run_resume_export'
+
+backend/tests/test_resume_export.py:258: AttributeError
+______________ test_unknown_worker_kind_fails_explicitly[sqlite] _______________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114e50b00>
+career_db = <sqlalchemy.orm.session.Session object at 0x114de52e0>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_unknown_worker_kind_fails0/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114eb9eb0>
+
+    def test_unknown_worker_kind_fails_explicitly(confirmed, career_db, export_runtime, monkeypatch):
+        _, worker, _ = export_runtime
+        from backend.agent_runtime import runner
+        def no_model(*args, **kwargs):
+            pytest.fail('Unknown kind entered the model runner')
+        monkeypatch.setattr(runner, 'run_agent', no_model)
+        run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+        run.kind = 'unsupported'
+        career_db.commit()
+        run_id = run.id
+>       worker.execute_run.run(run_id)
+
+backend/tests/test_resume_export.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/worker_tasks.py:66: in execute_run
+    run_agent(run_id, epoch)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('45bf8b4a-5e3b-426e-a317-0004179b7c08', 1), kwargs = {}
+
+    def no_model(*args, **kwargs):
+>       pytest.fail('Unknown kind entered the model runner')
+E       Failed: Unknown kind entered the model runner
+
+backend/tests/test_resume_export.py:275: Failed
+_______________ test_unknown_worker_kind_fails_explicitly[mysql] _______________
+
+confirmed = <backend.db.career_models.ResumeVersion object at 0x114ee49e0>
+career_db = <sqlalchemy.orm.session.Session object at 0x114cecc50>
+export_runtime = (<module 'backend.services.resume_export' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agen...te/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-109/test_unknown_worker_kind_fails1/exports'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114eb8bc0>
+
+    def test_unknown_worker_kind_fails_explicitly(confirmed, career_db, export_runtime, monkeypatch):
+        _, worker, _ = export_runtime
+        from backend.agent_runtime import runner
+        def no_model(*args, **kwargs):
+            pytest.fail('Unknown kind entered the model runner')
+        monkeypatch.setattr(runner, 'run_agent', no_model)
+        run = agent_runs.create_run(career_db, 1, export_request(confirmed.id))
+        run.kind = 'unsupported'
+        career_db.commit()
+        run_id = run.id
+>       worker.execute_run.run(run_id)
+
+backend/tests/test_resume_export.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/worker_tasks.py:66: in execute_run
+    run_agent(run_id, epoch)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('30d7c29a-b2b2-47a4-81a4-5c922b449220', 1), kwargs = {}
+
+    def no_model(*args, **kwargs):
+>       pytest.fail('Unknown kind entered the model runner')
+E       Failed: Unknown kind entered the model runner
+
+backend/tests/test_resume_export.py:275: Failed
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_export.py::test_real_renderer_prints_text_pdf
+FAILED backend/tests/test_resume_export.py::test_worker_exports_frozen_material_without_model_and_exposes_owned_download[sqlite]
+FAILED backend/tests/test_resume_export.py::test_worker_exports_frozen_material_without_model_and_exposes_owned_download[mysql]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[sqlite-cancel]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[sqlite-failure]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[sqlite-lost]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[mysql-cancel]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[mysql-failure]
+FAILED backend/tests/test_resume_export.py::test_incomplete_export_never_exposes_file_or_success_event[mysql-lost]
+FAILED backend/tests/test_resume_export.py::test_unknown_worker_kind_fails_explicitly[sqlite]
+FAILED backend/tests/test_resume_export.py::test_unknown_worker_kind_fails_explicitly[mysql]
+11 failed, 16 deselected, 7 warnings in 3.17s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

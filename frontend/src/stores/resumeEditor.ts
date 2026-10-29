@@ -1,14 +1,14 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
-import type { ReviewDecision, RunArtifact } from '../api/agentRuns'
+import type { ReviewDecision, ResumeVersionArtifact } from '../api/agentRuns'
 import { confirmResumeVersion, fetchResumeVersion, saveResumeVersion } from '../api/resumeVersions'
 import { decisionsFor, projectResume, reviewChanges, sameDecision } from '../utils/resumeReview'
 import { useAuthStore } from './auth'
 
 export const useResumeEditorStore = defineStore('resumeEditor', () => {
-  const serverSnapshot = ref<RunArtifact | null>(null)
+  const serverSnapshot = ref<ResumeVersionArtifact | null>(null)
   const localDecisions = ref<Record<string, ReviewDecision>>({})
-  const conflictLatest = ref<RunArtifact | null>(null), conflict = ref(false)
+  const conflictLatest = ref<ResumeVersionArtifact | null>(null), conflict = ref(false)
   const loading = ref(false), busy = ref(false), error = ref(''), notice = ref('')
   let generation = 0, selectedId = ''
   const auth = useAuthStore()
@@ -27,7 +27,7 @@ export const useResumeEditorStore = defineStore('resumeEditor', () => {
     generation++; selectedId = ''; serverSnapshot.value = null; localDecisions.value = {}; conflictLatest.value = null
     loading.value = false; busy.value = false; conflict.value = false; error.value = ''; notice.value = ''
   }
-  function adopt(value: RunArtifact) {
+  function adopt(value: ResumeVersionArtifact) {
     serverSnapshot.value = value; localDecisions.value = decisionsFor(reviewChanges(value) || [])
     conflict.value = false; conflictLatest.value = null
   }

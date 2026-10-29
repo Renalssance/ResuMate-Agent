@@ -18,20 +18,20 @@
         <div class="section-head"><h2>我的任务</h2><button class="button-secondary" type="button" :disabled="store.listLoading" @click="store.loadRuns()">刷新任务</button></div>
         <p v-if="store.listLoading && !store.runs.length">正在加载任务…</p>
         <p v-else-if="!store.runs.length" class="muted-note">选择岗位和简历，开始准备第一份材料。</p>
-        <ul v-else class="task-links"><li v-for="run in store.runs" :key="run.runId"><RouterLink :to="`/agent/tasks/${run.runId}`" :aria-current="selectedRunId === run.runId ? 'page' : undefined"><strong>{{ taskTitle(run.input) }}</strong><span>{{ runStatusLabel[run.status] }}</span><time>{{ formatDate(run.createdAt) }}</time></RouterLink></li></ul>
+        <ul v-else class="task-links"><li v-for="run in store.runs" :key="run.runId"><RouterLink :to="`/agent/tasks/${run.runId}`" :aria-current="selectedRunId === run.runId ? 'page' : undefined"><strong>{{ taskTitle(run.input, run.kind) }}</strong><span>{{ taskStatusLabel(run.status, run.kind) }}</span><time>{{ formatDate(run.createdAt) }}</time></RouterLink></li></ul>
         <button v-if="store.hasMore" class="button-secondary" type="button" :disabled="store.listLoading" @click="store.loadRuns(true)">加载更多任务</button>
       </section>
       <section v-if="selectedRunId" class="card workflow-card task-detail" aria-label="任务详情" :aria-busy="store.loading">
         <p v-if="store.loading">正在读取任务…</p>
         <p v-if="store.disconnected" class="connection-note" role="status">网络连接已断开，正在重新连接。任务会继续运行。</p>
         <template v-if="store.snapshot">
-          <div class="section-head"><div><h2 ref="statusHeading" tabindex="-1">{{ runStatusLabel[store.snapshot.status] }}</h2><p>{{ taskTitle(store.snapshot.input) }}</p></div><div class="run-buttons"><button v-if="store.snapshot.status === 'failed'" class="button-primary" type="button" :disabled="store.busy" @click="store.changeRun('retry')">重试任务</button><button v-else-if="!terminal" class="button-secondary" type="button" :disabled="store.busy || store.snapshot.cancelRequested" @click="store.changeRun('cancel')">{{ store.snapshot.cancelRequested ? '正在取消…' : '取消任务' }}</button></div></div>
+          <div class="section-head"><div><h2 ref="statusHeading" tabindex="-1">{{ taskStatusLabel(store.snapshot.status, store.snapshot.kind) }}</h2><p>{{ taskTitle(store.snapshot.input, store.snapshot.kind) }}</p></div><div class="run-buttons"><button v-if="store.snapshot.status === 'failed'" class="button-primary" type="button" :disabled="store.busy" @click="store.changeRun('retry')">重试任务</button><button v-else-if="!terminal" class="button-secondary" type="button" :disabled="store.busy || store.snapshot.cancelRequested" @click="store.changeRun('cancel')">{{ store.snapshot.cancelRequested ? '正在取消…' : '取消任务' }}</button></div></div>
           <p v-if="store.snapshot.status === 'failed'" class="error-note">{{ failureMessage }}</p>
           <p v-if="store.notice" class="notice" role="status">{{ store.notice }}</p>
-          <RunTimeline :events="store.events" :status="store.snapshot.status" />
+          <RunTimeline :events="store.events" :status="store.snapshot.status" :kind="store.snapshot.kind" />
           <ActionForm v-for="action in visibleActions" :key="action.actionId" :model-value="store.drafts[action.actionId] || ''" @update:model-value="value => updateAnswer(action.actionId, value)" :action="action" :busy="store.busy" :error="store.actionErrors[action.actionId] || ''" :inactive="!acceptsAnswers || !store.snapshot.actions.some(item => item.actionId === action.actionId)" @submit="decision => store.submitAction(action, decision)" />
-          <ArtifactCard v-for="artifact in store.artifacts" :key="artifact.id" :artifact="artifact" />
-          <p v-if="store.snapshot.status === 'succeeded' && !store.artifacts.length" class="muted-note">材料已完成，正在读取草稿。<button class="button-secondary" type="button" @click="store.refresh()">重新读取材料</button></p>
+          <template v-for="artifact in store.artifacts" :key="artifact.id"><PdfArtifactCard v-if="artifact.kind === 'resume_pdf'" :artifact="artifact" /><ArtifactCard v-else :artifact="artifact" /></template>
+          <p v-if="store.snapshot.status === 'succeeded' && !store.artifacts.length" class="muted-note">{{ store.snapshot.kind === 'resume_export' ? 'PDF 已完成，正在读取下载信息。' : '材料已完成，正在读取草稿。' }}<button class="button-secondary" type="button" @click="store.refresh()">重新读取材料</button></p>
         </template>
         <button v-else-if="!store.loading && !store.loginRequired" class="button-secondary" type="button" @click="store.openRun(selectedRunId)">重新连接任务</button>
       </section>
@@ -46,10 +46,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useDocumentStore } from '../stores/document'
 import { useAgentRunStore } from '../stores/agentRun'
-import { runStatusLabel } from '../api/agentRuns'
+import { taskStatusLabel } from '../api/agentRuns'
 import { formatResumeLabel } from '../utils/format'
 import RunTimeline from '../components/agent/RunTimeline.vue'
 import ActionForm from '../components/agent/ActionForm.vue'
+import PdfArtifactCard from '../components/agent/PdfArtifactCard.vue'
 import ArtifactCard from '../components/agent/ArtifactCard.vue'
 const route = useRoute(), router = useRouter(), auth = useAuthStore(), documents = useDocumentStore(), store = useAgentRunStore()
 const jdId = ref(''), resumeId = ref(''), statusHeading = ref<HTMLElement | null>(null), announcement = ref('')
@@ -57,8 +58,8 @@ const selectedRunId = computed(() => String(route.params.runId || ''))
 const terminal = computed(() => ['succeeded', 'failed', 'cancelled'].includes(store.snapshot?.status || ''))
 const acceptsAnswers = computed(() => ['waiting_input', 'waiting_approval'].includes(store.snapshot?.status || ''))
 const visibleActions = computed(() => [...(store.snapshot?.actions || []).filter(action => acceptsAnswers.value || store.drafts[action.actionId]?.trim()), ...store.conflictedActions.filter(action => !store.snapshot?.actions.some(item => item.actionId === action.actionId))])
-const failureMessage = computed(() => store.snapshot?.errorCode === 'input_changed' ? '岗位或简历已变化，请使用当前资料创建新任务。' : '材料准备未完成。你可以重试任务，或检查设置后重新准备。')
-function taskTitle(input: Record<string, unknown>) { const doc = documents.parsedJds.find(doc => Number(doc.id.split(':').pop()) === Number(input.jdId)); return String(doc?.parsedContent?.title || doc?.filename || '投递材料') }
+const failureMessage = computed(() => store.snapshot?.kind === 'resume_export' ? 'PDF 导出未完成。你可以重试任务，继续使用已确认的简历内容。' : store.snapshot?.errorCode === 'input_changed' ? '岗位或简历已变化，请使用当前资料创建新任务。' : '材料准备未完成。你可以重试任务，或检查设置后重新准备。')
+function taskTitle(input: Record<string, unknown>, kind?: string) { if (kind === 'resume_export') return '已确认简历 · PDF 导出'; const doc = documents.parsedJds.find(doc => Number(doc.id.split(':').pop()) === Number(input.jdId)); return String(doc?.parsedContent?.title || doc?.filename || '投递材料') }
 function formatDate(value: string) { return new Date(value).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }
 function updateAnswer(actionId: string, value: string) { store.drafts[actionId] = value; if (value.trim()) store.actionErrors[actionId] = '' }
 async function createTask() { if (!jdId.value || !resumeId.value) return; const runId = await store.createRun(jdId.value, resumeId.value); if (runId) await router.push(`/agent/tasks/${runId}`) }
@@ -70,7 +71,7 @@ watch([() => route.query.jdId, () => route.query.resumeId, () => documents.parse
 }, { immediate: true })
 watch([selectedRunId, () => auth.token], ([id, token]) => { store.openRun(token ? id : '') }, { immediate: true })
 let announcementTimer: ReturnType<typeof setTimeout> | undefined
-watch(() => store.snapshot?.status, (status) => { clearTimeout(announcementTimer); if (status) announcementTimer = setTimeout(() => { announcement.value = runStatusLabel[status] }, 600) })
+watch(() => store.snapshot?.status, (status) => { clearTimeout(announcementTimer); if (status) announcementTimer = setTimeout(() => { announcement.value = taskStatusLabel(status, store.snapshot?.kind) }, 600) })
 watch(() => store.busy, async (value, previous) => { if (previous && !value && (!acceptsAnswers.value || !store.snapshot?.actions.length)) { await nextTick(); statusHeading.value?.focus() } })
 onBeforeUnmount(() => { clearTimeout(announcementTimer); store.disconnect() })
 </script>

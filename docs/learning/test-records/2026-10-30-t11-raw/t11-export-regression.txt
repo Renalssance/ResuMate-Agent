@@ -1,0 +1,263 @@
+........................................................s............... [ 40%]
+................................................................FF...... [ 80%]
+..................................FF                                     [100%]
+=================================== FAILURES ===================================
+_______ test_draft_preserves_base_and_api_resolves_fixed_sources[sqlite] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x115698050>
+run_client = <starlette.testclient.TestClient object at 0x115af8e90>
+
+    def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+        version_id = tools.save_draft(run.id, epoch, [change])
+        response = run_client.get('/api/resume-versions/' + version_id, headers=headers())
+        assert response.status_code == 200, response.text
+        result = response.json()
+        assert result['structuredContent']['resume']['self_summary'] == 'Built APIs'
+        saved = result['structuredContent']['changes'][0]
+        assert saved['id'] and saved['status'] == 'pending'
+        assert {k: saved[k] for k in change} == change
+        assert result['factRefs'] == change['fact_refs']
+        assert result['sources'][0]['content'] == 'Built reliable APIs'
+        assert result['basedOnOldInput'] is False and result['changedInputs'] == []
+        assert result['reviewable'] is True
+        assert run_client.get('/api/resume-versions/' + version_id, headers=headers('bob')).status_code == 404
+        assert run_client.get('/api/resume-versions/' + version_id).status_code == 401
+        artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
+>       assert artifacts == [result]
+E       AssertionError: assert [{'basedOnOld..., ...}], ...}] == [{'basedOnOld..., ...}], ...}]
+E         
+E         At index 0 diff: {'kind': 'resume_version', 'id': 'e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf', 'runId': '04f6730f-7792-424c-b3f7-8153573288c5', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'resume': {'self_summary': 'Built APIs', 'work_experience': [{'company': 'Actual company', 'description': 'Built reliable APIs', 'source_refs': [{'page_number': 0, 'section': 'work_experience', 'text': 'Built reliable APIs', 'chunk_id': 'resume:1:0'}]}], 'projects': [{'name': 'Actual project', 'description': 'Designed an API', 'source_refs': []}]}, 'cha...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+backend/tests/test_resume_versions.py:54: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:02:46,265 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+2026-10-30 01:02:46,268 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=200 duration_ms=3
+2026-10-30 01:02:46,269 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 200 OK"
+2026-10-30 01:02:46,270 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+2026-10-30 01:02:46,271 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=404 duration_ms=1
+2026-10-30 01:02:46,272 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 404 Not Found"
+2026-10-30 01:02:46,273 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+2026-10-30 01:02:46,273 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=401 duration_ms=0
+2026-10-30 01:02:46,273 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 401 Unauthorized"
+2026-10-30 01:02:46,274 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts client=testclient
+2026-10-30 01:02:46,276 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts status=200 duration_ms=2
+2026-10-30 01:02:46,277 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=404 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 404 Not Found"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf status=401 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/e848ebd5-a81f-4ca4-bf5d-539d1fa9e0cf "HTTP/1.1 401 Unauthorized"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/04f6730f-7792-424c-b3f7-8153573288c5/artifacts "HTTP/1.1 200 OK"
+_______ test_draft_preserves_base_and_api_resolves_fixed_sources[mysql] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x115bcb290>
+run_client = <starlette.testclient.TestClient object at 0x115acc350>
+
+    def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+        version_id = tools.save_draft(run.id, epoch, [change])
+        response = run_client.get('/api/resume-versions/' + version_id, headers=headers())
+        assert response.status_code == 200, response.text
+        result = response.json()
+        assert result['structuredContent']['resume']['self_summary'] == 'Built APIs'
+        saved = result['structuredContent']['changes'][0]
+        assert saved['id'] and saved['status'] == 'pending'
+        assert {k: saved[k] for k in change} == change
+        assert result['factRefs'] == change['fact_refs']
+        assert result['sources'][0]['content'] == 'Built reliable APIs'
+        assert result['basedOnOldInput'] is False and result['changedInputs'] == []
+        assert result['reviewable'] is True
+        assert run_client.get('/api/resume-versions/' + version_id, headers=headers('bob')).status_code == 404
+        assert run_client.get('/api/resume-versions/' + version_id).status_code == 401
+        artifacts = run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json()
+>       assert artifacts == [result]
+E       AssertionError: assert [{'basedOnOld..., ...}], ...}] == [{'basedOnOld..., ...}], ...}]
+E         
+E         At index 0 diff: {'kind': 'resume_version', 'id': '2bd53db3-07b5-4848-8445-b5e279020cb7', 'runId': 'aabd8344-e638-4daf-a099-94fc4ef2e576', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'resume': {'projects': [{'name': 'Actual project', 'description': 'Designed an API', 'source_refs': []}], 'self_summary': 'Built APIs', 'work_experience': [{'company': 'Actual company', 'description': 'Built reliable APIs', 'source_refs': [{'text': 'Built reliable APIs', 'section': 'work_experience', 'chunk_id': 'resume:1:0', 'page_number': 0}]}]}, 'cha...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+backend/tests/test_resume_versions.py:54: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:02:46,875 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+2026-10-30 01:02:46,878 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=200 duration_ms=3
+2026-10-30 01:02:46,879 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 200 OK"
+2026-10-30 01:02:46,880 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+2026-10-30 01:02:46,881 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=404 duration_ms=1
+2026-10-30 01:02:46,882 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 404 Not Found"
+2026-10-30 01:02:46,882 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+2026-10-30 01:02:46,883 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=401 duration_ms=0
+2026-10-30 01:02:46,883 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 401 Unauthorized"
+2026-10-30 01:02:46,883 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts client=testclient
+2026-10-30 01:02:46,886 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts status=200 duration_ms=3
+2026-10-30 01:02:46,887 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=404 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 404 Not Found"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 status=401 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/2bd53db3-07b5-4848-8445-b5e279020cb7 "HTTP/1.1 401 Unauthorized"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/aabd8344-e638-4daf-a099-94fc4ef2e576/artifacts "HTTP/1.1 200 OK"
+__ test_legacy_draft_reports_changed_input_without_inventing_sources[sqlite] ___
+
+career_db = <sqlalchemy.orm.session.Session object at 0x1129e1af0>
+run_client = <starlette.testclient.TestClient object at 0x116312ab0>
+
+    def test_legacy_draft_reports_changed_input_without_inventing_sources(career_db, run_client):
+        run = agent_runs.create_run(career_db, 1, RunCreate(
+            kind='tailoring', jd_id=1, resume_id=1, request_id='legacy-draft'))
+        # T08 Runs kept input_versions but had no fixed context or field-proposal content.
+        run.input_json = {'jdId': 1, 'resumeId': 1}
+        version_id = str(uuid4())
+        career_db.add(ResumeVersion(id=version_id, user_id=1, run_id=run.id,
+            resume_id=1, jd_id=1, structured_content={'summary': 'Historical draft'}, fact_refs=[]))
+        career_db.commit()
+        original = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+        assert original['sources'] == [] and original['changedInputs'] == []
+        assert original['reviewable'] is False
+        resume = career_db.get(Resume, 1)
+        resume.structured_data = {'self_summary': 'Changed after the historical draft'}
+        resume.updated_at += timedelta(seconds=2)
+        career_db.commit()
+        detail = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+        assert detail['basedOnOldInput'] is True
+        assert detail['changedInputs'] == ['resume']
+        assert detail['sources'] == []
+        assert detail['structuredContent'] == {'summary': 'Historical draft'}
+>       assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [detail]
+E       AssertionError: assert [{'basedOnOld...fs': [], ...}] == [{'basedOnOld...fs': [], ...}]
+E         
+E         At index 0 diff: {'kind': 'resume_version', 'id': '9fc33003-01c2-4d62-93aa-bed8a50ff1d7', 'runId': 'fc5d247c-2f70-4749-a7f3-6fc0abc8fad0', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'summary': 'Historical draft'}, 'factRefs': [], 'createdAt': '2026-10-29T17:03:04.702971+00:00', 'basedOnOldInput': True, 'changedInputs': ['resume'], 'sources': [], 'reviewable': False} != {'id': '9fc33003-01c2-4d62-93aa-bed8a50ff1d7', 'runId': 'fc5d247c-2f70-4749-a7f3-6fc0abc8fad0', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structur...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+backend/tests/test_resume_versions.py:187: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:03:04,703 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 client=testclient
+2026-10-30 01:03:04,707 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 status=200 duration_ms=3
+2026-10-30 01:03:04,708 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 "HTTP/1.1 200 OK"
+2026-10-30 01:03:04,709 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 client=testclient
+2026-10-30 01:03:04,711 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 status=200 duration_ms=2
+2026-10-30 01:03:04,712 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 "HTTP/1.1 200 OK"
+2026-10-30 01:03:04,713 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts client=testclient
+2026-10-30 01:03:04,715 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts status=200 duration_ms=2
+2026-10-30 01:03:04,716 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/9fc33003-01c2-4d62-93aa-bed8a50ff1d7 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/fc5d247c-2f70-4749-a7f3-6fc0abc8fad0/artifacts "HTTP/1.1 200 OK"
+___ test_legacy_draft_reports_changed_input_without_inventing_sources[mysql] ___
+
+career_db = <sqlalchemy.orm.session.Session object at 0x11636e510>
+run_client = <starlette.testclient.TestClient object at 0x1163c5f40>
+
+    def test_legacy_draft_reports_changed_input_without_inventing_sources(career_db, run_client):
+        run = agent_runs.create_run(career_db, 1, RunCreate(
+            kind='tailoring', jd_id=1, resume_id=1, request_id='legacy-draft'))
+        # T08 Runs kept input_versions but had no fixed context or field-proposal content.
+        run.input_json = {'jdId': 1, 'resumeId': 1}
+        version_id = str(uuid4())
+        career_db.add(ResumeVersion(id=version_id, user_id=1, run_id=run.id,
+            resume_id=1, jd_id=1, structured_content={'summary': 'Historical draft'}, fact_refs=[]))
+        career_db.commit()
+        original = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+        assert original['sources'] == [] and original['changedInputs'] == []
+        assert original['reviewable'] is False
+        resume = career_db.get(Resume, 1)
+        resume.structured_data = {'self_summary': 'Changed after the historical draft'}
+        resume.updated_at += timedelta(seconds=2)
+        career_db.commit()
+        detail = run_client.get('/api/resume-versions/' + version_id, headers=headers()).json()
+        assert detail['basedOnOldInput'] is True
+        assert detail['changedInputs'] == ['resume']
+        assert detail['sources'] == []
+        assert detail['structuredContent'] == {'summary': 'Historical draft'}
+>       assert run_client.get('/api/agent/runs/' + run.id + '/artifacts', headers=headers()).json() == [detail]
+E       AssertionError: assert [{'basedOnOld...fs': [], ...}] == [{'basedOnOld...fs': [], ...}]
+E         
+E         At index 0 diff: {'kind': 'resume_version', 'id': 'c4db64ab-7630-4b4b-a3ce-9e5a9109be19', 'runId': 'a224e7fe-dc0c-47fd-8f12-65046f421ca6', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredContent': {'summary': 'Historical draft'}, 'factRefs': [], 'createdAt': '2026-10-29T17:03:05+00:00', 'basedOnOldInput': True, 'changedInputs': ['resume'], 'sources': [], 'reviewable': False} != {'id': 'c4db64ab-7630-4b4b-a3ce-9e5a9109be19', 'runId': 'a224e7fe-dc0c-47fd-8f12-65046f421ca6', 'resumeId': 1, 'jdId': 1, 'revision': 1, 'status': 'draft', 'structuredConte...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+backend/tests/test_resume_versions.py:187: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 01:03:05,286 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 client=testclient
+2026-10-30 01:03:05,289 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 status=200 duration_ms=3
+2026-10-30 01:03:05,290 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 "HTTP/1.1 200 OK"
+2026-10-30 01:03:05,292 | INFO | backend.app | Request start | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 client=testclient
+2026-10-30 01:03:05,295 | INFO | backend.app | Request end | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 status=200 duration_ms=2
+2026-10-30 01:03:05,295 | INFO | httpx | HTTP Request: GET http://testserver/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 "HTTP/1.1 200 OK"
+2026-10-30 01:03:05,296 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts client=testclient
+2026-10-30 01:03:05,304 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts status=200 duration_ms=7
+2026-10-30 01:03:05,305 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/resume-versions/c4db64ab-7630-4b4b-a3ce-9e5a9109be19 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts status=200 duration_ms=7
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/a224e7fe-dc0c-47fd-8f12-65046f421ca6/artifacts "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_versions.py::test_draft_preserves_base_and_api_resolves_fixed_sources[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_draft_preserves_base_and_api_resolves_fixed_sources[mysql]
+FAILED backend/tests/test_resume_versions.py::test_legacy_draft_reports_changed_input_without_inventing_sources[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_legacy_draft_reports_changed_input_without_inventing_sources[mysql]
+4 failed, 175 passed, 1 skipped, 7 warnings in 82.63s (0:01:22)

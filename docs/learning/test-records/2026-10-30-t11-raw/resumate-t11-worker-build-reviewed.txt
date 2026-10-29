@@ -1,0 +1,51 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from worker.Dockerfile
+#1 transferring dockerfile: 823B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm
+#2 DONE 1.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 356B done
+#3 DONE 0.0s
+
+#4 [1/8] FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337
+#4 resolve public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337 done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 16.44kB done
+#5 DONE 0.0s
+
+#6 [2/8] WORKDIR /app
+#6 CACHED
+
+#7 [3/8] RUN pip install --no-cache-dir uv==0.12.5
+#7 CACHED
+
+#8 [4/8] COPY pyproject.toml uv.lock README.md ./
+#8 CACHED
+
+#9 [5/8] RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources
+#9 CACHED
+
+#10 [6/8] RUN uv sync --locked --no-dev --no-install-project     && python -m playwright install --with-deps chromium     && apt-get install -y --no-install-recommends fonts-noto-cjk=1:20220127+repack1-1     && rm -rf /var/lib/apt/lists/*
+#10 CACHED
+
+#11 [7/8] COPY backend/ ./backend/
+#11 DONE 0.0s
+
+#12 [8/8] RUN mkdir -p /app/data/agent /app/data/exports
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers 0.0s done
+#13 exporting manifest sha256:959e2989f8cb48118409dde4c84bbde2ddf36aad7fa08441b2f00b2199ac3c57 done
+#13 exporting config sha256:422f5c39e54274239b34c5d3f28bc1bb3793b895670a665cd183391d5b29e1d1 done
+#13 exporting attestation manifest sha256:cf2cbf252c118ee81a2e6ffacc354454caa5def669c9744ee7d4d896bee116ce done
+#13 exporting manifest list sha256:9f9721ac9425b0e4aace30d382d43fddb187cf58c37d4df64615975ca5916b75 done
+#13 naming to docker.io/library/resumate-t11-worker:latest done
+#13 unpacking to docker.io/library/resumate-t11-worker:latest 0.0s done
+#13 DONE 0.1s

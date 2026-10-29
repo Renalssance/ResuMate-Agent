@@ -79,3 +79,8 @@ class ResumeChange(BaseModel):
         elif self.after is None or not self.fact_refs:
             raise ValueError('修改建议需要正文和事实来源')
         return self
+
+
+class ResumeVersionExport(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
+    request_id: str = Field(alias='requestId', min_length=1, max_length=100)

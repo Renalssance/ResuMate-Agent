@@ -51,19 +51,28 @@ def _heartbeat(run_id, epoch, stopped):
 
 @app.task(name='resumate.execute_run')
 def execute_run(run_id: str) -> None:
-    from backend.agent_runtime.runner import run_agent
     with execution_lock() as acquired:
         if not acquired:
             return  # SQL scanner will redispatch queued work.
         with SessionLocal() as db:
             epoch = agent_runs.claim_run(db, run_id)
+            kind = db.scalar(select(AgentRun.kind).where(AgentRun.id == run_id)) if epoch is not None else None
         if epoch is None:
             return
         stopped = Event()
         heartbeat = Thread(target=_heartbeat, args=(run_id, epoch, stopped), daemon=True)
         heartbeat.start()
         try:
-            run_agent(run_id, epoch)
+            if kind == 'tailoring':
+                from backend.agent_runtime.runner import run_agent
+                run_agent(run_id, epoch)
+            elif kind == 'resume_export':
+                from backend.services.resume_export import run_resume_export
+                run_resume_export(run_id, epoch)
+            else:
+                with SessionLocal() as db:
+                    agent_runs.finish_run(db, run_id, epoch, RunStatus.FAILED,
+                                          error_code='unsupported_run_kind')
         finally:
             stopped.set()
             heartbeat.join(timeout=5)

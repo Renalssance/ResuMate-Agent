@@ -2,16 +2,16 @@
   <div class="run-timeline">
     <h3>处理进度</h3>
     <p v-if="!phases.length" class="muted-note">正在获取任务进度</p>
-    <ol v-else class="phase-list" aria-label="任务阶段"><li v-for="event in phases" :key="event.seq">{{ runStatusLabel[event.payload.status as RunStatus] || '状态已更新' }}</li></ol>
+    <ol v-else class="phase-list" aria-label="任务阶段"><li v-for="event in phases" :key="event.seq">{{ taskStatusLabel(event.payload.status as RunStatus, kind) || '状态已更新' }}</li></ol>
     <ul v-if="tools.length" class="tool-list" aria-label="材料处理步骤"><ToolCallCard v-for="tool in tools" :key="tool.key" :name="tool.name" :status="tool.status" /></ul>
   </div>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { runStatusLabel } from '../../api/agentRuns'
+import { taskStatusLabel } from '../../api/agentRuns'
 import type { RunEvent, RunStatus } from '../../services/agentStream'
 import ToolCallCard from './ToolCallCard.vue'
-const props = defineProps<{ events: RunEvent[]; status: RunStatus }>()
+const props = defineProps<{ events: RunEvent[]; status: RunStatus; kind?: string }>()
 const phases = computed(() => props.events.filter(event => event.type === 'run.status'))
 const tools = computed(() => {
   const values = new Map<string, { key: string; name: string; status: string }>()

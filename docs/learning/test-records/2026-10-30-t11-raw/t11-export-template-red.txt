@@ -1,0 +1,60 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_template_preserves_supported_fields_and_honors_reviewed_descriptions ___
+
+    def test_template_preserves_supported_fields_and_honors_reviewed_descriptions():
+        from backend.services import resume_export
+        content = template_content()
+        before = deepcopy(content)
+>       html = resume_export.render_html(content)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'render_html'
+
+backend/tests/test_resume_export.py:145: AttributeError
+________ test_template_supports_summary_and_dates_without_shadow_fields ________
+
+    def test_template_supports_summary_and_dates_without_shadow_fields():
+        from backend.services import resume_export
+>       html = resume_export.render_html({'resume': {'candidate_name': '陈明', 'summary': '历史摘要',
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+            'education': [{'school': '测试大学', 'start_date': '2016年', 'end_date': '2020年'}],
+            'work_experience': [{'company': '测试公司', 'start_date': '2020年', 'end_date': '至今'}]}})
+E       AttributeError: module 'backend.services.resume_export' has no attribute 'render_html'
+
+backend/tests/test_resume_export.py:164: AttributeError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_export.py::test_template_preserves_supported_fields_and_honors_reviewed_descriptions
+FAILED backend/tests/test_resume_export.py::test_template_supports_summary_and_dates_without_shadow_fields
+2 failed, 14 deselected, 7 warnings in 1.01s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

@@ -41,3 +41,7 @@ export function completeApplicationScheduleApi(id: number, scheduleId: number) {
 export function deleteApplicationApi(id: number) {
   return request.delete<{ id: number }, { id: number }>(`/applications/${id}`)
 }
+
+export function attachApplicationSubmissionApi(id: number, payload: { jd_id: number; resume_version_id: string }) {
+  return request.put<BackendJobApplicationRecord, BackendJobApplicationRecord>(`/applications/${id}/submission`, payload)
+}
