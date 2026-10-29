@@ -1,13 +1,14 @@
 """Authoritative Run lifecycle. Does not execute models or publish queue messages."""
 from uuid import uuid4
 
-from sqlalchemy import func, select, update
+from sqlalchemy import and_, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.db.agent_models import AgentAction, AgentRun, AgentRunEvent, AgentSession
 from backend.db.models import JobDescription, Resume, utcnow
 from backend.schemas.agent_runs import ActionResponse, RunCreate, RunStatus
+from backend.services.run_events import append_event
 
 
 class RunError(Exception):
@@ -78,6 +79,7 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         db.add(run)
         db.flush()
         _claim_session(db, user_id, session.id, run.id)
+        append_event(db, run.id, 'run.status', {'status': run.status})
         db.commit()
     except IntegrityError:
         db.rollback()
@@ -109,6 +111,8 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         db.execute(update(AgentSession).where(
             AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
         ).values(active_run_id=None))
+    if stopped.rowcount == 1:
+        append_event(db, run.id, 'run.status', {'status': RunStatus.CANCELLED})
     # A running call stops cooperatively in T04/T05. Do not claim it stopped here.
     db.commit()
     db.refresh(run)
@@ -131,14 +135,25 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run.error_code = None
     run.cancel_requested_at = None
     run.heartbeat_at = None
+    append_event(db, run.id, 'run.status', {'status': run.status})
     db.commit()
     return run
 
 
 def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
-    run = get_run(db, user_id, run_id)
-    last_seq = db.scalar(select(func.max(AgentRunEvent.seq)).where(AgentRunEvent.run_id == run.id)) or 0
-    actions = db.scalars(select(AgentAction).where(AgentAction.run_id == run.id, AgentAction.status == 'pending')).all()
+    # One SELECT keeps status, pending actions and cursor at the same point in
+    # time, including SQLite's legacy SELECT transaction behavior.
+    last_sequence = select(func.max(AgentRunEvent.seq)).where(
+        AgentRunEvent.run_id == AgentRun.id).correlate(AgentRun).scalar_subquery()
+    rows = db.execute(select(AgentRun, last_sequence, AgentAction).outerjoin(
+        AgentAction, and_(AgentAction.run_id == AgentRun.id, AgentAction.status == 'pending'),
+    ).where(AgentRun.id == run_id, AgentRun.user_id == user_id)
+        .execution_options(populate_existing=True)).all()
+    if not rows:
+        raise RunError(404, 'not_found', '任务不存在')
+    run, last_seq, _ = rows[0]
+    last_seq = last_seq or 0
+    actions = [row[2] for row in rows if row[2] is not None]
     return {
         'runId': run.id, 'sessionId': run.session_id, 'status': run.status,
         'kind': run.kind, 'input': run.input_json, 'inputVersions': run.input_versions,
@@ -191,6 +206,7 @@ def answer_action(db: Session, user_id: int, run_id: str, action_id: str, respon
         db.execute(update(AgentSession).where(
             AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
         ).values(active_run_id=None))
+    append_event(db, run.id, 'run.status', {'status': next_status})
     db.commit()
     return run
 
@@ -206,6 +222,7 @@ def claim_run(db: Session, run_id: str) -> int | None:
         db.rollback()
         return None
     epoch = db.scalar(select(AgentRun.execution_epoch).where(AgentRun.id == run_id))
+    append_event(db, run_id, 'run.status', {'status': RunStatus.RUNNING})
     db.commit()
     return epoch
 
@@ -252,6 +269,7 @@ def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
         db.execute(update(AgentSession).where(
             AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
         ).values(active_run_id=None))
+    append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
     db.commit()
 
 
@@ -280,6 +298,7 @@ def recover_stale_runs(db: Session, now=None) -> int:
             run.status = RunStatus.QUEUED
             run.attempt += 1
             run.heartbeat_at = None
+        append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
         recovered += 1
     db.commit()
     return recovered

@@ -19,7 +19,7 @@ def model_for_user(user_id: int):
         raise RunError(422, 'model_not_configured', '请先完成个人模型设置')
     return ChatOpenAI(model=settings.model, api_key=settings.api_key, base_url=settings.base_url,
                       max_tokens=settings.max_tokens, timeout=settings.request_timeout_seconds,
-                      max_retries=0)
+                      max_retries=0, stream_usage=True)
 
 
 def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int):

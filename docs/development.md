@@ -75,3 +75,14 @@ RESUMATE_COMPOSE_TEST=1 uv run pytest backend/tests/test_worker_compose.py -q -s
 ```
 
 未提供 RESUMATE_TEST_MYSQL_SOCKET 时，MySQL 参数会显式跳过；应在记录中说明。Compose 测试自行创建随机项目、合成资料、测试模型和端口，完成后清理该测试的容器与卷。它会终止自己的 worker，不终止已有开发服务。常规后端套件默认跳过此项耗时故障实验；启用参数仅是测试入口，不是产品功能开关。
+
+## T06：事件订阅与教学
+
+新 Run 的事件记录在 SQL 中，接口 `/api/agent/runs/{run_id}/events?after=N` 使用 Bearer 请求头。前端入口是 `frontend/src/services/agentStream.ts`；关闭订阅不取消任务。旧任务进度也必须登录，提交成功后再订阅；旧内存任务的持久化迁移仍待 T14。
+
+```sh
+uv run pytest backend/tests/test_run_events.py backend/tests/test_agent_events.py backend/tests/test_legacy_task_auth.py -q
+npm --prefix frontend run test:unit
+```
+
+详见[第六课：持久事件与 SSE](learning/06-durable-events-and-sse.md)及[T06 测试记录](learning/test-records/2026-10-29-t06.md)。Compose 故障实验现在同时验证实际网络 SSE：断线、worker 崩溃、按游标补齐、唯一产物事件。新任务界面与实际操作闭环仍在 T07 验收。

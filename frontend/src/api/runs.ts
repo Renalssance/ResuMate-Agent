@@ -8,10 +8,11 @@ export interface CreateRunPayload {
   taskId?: string
 }
 
-export async function createRunApi(payload: CreateRunPayload) {
+export async function createRunApi(payload: CreateRunPayload, onAccepted?: (taskId: string) => void) {
   const accepted = await request.post<AcceptedTask, AcceptedTask>('/runs', payload, {
     headers: { Prefer: 'respond-async' },
   })
+  onAccepted?.(accepted.taskId)
   return waitForTaskResult(accepted.taskId, (data) => data as unknown as RunSummary)
 }
 
@@ -23,12 +24,13 @@ export function fetchCandidateReportApi(runId: string | number, candidateId: str
   return request.get<CandidateReport, CandidateReport>(`/runs/${runId}/candidates/${candidateId}`)
 }
 
-export async function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '', questionCount = 10) {
+export async function generateCandidateQuestionsApi(runId: string | number, candidateId: string | number, taskId = '', questionCount = 10, onAccepted?: (taskId: string) => void) {
   const params = new URLSearchParams({ question_count: String(questionCount) })
   if (taskId) params.set('task_id', taskId)
   const accepted = await request.post<AcceptedTask, AcceptedTask>(`/runs/${runId}/candidates/${candidateId}/questions?${params.toString()}`, undefined, {
     headers: { Prefer: 'respond-async' },
   })
+  onAccepted?.(accepted.taskId)
   return waitForTaskResult(accepted.taskId, (data) => data as unknown as CandidateReport)
 }
 

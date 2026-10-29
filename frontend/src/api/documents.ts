@@ -33,11 +33,12 @@ export interface JDUploadResponse {
   message: string
 }
 
-export async function uploadDocumentsApi(formData: FormData, onUploadProgress?: (event: AxiosProgressEvent) => void) {
+export async function uploadDocumentsApi(formData: FormData, onUploadProgress?: (event: AxiosProgressEvent) => void, onAccepted?: (taskId: string) => void) {
   const accepted = await request.post<AcceptedTask, AcceptedTask>('/documents', formData, {
     onUploadProgress,
     headers: { Prefer: 'respond-async' },
   })
+  onAccepted?.(accepted.taskId)
   return waitForTaskResult<ParseDocumentsResponse>(accepted.taskId, (data) => ({
     documents: data.documents as BackendDocumentParseResult[],
     taskId: accepted.taskId,
@@ -52,11 +53,12 @@ export function fetchDocumentApi(documentId: string) {
   return request.get<BackendDocumentParseResult, BackendDocumentParseResult>(`/documents/${documentId}`)
 }
 
-export async function reparseDocumentApi(documentId: string, taskId = '') {
+export async function reparseDocumentApi(documentId: string, taskId = '', onAccepted?: (taskId: string) => void) {
   const suffix = taskId ? `?task_id=${encodeURIComponent(taskId)}` : ''
   const accepted = await request.post<AcceptedTask, AcceptedTask>(`/documents/${documentId}/parse${suffix}`, undefined, {
     headers: { Prefer: 'respond-async' },
   })
+  onAccepted?.(accepted.taskId)
   return waitForTaskResult(accepted.taskId, (data) => data.document as BackendDocumentParseResult)
 }
 

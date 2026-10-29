@@ -1,4 +1,6 @@
 import type { SseProgressEvent } from '../types/task'
+import { buildAuthHeaders } from './authToken'
+import { parseSseStream } from './sseParser'
 
 interface TaskCallbacks {
   onMessage: (event: SseProgressEvent) => void
@@ -10,44 +12,47 @@ export interface TaskConnection {
   close: () => void
 }
 
-const activeConnections = new Map<string, TaskConnection>()
+const activeConnections = new Map<string, Set<TaskConnection>>()
 
-export function subscribeTaskProgress(taskId: string, callbacks: TaskCallbacks) {
-  const existing = activeConnections.get(taskId)
-  if (existing) existing.close()
-
-  const source = new EventSource(`/api/tasks/${taskId}/events`)
-  let terminalClose = false
+export function subscribeTaskProgress(taskId: string, callbacks: TaskCallbacks): TaskConnection {
+  const controller = new AbortController()
+  let closed = false
+  const connections = activeConnections.get(taskId) || new Set<TaskConnection>()
   const connection = {
     close: () => {
-      source.close()
-      activeConnections.delete(taskId)
+      if (closed) return
+      closed = true
+      controller.abort()
+      connections.delete(connection)
+      if (!connections.size) activeConnections.delete(taskId)
       callbacks.onClose?.()
     },
   }
+  connections.add(connection)
+  activeConnections.set(taskId, connections)
 
-  source.onmessage = (message) => {
+  void (async () => {
     try {
-      const event = JSON.parse(message.data) as SseProgressEvent
-      callbacks.onMessage(event)
-      if (event.status === 'success' || event.status === 'failed') {
-        terminalClose = true
-        connection.close()
-      }
-    } catch {
-      callbacks.onError?.(new Error('SSE event parse failed'))
+      const response = await fetch(`/api/tasks/${encodeURIComponent(taskId)}/events`, {
+        headers: { ...buildAuthHeaders(), Accept: 'text/event-stream' },
+        signal: controller.signal,
+      })
+      if (!response.ok) throw new Error(`SSE request failed (${response.status})`)
+      await parseSseStream(response, (frame) => {
+        const event = JSON.parse(frame.data) as SseProgressEvent
+        callbacks.onMessage(event)
+        if (event.status === 'success' || event.status === 'failed') connection.close()
+      }, controller.signal)
+      if (!closed) throw new Error('SSE connection closed')
+    } catch (error) {
+      if (!closed) callbacks.onError?.(error instanceof Error ? error : new Error(String(error)))
+    } finally {
+      connection.close()
     }
-  }
-
-  source.onerror = () => {
-    if (!terminalClose) callbacks.onError?.(new Error('SSE connection closed'))
-    connection.close()
-  }
-
-  activeConnections.set(taskId, connection)
+  })()
   return connection
 }
 
 export function closeTaskProgress(taskId: string) {
-  activeConnections.get(taskId)?.close()
+  for (const connection of activeConnections.get(taskId) || []) connection.close()
 }

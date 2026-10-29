@@ -55,9 +55,10 @@ interface UploadQueueDeps {
     file: File,
     taskId: string,
     onUploadProgress: (event: UploadProgressLike) => void,
+    onAccepted?: (taskId: string) => void,
   ) => Promise<ParseDocumentsResponse>
   refreshDocumentsSilently?: () => Promise<void>
-  reparse?: (documentId: string, taskId: string) => Promise<unknown>
+  reparse?: (documentId: string, taskId: string, onAccepted?: (taskId: string) => void) => Promise<unknown>
   concurrency?: number
 }
 
@@ -70,6 +71,7 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   const queue: QueueItem[] = []
   const connections = new Map<string, TaskConnection>()
   let activeCount = 0
+  let closed = false
   const concurrency = Math.min(Math.max(deps.concurrency || 1, 1), 2)
   const createTaskId = deps.createTaskId || (() => createId('task_parse'))
   const subscribe = deps.subscribe || subscribeTaskProgress
@@ -107,6 +109,18 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
     tasks.set(taskId, rawTask)
     const task = tasks.get(taskId)!
 
+    try {
+      await upload(item.type, item.file, taskId, (event) => updateUploadProgress(task, event), () => subscribeToTask(task))
+      return true
+    } catch (err) {
+      failTask(task, err instanceof Error ? err.message : String(err))
+      return false
+    }
+  }
+
+  function subscribeToTask(task: DocumentParseTask) {
+    if (closed) return
+    const taskId = task.taskId
     connections.set(
       taskId,
       subscribe(taskId, {
@@ -123,14 +137,6 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
         },
       }),
     )
-
-    try {
-      await upload(item.type, item.file, taskId, (event) => updateUploadProgress(task, event))
-      return true
-    } catch (err) {
-      failTask(task, err instanceof Error ? err.message : String(err))
-      return false
-    }
   }
 
   function closeTask(taskId: string) {
@@ -139,6 +145,7 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
   }
 
   function closeAll() {
+    closed = true
     for (const taskId of connections.keys()) closeTask(taskId)
   }
 
@@ -150,24 +157,8 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
     tasks.set(taskId, rawTask)
     const task = tasks.get(taskId)!
 
-    connections.set(
-      taskId,
-      subscribe(taskId, {
-        onMessage: (event) => {
-          updateFromSse(task, event)
-          if (event.stage === 'completed' && event.status === 'success') {
-            void refreshDocumentsSilently()
-          }
-        },
-        onError: () => {
-          if (task.status !== 'success' && task.status !== 'failed') {
-            task.message = '实时进度连接已中断，正在等待服务端解析结果'
-          }
-        },
-      }),
-    )
     try {
-      await reparse(document.id, taskId)
+      await reparse(document.id, taskId, () => subscribeToTask(task))
     } catch (err) {
       failTask(task, err instanceof Error ? err.message : String(err))
     }
@@ -181,12 +172,13 @@ async function defaultUpload(
   file: File,
   taskId: string,
   onUploadProgress: (event: UploadProgressLike) => void,
+  onAccepted?: (taskId: string) => void,
 ) {
   const formData = new FormData()
   formData.append('document_type', type)
   formData.append('task_id', taskId)
   formData.append('files', file)
-  return uploadDocumentsApi(formData, (event: AxiosProgressEvent) => onUploadProgress(event))
+  return uploadDocumentsApi(formData, (event: AxiosProgressEvent) => onUploadProgress(event), onAccepted)
 }
 
 function createTask(taskId: string, filename: string, documentType: DocumentType): DocumentParseTask {

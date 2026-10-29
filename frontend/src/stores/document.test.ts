@@ -55,10 +55,11 @@ const queue = createDocumentUploadQueue({
     }
     return { close: () => closed.push(taskId) }
   },
-  upload: async (_type, file, taskId, onUploadProgress) => {
+  upload: async (_type, file, taskId, onUploadProgress, onAccepted) => {
     uploaded.push(`${taskId}:${file.name}`)
     onUploadProgress({ loaded: 25, total: 100 })
     progress.push(queue.tasks.get(taskId)?.uploadProgress || 0)
+    onAccepted?.(taskId)
     if (file.name === 'bad.pdf') throw new Error('bad upload')
     return { documents: [backendDoc(`resume:${taskId}`)] }
   },

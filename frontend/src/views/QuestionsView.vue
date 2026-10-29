@@ -216,9 +216,9 @@ async function generate() {
   if (!jd || !resume || !match) return
   const taskId = createId('task_questions')
   localStorage.setItem(QUESTION_TASK_ID_KEY, JSON.stringify({ taskId, jdId: jd.id, resumeId: resume.id, matchId: match.id, questionCount: questionCount.value }))
-  task.start(taskId)
+  task.startManual(taskId, '正在提交试题生成任务')
   try {
-    await questionStore.createQuestionSet(jd, resume, questionCount.value, match, taskId)
+    await questionStore.createQuestionSet(jd, resume, questionCount.value, match, taskId, task.start)
     selectedSet.value = questionStore.questionSets[0] || null
   } catch (err) {
     task.failManual(err instanceof Error ? err.message : String(err))

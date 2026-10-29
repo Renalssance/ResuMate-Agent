@@ -16,7 +16,7 @@ from backend.tests.career_fixtures import career_engine, career_db
 @pytest.fixture
 def run_client(career_db, career_engine):
     def get_test_db():
-        with Session(career_engine, expire_on_commit=False) as db:
+        with Session(career_engine, autoflush=False, expire_on_commit=False) as db:
             yield db
     previous = dict(app.dependency_overrides)
     app.dependency_overrides[get_db] = get_test_db
@@ -49,7 +49,7 @@ def test_create_returns_durable_queued_run_and_snapshot(run_client, career_db):
     assert run.user_id == 1
     snapshot = run_client.get('/api/agent/runs/' + run.id, headers=headers()).json()
     assert snapshot['runId'] == run.id
-    assert snapshot['lastSeq'] == 0 and snapshot['actions'] == []
+    assert snapshot['lastSeq'] == 1 and snapshot['actions'] == []
     assert snapshot['input'] == {'jdId': 1, 'resumeId': 1}
 
 

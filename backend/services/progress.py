@@ -4,6 +4,8 @@ import asyncio
 from collections import defaultdict
 from uuid import uuid4
 
+from fastapi import HTTPException
+
 from backend.schemas.workflow import SseProgressEvent, TaskStatus
 
 
@@ -15,12 +17,21 @@ class TaskProgressHub:
         self._history: dict[str, list[SseProgressEvent]] = defaultdict(list)
         self._queues: dict[str, list[tuple[asyncio.AbstractEventLoop, asyncio.Queue[SseProgressEvent]]]] = defaultdict(list)
         self._last_progress: dict[str, int] = defaultdict(int)
+        self._owners: dict[str, int] = {}
 
-    def create_task(self, prefix: str = "task") -> str:
-        task_id = f"{prefix}_{uuid4().hex}"
-        self._history[task_id] = []
-        self._last_progress[task_id] = 0
+    def create_task(self, prefix: str = "task", *, user_id: int, task_id: str = "") -> str:
+        task_id = task_id or f"{prefix}_{uuid4().hex}"
+        owner_id = self._owners.get(task_id)
+        if owner_id is not None and owner_id != user_id:
+            raise HTTPException(status_code=404, detail="task not found")
+        if owner_id is None:
+            self._owners[task_id] = user_id
+            self._history[task_id] = []
+            self._last_progress[task_id] = 0
         return task_id
+
+    def is_owned_by(self, task_id: str, user_id: int) -> bool:
+        return self._owners.get(task_id) == user_id
 
     def publish(
         self,

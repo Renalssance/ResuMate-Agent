@@ -22,11 +22,11 @@ export const useQuestionStore = defineStore('question', () => {
     })
   }
 
-  async function createQuestionSet(jd: DocumentRecord, resume: DocumentRecord, count: number, match: MatchResult, taskId = '') {
+  async function createQuestionSet(jd: DocumentRecord, resume: DocumentRecord, count: number, match: MatchResult, taskId = '', onAccepted?: (taskId: string) => void) {
     loading.value = true
     error.value = ''
     try {
-      const sourceReport = await generateQuestionsForMatch(match, taskId, count)
+      const sourceReport = await generateQuestionsForMatch(match, taskId, count, onAccepted)
       const created = buildQuestionSetFromReport(jd, resume, sourceReport.formal_questions, count, match, sourceReport)
       questionSets.value = [created, ...questionSets.value]
       return { questionSetId: created.id }
@@ -61,10 +61,10 @@ export const useQuestionStore = defineStore('question', () => {
   return { questionSets, loading, error, loadQuestionSets, createQuestionSet, restoreQuestionSet, deleteQuestionSet }
 })
 
-async function generateQuestionsForMatch(match: MatchResult, taskId = '', questionCount = 10): Promise<CandidateReport> {
+async function generateQuestionsForMatch(match: MatchResult, taskId = '', questionCount = 10, onAccepted?: (taskId: string) => void): Promise<CandidateReport> {
   const [runId, candidateId] = match.id.split(':')
   if (!runId || !candidateId) throw new Error('Selected match does not identify a backend candidate report.')
-  return generateCandidateQuestionsApi(runId, candidateId, taskId, questionCount)
+  return generateCandidateQuestionsApi(runId, candidateId, taskId, questionCount, onAccepted)
 }
 
 async function fetchQuestionsForMatch(match: MatchResult): Promise<CandidateReport> {

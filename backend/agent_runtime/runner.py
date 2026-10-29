@@ -7,11 +7,13 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.types import Command
 from openai import APIConnectionError, APITimeoutError, APIStatusError
 from backend.agent_runtime.factory import build_agent
+from backend.agent_runtime.events import RuntimeEvents
 from backend.db.database import SessionLocal
 from backend.db.agent_models import AgentRun, AgentAction
 from backend.db.career_models import ResumeVersion
 from backend.schemas.agent_runs import RunStatus
 from backend.services import agent_runs
+from backend.services.run_events import append_event
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +54,20 @@ def run_agent(run_id: str, epoch: int) -> None:
             else:
                 _complete(run_id, epoch)
                 return
-            result = agent.invoke(graph_input, config)
-            if result.get('__interrupt__'):
-                _save_interrupts(run_id, epoch, result['__interrupt__'])
+            events = RuntimeEvents(run_id, epoch, SessionLocal)
+            interrupts = ()
+            try:
+                for mode, data in agent.stream(graph_input, config, stream_mode=['messages', 'updates']):
+                    if mode == 'messages':
+                        events.message(*data)
+                    else:
+                        events.flush()
+                        if data.get('__interrupt__'):
+                            interrupts = data['__interrupt__']
+            finally:
+                events.flush()
+            if interrupts:
+                _save_interrupts(run_id, epoch, interrupts)
             else:
                 _complete(run_id, epoch)
     except Exception as error:
@@ -75,7 +88,10 @@ def _save_interrupts(run_id, epoch, interrupts):
             action = db.scalar(select(AgentAction).where(
                 AgentAction.run_id == run_id, AgentAction.interrupt_id == item.id))
             if action is None:
-                db.add(AgentAction(run_id=run_id, interrupt_id=item.id, kind='input', payload=item.value))
+                action = AgentAction(run_id=run_id, interrupt_id=item.id, kind='input', payload=item.value)
+                db.add(action)
+                db.flush()
+                append_event(db, run_id, 'action.required', {'action_id': action.id, 'kind': action.kind})
         agent_runs.finish_run(db, run_id, epoch, RunStatus.WAITING_INPUT)
 
 

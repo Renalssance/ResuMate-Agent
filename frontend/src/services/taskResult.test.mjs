@@ -4,19 +4,24 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { build } from 'esbuild'
 
-class FakeEventSource {
+class FetchConnection {
   static instances = []
   closed = false
-  onmessage = null
-  onerror = null
-  constructor(url) {
+  constructor(url, options) {
     this.url = url
-    FakeEventSource.instances.push(this)
+    this.options = options
+    this.response = new Response(new ReadableStream({
+      start: controller => { this.controller = controller },
+      cancel: () => { this.closed = true },
+    }), { headers: { 'Content-Type': 'text/event-stream' } })
+    options.signal.addEventListener('abort', () => { this.closed = true })
+    FetchConnection.instances.push(this)
   }
-  close() { this.closed = true }
-  emit(event) { this.onmessage?.({ data: JSON.stringify(event) }) }
+  emit(event) { this.controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`)) }
+  end() { this.controller.close() }
 }
-globalThis.EventSource = FakeEventSource
+globalThis.window = { localStorage: { getItem: () => 'legacy-token' } }
+globalThis.fetch = async (url, options) => new FetchConnection(url, options).response
 const tempDir = await mkdtemp(join(new URL('../..', import.meta.url).pathname, '.task-result-test-'))
 try {
   const entry = join(tempDir, 'entry.ts')
@@ -52,24 +57,32 @@ try {
   const form = new FormData()
   form.append('files', new Blob(['Candidate text']), 'resume.txt')
   const cases = [
-    ['upload-task', () => api.uploadDocumentsApi(form), { documents: [document] }, { documents: [document], taskId: 'upload-task' }],
-    ['reparse-task', () => api.reparseDocumentApi('resume:1', 'reparse-task'), { document }, document],
-    ['run-task', () => api.createRunApi({ jd_document_id: 'jd:1', resume_document_ids: ['resume:1'], taskId: 'run-task' }), run, run],
-    ['questions-task', () => api.generateCandidateQuestionsApi(7, 8, 'questions-task', 3), report, report],
+    ['upload-task', onAccepted => api.uploadDocumentsApi(form, undefined, onAccepted), { documents: [document] }, { documents: [document], taskId: 'upload-task' }],
+    ['reparse-task', onAccepted => api.reparseDocumentApi('resume:1', 'reparse-task', onAccepted), { document }, document],
+    ['run-task', onAccepted => api.createRunApi({ jd_document_id: 'jd:1', resume_document_ids: ['resume:1'], taskId: 'run-task' }, onAccepted), run, run],
+    ['questions-task', onAccepted => api.generateCandidateQuestionsApi(7, 8, 'questions-task', 3, onAccepted), report, report],
   ]
   for (const [id, submit, data, expected] of cases) {
     taskId = id
-    const ui = api.subscribeTaskProgress(id, { onMessage() {} })
-    const uiSource = FakeEventSource.instances.at(-1)
+    let ui, uiSource
     let settled = false
-    const result = submit()
+    const beforeSubmit = FetchConnection.instances.length
+    const result = submit(acceptedId => {
+      assert.equal(acceptedId, id)
+      ui = api.subscribeTaskProgress(acceptedId, { onMessage() {} })
+      uiSource = FetchConnection.instances.at(-1)
+    })
+    assert.equal(FetchConnection.instances.length, beforeSubmit, 'subscriptions must wait for HTTP acceptance')
     result.then(() => { settled = true }, () => { settled = true })
     await new Promise(resolve => setImmediate(resolve))
+    assert.ok(uiSource, 'accepted tasks must start the UI subscription')
+    assert.equal(uiSource.options.headers.Authorization, 'Bearer legacy-token')
     assert.equal(settled, false, 'HTTP 202 must not finish the caller or release its upload queue slot')
     assert.equal(uiSource.closed, false, 'waiting for results must preserve the existing progress subscription')
-    const waiter = FakeEventSource.instances.at(-1)
+    const waiter = FetchConnection.instances.at(-1)
     assert.notEqual(waiter, uiSource, 'result and UI subscriptions own separate connections')
     assert.equal(waiter.url, `/api/tasks/${id}/events`)
+    assert.equal(waiter.options.headers.Authorization, 'Bearer legacy-token')
     waiter.emit({ taskId: id, stage: 'llm_analyze', status: 'running', progress: 45, message: 'Working', data: {} })
     await new Promise(resolve => setImmediate(resolve))
     assert.equal(settled, false)
@@ -86,7 +99,7 @@ try {
   taskId = 'failed-task'
   const failed = api.createRunApi({ jd_document_id: 'jd:1', resume_document_ids: ['resume:1'] })
   await new Promise(resolve => setImmediate(resolve))
-  const source = FakeEventSource.instances.at(-1)
+  const source = FetchConnection.instances.at(-1)
   source.emit({ taskId, stage: 'failed', status: 'failed', progress: 100, message: 'Model request failed', data: {} })
   await assert.rejects(failed, /Model request failed/)
   assert.equal(source.closed, true)
@@ -94,8 +107,8 @@ try {
   taskId = 'disconnected-task'
   const disconnected = api.createRunApi({ jd_document_id: 'jd:1', resume_document_ids: ['resume:1'] })
   await new Promise(resolve => setImmediate(resolve))
-  const disconnectedSource = FakeEventSource.instances.at(-1)
-  disconnectedSource.onerror()
+  const disconnectedSource = FetchConnection.instances.at(-1)
+  disconnectedSource.end()
   await assert.rejects(disconnected, /connection/i)
   assert.equal(disconnectedSource.closed, true)
   // A failed queued resume must not determine a later text upload's outcome.

@@ -22,8 +22,8 @@ def create_run(
     prefer: str = Header(""),
     background_tasks: BackgroundTasks = None,
 ):
+    task_id = progress_hub.create_task("task_match", user_id=current_user.id, task_id=request.task_id)
     if prefer == "respond-async":
-        task_id = request.task_id or progress_hub.create_task("task_match")
         return submit_task(
             background_tasks, task_id, current_user.id, create_run,
             request=request.model_copy(update={"task_id": task_id}),
@@ -33,7 +33,7 @@ def create_run(
             user_id=current_user.id,
             jd_document_id=request.jd_document_id,
             resume_document_ids=request.resume_document_ids,
-            task_id=request.task_id,
+            task_id=task_id,
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -71,8 +71,8 @@ def generate_candidate_questions(
     prefer: str = Header(""),
     background_tasks: BackgroundTasks = None,
 ):
+    task_id = progress_hub.create_task("task_questions", user_id=current_user.id, task_id=task_id)
     if prefer == "respond-async":
-        task_id = task_id or progress_hub.create_task("task_questions")
         return submit_task(
             background_tasks, task_id, current_user.id, generate_candidate_questions,
             run_id=run_id, candidate_id=candidate_id, task_id=task_id, question_count=question_count,

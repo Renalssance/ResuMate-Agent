@@ -70,6 +70,7 @@ async def test_async_upload_saves_file_before_accepting_and_uses_own_session(bac
 
     assert response.status_code == 202
     assert json.loads(response.body) == {"taskId": "async-upload"}
+    assert progress_hub.is_owned_by("async-upload", user_id)
     assert calls == [] and workers == []
     await upload.close()
     request_db.close()
@@ -150,6 +151,7 @@ async def test_long_routes_accept_before_background_work(background_db, monkeypa
         assert response.status_code == 202
         task_id = json.loads(response.body)["taskId"]
         assert isinstance(task_id, str) and task_id
+        assert progress_hub.is_owned_by(task_id, user_id)
         assert calls == [] and workers == []
     await background()
     assert calls
@@ -219,6 +221,7 @@ async def test_followup_async_submission_publishes_own_complete_model_result(bac
     assert calls == [] and workers == []
     await background()
     assert len(calls) == 1 and workers[0].closed
+    assert progress_hub.is_owned_by("async-followup", user_id)
     terminal = progress_hub._history["async-followup"][-1]
     assert terminal.status == "success"
     assert terminal.data == result.model_dump(mode="json")

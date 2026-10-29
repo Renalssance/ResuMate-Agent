@@ -1,5 +1,6 @@
 """Opt-in real Docker/Redis/worker kill test; every resource belongs to this test."""
 import os
+import json
 from pathlib import Path
 import socket
 import subprocess
@@ -91,6 +92,18 @@ def test_committed_draft_survives_broker_failure_and_worker_kill(tmp_path, monke
         subprocess.run(command + ['up', '-d', '--build'], check=True, timeout=300)
         wait_for(lambda: (agent_dir / 'artifact_committed').exists(), 90, 'scanner redispatches and commits artifact')
         assert snapshot()['status'] == 'running'
+        # Disconnect after receiving the committed artifact; this must not cancel work.
+        received = []
+        with client.stream('GET', '/api/agent/runs/' + run_id + '/events') as stream:
+            stream.raise_for_status()
+            for line in stream.iter_lines():
+                if line.startswith('data: '):
+                    received.append(json.loads(line[6:]))
+                    if received[-1]['type'] == 'artifact.created':
+                        break
+        cursor = received[-1]['seq']
+        assert [event['seq'] for event in received] == list(range(1, cursor + 1))
+        assert snapshot()['status'] == 'running'
         assert database_record()['run'][:3] == ['running', 1, 1]
         # Verify the heartbeat advances while an actual task is blocked.
         first_heartbeat = database_record()['run'][3]
@@ -106,6 +119,16 @@ def test_committed_draft_survives_broker_failure_and_worker_kill(tmp_path, monke
         assert record['run'][:3] == ['succeeded', 2, 2]
         assert record['versions'] == record['operations'] == 1
         assert len(snapshot()['outputRefs']) == 1
+        replay = client.get(f'/api/agent/runs/{run_id}/events?after={cursor}')
+        replay.raise_for_status()
+        tail = [json.loads(line[6:]) for line in replay.text.splitlines() if line.startswith('data: ')]
+        complete = received + tail
+        assert [event['seq'] for event in complete] == list(range(1, snapshot()['lastSeq'] + 1))
+        assert sum(event['type'] == 'artifact.created' for event in complete) == 1
+        assert [event['payload']['status'] for event in complete if event['type'] == 'run.status'] == [
+            'queued', 'running', 'queued', 'running', 'succeeded']
+        assert tail[-1]['payload']['status'] == 'succeeded'
+        print('PASS: authenticated live SSE -> disconnect -> worker crash -> cursor replay; contiguous seq, one artifact event')
         print('PASS: publish failure -> scan; heartbeat; duplicates; SIGKILL after SQL commit -> attempt 2, one artifact')
     finally:
         logs = subprocess.run(command + ['logs', '--no-color'], capture_output=True, text=True, timeout=30)

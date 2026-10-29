@@ -80,7 +80,7 @@ class AnalysisService:
         resume_document_ids: list[str],
         task_id: str = "",
     ) -> AnalyzeResponse:
-        task_id = task_id or progress_hub.create_task("task_match")
+        task_id = progress_hub.create_task("task_match", user_id=user_id, task_id=task_id)
         try:
             jd_id = parse_document_id(jd_document_id, "jd")
             resume_ids = [parse_document_id(value, "resume") for value in resume_document_ids]
@@ -160,7 +160,7 @@ class AnalysisService:
         task_id: str = "",
         question_count: int = 10,
     ) -> CandidateReport:
-        task_id = task_id or progress_hub.create_task("task_questions")
+        task_id = progress_hub.create_task("task_questions", user_id=user_id, task_id=task_id)
         question_count = max(1, min(question_count, 10))
         progress_hub.publish(
             task_id,

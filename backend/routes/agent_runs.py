@@ -1,16 +1,16 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
 from backend.schemas.agent_runs import ActionResponse, RunAccepted, RunCreate
-from backend.services import agent_runs
+from backend.services import agent_runs, run_events
 from backend.services.run_delivery import publish_run
 
 
@@ -73,3 +73,18 @@ def answer(run_id: str, action_id: str, response: ActionResponse,
     if run.status == "queued":
         publish_run(run.id)
     return RunAccepted(run_id=run.id, status=run.status)
+
+
+@router.get('/{run_id}/events')
+def events(run_id: str, after: int = Query(default=0, ge=0),
+           last_event_id: int | None = Header(default=None, ge=0),
+           user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    cursor = max(after, last_event_id or 0)
+    user_id = user.id
+    # Validate ownership and cursor before HTTP headers are sent.
+    run_events.read_page(db, user_id, run_id, cursor)
+    session_factory = sessionmaker(bind=db.get_bind(), autoflush=False, expire_on_commit=False)
+    db.close()
+    return StreamingResponse(run_events.stream_events(session_factory, user_id, run_id, cursor),
+                             media_type='text/event-stream',
+                             headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'})

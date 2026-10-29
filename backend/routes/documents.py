@@ -148,7 +148,7 @@ def upload_documents(
 ):
     if len(files) != 1:
         raise HTTPException(status_code=422, detail="exactly one file is required per document parsing task")
-    task_id = task_id or progress_hub.create_task("task_parse")
+    task_id = progress_hub.create_task("task_parse", user_id=current_user.id, task_id=task_id)
     try:
         # Finish reading UploadFile before FastAPI closes the request's files.
         stored = anyio.from_thread.run(store_upload, files[0])
@@ -356,7 +356,7 @@ def reparse_document(
     background_tasks: BackgroundTasks = None,
 ):
     kind, row = _find_document(db, current_user.id, document_id)
-    task_id = task_id or progress_hub.create_task("task_parse")
+    task_id = progress_hub.create_task("task_parse", user_id=current_user.id, task_id=task_id)
     if prefer == "respond-async":
         return submit_task(
             background_tasks, task_id, current_user.id, reparse_document,
@@ -477,8 +477,9 @@ def analyze_followup(
     prefer: str = Header(""),
     background_tasks: BackgroundTasks = None,
 ):
+    if task_id or prefer == "respond-async":
+        task_id = progress_hub.create_task("task_followup", user_id=current_user.id, task_id=task_id)
     if prefer == "respond-async":
-        task_id = task_id or progress_hub.create_task("task_followup")
         return submit_task(
             background_tasks, task_id, current_user.id, analyze_followup,
             request=request, task_id=task_id,

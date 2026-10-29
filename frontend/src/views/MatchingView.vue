@@ -204,9 +204,9 @@ async function runMatch() {
   const resumes = documentStore.parsedResumes.filter((item) => selectedResumeIds.value.includes(item.id))
   if (!jd || !resumes.length) return
   const taskId = createId('task_match')
-  task.start(taskId)
+  task.startManual(taskId, '正在提交匹配任务')
   try {
-    await matchStore.createMatch(jd, resumes, taskId)
+    await matchStore.createMatch(jd, resumes, taskId, task.start)
     selectedResult.value = matchStore.results[0] || null
   } catch (err) {
     task.failManual(err instanceof Error ? err.message : String(err))

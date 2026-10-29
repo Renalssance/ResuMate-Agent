@@ -1,0 +1,154 @@
+ Network resumate-test-9c7d466e_default Creating 
+ Volume resumate-test-9c7d466e_redis-data Creating 
+ Volume resumate-test-9c7d466e_redis-data Creating 
+ Network resumate-test-9c7d466e_default Creating 
+ Volume resumate-test-9c7d466e_redis-data Created 
+ Volume resumate-test-9c7d466e_redis-data Created 
+ Network resumate-test-9c7d466e_default Created 
+ Network resumate-test-9c7d466e_default Created 
+ Container resumate-test-9c7d466e-redis-1 Creating 
+ Container resumate-test-9c7d466e-redis-1 Created 
+ Container resumate-test-9c7d466e-redis-1 Starting 
+ Container resumate-test-9c7d466e-redis-1 Started 
+ Container resumate-test-9c7d466e-redis-1 Waiting 
+ Container resumate-test-9c7d466e-redis-1 Healthy 
+ Image resumate-test-9c7d466e-scheduler Building 
+ Image resumate-test-9c7d466e-api Building 
+ Image resumate-test-9c7d466e-worker Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.74kB done
+#1 DONE 0.0s
+
+#2 [api internal] load build definition from worker.Dockerfile
+#2 transferring dockerfile: 520B done
+#2 DONE 0.0s
+
+#3 [api internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm
+#3 DONE 2.5s
+
+#4 [api internal] load .dockerignore
+#4 transferring context: 356B done
+#4 DONE 0.0s
+
+#5 [api 1/7] FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337
+#5 resolve public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337 done
+#5 DONE 0.0s
+
+#6 [worker internal] load build context
+#6 transferring context: 94.47kB done
+#6 DONE 0.0s
+
+#7 [api 2/7] WORKDIR /app
+#7 CACHED
+
+#8 [api 3/7] RUN pip install --no-cache-dir uv==0.12.5
+#8 CACHED
+
+#9 [api 4/7] COPY pyproject.toml uv.lock README.md ./
+#9 CACHED
+
+#10 [api 5/7] RUN uv sync --locked --no-dev --no-install-project
+#10 CACHED
+
+#11 [scheduler 6/7] COPY backend/ ./backend/
+#11 DONE 0.0s
+
+#12 [worker 7/7] RUN mkdir -p /app/data/agent
+#12 DONE 0.1s
+
+#13 [scheduler] exporting to image
+#13 exporting layers 0.0s done
+#13 exporting manifest sha256:f20063a7662e70cbb258ab5438fe8e47b45442a667703f11f1bd79c1c6915c8d done
+#13 exporting config sha256:5f3af4a45e06e56e3091d9e97f1ed0d6eb1030f89c99136db800772f5d37b817 done
+#13 exporting attestation manifest sha256:3d6a22455b3e872fcedb48f3675df364e6012ef491499a6f8cc2b272eb5fb333 done
+#13 exporting manifest list sha256:2ef9752e709c0f613f2beedddefd5d86f21a18aac93bcdc13a181d17d1b8ca12 done
+#13 naming to docker.io/library/resumate-test-9c7d466e-scheduler:latest done
+#13 unpacking to docker.io/library/resumate-test-9c7d466e-scheduler:latest 0.0s done
+#13 DONE 0.1s
+
+#14 [api] exporting to image
+#14 exporting layers 0.0s done
+#14 exporting manifest sha256:dd208efcf27789d4b51c72a2ae032ed9ab4d61c976591e20dbe2b329a2a8d362 done
+#14 exporting config sha256:6195e85568322bbc39c5c0306007b9410244096fe081de6996e2bf84661605ba done
+#14 exporting attestation manifest sha256:1dae6509f52add01bc847bf597d0496a3bd5f032af4d82911d8b5a318ff38501 done
+#14 exporting manifest list sha256:758684449f63b41e844590ffb8838035cfebe0cb6290b5a2f424466dc909a399 done
+#14 naming to docker.io/library/resumate-test-9c7d466e-api:latest done
+#14 unpacking to docker.io/library/resumate-test-9c7d466e-api:latest 0.0s done
+#14 DONE 0.1s
+
+#15 [worker] exporting to image
+#15 exporting layers 0.0s done
+#15 exporting manifest sha256:7c68ac60cdd46aaa0e81824d8341e5bb0e02bf5866a1f2b9a1efbc4a0936bc95 done
+#15 exporting config sha256:1a72c07fb49de1cc1f3705ce4453e4a6ae2117d1d138332c6ec4ac9644be2326 done
+#15 exporting attestation manifest sha256:9bd5b752f1c863bcc0e78fe145800174e82d2c3902a8cad1adea94ac1ff39bb1 done
+#15 exporting manifest list sha256:cfe85585f16b6ad6912fe8ef94b9e44f56550348ceb5219f262268a341ceee16 done
+#15 naming to docker.io/library/resumate-test-9c7d466e-worker:latest done
+#15 unpacking to docker.io/library/resumate-test-9c7d466e-worker:latest 0.0s done
+#15 DONE 0.1s
+
+#16 [api] resolving provenance for metadata file
+#16 DONE 0.0s
+
+#17 [worker] resolving provenance for metadata file
+#17 DONE 0.0s
+
+#18 [scheduler] resolving provenance for metadata file
+#18 DONE 0.0s
+ Image resumate-test-9c7d466e-worker Built 
+ Image resumate-test-9c7d466e-api Built 
+ Image resumate-test-9c7d466e-scheduler Built 
+ Container resumate-test-9c7d466e-redis-1 Running 
+ Container resumate-test-9c7d466e-api-1 Creating 
+ Container resumate-test-9c7d466e-scheduler-1 Creating 
+ Container resumate-test-9c7d466e-api-1 Created 
+ Container resumate-test-9c7d466e-worker-1 Creating 
+ Container resumate-test-9c7d466e-scheduler-1 Created 
+ Container resumate-test-9c7d466e-worker-1 Created 
+ Container resumate-test-9c7d466e-api-1 Starting 
+ Container resumate-test-9c7d466e-redis-1 Waiting 
+ Container resumate-test-9c7d466e-api-1 Started 
+ Container resumate-test-9c7d466e-redis-1 Waiting 
+ Container resumate-test-9c7d466e-api-1 Waiting 
+ Container resumate-test-9c7d466e-redis-1 Healthy 
+ Container resumate-test-9c7d466e-scheduler-1 Starting 
+ Container resumate-test-9c7d466e-scheduler-1 Started 
+ Container resumate-test-9c7d466e-redis-1 Healthy 
+ Container resumate-test-9c7d466e-api-1 Healthy 
+ Container resumate-test-9c7d466e-worker-1 Starting 
+ Container resumate-test-9c7d466e-worker-1 Started 
+ Container resumate-test-9c7d466e-worker-1 Killing 
+ Container resumate-test-9c7d466e-worker-1 Killed 
+ Container resumate-test-9c7d466e-api-1 Running 
+ Container resumate-test-9c7d466e-redis-1 Running 
+ Container resumate-test-9c7d466e-redis-1 Waiting 
+ Container resumate-test-9c7d466e-api-1 Waiting 
+ Container resumate-test-9c7d466e-api-1 Healthy 
+ Container resumate-test-9c7d466e-redis-1 Healthy 
+ Container resumate-test-9c7d466e-worker-1 Starting 
+ Container resumate-test-9c7d466e-worker-1 Started 
+ Container resumate-test-9c7d466e-worker-1 Stopping 
+ Container resumate-test-9c7d466e-scheduler-1 Stopping 
+ Container resumate-test-9c7d466e-scheduler-1 Stopped 
+ Container resumate-test-9c7d466e-scheduler-1 Removing 
+ Container resumate-test-9c7d466e-scheduler-1 Removed 
+ Container resumate-test-9c7d466e-worker-1 Stopped 
+ Container resumate-test-9c7d466e-worker-1 Removing 
+ Container resumate-test-9c7d466e-worker-1 Removed 
+ Container resumate-test-9c7d466e-api-1 Stopping 
+ Container resumate-test-9c7d466e-redis-1 Stopping 
+ Container resumate-test-9c7d466e-redis-1 Stopped 
+ Container resumate-test-9c7d466e-redis-1 Removing 
+ Container resumate-test-9c7d466e-redis-1 Removed 
+ Container resumate-test-9c7d466e-api-1 Stopped 
+ Container resumate-test-9c7d466e-api-1 Removing 
+ Container resumate-test-9c7d466e-api-1 Removed 
+ Volume resumate-test-9c7d466e_redis-data Removing 
+ Network resumate-test-9c7d466e_default Removing 
+ Volume resumate-test-9c7d466e_redis-data Removed 
+ Network resumate-test-9c7d466e_default Removed 
+PASS: Redis visibility_timeout=3600; fresh unacked stays hidden; aged delivery reappears
+PASS: authenticated live SSE -> disconnect -> worker crash -> cursor replay; contiguous seq, one artifact event
+PASS: publish failure -> scan; heartbeat; duplicates; SIGKILL after SQL commit -> attempt 2, one artifact
+Compose evidence: /private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-54/test_committed_draft_survives_0/compose.log
+.
+1 passed in 140.85s (0:02:20)

@@ -77,10 +77,10 @@ export const useDocumentStore = defineStore('document', () => {
     return { documentIds }
   }
 
-  async function reparseDocument(id: string, taskId = '') {
+  async function reparseDocument(id: string, taskId = '', onAccepted?: (taskId: string) => void) {
     reparsingIds.value = new Set(reparsingIds.value).add(id)
     try {
-      const updated = toDocumentRecord(await reparseDocumentApi(id, taskId))
+      const updated = toDocumentRecord(await reparseDocumentApi(id, taskId, onAccepted))
       upsertDocument(updated)
       return updated
     } finally {

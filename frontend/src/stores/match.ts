@@ -39,11 +39,11 @@ export const useMatchStore = defineStore('match', () => {
     }
   }
 
-  async function createMatch(jd: DocumentRecord, resumes: DocumentRecord[], taskId = '') {
+  async function createMatch(jd: DocumentRecord, resumes: DocumentRecord[], taskId = '', onAccepted?: (taskId: string) => void) {
     loading.value = true
     error.value = ''
     try {
-      const created = await runAnalysis(jd, resumes, taskId)
+      const created = await runAnalysis(jd, resumes, taskId, onAccepted)
       results.value = [...created, ...results.value]
       return { matchIds: created.map((match) => match.id) }
     } catch (err) {
@@ -54,12 +54,12 @@ export const useMatchStore = defineStore('match', () => {
     }
   }
 
-  async function runAnalysis(jd: DocumentRecord, resumes: DocumentRecord[], taskId = '') {
+  async function runAnalysis(jd: DocumentRecord, resumes: DocumentRecord[], taskId = '', onAccepted?: (taskId: string) => void) {
     const run = await createRunApi({
       jd_document_id: jd.id,
       resume_document_ids: resumes.map((resume) => resume.id),
       taskId,
-    })
+    }, onAccepted)
     const created: MatchResult[] = []
     for (const candidate of run.candidates) {
       const report = await fetchCandidateReportApi(run.run_id, candidate.candidate_id)

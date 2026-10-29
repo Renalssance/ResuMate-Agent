@@ -5,6 +5,7 @@ import { useAgentStatus } from './useAgentStatus'
 
 export function useTaskSse(stepTemplates: StepTemplate[]) {
   const globalAgentStatus = useAgentStatus()
+  let disposed = false
   const taskId = ref('')
   const status = ref<TaskStatus>('pending')
   const progress = ref(0)
@@ -19,6 +20,7 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
   const currentAgent = computed(() => agentEvents.value[0] || null)
 
   function start(id: string) {
+    if (disposed) return
     reset()
     taskId.value = id
     subscribeTaskProgress(id, {
@@ -109,7 +111,10 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
     globalAgentStatus.clear(taskId.value)
   }
 
-  onBeforeUnmount(reset)
+  onBeforeUnmount(() => {
+    disposed = true
+    reset()
+  })
 
   return {
     taskId,

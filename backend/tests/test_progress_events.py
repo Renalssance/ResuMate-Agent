@@ -14,7 +14,7 @@ from backend.services.progress import TaskProgressHub
 @pytest.mark.asyncio
 async def test_progress_hub_replays_events_as_sse_lines():
     hub = TaskProgressHub()
-    task_id = hub.create_task("parse")
+    task_id = hub.create_task("parse", user_id=1)
     hub.publish(task_id, stage="upload", status="running", progress=10, message="Uploaded")
     hub.publish(task_id, stage="completed", status="success", progress=100, message="Done")
 
@@ -63,7 +63,7 @@ def test_sse_progress_event_uses_frontend_contract_keys():
 
 def test_progress_hub_keeps_overall_progress_monotonic_and_exposes_page_counts():
     hub = TaskProgressHub()
-    task_id = hub.create_task("parse")
+    task_id = hub.create_task("parse", user_id=1)
 
     hub.publish(
         task_id,

@@ -1,6 +1,6 @@
 # ResuMate AI 全栈与 Agent 开发计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. 未获用户明确要求时不派发子 Agent；每个任务独立交付与验证。
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. 每个任务独立交付与验证；边界独立的实现可并行，整合后统一测试与审查。
 
 **Goal:** 将现有分析工作台升级为覆盖四层能力的求职 AI 全栈应用，使用 Deep Agents、应用级 Harness 和评测支撑可恢复的真实业务任务。
 
@@ -21,7 +21,8 @@
 | T03 | 完成并提交 | Run API、权限、并发与动作回答；全后端 275 passed / 1 skipped |
 | T04 | 基础与联合恢复验收完成 | 31 项 T04/T05 单元通过；全后端 306 passed / 2 skipped；Compose 实验单独 1 passed / 139.91s，真实心跳、SQL 扫描与 SIGKILL 后重放成功，草稿仍为一份 |
 | T05 | 实现及确定性自动验收完成；真实模型 smoke 待执行 | 正常生成、补问恢复、工具失败、重复写入及审查回归通过；未调用付费模型，不能作为内容质量验收 |
-| T06/T07 | 待开发 | 下一步接持久事件、鉴权 SSE 和任务 UI；在 M1 可演示验收前补真实模型 smoke |
+| T06 | 实现与自动验收完成 | SQL 事件、鉴权 SSE、断线续接、旧流鉴权；真实 Compose 故障与游标回放 1 passed / 140.85s，详见 T06 记录 |
+| T07 | 待开发 | 下一步接任务工作台、补问与产物 UI；在 M1 可演示验收前补真实模型 smoke |
 | T08–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
 
 T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
@@ -358,13 +359,13 @@ def test_draft_replay_returns_same_artifact(draft_tool):
 ### T06：鉴权 SSE、事件持久化与恢复协议
 
 **文件：** 修改 backend/routes/agent_runs.py、backend/services/agent_runs.py、backend/agent_runtime/runner.py、backend/routes/tasks.py、backend/services/progress.py；新增 backend/agent_runtime/events.py、backend/services/run_events.py、backend/tests/test_run_events.py、frontend/src/services/agentStream.ts、frontend/src/services/agentStream.spec.ts。
-**接口：** `append_event(run_id, type, payload) -> seq`、`read_events(user_id, run_id, after, limit)`；前端 `subscribeRun({runId, after, onEvent, signal})`。
+**接口：** `append_event(db, run_id, type, payload) -> AgentRunEvent`（不提交）、`read_page(db, user_id, run_id, after)`（每批最多 100 条）；前端 `subscribeRun({runId, after, onEvent, signal})`。
 
-- [ ] Run 事件提交数据库；接通 T03–T05 的创建、领取、等待输入、动作回答、取消、自动重试、失联恢复和终态路径，状态变化与状态事件同事务，避免终态无终态事件。测试事务回滚不会只留下状态或事件，重试/恢复不重复记录同一次转换。
-- [ ] 新流采用 fetch + Authorization，解析跨网络分片、多行 data、空注释、id；不要把 Token 放 URL。
-- [ ] 心跳 15 秒；断线以 1/2/4/8/15 秒退避重连；401 停止并引导登录，404 停止，429 遵循 Retry-After。
-- [ ] 客户端按 seq 去重；刷新先取快照，仍从已有游标消费事件；游标超出保留窗口时服务器返回可识别的重置响应，客户端重取快照。
-- [ ] 旧任务流增加用户归属映射和认证，不留下原来的匿名流旁路。尚未迁移的旧任务通过实际创建者映射授权。
+- [x] Run 事件提交数据库；接通 T03–T05 的创建、领取、等待输入、动作回答、取消、自动重试、失联恢复和终态路径，状态变化与状态事件同事务，避免终态无终态事件。测试事务回滚不会只留下状态或事件，重试/恢复不重复记录同一次转换。
+- [x] 新流采用 fetch + Authorization，解析跨网络分片、多行 data、空注释、id；不要把 Token 放 URL。
+- [x] 心跳 15 秒；断线以 1/2/4/8/15 秒退避重连；401 停止并向调用者传递登录错误（T07 接入提示），404 停止，429 遵循 Retry-After。
+- [x] 客户端按 seq 去重；刷新先取快照，仍从已有游标消费事件；游标超出保留窗口时服务器返回可识别的重置响应，客户端重取快照。
+- [x] 旧任务流增加用户归属映射和认证，不留下原来的匿名流旁路。尚未迁移的旧任务通过实际创建者映射授权。
 
 ```ts
 it('keeps one copy after reconnect', () => {
@@ -376,6 +377,8 @@ it('keeps one copy after reconnect', () => {
 
 实现测试应调用真实 parser/store 方法，上述仅表达序号去重预期，不把这个 Map 片段单独当成产品测试。
 **验证：** `uv run pytest backend/tests/test_run_events.py -q` 与 `npm --prefix frontend run test:unit -- src/services/agentStream.spec.ts`；检测越权订阅、分片丢事件与重复展示，失败分别修正授权、解析和游标协议。
+
+执行记录：[T06 事件、重连与审查回归](../../learning/test-records/2026-10-29-t06.md)。本次实测调整：快照的状态/动作/游标用一次 SQL 读取；每次重连刷新历史终态的判定边界；新旧 SSE 授权后立即释放认证会话。旧页面改为 202 受理后订阅，避免先订阅未注册任务得到 404。旧进度仍是单 API 进程内存来源，T14 才完成其长任务迁移；T06 不宣称整个 UI 或真实模型内容质量完成。
 
 ### T07：任务工作台、补问与人工审阅
 
@@ -689,7 +692,7 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 ## 11. 开始执行的顺序
 
-T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。下一步按 T06 → T07 推进持久事件、鉴权 SSE 和任务 UI；在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
+T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。T06 持久事件、鉴权 SSE、断线续接及联合崩溃回放已经通过。下一步按 T07 推进任务 UI；在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
 
 T12/T13/T14 按上下文、评测与故障恢复依赖推进。M4 完成 T15，并依次完成 T20、T16、T21，再进入包含实时链路的 T17–T19。M1 验收通过前，不启动批量抓取、复杂编辑器或额外 Agent 角色；原有产品范围与 21 个任务 ID 保持不变。
 
