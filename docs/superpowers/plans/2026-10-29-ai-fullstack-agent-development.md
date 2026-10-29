@@ -272,10 +272,10 @@ def test_duplicate_operation_is_rejected(db, operation_factory):
 **文件：** 新增 backend/services/agent_runs.py、backend/routes/agent_runs.py、backend/tests/test_agent_run_routes.py；修改 backend/routes/api.py。
 **接口：** `create_run(user_id, request) -> AgentRun`、`get_run(user_id, run_id) -> AgentRun`、`cancel_run(user_id, run_id) -> AgentRun`、`retry_run(user_id, run_id) -> AgentRun`。
 
-- [ ] 实现第 4 节 Run API、requestId 去重和一个 Session 单活动 Run 约束。
-- [ ] 所有入口从认证上下文获取 user_id；body 中同名字段不得成为授权依据。
-- [ ] 接受任务返回 202，失败返回稳定错误码；取消/重试执行状态转移，不直接删除运行记录。
-- [ ] 写双用户访问和重复请求测试，确认取消终态、重试非失败任务的行为。
+- [x] 实现第 4 节 Run API、requestId 去重和一个 Session 单活动 Run 约束。
+- [x] 所有入口从认证上下文获取 user_id；body 中同名字段不得成为授权依据。
+- [x] 接受任务返回 202，失败返回稳定错误码；取消/重试执行状态转移，不直接删除运行记录。
+- [x] 写双用户访问和重复请求测试，确认取消终态、重试非失败任务的行为。
 
 ```python
 def test_other_user_cannot_read_run(client, alice_run, bob_headers):
@@ -283,6 +283,8 @@ def test_other_user_cannot_read_run(client, alice_run, bob_headers):
 ```
 
 **验证：** `uv run pytest backend/tests/test_agent_run_routes.py -q`；失败会导致越权或重复任务，修复后才开放 UI。
+
+执行记录：[T03 API 与并发实测](../../learning/test-records/2026-10-29-t03.md)。本单元含动作回答；持久 SSE 仍按 T06 开发。
 
 ### T04：独立 worker、领取与重投递
 

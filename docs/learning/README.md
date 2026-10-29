@@ -8,7 +8,8 @@
 | --- | --- | --- |
 | M0 / T01 | 可复现环境、测试分层、工具调用、SQLite checkpoint、暂停恢复 | 完成；后端 220、组件 2、浏览器 1 项通过 |
 | M0 / T02 | SQL 数据建模、唯一约束、状态契约、增量升级 | 完成；SQLite/MySQL 与全后端 244 项通过 |
-| M1 / T03–T07 | 业务 API、鉴权、独立 worker、Agent 工具、持久 SSE、任务 UI | 待开发 |
+| M1 / T03 | Run API、鉴权、事务、幂等、取消与补问 | 完成；全后端 275 passed / 1 skipped |
+| M1 / T04–T07 | 独立 worker、Agent 工具、持久 SSE、任务 UI | 待开发；T04 等待集成环境选择 |
 | M2 / T08–T11 | 岗位、事实版本、修改审阅、PDF、投递快照 | 待开发 |
 | M3 / T12–T14 | 上下文、记忆、观测、恢复、AI 评测 | 待开发 |
 | M4 / T15–T16、T20–T21 | 扩展收藏、多轮面试、Redis、WebSocket | 待开发 |
@@ -18,6 +19,8 @@
 
 - [第一课：开发基线与 Agent 恢复契约](01-development-baseline.md)
 - [第二课：业务数据契约](02-data-contracts.md)
+- [第三课：任务 API 与事务](03-run-api.md)
+- [T03 测试记录](test-records/2026-10-29-t03.md)
 - [T02 测试记录](test-records/2026-10-29-t02.md)
 - [T01 测试记录](test-records/2026-10-29-t01.md)
 - [开发命令与协作约定](../development.md)

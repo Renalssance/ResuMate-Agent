@@ -280,6 +280,8 @@ data/documents/         上传的原始文档
 
 ## 开发与验证
 
+AI 全栈与 Agent 教学开发见 [学习导航](docs/learning/README.md)，安装与测试命令见 [开发指南](docs/development.md)。每单元的设计理由、源码入口、测试实测与未验证边界都保存在文档中。
+
 后端测试：
 
 ```bash

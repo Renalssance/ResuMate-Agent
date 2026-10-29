@@ -111,3 +111,25 @@ RunEvent = Annotated[
     Field(discriminator='type'),
 ]
 RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
+
+
+class RunCreate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
+    session_id: str | None = Field(default=None, alias='sessionId', min_length=1, max_length=36)
+    kind: Literal['tailoring']
+    jd_id: int = Field(alias='jdId', gt=0)
+    resume_id: int = Field(alias='resumeId', gt=0)
+    request_id: str = Field(alias='requestId', min_length=1, max_length=100)
+
+
+class RunAccepted(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    run_id: str = Field(alias='runId')
+    status: RunStatus
+
+
+class ActionResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+    decision: Literal['submit', 'approve', 'reject']
+    answers: dict[str, str] = Field(default_factory=dict)
+    expected_revision: int = Field(alias='expectedRevision', ge=1)
