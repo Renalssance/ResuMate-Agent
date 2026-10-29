@@ -93,6 +93,9 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
     if existing is not None:
         return existing
     versions = _input_versions(db, user_id, request.jd_id, request.resume_id)
+    from backend.services.profile_facts import latest_facts
+    versions['facts'] = [{'factId': fact.id, 'revision': fact.revision} for fact in latest_facts(
+        db, user_id, source_document_id=request.resume_id, confirmed_only=True)]
     if request.session_id:
         session = db.scalar(select(AgentSession).where(AgentSession.id == request.session_id, AgentSession.user_id == user_id))
         if session is None:
@@ -158,7 +161,7 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         versions = _input_versions(db, user_id, run.input_json['jdId'], run.input_json['resumeId'])
     except RunError as error:
         raise RunError(409, 'input_changed', '原资料已删除，请创建新任务') from error
-    if versions != run.input_versions:
+    if any(run.input_versions.get(key) != value for key, value in versions.items()):
         raise RunError(409, 'input_changed', '资料已变化，请创建新任务')
     _claim_session(db, user_id, run.session_id, run.id)
     run.status = RunStatus.QUEUED

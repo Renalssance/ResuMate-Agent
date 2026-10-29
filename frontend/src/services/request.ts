@@ -14,7 +14,9 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    const message = error.response?.data?.detail || error.message || '请求失败'
-    return Promise.reject(new Error(message))
+    const data = error.response?.data
+    const detail = data?.detail
+    const message = (Array.isArray(detail) ? detail.map(item => item.msg).filter(Boolean).join('；') : detail) || data?.message || error.message || '请求失败'
+    return Promise.reject(Object.assign(new Error(message), { status: error.response?.status }))
   },
 )

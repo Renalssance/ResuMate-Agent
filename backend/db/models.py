@@ -204,6 +204,9 @@ class JobDescription(Base):
     __tablename__ = "job_descriptions"
     __table_args__ = (UniqueConstraint("user_id", "source_site", "source_job_id", name="uq_job_source"),)
 
+    primary_resume_id: Mapped[int | None] = mapped_column(
+        ForeignKey("resumes.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     source_url: Mapped[str | None] = mapped_column(String(1024))
     source_site: Mapped[str | None] = mapped_column(String(100))
     source_job_id: Mapped[str | None] = mapped_column(String(255))

@@ -58,7 +58,7 @@ def _record(document_type: str, row) -> DocumentParseResult:
         parsed_content=row.structured_data or {},
         parse_status=row.parse_status,
         created_at=_utc_isoformat(row.created_at),
-        vectorized=succeeded,
+        vectorized=succeeded and (document_type == "resume" or bool(row.file_path)),
         local_stored=bool(row.file_path),
     )
 
@@ -314,6 +314,38 @@ def _parse_saved_upload(stored, document_type: DocumentType, task_id: str, curre
     return DocumentParseResponse(documents=[result], task_id=task_id)
 
 
+def parse_saved_job_text(job_id: int, task_id: str, current_user: User, db: Session):
+    """Parse a saved posting directly; pasted jobs have no original file."""
+    row = db.query(JobDescription).filter_by(id=job_id, user_id=current_user.id).first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="job not found")
+    document_id = f"jd:{row.id}"
+    try:
+        row.parse_status = "running"
+        db.commit()
+        progress_hub.publish(task_id, stage="llm_analyze", status="running", progress=45,
+                             document_id=document_id, filename=row.filename or row.title,
+                             message="Structuring saved job text with LLM")
+        row.structured_data = _parse_profile("jd", row.filename or row.title, row.raw_text, [], task_id, current_user.id)
+        row.parse_status = "success"
+        row.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(row)
+        # Matching retrieves resume evidence, so JD text needs no embedding call.
+        result = _record("jd", row).model_copy(update={"vectorized": False})
+        progress_hub.publish(task_id, stage="completed", status="success", progress=100,
+                             document_id=document_id, filename=result.filename,
+                             message="Saved job parsing completed", data={"document": result.model_dump(mode="json")})
+        return result
+    except Exception as exc:
+        db.rollback()
+        row.parse_status = "failed"
+        db.commit()
+        progress_hub.publish(task_id, stage="failed", status="failed", progress=100,
+                             document_id=document_id, filename=row.filename or row.title, message=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("", response_model=list[DocumentParseResult])
 async def list_documents(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     rows = [_record("jd", row) for row in db.query(JobDescription).filter(JobDescription.user_id == current_user.id).all()]
@@ -362,6 +394,8 @@ def reparse_document(
             background_tasks, task_id, current_user.id, reparse_document,
             document_id=document_id, task_id=task_id,
         )
+    if kind == "jd" and not row.file_path:
+        return parse_saved_job_text(row.id, task_id, current_user, db)
     try:
         pages = extract_stored_pages(
             row.file_path,
@@ -460,6 +494,21 @@ async def delete_document(document_id: str, current_user: User = Depends(get_cur
     kind, row = _find_document(db, current_user.id, document_id)
     get_rag_store().delete_document(user_id=current_user.id, document_type=kind, document_id=row.id)
     delete_stored_file(row.file_path)
+    if kind == "resume":
+        from uuid import uuid4
+        from backend.db.career_models import ProfileFact
+        from backend.db.models import utcnow
+        from backend.services.profile_facts import latest_statement
+
+        # SET NULL preserves history, but must not turn source-specific facts into global facts.
+        facts = db.scalars(latest_statement(current_user.id).where(
+            ProfileFact.source_document_id == row.id, ProfileFact.deleted_at.is_(None)))
+        for fact in facts:
+            db.add(ProfileFact(id=str(uuid4()), user_id=current_user.id, fact_key=fact.fact_key,
+                               kind=fact.kind, content=fact.content, source_document_id=row.id,
+                               revision=fact.revision + 1, deleted_at=utcnow()))
+        # Persist the tombstones before the FK source disappears, in the same transaction.
+        db.flush()
     db.delete(row)
     db.commit()
     return {"id": document_id}

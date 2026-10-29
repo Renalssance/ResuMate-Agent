@@ -23,6 +23,8 @@ from backend.routes.autofill import router as autofill_router
 from backend.routes.applications import router as applications_router
 from backend.routes.settings import router as settings_router
 from backend.routes.agent_runs import router as agent_runs_router
+from backend.routes.profile_facts import router as profile_facts_router
+from backend.routes.jobs import router as jobs_router
 
 router = APIRouter()
 
@@ -80,3 +82,7 @@ router.include_router(applications_router)
 router.include_router(settings_router)
 
 router.include_router(agent_runs_router)
+
+router.include_router(profile_facts_router)
+
+router.include_router(jobs_router)

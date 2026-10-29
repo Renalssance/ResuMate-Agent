@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartNoAxesCombined, CircleHelp, ClipboardList, Cat, Files, LogOut, Menu, Puzzle, ScanSearch, Settings, X } from '@lucide/vue'
+import { ChartNoAxesCombined, CircleHelp, ClipboardList, Cat, BriefcaseBusiness, Files, LogOut, Menu, Puzzle, ScanSearch, Settings, X } from '@lucide/vue'
 import { AestheticFluidBg } from 'color4bg'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -117,6 +117,7 @@ function syncFluidPreferences() {
 }
 
 const navItems = [
+  { path: '/jobs', label: '岗位中心', icon: BriefcaseBusiness },
   { path: '/documents', label: '文档管理', icon: Files },
   { path: '/matching', label: '岗位匹配', icon: ScanSearch },
   { path: '/agent/tasks', label: '材料准备', icon: ClipboardList },

@@ -80,7 +80,7 @@ def main():
     import httpx
     import redis
     from backend.db.database import init_db, SessionLocal
-    from backend.db.models import User, Resume, JobDescription
+    from backend.db.models import User, Resume, JobDescription, UserLlmSettings
     from backend.auth.security import get_password_hash
 
     init_db()
@@ -89,10 +89,17 @@ def main():
         db.flush()
         db.add_all([
             Resume(id=1, user_id=1, filename='E2E 主简历.txt', parse_status='success',
-                   raw_text='在示例项目中负责 API 和数据库设计。', structured_data={'summary': 'API development'}),
+                   raw_text='在示例项目中负责 API 和数据库设计。', structured_data={
+                       'candidate_name': '示例求职者', 'summary': 'API development',
+                       'work_experience': [{'company': '示例团队', 'title': 'API 开发',
+                                            'description': '负责 API 和数据库设计。',
+                                            'source_refs': [{'page_number': 1, 'section': '工作经历',
+                                                             'text': '负责 API 和数据库设计。', 'chunk_id': 'e2e-resume-1'}]}]}),
             JobDescription(id=1, user_id=1, title='E2E API 工程师', company='示例团队',
                            parse_status='success', raw_text='负责 API 和数据库设计。', structured_data={'title': 'API 工程师'}),
         ])
+        db.add(UserLlmSettings(user_id=1, api_key='synthetic-browser-model-key',
+                               base_url='https://model-fixture.invalid/v1', model='browser-deterministic'))
         db.commit()
     image = os.environ.get('RESUMATE_E2E_REDIS_IMAGE', 'public.ecr.aws/docker/library/redis:7.4-alpine')
     container_id = subprocess.check_output([
@@ -106,7 +113,7 @@ def main():
         except redis.ConnectionError:
             return False
     wait_for(redis_ready, 'disposable Redis')
-    start([PYTHON, '-m', 'uvicorn', 'backend.app:app', '--host', '127.0.0.1', '--port', '4174'], env, 'api')
+    start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', '127.0.0.1', '--port', '4174'], env, 'api')
     # Solo avoids macOS fork restrictions while exercising the actual Celery delivery/task.
     start([PYTHON, '-m', 'celery', '-A', 'backend.tests.e2e_worker_fixture:app', 'worker',
            '--pool=solo', '--concurrency=1', '--loglevel=WARNING', '--without-gossip', '--without-mingle'], env, 'worker')

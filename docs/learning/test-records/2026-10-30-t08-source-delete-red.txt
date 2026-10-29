@@ -1,0 +1,206 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_deleting_source_resume_tombstones_facts_before_they_can_become_global[sqlite] _
+
+run_client = <starlette.testclient.TestClient object at 0x110d05730>
+career_db = <sqlalchemy.orm.session.Session object at 0x1109c5460>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1118bc9e0>
+
+    def test_deleting_source_resume_tombstones_facts_before_they_can_become_global(run_client, career_db, monkeypatch):
+        from types import SimpleNamespace
+        from backend.routes import documents
+        # Document deletion also removes external RAG chunks; keep this test on the real SQL transaction.
+        monkeypatch.setattr(documents, 'get_rag_store', lambda: SimpleNamespace(delete_document=lambda **kwargs: None))
+        career_db.add(Resume(id=2, user_id=1, filename='resume-b.txt'))
+        career_db.commit()
+        source_v1 = create_fact(run_client, sourceDocumentId=1, confirmed=True)
+        source_v2 = revise(run_client, source_v1, confirmed=True).json()
+        unconfirmed = create_fact(run_client, sourceDocumentId=1)
+        already_deleted = create_fact(run_client, sourceDocumentId=1, confirmed=True)
+        assert run_client.delete(URL + '/' + already_deleted['id'] + '?expectedRevision=1', headers=headers()).status_code == 200
+        global_fact = create_fact(run_client, confirmed=True)
+        other_resume = create_fact(run_client, sourceDocumentId=2, confirmed=True)
+    
+        response = run_client.delete('/api/documents/resume:1', headers=headers())
+        assert response.status_code == 200
+        career_db.rollback()
+        newer = agent_runs.create_run(career_db, 1, RunCreate(
+            kind='tailoring', jd_id=1, resume_id=2, request_id='after-source-delete'))
+>       assert {ref['factId'] for ref in newer.input_versions['facts']} == {global_fact['id'], other_resume['id']}
+E       AssertionError: assert {'089c3165-5c...24da896f3ae4'} == {'089c3165-5c...87c57fbcffa5'}
+E         
+E         Extra items in the left set:
+E         'd02fe3f7-1409-4f28-9202-24da896f3ae4'
+E         Use -v to get more diff
+
+backend/tests/test_profile_facts.py:188: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:16:14,975 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:14,979 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=3
+2026-10-30 00:16:14,979 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,980 | INFO | backend.app | Request start | method=PATCH path=/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 client=testclient
+2026-10-30 00:16:14,982 | INFO | backend.app | Request end | method=PATCH path=/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 status=200 duration_ms=2
+2026-10-30 00:16:14,983 | INFO | httpx | HTTP Request: PATCH http://testserver/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,983 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:14,985 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:14,985 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,985 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:14,987 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:14,987 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,987 | INFO | backend.app | Request start | method=DELETE path=/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58 client=testclient
+2026-10-30 00:16:14,989 | INFO | backend.app | Request end | method=DELETE path=/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58 status=200 duration_ms=1
+2026-10-30 00:16:14,989 | INFO | httpx | HTTP Request: DELETE http://testserver/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58?expectedRevision=1 "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,989 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:14,991 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:14,991 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,991 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:14,993 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:14,993 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:14,994 | INFO | backend.app | Request start | method=DELETE path=/api/documents/resume:1 client=testclient
+2026-10-30 00:16:15,034 | INFO | backend.app | Request end | method=DELETE path=/api/documents/resume:1 status=200 duration_ms=40
+2026-10-30 00:16:15,035 | INFO | httpx | HTTP Request: DELETE http://testserver/api/documents/resume:1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/profile-facts/2a8a5eec-82fc-495c-a1b2-255cbcbe4b17 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58 status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/profile-facts/b437c2f1-0df3-4755-bacb-740ea5502a58?expectedRevision=1 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/documents/resume:1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/documents/resume:1 status=200 duration_ms=40
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/documents/resume:1 "HTTP/1.1 200 OK"
+_ test_deleting_source_resume_tombstones_facts_before_they_can_become_global[mysql] _
+
+run_client = <starlette.testclient.TestClient object at 0x1145bf920>
+career_db = <sqlalchemy.orm.session.Session object at 0x111912ba0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11460fbf0>
+
+    def test_deleting_source_resume_tombstones_facts_before_they_can_become_global(run_client, career_db, monkeypatch):
+        from types import SimpleNamespace
+        from backend.routes import documents
+        # Document deletion also removes external RAG chunks; keep this test on the real SQL transaction.
+        monkeypatch.setattr(documents, 'get_rag_store', lambda: SimpleNamespace(delete_document=lambda **kwargs: None))
+        career_db.add(Resume(id=2, user_id=1, filename='resume-b.txt'))
+        career_db.commit()
+        source_v1 = create_fact(run_client, sourceDocumentId=1, confirmed=True)
+        source_v2 = revise(run_client, source_v1, confirmed=True).json()
+        unconfirmed = create_fact(run_client, sourceDocumentId=1)
+        already_deleted = create_fact(run_client, sourceDocumentId=1, confirmed=True)
+        assert run_client.delete(URL + '/' + already_deleted['id'] + '?expectedRevision=1', headers=headers()).status_code == 200
+        global_fact = create_fact(run_client, confirmed=True)
+        other_resume = create_fact(run_client, sourceDocumentId=2, confirmed=True)
+    
+        response = run_client.delete('/api/documents/resume:1', headers=headers())
+        assert response.status_code == 200
+        career_db.rollback()
+        newer = agent_runs.create_run(career_db, 1, RunCreate(
+            kind='tailoring', jd_id=1, resume_id=2, request_id='after-source-delete'))
+>       assert {ref['factId'] for ref in newer.input_versions['facts']} == {global_fact['id'], other_resume['id']}
+E       AssertionError: assert {'833b5904-13...306866aecc75'} == {'9e0e671f-86...306866aecc75'}
+E         
+E         Extra items in the left set:
+E         '833b5904-1345-4940-8344-4c1054cda6d3'
+E         Use -v to get more diff
+
+backend/tests/test_profile_facts.py:188: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:16:15,317 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:15,321 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=3
+2026-10-30 00:16:15,321 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,322 | INFO | backend.app | Request start | method=PATCH path=/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 client=testclient
+2026-10-30 00:16:15,324 | INFO | backend.app | Request end | method=PATCH path=/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 status=200 duration_ms=2
+2026-10-30 00:16:15,324 | INFO | httpx | HTTP Request: PATCH http://testserver/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,325 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:15,326 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:15,327 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,327 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:15,329 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+2026-10-30 00:16:15,329 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,330 | INFO | backend.app | Request start | method=DELETE path=/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3 client=testclient
+2026-10-30 00:16:15,331 | INFO | backend.app | Request end | method=DELETE path=/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3 status=200 duration_ms=1
+2026-10-30 00:16:15,332 | INFO | httpx | HTTP Request: DELETE http://testserver/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3?expectedRevision=1 "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,332 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:15,334 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=2
+2026-10-30 00:16:15,335 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,335 | INFO | backend.app | Request start | method=POST path=/api/profile-facts client=testclient
+2026-10-30 00:16:15,337 | INFO | backend.app | Request end | method=POST path=/api/profile-facts status=200 duration_ms=2
+2026-10-30 00:16:15,338 | INFO | httpx | HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+2026-10-30 00:16:15,338 | INFO | backend.app | Request start | method=DELETE path=/api/documents/resume:1 client=testclient
+2026-10-30 00:16:15,342 | INFO | backend.app | Request end | method=DELETE path=/api/documents/resume:1 status=200 duration_ms=3
+2026-10-30 00:16:15,342 | INFO | httpx | HTTP Request: DELETE http://testserver/api/documents/resume:1 "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=PATCH path=/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 client=testclient
+INFO     backend.app:app.py:76 Request end | method=PATCH path=/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: PATCH http://testserver/api/profile-facts/69dd5729-98e2-4996-b230-d028fe1d8856 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3 status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/profile-facts/2a494c61-73da-4f9e-a34c-1ac30348e0e3?expectedRevision=1 "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=POST path=/api/profile-facts client=testclient
+INFO     backend.app:app.py:76 Request end | method=POST path=/api/profile-facts status=200 duration_ms=2
+INFO     httpx:_client.py:1025 HTTP Request: POST http://testserver/api/profile-facts "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=DELETE path=/api/documents/resume:1 client=testclient
+INFO     backend.app:app.py:76 Request end | method=DELETE path=/api/documents/resume:1 status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: DELETE http://testserver/api/documents/resume:1 "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_profile_facts.py::test_deleting_source_resume_tombstones_facts_before_they_can_become_global[sqlite]
+FAILED backend/tests/test_profile_facts.py::test_deleting_source_resume_tombstones_facts_before_they_can_become_global[mysql]
+2 failed, 24 deselected, 7 warnings in 1.38s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

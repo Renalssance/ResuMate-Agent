@@ -1,4 +1,5 @@
 import type { AxiosProgressEvent } from 'axios'
+import { readAccessToken } from '../services/authToken'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
@@ -27,23 +28,29 @@ export const useDocumentStore = defineStore('document', () => {
   const parsedResumes = computed(() => documents.value.filter((doc) => doc.type === 'resume' && isDocumentParseSuccess(doc.parseStatus)))
 
   async function loadDocuments() {
+    const token = readAccessToken()
     listLoading.value = true
     try {
-      documents.value = (await fetchDocumentsApi()).map(toDocumentRecord)
+      const loaded = (await fetchDocumentsApi()).map(toDocumentRecord)
+      if (token !== readAccessToken()) return
+      documents.value = loaded
       error.value = ''
     } catch (err) {
-      error.value = err instanceof Error ? err.message : String(err)
+      if (token === readAccessToken()) error.value = err instanceof Error ? err.message : String(err)
     } finally {
-      listLoading.value = false
+      if (token === readAccessToken()) listLoading.value = false
     }
   }
 
   async function refreshDocumentsSilently() {
+    const token = readAccessToken()
     try {
-      upsertDocuments((await fetchDocumentsApi()).map(toDocumentRecord))
+      const loaded = (await fetchDocumentsApi()).map(toDocumentRecord)
+      if (token !== readAccessToken()) return
+      upsertDocuments(loaded)
       error.value = ''
     } catch (err) {
-      error.value = err instanceof Error ? err.message : String(err)
+      if (token === readAccessToken()) error.value = err instanceof Error ? err.message : String(err)
     }
   }
 
@@ -123,6 +130,7 @@ export const useDocumentStore = defineStore('document', () => {
   }
 
   function clearDocuments() {
+    listLoading.value = false
     documents.value = []
     error.value = ''
   }

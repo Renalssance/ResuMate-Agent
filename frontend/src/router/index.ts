@@ -9,6 +9,7 @@ import SettingsView from '../views/SettingsView.vue'
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
 import AgentTaskView from '../views/AgentTaskView.vue'
+import JobsView from '../views/JobsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,6 +29,7 @@ const router = createRouter({
       component: DocumentsView,
       meta: { title: '文档管理', description: '上传、解析、查看和删除 JD 与简历' },
     },
+    { path: '/jobs', name: 'jobs', component: JobsView, meta: { title: '岗位中心', description: '收藏岗位原文、关联简历并准备投递材料' } },
     { path: '/agent/tasks/:runId?', name: 'agent-tasks', component: AgentTaskView, meta: { title: '材料准备', description: '准备、补充并核对你的投递材料' } },
     {
       path: '/matching',

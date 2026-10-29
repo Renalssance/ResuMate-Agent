@@ -227,10 +227,12 @@ def ensure_sqlite_schema(engine: Engine) -> None:
             for name, ddl in {
                 "source_url": "VARCHAR(1024)", "source_site": "VARCHAR(100)",
                 "source_job_id": "VARCHAR(255)", "captured_at": "DATETIME",
+                "primary_resume_id": "INTEGER REFERENCES resumes(id) ON DELETE SET NULL",
                 "status": "VARCHAR(40) NOT NULL DEFAULT 'saved'",
             }.items():
                 if name not in jd_columns:
                     connection.execute(text(f"ALTER TABLE job_descriptions ADD COLUMN {name} {ddl}"))
+            connection.execute(text("CREATE INDEX IF NOT EXISTS ix_job_descriptions_primary_resume_id ON job_descriptions (primary_resume_id)"))
             if "user_id" in jd_columns:
                 connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_job_source ON job_descriptions (user_id,source_site,source_job_id)"))
         if application_columns:

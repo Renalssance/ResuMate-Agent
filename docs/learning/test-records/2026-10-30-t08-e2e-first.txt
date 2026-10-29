@@ -1,0 +1,112 @@
+
+> test:e2e
+> playwright test jobs.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-AM1TiJ
+
+Running 3 tests using 1 worker
+
+(node:89155) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/jobs.spec.ts:21:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 (16.7s)
+(node:89296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/jobs.spec.ts:62:1 › 用户确认经历后编辑保留历史，删除后可追溯 (45.1s)
+(node:89460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › tests/e2e/jobs.spec.ts:97:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 (45.1s)
+
+
+  1) [chromium] › tests/e2e/jobs.spec.ts:21:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 ──────────────────────
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByLabel('目标 JD', { exact: true })
+    Expected: "jd:2"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('目标 JD', { exact: true }) with timeout 15000ms
+      - waiting for getByLabel('目标 JD', { exact: true })
+
+
+      43 |   await detail.getByRole('link', { name: '去匹配', exact: true }).click()
+      44 |   await expect(page).toHaveURL(/\/matching\?/)
+    > 45 |   await expect(page.getByLabel('目标 JD', { exact: true })).toHaveValue(`jd:${job.id}`)
+         |                                                           ^
+      46 |   await expect(page.getByLabel('候选人简历', { exact: true })).toHaveValues(['resume:1'])
+      47 |   await page.goto('/jobs')
+      48 |   await page.locator(`[data-job-id="${job.id}"]`).click()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/jobs.spec.ts:45:59
+
+    Error Context: test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/e2e/jobs.spec.ts:62:1 › 用户确认经历后编辑保留历史，删除后可追溯 ───────────────────────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByLabel('选择简历', { exact: true })
+
+
+      62 | test('用户确认经历后编辑保留历史，删除后可追溯', async ({ page, api }) => {
+      63 |   await page.goto('/profile-fields')
+    > 64 |   await page.getByLabel('选择简历', { exact: true }).selectOption('resume:1')
+         |                                                  ^
+      65 |   const facts = page.getByRole('region', { name: '确认事实', exact: true })
+      66 |   await expect(facts).toBeVisible()
+      67 |   await facts.getByLabel('事实类型', { exact: true }).selectOption('experience')
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/jobs.spec.ts:64:50
+
+    Error Context: test-results/jobs-用户确认经历后编辑保留历史，删除后可追溯-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/jobs-用户确认经历后编辑保留历史，删除后可追溯-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/jobs-用户确认经历后编辑保留历史，删除后可追溯-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests/e2e/jobs.spec.ts:97:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 ────────────────────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.click: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for locator('[data-job-id="3"]')
+
+
+       99 |   const { job } = await created.json()
+      100 |   await page.goto('/jobs')
+    > 101 |   await page.locator(`[data-job-id="${job.id}"]`).click()
+          |                                                   ^
+      102 |   const detail = page.getByRole('region', { name: '岗位详情', exact: true })
+      103 |   await detail.getByRole('button', { name: '解析岗位', exact: true }).click()
+      104 |   await expect(detail.getByRole('button', { name: '重试解析', exact: true })).toBeVisible()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/jobs.spec.ts:101:51
+
+    Error Context: test-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [chromium] › tests/e2e/jobs.spec.ts:21:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 ───────────────────────
+    [chromium] › tests/e2e/jobs.spec.ts:62:1 › 用户确认经历后编辑保留历史，删除后可追溯 ────────────────────────────────
+    [chromium] › tests/e2e/jobs.spec.ts:97:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 ─────────────────────────────

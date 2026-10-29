@@ -63,6 +63,11 @@ function formatDate(value: string) { return new Date(value).toLocaleString('zh-C
 function updateAnswer(actionId: string, value: string) { store.drafts[actionId] = value; if (value.trim()) store.actionErrors[actionId] = '' }
 async function createTask() { if (!jdId.value || !resumeId.value) return; const runId = await store.createRun(jdId.value, resumeId.value); if (runId) await router.push(`/agent/tasks/${runId}`) }
 watch(() => auth.token, (token) => { jdId.value = ''; resumeId.value = ''; if (token) { void documents.loadDocuments(); void store.loadRuns() } }, { immediate: true })
+watch([() => route.query.jdId, () => route.query.resumeId, () => documents.parsedJds, () => documents.parsedResumes], () => {
+  const jd = String(route.query.jdId || ''), resume = String(route.query.resumeId || '')
+  if (jd) jdId.value = documents.parsedJds.find(doc => doc.id === jd || doc.id === `jd:${jd}`)?.id || ''
+  if (resume) resumeId.value = documents.parsedResumes.find(doc => doc.id === resume || doc.id === `resume:${resume}`)?.id || ''
+}, { immediate: true })
 watch([selectedRunId, () => auth.token], ([id, token]) => { store.openRun(token ? id : '') }, { immediate: true })
 let announcementTimer: ReturnType<typeof setTimeout> | undefined
 watch(() => store.snapshot?.status, (status) => { clearTimeout(announcementTimer); if (status) announcementTimer = setTimeout(() => { announcement.value = runStatusLabel[status] }, 600) })

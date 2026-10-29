@@ -152,7 +152,9 @@
 
 <script setup lang="ts">
 import { Eye, Trash2, X } from '@lucide/vue'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 import EmptyState from '../components/EmptyState.vue'
 import EvidenceList from '../components/EvidenceList.vue'
 import TaskProgress from '../components/TaskProgress.vue'
@@ -165,6 +167,7 @@ import { createId, formatResumeLabel } from '../utils/format'
 import { buildCriterionChartRows, buildMatchDetailGroups, clampScorePercent } from '../utils/matchChart'
 
 const documentStore = useDocumentStore()
+const route = useRoute(), auth = useAuthStore()
 const matchStore = useMatchStore()
 const task = useTaskSse(MATCH_STEPS)
 
@@ -181,10 +184,19 @@ const detailGroups = computed(() => (
   selectedResult.value ? buildMatchDetailGroups(selectedResult.value) : []
 ))
 
-onMounted(() => {
-  documentStore.loadDocuments()
-  matchStore.loadMatches()
-})
+watch(() => auth.token, () => {
+  selectedJdId.value = ''; selectedResumeIds.value = []; selectedResult.value = null
+  if (auth.token) { void documentStore.loadDocuments(); void matchStore.loadMatches() }
+}, { immediate: true })
+watch([() => route.query.jdId, () => route.query.resumeId, () => documentStore.parsedJds, () => documentStore.parsedResumes], () => {
+  const jd = String(route.query.jdId || ''), resume = String(route.query.resumeId || '')
+  if (jd) selectedJdId.value = documentStore.parsedJds.find(doc => doc.id === jd || doc.id === `jd:${jd}`)?.id || ''
+  if (resume) { const found = documentStore.parsedResumes.find(doc => doc.id === resume || doc.id === `resume:${resume}`); selectedResumeIds.value = found ? [found.id] : [] }
+}, { immediate: true })
+watch([() => route.query.matchId, () => matchStore.results], () => {
+  const id = String(route.query.matchId || '')
+  if (id) selectedResult.value = matchStore.results.find(result => result.id === id) || null
+}, { immediate: true })
 
 watch(task.status, async (status) => {
   if (status !== 'success') return

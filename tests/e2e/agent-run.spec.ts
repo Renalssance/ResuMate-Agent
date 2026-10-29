@@ -1,12 +1,8 @@
 import { test, expect, createRun, seededPausedRun, snapshot, waitForRun } from './support/fixtures'
-import { mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
 
 const question = '你负责什么工作？'
 const answer = '负责 API 和数据库设计。' + '与团队核对接口需求、维护数据结构，并以实际项目职责为依据整理待审阅材料。'.repeat(6)
-const screenshots = resolve('docs/learning/assets/t07')
-mkdirSync(screenshots, { recursive: true })
 async function capture(page: Page, name: string) {
   if (page.viewportSize()!.width < 1200) {
     await expect(page.getByRole('button', { name: '打开导航', exact: true })).toBeVisible()
@@ -18,7 +14,7 @@ async function capture(page: Page, name: string) {
   await page.evaluate(() => window.scrollTo(0, 0))
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width)
-  await page.screenshot({ path: resolve(screenshots, `${name}.png`), fullPage: page.viewportSize()!.width < 1200 || name.includes('completed'), animations: 'disabled' })
+  await page.screenshot({ path: test.info().outputPath(`${name}.png`), fullPage: page.viewportSize()!.width < 1200 || name.includes('completed'), animations: 'disabled' })
 }
 
 // Business responses come from FastAPI, SQL and a separate Celery worker. Routes

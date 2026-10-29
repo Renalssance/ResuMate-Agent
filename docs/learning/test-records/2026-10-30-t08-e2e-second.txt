@@ -1,0 +1,53 @@
+
+> test:e2e
+> playwright test jobs.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-0XfqaT
+
+Running 3 tests using 1 worker
+
+(node:90848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/jobs.spec.ts:25:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 (16.9s)
+(node:90920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › tests/e2e/jobs.spec.ts:66:1 › 用户确认经历后编辑保留历史，删除后可追溯 (1.2s)
+  ✓  3 [chromium] › tests/e2e/jobs.spec.ts:103:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 (619ms)
+
+
+  1) [chromium] › tests/e2e/jobs.spec.ts:25:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 ──────────────────────
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByLabel('目标岗位', { exact: true })
+    Expected: "jd:2"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" getByLabel('目标岗位', { exact: true }) with timeout 15000ms
+      - waiting for getByLabel('目标岗位', { exact: true })
+
+
+      52 |   await page.locator(`[data-job-id="${job.id}"]`).click()
+      53 |   await page.getByRole('region', { name: '岗位详情', exact: true }).getByRole('link', { name: '准备材料', exact: true }).click()
+    > 54 |   await expect(page.getByLabel('目标岗位', { exact: true })).toHaveValue(`jd:${job.id}`)
+         |                                                          ^
+      55 |   await expect(page.getByLabel('主简历', { exact: true })).toHaveValue('resume:1')
+      56 |   await page.getByRole('button', { name: '开始准备', exact: true }).click()
+      57 |   await expect(page).toHaveURL(/\/agent\/tasks\/[^/?]+$/)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/jobs.spec.ts:54:58
+
+    Error Context: test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/jobs-岗位收藏解析关联后进入材料准备并由独立-worker-完成-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/jobs.spec.ts:25:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 ───────────────────────
+  2 passed (25.0s)

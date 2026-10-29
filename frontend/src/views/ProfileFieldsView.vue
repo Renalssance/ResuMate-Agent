@@ -17,6 +17,8 @@
       </div>
     </section>
 
+    <ProfileFacts :resume-id="selectedResumeId" :parsed-content="selectedResume?.parsedContent" />
+
     <section v-if="store.listLoading && !parsedResumes.length" class="card loading-state" role="status">正在加载简历资料…</section>
     <section v-else-if="store.error && !selectedResume" class="card" role="alert">
       <div class="section-head"><h2>资料加载失败</h2><button class="button-secondary" type="button" :disabled="store.listLoading" @click="store.loadDocuments">重新加载</button></div>
@@ -223,6 +225,7 @@ import { Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import EmptyState from '../components/EmptyState.vue'
 import CopyFieldButton from '../components/CopyFieldButton.vue'
+import ProfileFacts from '../components/ProfileFacts.vue'
 import { emptyProfile, emptyEducation, emptyWork, emptyProject, emptyPaper, emptyAward, normalizeProfile } from '../utils/profileDraft'
 import { useDocumentStore } from '../stores/document'
 import { countFilledProfileFields, profileRequiredFields } from '../utils/profileFields'

@@ -23,7 +23,8 @@
 | T05 | 实现及确定性自动验收完成；真实模型 smoke 待执行 | 正常生成、补问恢复、工具失败、重复写入及审查回归通过；未调用付费模型，不能作为内容质量验收 |
 | T06 | 实现与自动验收完成 | SQL 事件、鉴权 SSE、断线续接、旧流鉴权；真实 Compose 故障与游标回放 1 passed / 140.85s，详见 T06 记录 |
 | T07 | 完成确定性验收 | 任务工作台、真实 API/worker 浏览器流程与桌面/手机截图通过；真实模型 smoke 仍待 M1 演示前补齐 |
-| T08–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
+| T08 | 完成确定性验收 | 岗位、事实版本与来源撤回；后端 442、前端 63、真实浏览器 11 项通过，7 张截图已实际查看 |
+| T09–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
 
 T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
 
@@ -410,13 +411,15 @@ demo-paused 由 E2E 测试后端准备真实持久化数据，禁止生产硬编
 **文件：** 新增 backend/services/jobs.py、backend/services/profile_facts.py、backend/routes/jobs.py、backend/tests/test_jobs.py、frontend/src/views/JobsView.vue、frontend/src/api/jobs.ts、tests/e2e/jobs.spec.ts；修改已有资料页。
 **接口：** `capture_job(user_id, source) -> JobDescription`、`list_facts(user_id, revision?)`、`update_fact(user_id, fact_id, expected_revision, content)`。
 
-- [ ] 使用现有 JobDescription 承载岗位，不另建内容相同的岗位实体。
-- [ ] 支持粘贴文本、来源 URL 记录、筛选、分页、关联主简历和历史匹配。
-- [ ] 求职偏好与经历以可编辑事实维护，确认、更新、删除可追溯；运行输入记录实际引用版本。
-- [ ] 列表组件使用稳定 key、可访问筛选表单和空/错/加载状态；仅在长列表测量证明需要时虚拟化。
-- [ ] 测试重复导入、跨用户引用、分页排序与修改后新任务读取新事实。
+- [x] 使用现有 JobDescription 承载岗位，不另建内容相同的岗位实体。
+- [x] 支持粘贴文本、来源 URL 记录、筛选、分页、关联主简历和历史匹配。
+- [x] 求职偏好与经历以可编辑事实维护，确认、更新、删除可追溯；运行输入记录实际引用版本。
+- [x] 列表组件使用稳定 key、可访问筛选表单和空/错/加载状态；仅在长列表测量证明需要时虚拟化。
+- [x] 测试重复导入、跨用户引用、分页排序与修改后新任务读取新事实。
 
 **验证：** `uv run pytest backend/tests/test_jobs.py -q` 与 `npm run test:e2e -- jobs.spec.ts`。验收：岗位成为连接分析、材料与投递的入口。
+
+执行记录：[T08 测试与截图](../../learning/test-records/2026-10-30-t08.md)。完整输入快照、字段级建议与语义评测边界保持 T09。
 
 ### T09：有证据依据的简历修改建议
 
