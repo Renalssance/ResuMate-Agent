@@ -11,6 +11,7 @@ from backend.db.database import get_db
 from backend.db.models import User
 from backend.schemas.agent_runs import ActionResponse, RunAccepted, RunCreate
 from backend.services import agent_runs
+from backend.services.run_delivery import publish_run
 
 
 class RunRoute(APIRoute):
@@ -41,6 +42,8 @@ router = APIRouter(prefix='/api/agent/runs', tags=['agent-runs'], route_class=Ru
 @router.post('', status_code=202, response_model=RunAccepted)
 def create(request: RunCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = agent_runs.create_run(db, user.id, request)
+    if run.status == "queued":
+        publish_run(run.id)
     return RunAccepted(run_id=run.id, status=run.status)
 
 
@@ -58,6 +61,8 @@ def cancel(run_id: str, user: User = Depends(get_current_user), db: Session = De
 @router.post('/{run_id}/retry', status_code=202, response_model=RunAccepted)
 def retry(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = agent_runs.retry_run(db, user.id, run_id)
+    if run.status == "queued":
+        publish_run(run.id)
     return RunAccepted(run_id=run.id, status=run.status)
 
 
@@ -65,4 +70,6 @@ def retry(run_id: str, user: User = Depends(get_current_user), db: Session = Dep
 def answer(run_id: str, action_id: str, response: ActionResponse,
            user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = agent_runs.answer_action(db, user.id, run_id, action_id, response)
+    if run.status == "queued":
+        publish_run(run.id)
     return RunAccepted(run_id=run.id, status=run.status)

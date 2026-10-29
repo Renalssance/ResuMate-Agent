@@ -44,3 +44,34 @@ Vitest 只收集 `src/**/*.spec.ts`；已有 `*.test.ts` / `*.test.mjs` 保留�
 ## 工作区说明
 
 本次开发使用独立工作区 `resumate-fullstack-learning/ResuMate-Agent`，从提交 `e993b27` 建立。原工作区已有的资料模板复制等未提交修改未带入；集成回原目录时需要保留并合并这些改动。测试日志会明确属于哪个工作区。
+
+## T04/T05：本地 API 与 worker
+
+Docker Desktop 已在本机安装。当前终端若找不到命令，macOS 可先执行：
+
+```sh
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+```
+
+本机 Compose 提供 API、一个 worker、一个调度器与 Redis，API 和 worker 共享 Docker 内的 `backend-data` 持久卷。它是独立数据环境，不会自动载入原开发目录的账号或简历。前端继续使用现有 Vite 开发方式；本镜像未包含前端打包页面、可选 OCR 或完整发布代理。
+
+准备自己的 `.env`（不提交），设置现有认证所需的 JWT_SECRET_KEY；可以用 `python -c 'import secrets; print(secrets.token_urlsafe(32))'` 生成。需要注册管理员时还需设置 ADMIN_INVITE_CODE。然后在仓库根目录运行：
+
+```sh
+docker compose --env-file .env -f deploy/compose.yaml up -d --build
+# 停止容器并保留业务数据库、checkpoint 和 Redis 持久卷：
+docker compose --env-file .env -f deploy/compose.yaml down
+```
+
+API 默认 `http://127.0.0.1:8000`，Redis 只发布到本机 6379。可通过 RESUMATE_API_PORT / RESUMATE_REDIS_PORT 避免端口冲突。不要对真实项目使用 `down -v`，它会删除命名数据卷。真实模型仍使用应用内个人模型设置，不把 API Key 放在队列中。
+
+**SQLite 运行边界：** API 与 worker 必须都在宿主机运行，或都在 Docker Linux 内访问同一卷。已实测 macOS 原生连接与 Docker worker 共享 SQLite WAL 会观察到旧数据；不要混用。跨主机/虚拟机数据访问使用 MySQL。当前 MySQL 行为测试来自临时 9.6.0 实例，不表示完整 MySQL Compose 部署或 MySQL 8.x 已验收。
+
+单元测试与独立故障实验分别执行：
+
+```sh
+uv run pytest backend/tests/test_worker_delivery.py backend/tests/test_agent_runtime.py backend/tests/test_tool_idempotency.py -q
+RESUMATE_COMPOSE_TEST=1 uv run pytest backend/tests/test_worker_compose.py -q -s
+```
+
+未提供 RESUMATE_TEST_MYSQL_SOCKET 时，MySQL 参数会显式跳过；应在记录中说明。Compose 测试自行创建随机项目、合成资料、测试模型和端口，完成后清理该测试的容器与卷。它会终止自己的 worker，不终止已有开发服务。常规后端套件默认跳过此项耗时故障实验；启用参数仅是测试入口，不是产品功能开关。

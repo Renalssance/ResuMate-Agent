@@ -10,6 +10,22 @@
 
 **Spec:** [已确认范围与设计边界](../specs/2026-10-29-ai-fullstack-agent-scope.md)。执行前先读该文件和仓库根目录 AGENTS.md。
 
+## 实测驱动修订（2026-10-29）
+
+本次依据 T01–T03 已提交成果、T04/T05 实现与故障实验调整依赖和验收，保留原有 21 个任务 ID 与产品范围。任务的基础测试、跨进程恢复、真实模型 smoke 和内容质量评测分别记录，不能互相替代；原工期为初始估计，不是当前剩余工期。
+
+| 任务 | 当前状态 | 已有证据与未完成边界 |
+|---|---|---|
+| T01 | 完成并提交 | 后端 220、组件 2、浏览器 1 项通过；依赖与 checkpoint 契约已验证 |
+| T02 | 完成并提交 | SQLite/MySQL 数据契约与全后端 244 项通过 |
+| T03 | 完成并提交 | Run API、权限、并发与动作回答；全后端 275 passed / 1 skipped |
+| T04 | 基础与联合恢复验收完成 | 31 项 T04/T05 单元通过；全后端 306 passed / 2 skipped；Compose 实验单独 1 passed / 139.91s，真实心跳、SQL 扫描与 SIGKILL 后重放成功，草稿仍为一份 |
+| T05 | 实现及确定性自动验收完成；真实模型 smoke 待执行 | 正常生成、补问恢复、工具失败、重复写入及审查回归通过；未调用付费模型，不能作为内容质量验收 |
+| T06/T07 | 待开发 | 下一步接持久事件、鉴权 SSE 和任务 UI；在 M1 可演示验收前补真实模型 smoke |
+| T08–T21 | 待开发 | 按下文依赖推进事实依据、审阅导出、评测、实时面试和交付，不将当前基础测试视为这些能力已完成 |
+
+T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
+
 ## Global Constraints
 
 - 保留 Vue 3 + TypeScript + Python/FastAPI；不新增 Java 服务作为本轮主线。
@@ -88,6 +104,8 @@ flowchart TB
 - Deep Agents：计划、工具调用、补问和上下文管理。显式禁用不需要的通用 shell 能力；文件工作区仅在本任务资源范围内。
 - SQL：业务事实、Run 状态、待处理动作和事件均在数据库；Redis 丢失不能使已接受任务永久消失。
 - checkpoint：worker 专属 SQLite 文件；API 不直接操作图 checkpoint。并发扩展需要后续专门切换共享 saver，不在本计划实现。
+- Compose 分阶段落地：T04/T05 初始环境为 Redis、worker、调度器与 SQLite 业务库，API 在宿主机；实测发现 Docker 内 heartbeat 已更新而宿主机连接仍读到旧值，macOS Docker 虚拟机与宿主进程共享 SQLite WAL 不保证一致。已调整为 API、worker、调度器和 Redis 均在 Docker 内，所有业务 SQLite 读写在 Linux 容器侧通过共享持久卷完成；测试使用真实 API 和容器内读库观测。此项修正与 SIGKILL 重试已通过，日志见 T04/T05 测试记录。原生开发则 API/worker 都原生运行，不支持一半宿主、一半容器共享 SQLite 的运行方式。
+- MySQL 9.6 行为测试单独记录，不能据此宣称 Compose MySQL 全链路或 MySQL 8.x 已验证。T20 跨进程测试前补齐共享 MySQL 与两个 API 进程，T17/T21 复用该环境；T19 完成发布配置、备份恢复与完整回归。最终单机集成范围保持 MySQL、Redis 和一个 Agent worker。
 - 文件产物：开发时使用受控数据目录，已有云存储路径继续复用；通过应用校验归属后下载。
 - Langfuse：观测与评测，不成为任务能否执行的依赖。首版可接托管实例；未配置时业务仍可运行。
 
@@ -205,9 +223,9 @@ type RunEvent = {
 
 ## 6. 里程碑、依赖与工作量
 
-估计为单人有效开发日，包含测试、集成和文档，不是承诺日期。总计约 54–73 个开发日（约 11–15 个全职工作周）；模型兼容与现有部署适配会影响实际排期。
+以下为制定计划时的初始估计，以单人有效开发日计，包含测试、集成和文档，不是承诺日期，也不是当前剩余工期。初始总计约 54–73 个开发日（约 11–15 个全职工作周）；本次不重新估算工期，后续以实际进度和验证结果调整。
 
-| 阶段 | 任务 | 预计 | 可演示成果 |
+| 阶段 | 任务 | 初始预计 | 可演示成果 |
 |---|---|---:|---|
 | M0 基线与契约 | T01–T02 | 3–4 日 | 可重复的开发环境、数据与接口契约 |
 | M1 四层最小闭环 | T03–T07 | 12–16 日 | 页面发起 → worker → Deep Agents 补问 → 恢复 → 有权限的流式状态 |
@@ -216,13 +234,13 @@ type RunEvent = {
 | M4 扩展与实时面试 | T15–T16、T20–T21 | 12–16 日 | 扩展收藏、Redis 工程与 WebSocket 双向面试 |
 | M5 性能、安全与交付 | T17–T19 | 9–13 日 | 有条件说明的性能报告、关键安全验证、部署与演示 |
 
-关键路径：T01 → T02 → T03 → T04 → T05 → T06/T07 → T08/T09 → T10 → T11 → T14 → T17/T18 → T19。
-新增依赖：T04/T06 → T20；T16/T20 → T21；T21 → T17/T18/T19。T20/T21 为追加编号，实际在 M4 执行，不在发布后补做。
-T13 从 T05 的小数据集开始，T14 才补全评测；安全基线从 T03/T06 开始，T18 是发布前整体验证，不是最后才加鉴权。
+当前主线：T01–T03 已完成 → T04 投递基础 / T05 运行工具实现 → T04/T05 联合恢复验收 → T06 → T07 → T08/T09 → T10 → T11。T07 验收的是内部功能闭环；事实依据和材料内容质量仍由 T08/T09、人工审阅及后续 live 评测验证。
+后续依赖：T13 从 T05 的小数据集开始，长上下文案例依赖 T12；T14 扩展 T13 的评测并迁移现有长任务。T16 使用 T11 的提交版本与 T12 的确认记忆。T04/T06 → T20；T16/T20 → T21；T14/T21 → T17/T18 → T19。T20/T21 为追加编号，实际在 M4 执行，不在发布后补做。
+安全基线从 T03/T06 开始，T18 是发布前整体验证，不是最后才加鉴权。
 
 ## 7. 逐任务实施计划
 
-每个任务完成后形成一个可审查提交；只暂存本任务修改，不自动推送。行为变更先补能表达预期的失败测试，再实现，再运行相关测试。以下测试代码为实施时应落地的契约示例，fixture 与辅助方法在指定测试文件/conftest 中一并实现。
+每个任务完成后形成可审查提交；存在运行依赖的 T04/T05 可联合提交，但分别记录单元验证与联合验收。只暂存本阶段修改，不自动推送。行为变更先补能表达预期的失败测试，再实现，再运行相关测试。以下测试代码为实施时应落地的契约示例，fixture 与辅助方法在指定测试文件/conftest 中一并实现。新 Vitest 用例统一使用 `src/**/*.spec.ts`；已有 Node 自执行 `*.test.ts` / `*.test.mjs` 保留原测试入口，不扩大 Vitest 收集范围。
 
 ### T01：依赖兼容与开发基线
 
@@ -290,11 +308,12 @@ def test_other_user_cannot_read_run(client, alice_run, bob_headers):
 
 **文件：** 新增 backend/worker.py、backend/worker_tasks.py、backend/tests/test_worker_delivery.py、deploy/compose.yaml；修改 .env.example、backend/services/agent_runs.py。
 **接口：** `execute_run(run_id: str) -> None`、`recover_runs() -> int`。消息只带 ID，数据库是状态源。
+**当前状态：** 基础与联合恢复自动验收完成。T04/T05 新增单元测试合计 31 项通过；Compose 中真实 Redis visibility、心跳、重复消息、SIGKILL 后 SQL 扫描与 checkpoint 重放通过，最终 attempt=2、epoch=2、草稿=1。宿主/容器混合 SQLite 问题已按上述运行边界修复。
 
-- [ ] 配置 Celery/Redis、独立 worker、15 秒扫描任务；首版只有一个扫描器实例。
-- [ ] 实现 Run 原子领取、心跳、execution_epoch、运行权检查和最多 3 次恢复尝试。
-- [ ] 配置晚确认及 worker 丢失行为，结合实际 Redis visibility timeout 验证；不把 acks_late 当作不重复保证。
-- [ ] 模拟数据库提交后消息发布失败、重复消息、worker 退出；验证待运行任务可重新投递且只产生一个业务结果。
+- [x] 配置 Celery/Redis、独立 worker、15 秒扫描任务；首版只有一个扫描器实例。Compose 的 API/worker/调度器统一在 Docker 内运行，业务 SQLite 使用容器侧共享持久卷；验证通过真实 API 和容器内读取进行，不混用 macOS 宿主与容器的 SQLite 连接。
+- [x] 实现 Run 原子领取、心跳、execution_epoch、运行权检查；初始执行计为 attempt 1，自动尝试总计最多 3 次，达到上限进入 failed 并释放 Session。使用与实际运行一致的 `autoflush=False` 会话验证计数持久化。
+- [x] 配置晚确认及 worker 丢失行为，结合实际 Redis visibility timeout 验证；不把 acks_late 当作不重复保证。
+- [x] 模拟数据库提交后消息发布失败、重复消息、worker 退出；基础验收确认已接受 Run 保留且可重新投递。接入 T05 后联合验证真实写工具重放只产生一个业务结果，旧 execution_epoch 无法提交写入。
 
 ```python
 def test_accepted_run_survives_broker_failure(run_service, broker):
@@ -306,18 +325,22 @@ def test_accepted_run_survives_broker_failure(run_service, broker):
     assert broker.contains(run.id)
 ```
 
-**验证：** `uv run pytest backend/tests/test_worker_delivery.py -q`；随后在 Compose 运行一次真实 worker kill/restart。验收：数据库接受的任务不会因消息发布失败消失；旧执行代次不能继续提交写工具。
+**验证：** `uv run pytest backend/tests/test_worker_delivery.py -q`。基础验收：数据库接受的任务不会因消息发布失败消失，重复消息只能领取一次，自动尝试有限。
+
+**与 T05 联合验收：** 在真实 Compose 中完成 worker SIGKILL/restart，记录杀进程时机、最后心跳、执行锁释放、恢复方式、attempt/execution_epoch、checkpoint 与最终业务产物。当前配置为心跳 10 秒、失联阈值 90 秒、扫描周期 15 秒、Redis visibility timeout 3600 秒；实验若调整参数，应记录实际值。Redis visibility 到期重投和 SQL 扫描恢复分别留下证据，不能将一种路径通过写成另一种也已通过。SQL 扫描恢复不要求再等满一小时。验收需确认旧执行器失去运行权、任务可解释地结束且只保留一个业务结果；SIGKILL 实验通过前该项保持未完成。
 
 ### T05：Deep Agents 运行器与第一个业务工具
 
-**文件：** 新增 backend/agent_runtime/{factory,runner,tools,events}.py、backend/tests/test_agent_runtime.py、backend/tests/test_tool_idempotency.py、backend/agent_runtime/skills/resume-tailoring/SKILL.md；修改 backend/worker_tasks.py。
-**接口：** `build_agent(user_id, checkpointer)`、`run_agent(run_id: str) -> None`；首个工具 `get_application_context(jd_id, resume_id)` 和 `create_resume_draft(jd_id, content, fact_refs)`。
+**文件：** 新增 backend/agent_runtime/{factory,runner,tools}.py、backend/tests/test_agent_runtime.py、backend/tests/test_tool_idempotency.py、backend/agent_runtime/skills/resume-tailoring/SKILL.md；修改 backend/worker_tasks.py。
+**接口：** 当前实现为 `build_agent(user_id, checkpointer, *, run_id, epoch)`、`run_agent(run_id: str, epoch: int) -> None`；首个工具 `get_application_context()` 和 `create_resume_draft(content, fact_refs)`，岗位、简历与归属 ID 从 Run 注入。
+**当前状态：** 实现及确定性自动验收完成，真实模型 smoke 待执行。真实 Deep Agents/checkpoint 已完成单元与联合 SIGKILL 恢复验证，仍不能把测试模型结果当成真实生成质量。
 
-- [ ] 在 factory 唯一构建 Deep Agents，接个人模型设置、官方 SQLite saver 和业务工具；thread_id 使用持久化 session_id。
-- [ ] 工具闭包/运行上下文注入 user_id、run_id、execution_epoch；这些参数不交给模型填写。
-- [ ] create_resume_draft 的 operation_key 来自持久化业务步骤，例如 `draft:{jd_id}:initial`，不能从每次重试的新 tool_call_id 推导。
-- [ ] ToolOperation 与 ResumeVersion 在同一事务写入；已有成功操作直接返回同一 draft ID。
-- [ ] 用 4 个最小评测案例覆盖正常生成、缺信息、工具失败、重复调用，为 T13 提供起点。
+- [x] 在 factory 唯一构建 Deep Agents，接个人模型设置、官方 SQLite saver 和业务工具；thread_id 使用持久化 session_id。同一 Run 恢复保留其执行状态，同 Session 的新 Run 清空旧 messages/files/todos/摘要，不能沿用上一任务材料。
+- [x] 工具闭包/运行上下文注入 user_id、run_id、execution_epoch；这些参数不交给模型填写。
+- [x] create_resume_draft 的 operation_key 来自持久化业务步骤，例如 `draft:{jd_id}:initial`，不能从每次重试的新 tool_call_id 推导。
+- [x] ToolOperation 与 ResumeVersion 在同一事务写入；已有成功操作直接返回同一 draft ID。
+- [x] 保留已补的取消与模型超时交错回归：取消优先于自动重试，进入 cancelled 并释放 Session，迟到结果不能变成成功产物。
+- [x] 用 4 个最小评测案例覆盖正常生成、缺信息、工具失败、重复调用，为 T13 提供起点。
 
 ```python
 def test_draft_replay_returns_same_artifact(draft_tool):
@@ -326,14 +349,18 @@ def test_draft_replay_returns_same_artifact(draft_tool):
     assert first.version_id == replay.version_id
 ```
 
-**验证：** 两个指定测试文件；真实模型只做一条用户授权配置下的 smoke，不自动向公共 trace 上传简历。失败先定位工具语义与运行配置，不以增加 Agent 角色掩盖问题。
+**验证：** `uv run pytest backend/tests/test_agent_runtime.py backend/tests/test_tool_idempotency.py -q`，并完成 T04/T05 联合恢复验收。确定性测试分别验证正常生成、补问后重开 checkpoint、工具失败、重复写入、有限自动尝试、取消遇超时及同 Session 新 Run 上下文隔离；失败先修正运行契约与工具事务，不推迟到 T12/T14。
+
+真实模型只做一条用户授权配置下的 smoke，不自动向公共 trace 上传简历。该检查与确定性功能验证分别记录；未运行时明确标记未验证，不能宣称真实模型或内容质量验收通过。失败先定位工具语义与运行配置，不以增加 Agent 角色掩盖问题。
+
+执行记录：[T04/T05 联合故障与教学记录](../../learning/test-records/2026-10-29-t04-t05.md)。上面复选框表示代码和确定性测试通过；真实模型 smoke 仍待执行，M1 的用户可演示验收未完成。
 
 ### T06：鉴权 SSE、事件持久化与恢复协议
 
-**文件：** 修改 backend/routes/tasks.py、backend/services/progress.py；新增 backend/services/run_events.py、backend/tests/test_run_events.py、frontend/src/services/agentStream.ts、frontend/src/services/agentStream.test.ts。
+**文件：** 修改 backend/routes/agent_runs.py、backend/services/agent_runs.py、backend/agent_runtime/runner.py、backend/routes/tasks.py、backend/services/progress.py；新增 backend/agent_runtime/events.py、backend/services/run_events.py、backend/tests/test_run_events.py、frontend/src/services/agentStream.ts、frontend/src/services/agentStream.spec.ts。
 **接口：** `append_event(run_id, type, payload) -> seq`、`read_events(user_id, run_id, after, limit)`；前端 `subscribeRun({runId, after, onEvent, signal})`。
 
-- [ ] Run 事件提交数据库；状态变化与状态事件同事务，避免终态无终态事件。
+- [ ] Run 事件提交数据库；接通 T03–T05 的创建、领取、等待输入、动作回答、取消、自动重试、失联恢复和终态路径，状态变化与状态事件同事务，避免终态无终态事件。测试事务回滚不会只留下状态或事件，重试/恢复不重复记录同一次转换。
 - [ ] 新流采用 fetch + Authorization，解析跨网络分片、多行 data、空注释、id；不要把 Token 放 URL。
 - [ ] 心跳 15 秒；断线以 1/2/4/8/15 秒退避重连；401 停止并引导登录，404 停止，429 遵循 Retry-After。
 - [ ] 客户端按 seq 去重；刷新先取快照，仍从已有游标消费事件；游标超出保留窗口时服务器返回可识别的重置响应，客户端重取快照。
@@ -348,17 +375,18 @@ it('keeps one copy after reconnect', () => {
 ```
 
 实现测试应调用真实 parser/store 方法，上述仅表达序号去重预期，不把这个 Map 片段单独当成产品测试。
-**验证：** `uv run pytest backend/tests/test_run_events.py -q` 与 `npm --prefix frontend run test:unit -- src/services/agentStream.test.ts`；检测越权订阅、分片丢事件与重复展示，失败分别修正授权、解析和游标协议。
+**验证：** `uv run pytest backend/tests/test_run_events.py -q` 与 `npm --prefix frontend run test:unit -- src/services/agentStream.spec.ts`；检测越权订阅、分片丢事件与重复展示，失败分别修正授权、解析和游标协议。
 
 ### T07：任务工作台、补问与人工审阅
 
-**文件：** 新增 frontend/src/views/AgentTaskView.vue、frontend/src/stores/agentRun.ts、frontend/src/components/agent/{RunTimeline,ToolCallCard,ActionForm,ArtifactCard}.vue、tests/e2e/agent-run.spec.ts；修改 frontend/src/router/index.ts、backend/services/agent_runs.py、backend/agent_runtime/runner.py。
-**输入：** T03/T06 契约。**输出：** 用户可完成暂停/补问/继续/取消。
+**文件：** 新增 frontend/src/views/AgentTaskView.vue、frontend/src/stores/agentRun.ts、frontend/src/components/agent/{RunTimeline,ToolCallCard,ActionForm,ArtifactCard}.vue、tests/e2e/agent-run.spec.ts；修改 frontend/src/router/index.ts、backend/services/agent_runs.py、backend/agent_runtime/runner.py、playwright.config.ts；新增 tests/e2e/support/ 下的测试后端启动与数据准备代码。
+**输入：** T03–T06 契约。**输出：** 用户可完成暂停/补问/继续/取消。
 
 - [ ] 展示阶段、工具状态、待回答内容和产物；不展示模型私有推理过程。
 - [ ] 持久化 interrupt_id 与问题；用户回答先提交 AgentAction，再入队 resume；重复提交或旧动作返回一致结果/409。
 - [ ] UI 区分网络断线、任务失败、等待用户；断线不能把 Run 改成失败。
 - [ ] 对补问表单提供 label、错误关联、键盘提交和焦点恢复；流式内容用节流 aria-live，避免逐 token 播报。
+- [ ] 为 Playwright 准备独立测试数据库、真实 API/worker 和确定性模型，准备登录用户、岗位、简历及暂停 Run；扩展当前只启动前端的配置，启动/清理归测试入口管理，不在生产代码硬编码测试任务。
 - [ ] 检测刷新、另一个标签页抢先回答、离开页面、取消运行的真实流程。
 
 ```ts
@@ -371,7 +399,7 @@ test('continues a paused run after reload', async ({ page }) => {
 });
 ```
 
-demo-paused 由 E2E 测试后端准备真实持久化数据，禁止生产硬编码。**验收：** M1 全流程通过，不依赖原页面持续打开。
+demo-paused 由 E2E 测试后端准备真实持久化数据，禁止生产硬编码。**验收：** 页面发起、worker 执行、补问、刷新、继续和产物读取形成内部功能闭环，不依赖原页面持续打开。确定性模型验证流程可靠性；事实依据、建议质量与真实模型表现仍待 T08/T09、人工审阅和后续评测，不在 M1 提前宣称完成。
 
 ### T08：岗位中心与资料事实
 
@@ -407,7 +435,7 @@ def test_claim_requires_existing_fact(draft_validator, facts):
 
 ### T10：简历审阅编辑与冲突处理
 
-**文件：** 新增 frontend/src/views/ResumeEditorView.vue、frontend/src/components/resume/{ChangeReview,FactReference,ResumePreview}.vue、frontend/src/stores/resumeEditor.ts、frontend/src/stores/resumeEditor.test.ts、tests/e2e/resume-review.spec.ts。
+**文件：** 新增 frontend/src/views/ResumeEditorView.vue、frontend/src/components/resume/{ChangeReview,FactReference,ResumePreview}.vue、frontend/src/stores/resumeEditor.ts、frontend/src/stores/resumeEditor.spec.ts、tests/e2e/resume-review.spec.ts。
 **输入：** T09 修改建议和版本 API。**输出：** 已审阅、可确认的独立版本。
 
 - [ ] 支持逐条接受、拒绝、编辑，展示源经历；首版结构化字段编辑，不开发任意拖拽排版系统。
@@ -415,16 +443,16 @@ def test_claim_requires_existing_fact(draft_validator, facts):
 - [ ] 使用语义化表单、移动端单列审阅、键盘操作；预览与编辑只共享必要状态。
 - [ ] 组件测试验证接受/撤销、保存失败保留输入；E2E 验证两个标签页编辑不静默覆盖。
 
-**验证：** `npm --prefix frontend run test:unit -- src/stores/resumeEditor.test.ts`、`npm run test:e2e -- resume-review.spec.ts`。验收：用户确认前不冻结或替换原简历。
+**验证：** `npm --prefix frontend run test:unit -- src/stores/resumeEditor.spec.ts`、`npm run test:e2e -- resume-review.spec.ts`。验收：用户确认前不冻结或替换原简历。
 
 ### T11：PDF 导出与投递版本快照
 
-**文件：** 新增 backend/services/resume_export.py、backend/templates/resume.html、backend/tests/test_resume_export.py；修改 backend/routes/applications.py、frontend/src/views/ApplicationsView.vue、Dockerfile。
+**文件：** 新增 backend/services/resume_export.py、backend/templates/resume.html、backend/tests/test_resume_export.py；修改 backend/routes/applications.py、backend/schemas/agent_runs.py、backend/worker_tasks.py、frontend/src/views/ApplicationsView.vue、Dockerfile。
 **接口：** `export_resume_version(user_id, version_id) -> artifact_id`；`attach_submission(user_id, application_id, jd_id, version_id)`。
 
 - [ ] 首版只做一套中文可用的简历模板，使用 Playwright/Chromium 打印；安装并固定可用字体。
 - [ ] 模板按结构化字段渲染且转义文本；禁止任意 HTML/脚本/外链资源进入渲染器。
-- [ ] 导出在 worker 内执行；下载校验归属；重复导出可以返回已有同版本产物。
+- [ ] 导出在 worker 内执行；本单元引入导出 kind 时同步扩展 `RunCreate` 的输入校验和 worker 派发，验证导出任务不会进入 tailoring 执行器。下载校验归属；重复导出可以返回已有同版本产物。当前仅支持 tailoring，不提前建设通用任务框架。
 - [ ] 投递关联不可变提交版本；修改主简历不改变历史投递材料。
 - [ ] 检查 PDF 文本可提取、中文可读、两页样例无裁切和字段缺失；保存渲染预览供人工一次审阅。
 
@@ -464,11 +492,12 @@ def verify_single_draft(case, output, db_snapshot):
 
 ### T14：故障恢复评测与现有长任务迁入
 
-**文件：** 新增 backend/tests/test_agent_recovery.py、tests/e2e/recovery.spec.ts、evals/cases/recovery.jsonl；修改 backend/services/background_tasks.py、backend/services/analysis.py、backend/services/documents.py、backend/routes/documents.py、backend/routes/runs.py。
+**文件：** 新增 backend/tests/test_agent_recovery.py、tests/e2e/recovery.spec.ts、evals/cases/recovery.jsonl；修改 backend/services/background_tasks.py、backend/services/analysis.py、backend/services/documents.py、backend/routes/documents.py、backend/routes/runs.py、backend/schemas/agent_runs.py、backend/worker_tasks.py。
+**依赖：** T13 的 core 评测；进入本单元前，T04/T05 基础恢复契约须通过；本单元扩展崩溃点和迁移场景，不重复以相同实验代替新增验证。
 
 - [ ] 验证四个崩溃点：模型返回前、写草稿事务提交后、checkpoint 保存后但 Run 状态提交前、用户回答保存后但 resume 入队前。
 - [ ] 恢复前核对 checkpoint、待处理动作、ToolOperation 和业务产物；已完成业务写入返回已有结果。
-- [ ] 将解析、匹配、出题逐项接同一持久任务入口；每迁移一类保持原调用结果契约，删除该类内存执行分支，不长期维护双轨。
+- [ ] 将解析、匹配、出题逐项接同一持久任务入口；实际引入每类 kind 时同步扩展 `RunCreate`、输入契约与 worker 派发并验证对应处理器，保持原调用结果契约，删除该类内存执行分支，不长期维护双轨。不为尚未迁移的任务预建通用派发框架。
 - [ ] 验证取消与恢复相遇时不会重新开始已取消任务；权限变化后工具继续执行前重新检查。
 - [ ] 扩展 core 为 24 个任务案例，其中包含 4 个恢复案例；报告总量、失败原因和未执行案例。
 
@@ -487,10 +516,11 @@ def verify_single_draft(case, output, db_snapshot):
 
 ### T16：多轮文字模拟面试
 
-**文件：** 新增 backend/services/interviews.py、backend/routes/interviews.py、backend/tests/test_interviews.py、frontend/src/views/InterviewView.vue、backend/agent_runtime/skills/interview-prep/SKILL.md、tests/e2e/interview.spec.ts。
+**文件：** 新增 backend/services/interviews.py、backend/routes/interviews.py、backend/tests/test_interviews.py、frontend/src/views/InterviewView.vue、backend/agent_runtime/skills/interview-prep/SKILL.md、tests/e2e/interview.spec.ts；修改 backend/schemas/agent_runs.py、backend/worker_tasks.py。
+**依赖：** T11 的提交版本、T12 的确认记忆；跨进程实时链路由 T20/T21 接入。
 
 - [ ] 读取本次投递版本与岗位，创建会话；每轮保存问题、回答、反馈和引用。
-- [ ] Agent 根据回答缺口选择追问/换题；固定最多 8 轮或用户结束，不无限循环。
+- [ ] 引入面试生成 kind 时同步扩展 `RunCreate`、面试输入契约与 worker 派发，验证不会误入 tailoring 执行器；Agent 根据回答缺口选择追问/换题，固定最多 8 轮或用户结束，不无限循环。不提前增加通用任务框架。
 - [ ] 回答提交去重，刷新后恢复当前轮；区分“练习反馈”与真实面试结果。
 - [ ] 用户确认后将反馈写入业务记忆；不自动把模拟回答中的新经历当成事实。
 - [ ] 增加 6 个面试评测案例，总任务案例达到 30 个。
@@ -513,7 +543,7 @@ def verify_single_draft(case, output, db_snapshot):
 
 ### T18：实际入口安全与权限回归
 
-**文件：** 新增 backend/tests/test_agent_security.py、backend/tests/test_upload_limits.py、frontend/src/components/agent/ToolCallCard.test.ts；修改 backend/auth/security.py、backend/services/documents.py、backend/logging_config.py、backend/agent_runtime/tools.py、部署配置。
+**文件：** 新增 backend/tests/test_agent_security.py、backend/tests/test_upload_limits.py、frontend/src/components/agent/ToolCallCard.spec.ts；修改 backend/auth/security.py、backend/services/documents.py、backend/logging_config.py、backend/agent_runtime/tools.py、部署配置。
 
 - [ ] 检查岗位、简历版本、Run、动作、事件、下载全部走 user_id 归属；跨用户输入 ID 返回 404。
 - [ ] 文件限制按现有支持类型配置：首版上传上限 10MiB、PDF 最多 100 页、解析超时 120 秒；超限提示，不进入无限重试。
@@ -530,7 +560,7 @@ def verify_single_draft(case, output, db_snapshot):
 **文件：** 修改 Dockerfile、README.md、.env.example；新增 .github/workflows/ci.yml、docs/deployment.md、docs/architecture.md、docs/demo.md、docs/evaluation-report.md。
 
 - [ ] CI 分开运行后端测试、前端类型/组件测试、构建、扩展测试、stub 评测、关键 E2E；真实模型评测手动触发。
-- [ ] Compose 提供 API、worker、调度器、Redis、MySQL、反向代理和 checkpoint/产物持久卷；秘密从环境或挂载文件读取。
+- [ ] 在 T20 已建立的 API、worker、调度器、Redis、MySQL 集成环境上完成反向代理、checkpoint/产物持久卷与发布配置；秘密从环境或挂载文件读取。此处完成交付验收，不将 T20/T21 所需共享数据库和双 API 环境推迟到本单元。
 - [ ] 健康检查区分进程存活与依赖就绪；部署停止接受新任务、给在途任务有限结束窗口，超时后按恢复策略重启。
 - [ ] 备份演练先停止领取新任务，等待执行静止，备份 SQL、checkpoint 和产物；恢复到独立测试目录验证一条等待中的 Run。不得对运行中的 SQLite 只复制主文件而漏 WAL。
 - [ ] 跑完整主流程与原解析/匹配/投递/扩展回归。只在新增变更影响范围需要时扩大测试，不重复无变化的全套检查。
@@ -545,6 +575,7 @@ def verify_single_draft(case, output, db_snapshot):
 **文件：** 新增 backend/infrastructure/redis_client.py、backend/services/realtime_bus.py、backend/services/dashboard_cache.py、backend/tests/test_redis_integration.py；修改 backend/middleware/rate_limit.py、deploy/compose.yaml、.env.example。
 **依赖：** T04、T06。**接口：** `issue_ws_ticket(user_id, interview_id, auth_expires_at) -> ticket`、`consume_ws_ticket(ticket) -> claims | None`、`publish_interview_hint(interview_id,last_seq)`、`allow_request(user_id,scope) -> (allowed,retry_after)`。
 
+- [ ] 跨进程测试前将 T04 的 Compose 开发环境扩展为共享 MySQL、两个 API 进程、Redis、一个 worker 与调度器，保留 worker 专属 checkpoint 卷。记录数据库版本和实际服务配置，供 T21/T17 复用，不将 SQLite 或独立 MySQL 单元测试记作此环境验收。
 - [ ] 使用 redis-py async 连接池，应用生命周期统一创建/关闭；Pub/Sub 独立连接，不在每条消息中创建客户端。Redis 命令连接超时 1 秒、读取超时 2 秒；Pub/Sub 使用独立长连接超时策略。
 - [ ] key 命名：`resumate:{env}:rl:{scope}:{user}`、`resumate:{env}:ws-ticket:{random}`、`resumate:{env}:stats:{user}`；频道也包含环境名，因为 Redis Pub/Sub 不按逻辑数据库隔离。
 - [ ] 登录和创建 Run 的分布式限流采用 Lua 原子计数+首次设置 TTL；WS 票据用安全随机值，TTL 30 秒，GETDEL 原子消费；每张票据绑定用户、面试 ID 和原登录过期时间。
@@ -565,7 +596,7 @@ async def test_ws_ticket_can_only_be_consumed_once(ticket_service):
 
 ### T21：WebSocket 双向面试与连接生命周期
 
-**文件：** 新增 backend/routes/interview_ws.py、backend/services/interview_commands.py、backend/schemas/interview_events.py、backend/tests/test_interview_ws.py、frontend/src/services/interviewSocket.ts、frontend/src/services/interviewSocket.test.ts、tests/e2e/interview-reconnect.spec.ts；修改 InterviewView.vue、interviews.py、deploy/nginx.conf。
+**文件：** 新增 backend/routes/interview_ws.py、backend/services/interview_commands.py、backend/schemas/interview_events.py、backend/tests/test_interview_ws.py、frontend/src/services/interviewSocket.ts、frontend/src/services/interviewSocket.spec.ts、tests/e2e/interview-reconnect.spec.ts；修改 InterviewView.vue、interviews.py、deploy/nginx.conf。
 **依赖：** T16、T20。**接口：** `handle_command(user_id,interview_id,command) -> ack`；HTTP 和 WS 共用面试业务服务与同一 clientMessageId 唯一约束，不维护两份状态机。
 
 ```ts
@@ -603,8 +634,8 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
     assert interview_db.answer_count(turn=1) == 1
 ```
 
-**验证：** `uv run pytest backend/tests/test_interview_ws.py -q`、`npm --prefix frontend run test:unit -- src/services/interviewSocket.test.ts`、`npm run test:e2e -- interview-reconnect.spec.ts`。fixture 必须实际连接 ASGI WebSocket，跨进程用 Compose 验证。
-**性能预算：** 沿用 T17 环境，30 条 WS（包含两个 API 上的连接）与 30 条 SSE 并存；不含模型等待的命令 ack P95 <=300ms，正常 Pub/Sub 通路事件可见 P95 <=1s；通知故障补查 <=3s。Agent 仍只有一个执行槽，连接吞吐不等于模型并行量。
+**验证：** `uv run pytest backend/tests/test_interview_ws.py -q`、`npm --prefix frontend run test:unit -- src/services/interviewSocket.spec.ts`、`npm run test:e2e -- interview-reconnect.spec.ts`。fixture 必须实际连接 ASGI WebSocket，跨进程用 Compose 验证。
+**性能预算：** 使用 T20 集成环境，性能测量条件与 T17 一致；30 条 WS（包含两个 API 上的连接）与 30 条 SSE 并存；不含模型等待的命令 ack P95 <=300ms，正常 Pub/Sub 通路事件可见 P95 <=1s；通知故障补查 <=3s。Agent 仍只有一个执行槽，连接吞吐不等于模型并行量。
 
 ## 8. 测试分层与必要性
 
@@ -613,7 +644,7 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 | 单元/组件 | 状态转换、输入保留、事件解析、版本冲突 | 修正局部逻辑，不要求调用模型 |
 | SQL/Redis 集成 | 方言差异、唯一约束、发布失败与重投 | 修正事务和任务协议 |
 | 浏览器 E2E | 用户无法完成流程、键盘不可达、刷新丢状态 | 修正交互与接口集成 |
-| 恢复实验 | checkpoint 与业务写入不一致、任务重复执行 | 修正恢复与操作结果去重 |
+| 恢复实验 | checkpoint 与业务写入不一致、任务重复执行、取消或尝试次数未落库 | 修正恢复、状态事务与操作结果去重；分别记录 Redis 重投和 SQL 扫描证据 |
 | Agent live 评测 | 错选工具、漏补问、无依据生成 | 修改技能、工具描述、上下文或模型配置，并用同样例比较 |
 | 网络负载 | SSE 堆积、连接耗尽、慢查询、UI 卡顿 | 按测得瓶颈优化 |
 | 权限/输入测试 | 跨用户读取、恶意文档影响工具权限、密钥泄漏 | 阻止发布并修复服务端边界 |
@@ -658,6 +689,8 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 ## 11. 开始执行的顺序
 
-第一批只执行 T01–T03，交付依赖验证、数据库契约和可测试 Run API；然后执行 T04–T07，完成四层最小闭环。M4 依次完成 T20、T16、T21，再进入包含实时链路的 T17–T19。M1 验收通过前，不启动批量抓取、复杂编辑器或额外 Agent 角色。
+T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。下一步按 T06 → T07 推进持久事件、鉴权 SSE 和任务 UI；在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
+
+T12/T13/T14 按上下文、评测与故障恢复依赖推进。M4 完成 T15，并依次完成 T20、T16、T21，再进入包含实时链路的 T17–T19。M1 验收通过前，不启动批量抓取、复杂编辑器或额外 Agent 角色；原有产品范围与 21 个任务 ID 保持不变。
 
 每个阶段结束更新本文件复选框、实际耗时、已通过验收与尚存限制。阶段完成以可运行成果和测试证据为准，不以文件数量或技术名词数量为准。

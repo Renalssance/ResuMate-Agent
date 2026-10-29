@@ -193,3 +193,93 @@ def answer_action(db: Session, user_id: int, run_id: str, action_id: str, respon
         ).values(active_run_id=None))
     db.commit()
     return run
+
+
+def claim_run(db: Session, run_id: str) -> int | None:
+    """Only one delivery changes queued -> running; duplicates are harmless."""
+    claimed = db.execute(update(AgentRun).where(
+        AgentRun.id == run_id, AgentRun.status == RunStatus.QUEUED,
+        AgentRun.cancel_requested_at.is_(None),
+    ).values(status=RunStatus.RUNNING, execution_epoch=AgentRun.execution_epoch + 1,
+             heartbeat_at=utcnow()))
+    if claimed.rowcount != 1:
+        db.rollback()
+        return None
+    epoch = db.scalar(select(AgentRun.execution_epoch).where(AgentRun.id == run_id))
+    db.commit()
+    return epoch
+
+
+def guard_execution(db: Session, run_id: str, epoch: int) -> None:
+    """Acquire a write lock and fence cancellation/stale tools in THEIR transaction."""
+    result = db.execute(update(AgentRun).where(
+        AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
+        AgentRun.execution_epoch == epoch, AgentRun.cancel_requested_at.is_(None),
+    ).values(heartbeat_at=utcnow()))
+    if result.rowcount != 1:
+        raise RunError(409, 'execution_lost', '任务已取消或失去运行权')
+
+
+def heartbeat_run(db: Session, run_id: str, epoch: int) -> bool:
+    result = db.execute(update(AgentRun).where(
+        AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
+        AgentRun.execution_epoch == epoch,
+    ).values(heartbeat_at=utcnow()))
+    db.commit()
+    return result.rowcount == 1
+
+
+def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
+               *, error_code: str | None = None, output_refs: list | None = None,
+               retry: bool = False) -> None:
+    # First acquire a write lock also on SQLite; read cancellation under that lock.
+    changed = db.execute(update(AgentRun).where(
+        AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
+        AgentRun.execution_epoch == epoch,
+    ).values(heartbeat_at=utcnow()))
+    if changed.rowcount != 1:
+        db.rollback()
+        return
+    run = db.get(AgentRun, run_id, populate_existing=True)
+    if retry and not run.cancel_requested_at and run.attempt < 3:
+        status = RunStatus.QUEUED
+        run.attempt += 1
+    run.status = RunStatus.CANCELLED if run.cancel_requested_at else status
+    run.error_code = error_code if run.status == RunStatus.FAILED else None
+    if output_refs is not None and run.status != RunStatus.CANCELLED:
+        run.output_refs = output_refs
+    if run.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.CANCELLED):
+        db.execute(update(AgentSession).where(
+            AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
+        ).values(active_run_id=None))
+    db.commit()
+
+
+def recover_stale_runs(db: Session, now=None) -> int:
+    """Caller MUST hold the worker execution file lock (proves executor stopped)."""
+    from datetime import timedelta
+    cutoff = (now or utcnow()) - timedelta(seconds=90)
+    ids = list(db.scalars(select(AgentRun.id).where(
+        AgentRun.status == RunStatus.RUNNING, AgentRun.heartbeat_at < cutoff)))
+    recovered = 0
+    for run_id in ids:
+        changed = db.execute(update(AgentRun).where(
+            AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
+            AgentRun.heartbeat_at < cutoff,
+        ).values(updated_at=utcnow()))
+        if changed.rowcount != 1:
+            continue
+        run = db.get(AgentRun, run_id, populate_existing=True)
+        if run.cancel_requested_at or run.attempt >= 3:
+            run.status = RunStatus.CANCELLED if run.cancel_requested_at else RunStatus.FAILED
+            run.error_code = None if run.cancel_requested_at else 'worker_lost'
+            db.execute(update(AgentSession).where(
+                AgentSession.id == run.session_id, AgentSession.active_run_id == run.id,
+            ).values(active_run_id=None))
+        else:
+            run.status = RunStatus.QUEUED
+            run.attempt += 1
+            run.heartbeat_at = None
+        recovered += 1
+    db.commit()
+    return recovered

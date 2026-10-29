@@ -24,6 +24,7 @@ dependencies = [
     "pymysql[rsa]>=1.1.2",
     "deepagents>=0.7.32",
     "langgraph-checkpoint-sqlite>=3.1.2",
+    "celery[redis]>=5.6.3",
 ]
 
 [project.optional-dependencies]
