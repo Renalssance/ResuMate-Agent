@@ -1,0 +1,56 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_live_failure_removes_only_generated_raw_checkpoints_and_reports_unknown_cost[200] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-157/test_live_failure_removes_only0')
+provider_status = 200
+
+    @pytest.mark.parametrize('provider_status', [400, 200])
+    def test_live_failure_removes_only_generated_raw_checkpoints_and_reports_unknown_cost(tmp_path, provider_status):
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+        from threading import Thread
+        from backend.tests.test_eval_budget import config
+        class ProviderError(BaseHTTPRequestHandler):
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get('Content-Length', '0')))
+                self.send_response(provider_status)
+                self.send_header('Content-Type', 'application/json' if provider_status == 400 else 'text/event-stream')
+                self.end_headers()
+                if provider_status == 400:
+                    self.wfile.write(b'{"error":{"message":"private-provider-body","type":"invalid_request_error","code":"synthetic_failure"}}')
+                else:
+                    chunks = [dict(id='local', object='chat.completion.chunk', created=1, model='synthetic',
+                        choices=[dict(index=0, delta=dict(role='assistant', content='Public refusal'), finish_reason=None)]),
+                        dict(id='local', object='chat.completion.chunk', created=1, model='synthetic',
+                        choices=[dict(index=0, delta={}, finish_reason='stop')],
+                        usage=dict(prompt_tokens=1000001, completion_tokens=1, total_tokens=1000002))]
+                    self.wfile.write((''.join('data: ' + json.dumps(chunk) + '\n\n' for chunk in chunks)
+                                     + 'data: [DONE]\n\n').encode())
+
+            def log_message(self, *args):
+                pass
+        server = ThreadingHTTPServer(('127.0.0.1', 0), ProviderError)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        budget_file = tmp_path / 'budget.json'
+        budget_file.write_text(json.dumps(config(max_total_cost='1.3', max_case_cost='1.3').public()))
+        env_file = tmp_path / 'synthetic.env'
+        env_file.write_text(f'OPENAI_API_KEY=local-fake-key\nOPENAI_BASE_URL=http://127.0.0.1:{server.server_port}/v1\n')
+        unrelated = tmp_path / 'checkpoints.sqlite'
+        unrelated.write_text('unrelated checkpoint must remain')
+        try:
+            process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', 'normal-api',
+                '--config', str(budget_file), '--env-file', str(env_file))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+>       assert process.returncode == (1 if provider_status == 400 else 2), json.dumps(report)
+E       AssertionError: {"mode": "live", "results": [{"case_id": "normal-api", "category": "normal", "status": "fail", "error_code": "no_draft", "artifact": "cases/normal-api.json"}], "counts": {"pass": 0, "fail": 1, "incomplete": 0, "not_run": 0}, "error_code": null, "semantic_status": "unreviewed", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality.", "cost": {"currency": "CNY", "model_calls": 1, "stop_reason": "budget_config_mismatch", "observed_cost": "1.20000600", "reserved_cost": "0", "unknown_usage_calls": 0}}
+E       assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...z418lmdr0000gn/T/pytest-of-bono/pytest-157/test_live_failure_removes_only0/out/20261029T180323Z-baaff041\n', stderr='').returncode
+
+backend/tests/test_eval_runner.py:137: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_runner.py::test_live_failure_removes_only_generated_raw_checkpoints_and_reports_unknown_cost[200]
+1 failed, 6 deselected in 2.46s

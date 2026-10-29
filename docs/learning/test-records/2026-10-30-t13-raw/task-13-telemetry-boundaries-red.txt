@@ -1,0 +1,73 @@
+Fs.sFs                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_actual_sdk_summary_retry_has_distinct_call_ids[sqlite] __________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x109a23b60>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10b4d1580>
+
+    def test_actual_sdk_summary_retry_has_distinct_call_ids(runtime, career_db, fake_langfuse):
+        from deepagents.backends import StateBackend
+        from langchain_core.messages import HumanMessage
+        from backend.agent_runtime.context_middleware import BusinessContextMiddleware
+        from backend.agent_runtime.telemetry import RunTelemetry, attach_model_telemetry
+        from backend.tests.agent_fixtures import DraftModel
+        class SummaryModel(DraftModel):
+            calls: int = 0
+            def _generate(self, messages, **kwargs):
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError(PRIVATE)
+                return ChatResult(generations=[ChatGeneration(message=AIMessage(content=PRIVATE,
+                    usage_metadata={'input_tokens': 20, 'output_tokens': 5, 'total_tokens': 25}))])
+        run = new_run(career_db)
+        epoch = agent_runs.claim_run(career_db, run.id)
+        career_db.refresh(run)
+        trace = RunTelemetry(run)
+        model = SummaryModel()
+        attach_model_telemetry(model, trace)
+        middleware = BusinessContextMiddleware(model=model, backend=StateBackend(), run_id=run.id, epoch=epoch)
+        assert middleware._lc_helper._create_summary([HumanMessage(content=PRIVATE)]) == PRIVATE
+        spans = [s for s in fake_langfuse.observations if s.kind == 'generation']
+        assert model.calls == len(spans) == 2
+        assert [s.metadata['status'] for s in spans] == ['failed', 'succeeded']
+>       assert [s.metadata['retry_attempt'] for s in spans] == [1, 2]
+E       assert [1, 1] == [1, 2]
+E
+E         At index 1 diff: 1 != 2
+E         Use -v to get more diff
+
+backend/tests/test_agent_telemetry.py:240: AssertionError
+________ test_tool_completion_failure_also_closes_the_real_span[sqlite] ________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...y.ModelTelemetry object at 0x10c011ee0>], metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10beabec0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10b7235c0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b723a40>
+
+    def test_tool_completion_failure_also_closes_the_real_span(runtime, career_db, fake_langfuse, monkeypatch):
+        from backend.agent_runtime import tools
+        original = tools.append_event
+        def fail_completion(db, run_id, event_type, payload):
+            if event_type == 'tool.completed':
+                raise agent_runs.RunError(503, 'event_write_failed', PRIVATE)
+            return original(db, run_id, event_type, payload)
+        monkeypatch.setattr(tools, 'append_event', fail_completion)
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.FAILED
+        spans = [s for s in fake_langfuse.observations if s.kind == 'tool']
+>       assert len(spans) == 1 and spans[0].ended
+E       assert (1 == 1 and False)
+E        +  where 1 = len([<test_agent_telemetry.FakeObservation object at 0x10c099430>])
+E        +  and   False = <test_agent_telemetry.FakeObservation object at 0x10c099430>.ended
+
+backend/tests/test_agent_telemetry.py:280: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:86 Run 82a0ca3f-be1c-4197-8306-ec2464d2bfa9 stopped (RunError)
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_telemetry.py::test_actual_sdk_summary_retry_has_distinct_call_ids[sqlite]
+FAILED backend/tests/test_agent_telemetry.py::test_tool_completion_failure_also_closes_the_real_span[sqlite]
+2 failed, 1 passed, 3 skipped, 22 deselected in 2.97s

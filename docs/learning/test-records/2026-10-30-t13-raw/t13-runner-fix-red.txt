@@ -1,0 +1,164 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_real_faults_rollback_and_cancellation_leave_no_artifacts _________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_real_faults_rollback_and_0')
+
+    def test_real_faults_rollback_and_cancellation_leave_no_artifacts(tmp_path):
+        process, report, invocation = launch(tmp_path, '--mode', 'stub', '--cases',
+            'tool-read-failure,tool-write-rollback,cancel-waiting,duplicate-draft')
+        assert process.returncode == 0, json.dumps(report)
+        details = {path.stem: json.loads(path.read_text()) for path in (invocation / 'cases').glob('*.json')}
+        for case_id in ('tool-read-failure', 'tool-write-rollback'):
+            detail = details[case_id]
+            assert detail['output']['coverage']['fault_injected'] is True
+            assert detail['db_snapshot']['versions'] == []
+            assert detail['db_snapshot']['operations'] == []
+            assert not any(event['type'] == 'artifact.created' for event in detail['db_snapshot']['events'])
+            assert any(event['type'] == 'tool.failed' for event in detail['db_snapshot']['events'])
+        rollback = details['tool-write-rollback']
+        proposals = [call for message in rollback['output']['public_model_output']
+>                    for call in message['tool_calls'] if call['name'] == 'create_resume_draft']
+                                 ^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: string indices must be integers, not 'str'
+
+backend/tests/test_eval_runner.py:94: TypeError
+______ test_tool_only_and_invalid_proposals_remain_public_record_evidence ______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_tool_only_and_invalid_pro0')
+
+    def test_tool_only_and_invalid_proposals_remain_public_record_evidence(tmp_path):
+        from evals.records import CallRecorder
+        from langchain_core.messages import AIMessage
+        from langchain_core.outputs import ChatGeneration, LLMResult
+        from uuid import uuid4
+        recorder = CallRecorder(tmp_path / 'calls.jsonl', case_id='rejected-proposal')
+        call_id = uuid4()
+        proposal = {'changes': [{'section': '/self_summary', 'before': 'wrong before',
+                                 'after': 'Proposed public text', 'fact_refs': []}]}
+        message = AIMessage(content='',
+            tool_calls=[{'id': 'draft-call', 'name': 'create_resume_draft', 'args': proposal}],
+            invalid_tool_calls=[{'id': 'bad-json', 'name': 'create_resume_draft', 'args': '{broken-json',
+                                 'error': 'private parser diagnostic'}],
+            additional_kwargs={'reasoning_content': 'private reasoning', 'provider_body': 'private provider body'})
+        recorder.on_chat_model_start({}, [[]], run_id=call_id)
+        recorder.on_llm_end(LLMResult(generations=[[ChatGeneration(message=message)]]), run_id=call_id)
+        expected = {'text': '', 'tool_calls': [{'id': 'draft-call', 'name': 'create_resume_draft', 'args': proposal}],
+                    'invalid_tool_calls': [{'id': 'bad-json', 'name': 'create_resume_draft', 'args': '{broken-json'}]}
+>       assert recorder.outputs == [expected]
+E       AssertionError: assert [''] == [{'invalid_to...ume_draft'}]}]
+E
+E         At index 0 diff: '' != {'text': '', 'tool_calls': [{'id': 'draft-call', 'name': 'create_resume_draft', 'args': {'changes': [{'section': '/self_summary', 'before': 'wrong before', 'after': 'Proposed public text', 'fact_refs': []}]}}], 'invalid_tool_calls': [{'id': 'bad-json', 'name': 'create_resume_draft', 'args': '{broken-json'}]}
+E         Use -v to get more diff
+
+backend/tests/test_eval_runner.py:177: AssertionError
+_ test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[constraints] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_later_context_loss_cannot0')
+lost_field = 'constraints'
+
+    @pytest.mark.parametrize('lost_field', ['constraints', 'applicantAnswers', 'outputs', 'system_message'])
+    def test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context(tmp_path, lost_field):
+        from copy import deepcopy
+        from evals.records import CallRecorder
+        from langchain_core.messages import HumanMessage, SystemMessage
+        from uuid import uuid4
+        recorder = CallRecorder(tmp_path / 'calls.jsonl', case_id='context-proof')
+        required = dict(runId='run-1', inputVersions={'resume': 'v1'}, constraints=['keep fact', 'no invention'],
+                        applicantAnswers=[{'actionId': 'answered-1'}], outputs=[{'id': 'draft-1'}])
+        recorder.context_expectations = lambda: deepcopy(required)
+        recorder.epoch = 2
+        recorder.on_chat_model_start({}, [[SystemMessage(content='必保留业务上下文\n' + json.dumps(required))]], run_id=uuid4())
+>       assert recorder.required_contexts[-1]['passed'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'passed'
+
+backend/tests/test_eval_runner.py:195: KeyError
+_ test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[applicantAnswers] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_later_context_loss_cannot1')
+lost_field = 'applicantAnswers'
+
+    @pytest.mark.parametrize('lost_field', ['constraints', 'applicantAnswers', 'outputs', 'system_message'])
+    def test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context(tmp_path, lost_field):
+        from copy import deepcopy
+        from evals.records import CallRecorder
+        from langchain_core.messages import HumanMessage, SystemMessage
+        from uuid import uuid4
+        recorder = CallRecorder(tmp_path / 'calls.jsonl', case_id='context-proof')
+        required = dict(runId='run-1', inputVersions={'resume': 'v1'}, constraints=['keep fact', 'no invention'],
+                        applicantAnswers=[{'actionId': 'answered-1'}], outputs=[{'id': 'draft-1'}])
+        recorder.context_expectations = lambda: deepcopy(required)
+        recorder.epoch = 2
+        recorder.on_chat_model_start({}, [[SystemMessage(content='必保留业务上下文\n' + json.dumps(required))]], run_id=uuid4())
+>       assert recorder.required_contexts[-1]['passed'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'passed'
+
+backend/tests/test_eval_runner.py:195: KeyError
+_ test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[outputs] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_later_context_loss_cannot2')
+lost_field = 'outputs'
+
+    @pytest.mark.parametrize('lost_field', ['constraints', 'applicantAnswers', 'outputs', 'system_message'])
+    def test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context(tmp_path, lost_field):
+        from copy import deepcopy
+        from evals.records import CallRecorder
+        from langchain_core.messages import HumanMessage, SystemMessage
+        from uuid import uuid4
+        recorder = CallRecorder(tmp_path / 'calls.jsonl', case_id='context-proof')
+        required = dict(runId='run-1', inputVersions={'resume': 'v1'}, constraints=['keep fact', 'no invention'],
+                        applicantAnswers=[{'actionId': 'answered-1'}], outputs=[{'id': 'draft-1'}])
+        recorder.context_expectations = lambda: deepcopy(required)
+        recorder.epoch = 2
+        recorder.on_chat_model_start({}, [[SystemMessage(content='必保留业务上下文\n' + json.dumps(required))]], run_id=uuid4())
+>       assert recorder.required_contexts[-1]['passed'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'passed'
+
+backend/tests/test_eval_runner.py:195: KeyError
+_ test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[system_message] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_later_context_loss_cannot3')
+lost_field = 'system_message'
+
+    @pytest.mark.parametrize('lost_field', ['constraints', 'applicantAnswers', 'outputs', 'system_message'])
+    def test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context(tmp_path, lost_field):
+        from copy import deepcopy
+        from evals.records import CallRecorder
+        from langchain_core.messages import HumanMessage, SystemMessage
+        from uuid import uuid4
+        recorder = CallRecorder(tmp_path / 'calls.jsonl', case_id='context-proof')
+        required = dict(runId='run-1', inputVersions={'resume': 'v1'}, constraints=['keep fact', 'no invention'],
+                        applicantAnswers=[{'actionId': 'answered-1'}], outputs=[{'id': 'draft-1'}])
+        recorder.context_expectations = lambda: deepcopy(required)
+        recorder.epoch = 2
+        recorder.on_chat_model_start({}, [[SystemMessage(content='必保留业务上下文\n' + json.dumps(required))]], run_id=uuid4())
+>       assert recorder.required_contexts[-1]['passed'] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'passed'
+
+backend/tests/test_eval_runner.py:195: KeyError
+____ test_long_context_checks_every_real_request_against_available_sql_refs ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-162/test_long_context_checks_every0')
+
+    def test_long_context_checks_every_real_request_against_available_sql_refs(tmp_path):
+        process, report, invocation = launch(tmp_path, '--mode', 'stub', '--cases', 'long-context')
+        assert process.returncode == 0, json.dumps(report)
+        detail = json.loads((invocation / 'cases' / 'long-context.json').read_text())
+>       proof = detail['output']['required_context_checks']
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'required_context_checks'
+
+backend/tests/test_eval_runner.py:218: KeyError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_runner.py::test_real_faults_rollback_and_cancellation_leave_no_artifacts
+FAILED backend/tests/test_eval_runner.py::test_tool_only_and_invalid_proposals_remain_public_record_evidence
+FAILED backend/tests/test_eval_runner.py::test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[constraints]
+FAILED backend/tests/test_eval_runner.py::test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[applicantAnswers]
+FAILED backend/tests/test_eval_runner.py::test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[outputs]
+FAILED backend/tests/test_eval_runner.py::test_later_context_loss_cannot_be_masked_by_earlier_or_embedded_context[system_message]
+FAILED backend/tests/test_eval_runner.py::test_long_context_checks_every_real_request_against_available_sql_refs
+7 failed, 6 deselected in 6.09s

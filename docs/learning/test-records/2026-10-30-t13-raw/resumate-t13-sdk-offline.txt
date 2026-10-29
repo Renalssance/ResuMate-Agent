@@ -1,0 +1,1 @@
+Langfuse 5.0.4 actual agent/generation/tool lifecycle signatures accepted with tracing disabled; no delivery claim.

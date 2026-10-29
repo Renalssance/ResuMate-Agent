@@ -9,6 +9,7 @@ from deepagents.graph import DeepAgentState
 from deepagents.profiles import HarnessProfile, GeneralPurposeSubagentProfile, register_harness_profile
 from langchain_openai import ChatOpenAI
 from backend.agent_runtime.tools import business_tools
+from backend.agent_runtime.telemetry import attach_model_telemetry
 from backend.services.llm_settings import resolve_effective_llm_settings
 from backend.services.agent_runs import RunError
 
@@ -30,8 +31,9 @@ def model_for_user(user_id: int):
                       max_retries=0, stream_usage=True)
 
 
-def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int):
+def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int, telemetry=None):
     model = model_for_user(user_id)
+    attach_model_telemetry(model, telemetry)
     name = model.model_name
     key = name if name.startswith('openai:') else f'openai:{name}'
     register_harness_profile(key, HarnessProfile(
@@ -48,7 +50,7 @@ def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int):
         tool_token_limit_before_evict=max(128, int(input_budget * .15 / 4)))
     summarization = BusinessContextMiddleware(model=model, backend=backend, run_id=run_id, epoch=epoch)
     return create_deep_agent(model=model,
-        tools=business_tools(run_id, epoch, inline_token_limit=int(input_budget * .1), budget=budget),
+        tools=business_tools(run_id, epoch, inline_token_limit=int(input_budget * .1), budget=budget, telemetry=telemetry),
         system_prompt=prompt, state_schema=RunState, backend=backend,
         middleware=[filesystem, summarization],
         permissions=[FilesystemPermission(operations=['write'], paths=['/inputs/**'], mode='deny')],

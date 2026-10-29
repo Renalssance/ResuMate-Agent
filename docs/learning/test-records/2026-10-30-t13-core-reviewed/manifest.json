@@ -1,0 +1,36 @@
+{
+  "suite": "core",
+  "suite_version": 1,
+  "mode": "stub",
+  "case_ids": [
+    "normal-api",
+    "normal-confirmed-fact",
+    "normal-project",
+    "ask-technology",
+    "ask-metric",
+    "refuse-fabrication",
+    "cancel-waiting",
+    "tool-read-failure",
+    "tool-write-rollback",
+    "duplicate-draft",
+    "conflicting-sources",
+    "long-context"
+  ],
+  "created_at": "2026-10-29T18:22:17.106035+00:00",
+  "git_commit": "4f4f2018f529184fe41b8cc6da662d08512d3d16",
+  "dependencies": {
+    "deepagents": "0.7.32",
+    "langchain-core": "1.7.1",
+    "langchain-openai": "1.1.11",
+    "langgraph": "1.2.18",
+    "openai": "2.29.0"
+  },
+  "synthetic_inputs": true,
+  "model": "synthetic eval stub",
+  "tracing": "disabled in isolated harness",
+  "checkpoint_retention": "stub retained; live removed after child exit, including failures",
+  "failure_injection": "Harness-only read failure, transactional rollback and live duplicate tool replay",
+  "rubric_version": "v1",
+  "config": null,
+  "preflight": "passed"
+}

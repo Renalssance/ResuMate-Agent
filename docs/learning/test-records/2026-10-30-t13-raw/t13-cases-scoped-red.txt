@@ -1,0 +1,118 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_whole_entry_source_uses_its_own_marks[True-work_experience] _______
+
+section = 'work_experience', correct_marks = True
+
+    @pytest.mark.parametrize('section', ['work_experience', 'projects'])
+    @pytest.mark.parametrize('correct_marks', [True, False])
+    def test_whole_entry_source_uses_its_own_marks(section, correct_marks):
+        case, output, data = valid_snapshot()
+        entry = {'description': '负责测试环境接口开发。', 'source_refs': ['page:2:entry:0']}
+        version = data['versions'][0]
+        for structured in (data['resume']['structured_data'], data['baseline']['resume']['structured_data'],
+                           data['run']['input_json']['contextSnapshot']['resume']['structured'],
+                           version['structured_content']['resume']):
+            structured[section] = [deepcopy(entry)]
+        change = version['structured_content']['changes'][0]
+        change['fact_refs'][0].update(section=f'/{section}/0',
+                                     sourceRefs=entry['source_refs'] if correct_marks else ['page:1'])
+        version['fact_refs'] = deepcopy(change['fact_refs'])
+        verdict = verify(case, output, data)
+        if correct_marks:
+>           assert verdict['passed'], fail_names(verdict)
+E           AssertionError: {'source_identity'}
+E           assert False
+
+backend/tests/test_eval_verifiers.py:172: AssertionError
+__________ test_whole_entry_source_uses_its_own_marks[True-projects] ___________
+
+section = 'projects', correct_marks = True
+
+    @pytest.mark.parametrize('section', ['work_experience', 'projects'])
+    @pytest.mark.parametrize('correct_marks', [True, False])
+    def test_whole_entry_source_uses_its_own_marks(section, correct_marks):
+        case, output, data = valid_snapshot()
+        entry = {'description': '负责测试环境接口开发。', 'source_refs': ['page:2:entry:0']}
+        version = data['versions'][0]
+        for structured in (data['resume']['structured_data'], data['baseline']['resume']['structured_data'],
+                           data['run']['input_json']['contextSnapshot']['resume']['structured'],
+                           version['structured_content']['resume']):
+            structured[section] = [deepcopy(entry)]
+        change = version['structured_content']['changes'][0]
+        change['fact_refs'][0].update(section=f'/{section}/0',
+                                     sourceRefs=entry['source_refs'] if correct_marks else ['page:1'])
+        version['fact_refs'] = deepcopy(change['fact_refs'])
+        verdict = verify(case, output, data)
+        if correct_marks:
+>           assert verdict['passed'], fail_names(verdict)
+E           AssertionError: {'source_identity'}
+E           assert False
+
+backend/tests/test_eval_verifiers.py:172: AssertionError
+______ test_whole_entry_source_uses_its_own_marks[False-work_experience] _______
+
+section = 'work_experience', correct_marks = False
+
+    @pytest.mark.parametrize('section', ['work_experience', 'projects'])
+    @pytest.mark.parametrize('correct_marks', [True, False])
+    def test_whole_entry_source_uses_its_own_marks(section, correct_marks):
+        case, output, data = valid_snapshot()
+        entry = {'description': '负责测试环境接口开发。', 'source_refs': ['page:2:entry:0']}
+        version = data['versions'][0]
+        for structured in (data['resume']['structured_data'], data['baseline']['resume']['structured_data'],
+                           data['run']['input_json']['contextSnapshot']['resume']['structured'],
+                           version['structured_content']['resume']):
+            structured[section] = [deepcopy(entry)]
+        change = version['structured_content']['changes'][0]
+        change['fact_refs'][0].update(section=f'/{section}/0',
+                                     sourceRefs=entry['source_refs'] if correct_marks else ['page:1'])
+        version['fact_refs'] = deepcopy(change['fact_refs'])
+        verdict = verify(case, output, data)
+        if correct_marks:
+            assert verdict['passed'], fail_names(verdict)
+        else:
+>           assert fail_names(verdict) == {'source_identity'}
+E           AssertionError: assert set() == {'source_identity'}
+E
+E             Extra items in the right set:
+E             'source_identity'
+E             Use -v to get more diff
+
+backend/tests/test_eval_verifiers.py:174: AssertionError
+__________ test_whole_entry_source_uses_its_own_marks[False-projects] __________
+
+section = 'projects', correct_marks = False
+
+    @pytest.mark.parametrize('section', ['work_experience', 'projects'])
+    @pytest.mark.parametrize('correct_marks', [True, False])
+    def test_whole_entry_source_uses_its_own_marks(section, correct_marks):
+        case, output, data = valid_snapshot()
+        entry = {'description': '负责测试环境接口开发。', 'source_refs': ['page:2:entry:0']}
+        version = data['versions'][0]
+        for structured in (data['resume']['structured_data'], data['baseline']['resume']['structured_data'],
+                           data['run']['input_json']['contextSnapshot']['resume']['structured'],
+                           version['structured_content']['resume']):
+            structured[section] = [deepcopy(entry)]
+        change = version['structured_content']['changes'][0]
+        change['fact_refs'][0].update(section=f'/{section}/0',
+                                     sourceRefs=entry['source_refs'] if correct_marks else ['page:1'])
+        version['fact_refs'] = deepcopy(change['fact_refs'])
+        verdict = verify(case, output, data)
+        if correct_marks:
+            assert verdict['passed'], fail_names(verdict)
+        else:
+>           assert fail_names(verdict) == {'source_identity'}
+E           AssertionError: assert set() == {'source_identity'}
+E
+E             Extra items in the right set:
+E             'source_identity'
+E             Use -v to get more diff
+
+backend/tests/test_eval_verifiers.py:174: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_verifiers.py::test_whole_entry_source_uses_its_own_marks[True-work_experience]
+FAILED backend/tests/test_eval_verifiers.py::test_whole_entry_source_uses_its_own_marks[True-projects]
+FAILED backend/tests/test_eval_verifiers.py::test_whole_entry_source_uses_its_own_marks[False-work_experience]
+FAILED backend/tests/test_eval_verifiers.py::test_whole_entry_source_uses_its_own_marks[False-projects]
+4 failed, 21 deselected in 0.04s

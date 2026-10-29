@@ -1,0 +1,910 @@
+.FFFFFFFFFFFFFFFFFFF                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_corrupt_snapshot_is_rejected[duplicate_version-draft_count] _______
+
+mutation = 'duplicate_version', expected = 'draft_count'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+___ test_corrupt_snapshot_is_rejected[wrong_output_ref-artifact_consistency] ___
+
+mutation = 'wrong_output_ref', expected = 'artifact_consistency'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+________ test_corrupt_snapshot_is_rejected[wrong_before-before_matches] ________
+
+mutation = 'wrong_before', expected = 'before_matches'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+____ test_corrupt_snapshot_is_rejected[wrong_fact_revision-source_identity] ____
+
+mutation = 'wrong_fact_revision', expected = 'source_identity'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+___ test_corrupt_snapshot_is_rejected[wrong_resume_version-source_identity] ____
+
+mutation = 'wrong_resume_version', expected = 'source_identity'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_____ test_corrupt_snapshot_is_rejected[wrong_fact_owner-source_identity] ______
+
+mutation = 'wrong_fact_owner', expected = 'source_identity'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+____ test_corrupt_snapshot_is_rejected[wrong_source_marks-source_identity] _____
+
+mutation = 'wrong_source_marks', expected = 'source_identity'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+____ test_corrupt_snapshot_is_rejected[answer_other_run-answer_persistence] ____
+
+mutation = 'answer_other_run', expected = 'answer_persistence'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_____ test_corrupt_snapshot_is_rejected[missing_answer-answer_persistence] _____
+
+mutation = 'missing_answer', expected = 'answer_persistence'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+___ test_corrupt_snapshot_is_rejected[unanswered_action-answer_persistence] ____
+
+mutation = 'unanswered_action', expected = 'answer_persistence'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_______ test_corrupt_snapshot_is_rejected[auto_confirmed-pending_review] _______
+
+mutation = 'auto_confirmed', expected = 'pending_review'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_ test_corrupt_snapshot_is_rejected[main_resume_overwrite-original_resume_unchanged] _
+
+mutation = 'main_resume_overwrite', expected = 'original_resume_unchanged'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_________ test_corrupt_snapshot_is_rejected[new_fact-facts_unchanged] __________
+
+mutation = 'new_fact', expected = 'facts_unchanged'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+____ test_corrupt_snapshot_is_rejected[duplicate_operation-operation_count] ____
+
+mutation = 'duplicate_operation', expected = 'operation_count'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+_ test_corrupt_snapshot_is_rejected[duplicate_artifact_event-artifact_event_count] _
+
+mutation = 'duplicate_artifact_event', expected = 'artifact_event_count'
+
+    @pytest.mark.parametrize('mutation,expected', [
+        ('duplicate_version', 'draft_count'), ('wrong_output_ref', 'artifact_consistency'),
+        ('wrong_before', 'before_matches'), ('wrong_fact_revision', 'source_identity'),
+        ('wrong_resume_version', 'source_identity'), ('wrong_fact_owner', 'source_identity'),
+        ('wrong_source_marks', 'source_identity'), ('answer_other_run', 'answer_persistence'),
+        ('missing_answer', 'answer_persistence'), ('unanswered_action', 'answer_persistence'),
+        ('auto_confirmed', 'pending_review'), ('main_resume_overwrite', 'original_resume_unchanged'),
+        ('new_fact', 'facts_unchanged'), ('duplicate_operation', 'operation_count'),
+        ('duplicate_artifact_event', 'artifact_event_count'),
+    ])
+    def test_corrupt_snapshot_is_rejected(mutation, expected):
+        case, output, data = valid_snapshot()
+        version = data['versions'][0]
+        change = version['structured_content']['changes'][0]
+        if mutation == 'duplicate_version':
+            extra = deepcopy(version)
+            extra['id'] = 'draft-2'
+            data['versions'].append(extra)
+        elif mutation == 'wrong_output_ref':
+            data['run']['output_refs'][0]['id'] = 'wrong'
+        elif mutation == 'wrong_before':
+            change['before'] = 'invented original'
+        elif mutation == 'wrong_fact_revision':
+            change['fact_refs'][1]['revision'] = 2
+        elif mutation == 'wrong_resume_version':
+            change['fact_refs'][0]['inputVersion'] = 'newer-v2'
+        elif mutation == 'wrong_fact_owner':
+            data['facts'][0]['user_id'] = 2
+        elif mutation == 'wrong_source_marks':
+            change['fact_refs'][0]['sourceRefs'] = ['page:999']
+        elif mutation == 'answer_other_run':
+            data['actions'][0]['run_id'] = 'someone-else'
+        elif mutation == 'missing_answer':
+            data['actions'] = []
+        elif mutation == 'unanswered_action':
+            data['actions'][0]['status'] = 'pending'
+        elif mutation == 'auto_confirmed':
+            version['status'] = 'confirmed'
+        elif mutation == 'main_resume_overwrite':
+            data['resume']['structured_data']['self_summary'] = change['after']
+        elif mutation == 'new_fact':
+            data['facts'].append({**data['facts'][0], 'id': 'unrequested-fact'})
+        elif mutation == 'duplicate_operation':
+            data['operations'].append(deepcopy(data['operations'][0]))
+        elif mutation == 'duplicate_artifact_event':
+            data['events'].append({**data['events'][0], 'seq': 2})
+        verdict = verify(case, output, data)
+>       assert not verdict['passed']
+E       assert not True
+
+backend/tests/test_eval_verifiers.py:105: AssertionError
+____________ test_long_context_cannot_pass_from_a_large_input_alone ____________
+
+    def test_long_context_cannot_pass_from_a_large_input_alone():
+        case, output, data = valid_snapshot()
+        case['long'] = True
+        verdict = verify(case, output, data)
+>       assert {'actual_summary', 'file_paging', 'checkpoint_reopened', 'required_context_preserved'} <= fail_names(verdict)
+E       AssertionError: assert {'actual_summ...xt_preserved'} <= set()
+E
+E         Extra items in the left set:
+E         'file_paging'
+E         'required_context_preserved'
+E         'checkpoint_reopened'
+E         'actual_summary'
+
+backend/tests/test_eval_verifiers.py:115: AssertionError
+________ test_rollback_requires_no_artifact_operation_or_event_residue _________
+
+    def test_rollback_requires_no_artifact_operation_or_event_residue():
+        case, output, data = valid_snapshot()
+        case['fault'] = 'write'
+        case['expected'] = {'statuses': ['failed'], 'draft_count': 0}
+        data['run']['status'] = output['status'] = 'failed'
+        output['coverage']['fault_injected'] = True
+>       assert {'draft_count', 'operation_count', 'artifact_event_count'} <= fail_names(verify(case, output, data))
+E       AssertionError: assert {'artifact_ev...ration_count'} <= set()
+E
+E         Extra items in the left set:
+E         'artifact_event_count'
+E         'operation_count'
+E         'draft_count'
+
+backend/tests/test_eval_verifiers.py:124: AssertionError
+__________ test_cancel_requires_observed_pause_and_no_followup_calls ___________
+
+    def test_cancel_requires_observed_pause_and_no_followup_calls():
+        case, output, data = valid_snapshot()
+        case['cancel'] = True
+        case['expected'] = {'statuses': ['cancelled'], 'draft_count': 0, 'requires_waiting': True}
+        data['run']['status'] = output['status'] = 'cancelled'
+        output['coverage'] = {'cancel_claim_blocked': False, 'model_calls_after_cancel': 1}
+>       assert {'waiting_observed', 'cancel_claim_blocked', 'cancel_stops_calls'} <= fail_names(verify(case, output, data))
+E       AssertionError: assert {'cancel_clai...ing_observed'} <= set()
+E
+E         Extra items in the left set:
+E         'cancel_claim_blocked'
+E         'waiting_observed'
+E         'cancel_stops_calls'
+
+backend/tests/test_eval_verifiers.py:133: AssertionError
+___________ test_semantics_are_never_claimed_from_stub_or_id_checks ____________
+
+    def test_semantics_are_never_claimed_from_stub_or_id_checks():
+        stub, live = semantic_review('stub'), semantic_review('live')
+>       assert {item['status'] for item in stub['items']} == {'not_applicable'}
+E       AssertionError: assert set() == {'not_applicable'}
+E
+E         Extra items in the right set:
+E         'not_applicable'
+E         Use -v to get more diff
+
+backend/tests/test_eval_verifiers.py:138: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[duplicate_version-draft_count]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_output_ref-artifact_consistency]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_before-before_matches]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_fact_revision-source_identity]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_resume_version-source_identity]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_fact_owner-source_identity]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[wrong_source_marks-source_identity]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[answer_other_run-answer_persistence]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[missing_answer-answer_persistence]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[unanswered_action-answer_persistence]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[auto_confirmed-pending_review]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[main_resume_overwrite-original_resume_unchanged]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[new_fact-facts_unchanged]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[duplicate_operation-operation_count]
+FAILED backend/tests/test_eval_verifiers.py::test_corrupt_snapshot_is_rejected[duplicate_artifact_event-artifact_event_count]
+FAILED backend/tests/test_eval_verifiers.py::test_long_context_cannot_pass_from_a_large_input_alone
+FAILED backend/tests/test_eval_verifiers.py::test_rollback_requires_no_artifact_operation_or_event_residue
+FAILED backend/tests/test_eval_verifiers.py::test_cancel_requires_observed_pause_and_no_followup_calls
+FAILED backend/tests/test_eval_verifiers.py::test_semantics_are_never_claimed_from_stub_or_id_checks
+19 failed, 1 passed in 0.07s

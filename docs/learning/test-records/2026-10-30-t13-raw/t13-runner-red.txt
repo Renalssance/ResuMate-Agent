@@ -1,0 +1,75 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_explicit_env_file_only_loads_model_whitelist _______________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_explicit_env_file_only_lo0')
+
+    def test_explicit_env_file_only_loads_model_whitelist(tmp_path):
+>       from evals.run import load_model_env
+E       ModuleNotFoundError: No module named 'evals.run'
+
+backend/tests/test_eval_runner.py:21: ModuleNotFoundError
+______ test_live_missing_config_is_incomplete_without_reading_credentials ______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_live_missing_config_is_in0')
+
+    def test_live_missing_config_is_incomplete_without_reading_credentials(tmp_path):
+>       process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', 'normal-api',
+            '--env-file', str(tmp_path / 'does-not-exist.env'))
+
+backend/tests/test_eval_runner.py:30:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_live_missing_config_is_in0')
+env = None
+arguments = ('--mode', 'live', '--cases', 'normal-api', '--env-file', '/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_live_missing_config_is_in0/does-not-exist.env')
+output = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_live_missing_config_is_in0/out')
+process = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m.../Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python: No module named evals.run\n')
+
+    def launch(tmp_path, *arguments, env=None):
+        output = tmp_path / 'out'
+        process = subprocess.run([sys.executable, '-m', 'evals.run', '--suite', 'core', '--output', str(output),
+                                  *arguments], cwd=ROOT, env={**os.environ, **(env or {})}, capture_output=True, text=True)
+        reports = list(output.glob('*/report.json'))
+>       assert reports, process.stderr
+E       AssertionError: /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python: No module named evals.run
+E
+E       assert []
+
+backend/tests/test_eval_runner.py:16: AssertionError
+______ test_two_stub_cases_have_isolated_databases_and_no_provider_client ______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_two_stub_cases_have_isola0')
+
+    def test_two_stub_cases_have_isolated_databases_and_no_provider_client(tmp_path):
+        sentinel = tmp_path / 'existing.db'
+        sentinel.write_text('existing operator database must stay untouched')
+>       process, report, invocation = launch(tmp_path, '--mode', 'stub', '--cases', 'normal-api,ask-metric',
+            env={'DATABASE_URL': 'sqlite:///' + str(sentinel), 'OPENAI_API_KEY': 'must-not-use',
+                 'OPENAI_BASE_URL': 'http://127.0.0.1:1'})
+
+backend/tests/test_eval_runner.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_two_stub_cases_have_isola0')
+env = {'DATABASE_URL': 'sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_two_stub_cases_have_isola0/existing.db', 'OPENAI_API_KEY': 'must-not-use', 'OPENAI_BASE_URL': 'http://127.0.0.1:1'}
+arguments = ('--mode', 'stub', '--cases', 'normal-api,ask-metric')
+output = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-148/test_two_stub_cases_have_isola0/out')
+process = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m.../Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python: No module named evals.run\n')
+
+    def launch(tmp_path, *arguments, env=None):
+        output = tmp_path / 'out'
+        process = subprocess.run([sys.executable, '-m', 'evals.run', '--suite', 'core', '--output', str(output),
+                                  *arguments], cwd=ROOT, env={**os.environ, **(env or {})}, capture_output=True, text=True)
+        reports = list(output.glob('*/report.json'))
+>       assert reports, process.stderr
+E       AssertionError: /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python: No module named evals.run
+E
+E       assert []
+
+backend/tests/test_eval_runner.py:16: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_runner.py::test_explicit_env_file_only_loads_model_whitelist
+FAILED backend/tests/test_eval_runner.py::test_live_missing_config_is_incomplete_without_reading_credentials
+FAILED backend/tests/test_eval_runner.py::test_two_stub_cases_have_isolated_databases_and_no_provider_client
+3 failed, 1 passed in 0.10s

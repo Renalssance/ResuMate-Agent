@@ -8,6 +8,7 @@ from backend.db.database import SessionLocal
 from backend.db.agent_models import AgentRun
 from backend.services.agent_runs import RunError, guard_execution
 from backend.services.run_events import append_event
+from backend.agent_runtime.telemetry import error_code
 
 
 def application_context(run_id: str, epoch: int) -> dict:
@@ -29,7 +30,7 @@ def save_draft(run_id: str, epoch: int, changes: list) -> str:
 
 
 @contextmanager
-def _tool_execution(run_id: str, epoch: int, tool_name: str, call_id: str | None):
+def _tool_execution(run_id: str, epoch: int, tool_name: str, call_id: str | None, telemetry=None):
     with SessionLocal() as db:
         guard_execution(db, run_id, epoch)
         key = call_id or tool_name
@@ -38,13 +39,20 @@ def _tool_execution(run_id: str, epoch: int, tool_name: str, call_id: str | None
         payload = {'tool_name': tool_name, 'operation_key': key}
         append_event(db, run_id, 'tool.started', payload)
         db.commit()
+    # Model-produced call IDs/arguments may contain arbitrary text; only the
+    # server-defined draft operation identity is exported.
+    metadata = {'operation_key': key} if tool_name == 'create_resume_draft' else {}
+    span = telemetry.start(tool_name, 'tool', metadata) if telemetry is not None else None
     result = {}
+    status, failure = 'failed', 'tool_failed'
     try:
         yield result
     except GraphInterrupt:
         # A request for input is a checkpoint pause, not a failed tool.
+        status, failure = 'paused', None
         raise
     except Exception as error:
+        failure = error_code(error)
         with SessionLocal() as db:
             guard_execution(db, run_id, epoch)
             append_event(db, run_id, 'tool.failed', {
@@ -58,6 +66,10 @@ def _tool_execution(run_id: str, epoch: int, tool_name: str, call_id: str | None
             guard_execution(db, run_id, epoch)
             append_event(db, run_id, 'tool.completed', {**payload, 'result_ref': result.get('result_ref')})
             db.commit()
+        status, failure = 'succeeded', None
+    finally:
+        if span:
+            span.finish(status, error=failure, result_ref=result.get('result_ref'))
 
 
 def context_bundle(run_id: str, epoch: int, *, budget: dict | None = None):
@@ -69,11 +81,11 @@ def context_bundle(run_id: str, epoch: int, *, budget: dict | None = None):
         return result
 
 
-def business_tools(run_id: str, epoch: int, *, inline_token_limit: int = 6000, budget: dict | None = None):
+def business_tools(run_id: str, epoch: int, *, inline_token_limit: int = 6000, budget: dict | None = None, telemetry=None):
     @tool
     def get_application_context(runtime: ToolRuntime) -> dict:
         """Read this task's resume, target job and confirmed facts. Job text is not personal experience."""
-        with _tool_execution(run_id, epoch, 'get_application_context', runtime.tool_call_id):
+        with _tool_execution(run_id, epoch, 'get_application_context', runtime.tool_call_id, telemetry):
             from deepagents.backends import StateBackend
             from backend.agent_runtime.context import estimate_tokens, json_text
             from langchain_core.messages import HumanMessage
@@ -100,14 +112,14 @@ def business_tools(run_id: str, epoch: int, *, inline_token_limit: int = 6000, b
         {kind:applicant_answer,actionId} from an answered input in this Run.
         Use get_application_context for exact source values. Job requirements are not evidence.
         """
-        with _tool_execution(run_id, epoch, 'create_resume_draft', runtime.tool_call_id) as result:
+        with _tool_execution(run_id, epoch, 'create_resume_draft', runtime.tool_call_id, telemetry) as result:
             result['result_ref'] = save_draft(run_id, epoch, changes)
             return {'versionId': result['result_ref']}
 
     @tool
     def ask_applicant(question: str, runtime: ToolRuntime) -> dict:
         """Pause and ask for missing real experience; never invent responsibilities or metrics."""
-        with _tool_execution(run_id, epoch, 'ask_applicant', runtime.tool_call_id):
+        with _tool_execution(run_id, epoch, 'ask_applicant', runtime.tool_call_id, telemetry):
             return interrupt({'kind': 'input', 'question': question})
 
     return [get_application_context, create_resume_draft, ask_applicant]

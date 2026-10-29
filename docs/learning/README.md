@@ -18,11 +18,12 @@
 | M2 / T10 | 修改审阅与并发确认 | 完成；552 后端、87 前端、15 浏览器通过，6 张截图实际查看 |
 | M2 / T11 | PDF、投递快照 | 完成；626 后端、94 前端、17 浏览器通过；真实 Linux 中文两页 PDF 与截图已查看 |
 | M3 / T12 | 上下文预算、可撤回业务记忆 | 完成；678 后端、20 浏览器，14 张真实截图已查看，3 项审查修复闭环 |
-| M3 / T13–T14 | 观测、AI 评测、恢复 | T13 实施中；真实模型费用与语义另验收 |
+| M3 / T13 | 观测、AI 评测 | 实现与 stub 验收完成；最终 12 案、56/56 请求上下文证明通过；live 待预算、语义未验收 |
+| M3 / T14 | 故障恢复与旧任务迁移 | 待开发；真实崩溃实验单独验收 |
 | M4 / T15–T16、T20–T21 | 扩展收藏、多轮面试、Redis、WebSocket | 待开发 |
 | M5 / T17–T19 | 性能、安全回归、部署、整体验收 | 待开发 |
 
-最新结果见 [T12 测试记录](test-records/2026-10-30-t12.md)，包含真实浏览器联调与桌面/手机截图。T06 的真实 Compose 事件恢复实验单独运行，1 passed / 140.85s。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
+最新结果见 [T13 测试记录](test-records/2026-10-30-t13.md)，区分早期 751 项全后端、修复后 33/22 项定向测试与最后 12 案 stub。页面联调与桌面/手机截图见 [T12 测试记录](test-records/2026-10-30-t12.md)。T06 的真实 Compose 事件恢复实验单独运行，1 passed / 140.85s。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
 
 ## 已有资料
 
@@ -40,6 +41,8 @@
 - [第十课：逐项审阅、冲突与版本冻结](10-resume-review-and-conflicts.md)
 - [第十一课：中文 PDF 与不可变投递快照](11-pdf-and-submission-snapshots.md)
 - [第十二课：上下文预算、可恢复摘要与可删除记忆](12-context-and-business-memory.md)
+- [第十三课：怎样证明 Agent 做对了事情](13-tracing-and-core-evals.md)
+- [T13 测试、评测证据与审查修复记录](test-records/2026-10-30-t13.md)
 - [T12 测试、截图与审查修复记录](test-records/2026-10-30-t12.md)
 - [T11 测试、截图与 PDF 记录](test-records/2026-10-30-t11.md)
 - [T10 测试、截图与修复记录](test-records/2026-10-30-t10.md)

@@ -75,6 +75,10 @@ T11 已提交 `1d7c211`，日志封存补充 `f3042d2`。按[局部合同](../su
 
 T12 最终后端 678 passed / 6 expected skipped / 121.97s；前端全组件 109 passed，审查修复后相关组件 26 passed，类型检查/构建通过；完整真实浏览器 20 passed / 1.6m。14 张最终桌面/手机截图均实际打开查看。MySQL 创建/删除锁序、历史失败 Session 失效入口、首次列表读取交错三项 P2 已复现、修复并限定复审通过。[第十二课](12-context-and-business-memory.md)与[T12记录](test-records/2026-10-30-t12.md)保留失败、原始结果、截图和限制。
 
-## T13：追踪与首批 12 案评测（实施中）
+## T13：追踪与首批 12 案评测（实现与 stub 验收完成）
 
-按[局部合同](../superpowers/plans/2026-10-30-t13-tracing-and-core-evals.md)构建独立评测环境、纯验证器、真实调用限费及白名单观测。默认 stub；真实模型调用与 Langfuse 接收结果分别保留证据，不能由本地假模型代替。费用金额上限尚待可运行 harness 准备完成后确认，不提前发付费请求。
+按[局部合同](../superpowers/plans/2026-10-30-t13-tracing-and-core-evals.md)完成独立评测环境、纯验证器、实际模型调用限费及白名单观测。来源、工具状态、成功重试、公开工具提案和逐请求上下文证据的真实审查问题均已修复；最终限定复审没有剩余问题。
+
+完整后端 751 passed / 6 expected skipped / 103.58s 发生于最后 A retry/B 修复之前；之后 A 验证器 33 passed、B runner/budget 22 passed，最后 core 为 12 pass / 0 fail / 0 incomplete / 0 not_run。56 次请求（48 主模型/8 摘要）均有通过的上下文证明；长案 18 次请求、5 次文件读取、补问后重开 checkpoint。选定 manifest/calls/report/cases 已归档，不保存临时 SQL/checkpoint。详见[第十三课](13-tracing-and-core-evals.md)与[T13 测试记录](test-records/2026-10-30-t13.md)。
+
+真实 Langfuse 5.0.4 SDK 已在关闭 tracing 时完成生命周期适配验证；无云端凭据与接收证据。没有付费模型调用；smoke 与首批 live 共享总预算问题已提出、等待用户答复，真实语义质量仍未验收。默认 stub CLI 已运行，未提供实际 CI 作业证据；实际 CI 接入留待 T17。Git manifest 基线为 4f4f201，执行含未提交 T13 实现；本记录不虚构最终提交或预算批准。后续继续独立 T14 工作，真实崩溃实验不能由本轮 checkpoint 重开替代。

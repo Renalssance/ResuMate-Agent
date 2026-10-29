@@ -1,0 +1,51 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_live_failure_removes_only_generated_raw_checkpoints_and_keeps_reserve __
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-155/test_live_failure_removes_only0')
+
+    def test_live_failure_removes_only_generated_raw_checkpoints_and_keeps_reserve(tmp_path):
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+        from threading import Thread
+        from backend.tests.test_eval_budget import config
+        class ProviderError(BaseHTTPRequestHandler):
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get('Content-Length', '0')))
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(b'{"error":{"message":"private-provider-body","type":"invalid_request_error","code":"synthetic_failure"}}')
+
+            def log_message(self, *args):
+                pass
+        server = ThreadingHTTPServer(('127.0.0.1', 0), ProviderError)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        budget_file = tmp_path / 'budget.json'
+        budget_file.write_text(json.dumps(config(max_total_cost='1.3', max_case_cost='1.3').public()))
+        env_file = tmp_path / 'synthetic.env'
+        env_file.write_text(f'OPENAI_API_KEY=local-fake-key\nOPENAI_BASE_URL=http://127.0.0.1:{server.server_port}/v1\n')
+        unrelated = tmp_path / 'checkpoints.sqlite'
+        unrelated.write_text('unrelated checkpoint must remain')
+        try:
+            process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', 'normal-api',
+                '--config', str(budget_file), '--env-file', str(env_file))
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+        assert process.returncode == 1, json.dumps(report)
+        assert report['cost']['model_calls'] == 1
+        assert report['cost']['reserved_cost'] == '1.21970880'
+        assert report['cost']['unknown_usage_calls'] == 1
+        assert list(invocation.glob('state/*/eval.sqlite'))
+>       assert not list(invocation.glob('state/*/agent/checkpoints.sqlite*'))
+E       AssertionError: assert not [PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-155/test_live_failure_removes_only0/out/20261029T180154Z-c3d8a9e6/state/normal-api/agent/checkpoints.sqlite')]
+E        +  where [PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-155/test_live_failure_removes_only0/out/20261029T180154Z-c3d8a9e6/state/normal-api/agent/checkpoints.sqlite')] = list(<generator object Path.glob at 0x10c855360>)
+E        +    where <generator object Path.glob at 0x10c855360> = glob('state/*/agent/checkpoints.sqlite*')
+E        +      where glob = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-155/test_live_failure_removes_only0/out/20261029T180154Z-c3d8a9e6').glob
+
+backend/tests/test_eval_runner.py:131: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_runner.py::test_live_failure_removes_only_generated_raw_checkpoints_and_keeps_reserve
+1 failed, 5 deselected in 2.48s

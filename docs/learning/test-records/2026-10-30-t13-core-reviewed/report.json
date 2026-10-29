@@ -1,0 +1,98 @@
+{
+  "mode": "stub",
+  "results": [
+    {
+      "case_id": "normal-api",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-api.json"
+    },
+    {
+      "case_id": "normal-confirmed-fact",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-confirmed-fact.json"
+    },
+    {
+      "case_id": "normal-project",
+      "category": "normal",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/normal-project.json"
+    },
+    {
+      "case_id": "ask-technology",
+      "category": "clarification",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/ask-technology.json"
+    },
+    {
+      "case_id": "ask-metric",
+      "category": "clarification",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/ask-metric.json"
+    },
+    {
+      "case_id": "refuse-fabrication",
+      "category": "refusal_cancel",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/refuse-fabrication.json"
+    },
+    {
+      "case_id": "cancel-waiting",
+      "category": "refusal_cancel",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/cancel-waiting.json"
+    },
+    {
+      "case_id": "tool-read-failure",
+      "category": "tool_failure",
+      "status": "pass",
+      "error_code": "eval_context_unavailable",
+      "artifact": "cases/tool-read-failure.json"
+    },
+    {
+      "case_id": "tool-write-rollback",
+      "category": "tool_failure",
+      "status": "pass",
+      "error_code": "agent_failed",
+      "artifact": "cases/tool-write-rollback.json"
+    },
+    {
+      "case_id": "duplicate-draft",
+      "category": "duplicate",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/duplicate-draft.json"
+    },
+    {
+      "case_id": "conflicting-sources",
+      "category": "source_conflict",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/conflicting-sources.json"
+    },
+    {
+      "case_id": "long-context",
+      "category": "long_context",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/long-context.json"
+    }
+  ],
+  "counts": {
+    "pass": 12,
+    "fail": 0,
+    "incomplete": 0,
+    "not_run": 0
+  },
+  "error_code": null,
+  "semantic_status": "not_applicable",
+  "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."
+}

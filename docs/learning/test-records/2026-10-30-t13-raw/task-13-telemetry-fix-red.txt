@@ -1,0 +1,39 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+___ test_sdk_file_result_preserves_typed_outcome_without_private_body[False] ___
+
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10a4069f0>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-159/test_sdk_file_result_preserves0')
+file_exists = False
+
+    @pytest.mark.parametrize('file_exists', [False, True])
+    def test_sdk_file_result_preserves_typed_outcome_without_private_body(fake_langfuse, tmp_path, file_exists):
+        from deepagents.backends import FilesystemBackend
+        from deepagents.middleware.filesystem import FilesystemMiddleware
+        from langchain_core.messages import ToolMessage
+        from backend.agent_runtime.telemetry import RunTelemetry, SDKToolTelemetry
+        trace = RunTelemetry(SimpleNamespace(id=str(uuid4()), session_id=str(uuid4()),
+            request_id=str(uuid4()), input_versions={}, attempt=1, execution_epoch=1))
+        path = tmp_path / (PRIVATE + '.txt')
+        if file_exists:
+            path.write_text(PRIVATE)
+        middleware = FilesystemMiddleware(backend=FilesystemBackend(root_dir=tmp_path), tools=['read_file'])
+        read_file = next(tool for tool in middleware.tools if tool.name == 'read_file')
+        output = read_file.invoke({'file_path': '/' + path.name,
+            'runtime': SimpleNamespace(tool_call_id='filesystem-test')},
+            config={'callbacks': [SDKToolTelemetry(trace)]})
+        assert isinstance(output, ToolMessage)
+        assert output.status == ('success' if file_exists else 'error')
+        assert PRIVATE in output.content  # Successful content and missing-path errors are both private.
+        spans = [span for span in fake_langfuse.observations if span.kind == 'tool']
+        assert len(spans) == 1 and spans[0].ended
+>       assert spans[0].metadata['status'] == ('succeeded' if file_exists else 'failed')
+E       AssertionError: assert 'succeeded' == 'failed'
+E
+E         - failed
+E         + succeeded
+
+backend/tests/test_agent_telemetry.py:309: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_telemetry.py::test_sdk_file_result_preserves_typed_outcome_without_private_body[False]
+1 failed, 1 passed, 28 deselected in 0.93s

@@ -85,3 +85,6 @@ CLAUDE.md
 # Browser test artifacts
 test-results/
 playwright-report/
+
+# Local eval invocations (selected evidence is archived under docs/learning)
+artifacts/evals/

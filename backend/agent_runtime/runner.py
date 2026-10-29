@@ -8,6 +8,7 @@ from langgraph.types import Command
 from openai import APIConnectionError, APITimeoutError, APIStatusError
 from backend.agent_runtime.factory import build_agent
 from backend.agent_runtime.events import RuntimeEvents
+from backend.agent_runtime.telemetry import RunTelemetry, SDKToolTelemetry
 from backend.db.database import SessionLocal
 from backend.db.agent_models import AgentRun, AgentAction
 from backend.db.career_models import ResumeVersion
@@ -20,15 +21,19 @@ logger = logging.getLogger(__name__)
 
 def run_agent(run_id: str, epoch: int) -> None:
     from backend.worker_tasks import state_directory
+    telemetry = None
     try:
         with SessionLocal() as db:
             agent_runs.guard_execution(db, run_id, epoch)
             run = db.get(AgentRun, run_id)
             user_id, session_id = run.user_id, run.session_id
+            telemetry = RunTelemetry(run)
             db.commit()
         with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
-            agent = build_agent(user_id, saver, run_id=run_id, epoch=epoch)
+            agent = build_agent(user_id, saver, run_id=run_id, epoch=epoch, telemetry=telemetry)
             config = {'configurable': {'thread_id': session_id}, 'recursion_limit': 60}
+            if telemetry.enabled:
+                config['callbacks'] = [SDKToolTelemetry(telemetry)]
             state = agent.get_state(config)
             if state.values.get('run_id') != run_id:
                 if state.values:
@@ -79,6 +84,13 @@ def run_agent(run_id: str, epoch: int) -> None:
             agent_runs.finish_run(db, run_id, epoch, RunStatus.FAILED,
                                   error_code=code, retry=transient)
         logger.warning('Run %s stopped (%s)', run_id, type(error).__name__)
+    finally:
+        if telemetry is not None and telemetry.enabled:
+            try:
+                with SessionLocal() as db:
+                    telemetry.finish(db.get(AgentRun, run_id))
+            except Exception:
+                telemetry.disable()
 
 
 def _save_interrupts(run_id, epoch, interrupts):

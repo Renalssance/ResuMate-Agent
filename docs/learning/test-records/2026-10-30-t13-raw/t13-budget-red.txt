@@ -1,0 +1,71 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_____________ test_insufficient_reserve_prevents_actual_model_call _____________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-145/test_insufficient_reserve_prev0')
+
+    def test_insufficient_reserve_prevents_actual_model_call(tmp_path):
+>       from evals.budget import BudgetExceeded
+E       ModuleNotFoundError: No module named 'evals.budget'
+
+backend/tests/test_eval_budget.py:50: ModuleNotFoundError
+_______ test_usage_reconciles_once_and_missing_usage_keeps_full_reserve ________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-145/test_usage_reconciles_once_and0')
+
+    def test_usage_reconciles_once_and_missing_usage_keeps_full_reserve(tmp_path):
+>       budget = callback(tmp_path)
+                 ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_eval_budget.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-145/test_usage_reconciles_once_and0')
+updates = {}
+
+    def callback(tmp_path, **updates):
+>       from evals.budget import BudgetCallback
+E       ModuleNotFoundError: No module named 'evals.budget'
+
+backend/tests/test_eval_budget.py:45: ModuleNotFoundError
+______ test_timeout_reserve_and_summary_retry_share_actual_call_boundary _______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-145/test_timeout_reserve_and_summa0')
+
+    def test_timeout_reserve_and_summary_retry_share_actual_call_boundary(tmp_path):
+>       from evals.budget import BudgetExceeded
+E       ModuleNotFoundError: No module named 'evals.budget'
+
+backend/tests/test_eval_budget.py:74: ModuleNotFoundError
+_____________ test_usage_outside_verified_capacity_stops_next_call _____________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-145/test_usage_outside_verified_ca0')
+
+    def test_usage_outside_verified_capacity_stops_next_call(tmp_path):
+>       from evals.budget import BudgetExceeded
+E       ModuleNotFoundError: No module named 'evals.budget'
+
+backend/tests/test_eval_budget.py:90: ModuleNotFoundError
+________ test_unknown_billing_capability_rejected_without_calling_model ________
+
+    def test_unknown_billing_capability_rejected_without_calling_model():
+        with pytest.raises(ValueError, match='all_billed'):
+>           config(output_limit_covers_all_billed_tokens=False)
+
+backend/tests/test_eval_budget.py:104:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+updates = {'output_limit_covers_all_billed_tokens': False}
+
+    def config(**updates):
+>       from evals.budget import BudgetConfig
+E       ModuleNotFoundError: No module named 'evals.budget'
+
+backend/tests/test_eval_budget.py:12: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_budget.py::test_insufficient_reserve_prevents_actual_model_call
+FAILED backend/tests/test_eval_budget.py::test_usage_reconciles_once_and_missing_usage_keeps_full_reserve
+FAILED backend/tests/test_eval_budget.py::test_timeout_reserve_and_summary_retry_share_actual_call_boundary
+FAILED backend/tests/test_eval_budget.py::test_usage_outside_verified_capacity_stops_next_call
+FAILED backend/tests/test_eval_budget.py::test_unknown_billing_capability_rejected_without_calling_model
+5 failed in 0.11s

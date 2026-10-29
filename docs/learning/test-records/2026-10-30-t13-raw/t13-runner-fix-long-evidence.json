@@ -1,0 +1,27 @@
+{
+  "artifact": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-163/test_long_context_checks_every0/out/20261029T182013Z-b3983c74/cases/long-context.json",
+  "model_requests": 18,
+  "main_requests": 10,
+  "summary_requests": 8,
+  "resumed_requests": 8,
+  "coverage": {
+    "waiting_observed": true,
+    "waiting_draft_count": 0,
+    "checkpoint_reopened": true,
+    "summary_calls": 8,
+    "file_reads": [
+      "/inputs/bbb0059a-a882-4db4-9a22-4003e4d69af4/resume.json",
+      "/inputs/bbb0059a-a882-4db4-9a22-4003e4d69af4/resume-text.json",
+      "/inputs/bbb0059a-a882-4db4-9a22-4003e4d69af4/job-text.json",
+      "/inputs/bbb0059a-a882-4db4-9a22-4003e4d69af4/match.json",
+      "/inputs/bbb0059a-a882-4db4-9a22-4003e4d69af4/resume.json"
+    ],
+    "cancel_claim_blocked": false,
+    "model_calls_after_cancel": 0,
+    "fault_injected": false,
+    "duplicate_result_refs": [
+      "f5eed945-3673-46f2-a917-75313625298c"
+    ],
+    "required_context_preserved": true
+  }
+}

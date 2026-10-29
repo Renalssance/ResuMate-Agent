@@ -1,0 +1,21 @@
+WARN Retry attempt #0. Sleeping 1.987941633s before the next attempt
+WARN Retry attempt #0. Sleeping 1.022764175s before the next attempt
+WARN Retry attempt #0. Sleeping 1.824254694s before the next attempt
+WARN Retry attempt #0. Sleeping 1.894568007s before the next attempt
+WARN Retry attempt #0. Sleeping 1.496843951s before the next attempt
+WARN Retry attempt #0. Sleeping 1.098714933s before the next attempt
+Resolved 195 packages in 3.36s
+Updated googleapis-common-protos v1.56.1 -> v1.76.0
+Removed importlib-metadata v8.7.1
+Added langfuse v5.0.4
+Updated opentelemetry-api v1.40.0 -> v1.45.2
+Added opentelemetry-exporter-http-transport v0.66b2
+Added opentelemetry-exporter-otlp-common v0.66b2
+Added opentelemetry-exporter-otlp-proto-common v1.45.2
+Updated opentelemetry-exporter-otlp-proto-grpc v1.11.1 -> v1.45.2
+Added opentelemetry-exporter-otlp-proto-http v1.45.2
+Updated opentelemetry-proto v1.11.1 -> v1.45.2
+Updated opentelemetry-sdk v1.40.0 -> v1.45.2
+Updated opentelemetry-semantic-conventions v0.61b0 -> v0.66b2
+Added wrapt v2.5.1
+Removed zipp v3.23.0

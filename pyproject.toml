@@ -30,6 +30,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+telemetry = ["langfuse==5.0.4"]
 local-embeddings = ["sentence-transformers>=3.0.0"]
 ocr = ["rapidocr-onnxruntime>=1.4.4", "pypdfium2>=5.6.0"]
 

@@ -1,0 +1,211 @@
+...sssFsFFFFFsssssFsFs                                                   [100%]
+=================================== FAILURES ===================================
+_____ test_correlates_real_run_models_tools_versions_without_text[sqlite] ______
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...ExistingCallback object at 0x10c0c5010>], metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c0432f0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c0c5700>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c0c7bf0>
+
+    def test_correlates_real_run_models_tools_versions_without_text(runtime, career_db, fake_langfuse, monkeypatch):
+        from backend.agent_runtime import tools
+        runner, model = runtime
+        career_db.get(Resume, 1).structured_data = {'self_summary': PRIVATE}
+        career_db.commit()
+        run = new_run(career_db)
+        run.request_id = str(uuid4())
+        career_db.commit()
+        callback_calls = []
+        class ExistingCallback(BaseCallbackHandler):
+            def on_chat_model_start(self, *args, **kwargs):
+                callback_calls.append(str(kwargs['run_id']))
+        model.callbacks = [ExistingCallback()]
+        original = tools.save_draft
+        def save(*args, **kwargs):
+            live = [span for span in fake_langfuse.observations if span.name == 'create_resume_draft' and not span.ended]
+            assert len(live) == 1, 'Tool span must already exist during the actual database operation'
+            return original(*args, **kwargs)
+        monkeypatch.setattr(tools, 'save_draft', save)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        saved = career_db.get(AgentRun, run.id)
+>       assert saved.status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_telemetry.py:135: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 43155f7b-6285-41c9-b6b1-5c40eb97cff6 stopped (AssertionError)
+___ test_observation_failures_leave_business_success_unchanged[sqlite-init] ____
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c0d01a0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c0d3230>
+failure = 'init'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x10c31af00>
+
+    @pytest.mark.parametrize('failure', ['init', 'root_start', 'child_start', 'update', 'end'])
+    def test_observation_failures_leave_business_success_unchanged(runtime, career_db, fake_langfuse, failure, caplog):
+        fake_langfuse.failure = failure
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+        assert career_db.query(ResumeVersion).count() == 1
+        warnings = [r for r in caplog.records if r.name == 'backend.agent_runtime.telemetry']
+>       assert len(warnings) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:169: AssertionError
+_ test_observation_failures_leave_business_success_unchanged[sqlite-root_start] _
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c2669c0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c318ad0>
+failure = 'root_start'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x10c1b4ec0>
+
+    @pytest.mark.parametrize('failure', ['init', 'root_start', 'child_start', 'update', 'end'])
+    def test_observation_failures_leave_business_success_unchanged(runtime, career_db, fake_langfuse, failure, caplog):
+        fake_langfuse.failure = failure
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+        assert career_db.query(ResumeVersion).count() == 1
+        warnings = [r for r in caplog.records if r.name == 'backend.agent_runtime.telemetry']
+>       assert len(warnings) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:169: AssertionError
+_ test_observation_failures_leave_business_success_unchanged[sqlite-child_start] _
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c1855b0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c1b69f0>
+failure = 'child_start'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x10c1f77a0>
+
+    @pytest.mark.parametrize('failure', ['init', 'root_start', 'child_start', 'update', 'end'])
+    def test_observation_failures_leave_business_success_unchanged(runtime, career_db, fake_langfuse, failure, caplog):
+        fake_langfuse.failure = failure
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+        assert career_db.query(ResumeVersion).count() == 1
+        warnings = [r for r in caplog.records if r.name == 'backend.agent_runtime.telemetry']
+>       assert len(warnings) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:169: AssertionError
+__ test_observation_failures_leave_business_success_unchanged[sqlite-update] ___
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c041160>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10bc1ecc0>
+failure = 'update'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x10c08a060>
+
+    @pytest.mark.parametrize('failure', ['init', 'root_start', 'child_start', 'update', 'end'])
+    def test_observation_failures_leave_business_success_unchanged(runtime, career_db, fake_langfuse, failure, caplog):
+        fake_langfuse.failure = failure
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+        assert career_db.query(ResumeVersion).count() == 1
+        warnings = [r for r in caplog.records if r.name == 'backend.agent_runtime.telemetry']
+>       assert len(warnings) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:169: AssertionError
+____ test_observation_failures_leave_business_success_unchanged[sqlite-end] ____
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10bbf1bb0>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10bee9b80>
+failure = 'end'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x10c4b6d50>
+
+    @pytest.mark.parametrize('failure', ['init', 'root_start', 'child_start', 'update', 'end'])
+    def test_observation_failures_leave_business_success_unchanged(runtime, career_db, fake_langfuse, failure, caplog):
+        fake_langfuse.failure = failure
+        runner, _ = runtime
+        run = new_run(career_db)
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+        assert career_db.query(ResumeVersion).count() == 1
+        warnings = [r for r in caplog.records if r.name == 'backend.agent_runtime.telemetry']
+>       assert len(warnings) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:169: AssertionError
+_ test_pause_is_closed_then_resume_uses_same_trace_without_private_answer[sqlite] _
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, ask=True))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c06a570>
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c49fe60>
+
+    def test_pause_is_closed_then_resume_uses_same_trace_without_private_answer(runtime, career_db, fake_langfuse):
+        runner, model = runtime
+        model.ask = True
+        run = new_run(career_db)
+        run.request_id = PRIVATE
+        career_db.commit()
+        runner.run_agent(run.id, agent_runs.claim_run(career_db, run.id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.WAITING_INPUT
+        paused = [s for s in fake_langfuse.observations if s.name == 'ask_applicant']
+>       assert len(paused) == 1 and paused[0].ended
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:183: AssertionError
+____ test_real_summary_and_filesystem_callbacks_include_usage_only[sqlite] _____
+
+context_runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...Model(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3000}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10c49ee70>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c5f5f40>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-146/test_real_summary_and_filesyst0')
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x10c6e7470>
+
+    def test_real_summary_and_filesystem_callbacks_include_usage_only(context_runtime, career_db, monkeypatch, tmp_path, fake_langfuse):
+        from backend.tests.test_agent_context import LongContextModel, test_long_context_summarizes_and_recovers_real_checkpoint
+        original = LongContextModel._generate
+        def generate(self, messages, **kwargs):
+            result = original(self, messages, **kwargs)
+            result.generations[0].message.usage_metadata = {'input_tokens': 11, 'output_tokens': 7, 'total_tokens': 18}
+            return result
+        monkeypatch.setattr(LongContextModel, '_generate', generate)
+        test_long_context_summarizes_and_recovers_real_checkpoint(context_runtime, career_db, monkeypatch, tmp_path)
+        summaries = [s for s in fake_langfuse.observations if s.name == 'model.summary']
+>       assert summaries, 'Actual SDK summary calls are missing from telemetry'
+E       AssertionError: Actual SDK summary calls are missing from telemetry
+E       assert []
+
+backend/tests/test_agent_telemetry.py:209: AssertionError
+----------------------------- Captured stdout call -----------------------------
+CONTEXT_ESTIMATES {"method": "estimated: SDK count_tokens_approximately, chars_per_token=1.0, includes system and tools", "inlineSnapshotEstimatedTokens": 88620, "actualMainRequestEstimatedTokens": [13567, 19736, 16826, 20140, 20134, 20745, 16735, 19620, 20250, 16942, 20253], "actualSummaryRequestEstimatedTokens": [11443, 8559, 11873, 11867, 12478, 11384, 11969], "summaryCalls": 7, "draftId": "a86627f5-a6c5-4758-9a92-db5c76e4119c", "sourceActionId": "1b127212-c5eb-4902-9960-a335427e99bc"}
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_telemetry.py::test_correlates_real_run_models_tools_versions_without_text[sqlite]
+FAILED backend/tests/test_agent_telemetry.py::test_observation_failures_leave_business_success_unchanged[sqlite-init]
+FAILED backend/tests/test_agent_telemetry.py::test_observation_failures_leave_business_success_unchanged[sqlite-root_start]
+FAILED backend/tests/test_agent_telemetry.py::test_observation_failures_leave_business_success_unchanged[sqlite-child_start]
+FAILED backend/tests/test_agent_telemetry.py::test_observation_failures_leave_business_success_unchanged[sqlite-update]
+FAILED backend/tests/test_agent_telemetry.py::test_observation_failures_leave_business_success_unchanged[sqlite-end]
+FAILED backend/tests/test_agent_telemetry.py::test_pause_is_closed_then_resume_uses_same_trace_without_private_answer[sqlite]
+FAILED backend/tests/test_agent_telemetry.py::test_real_summary_and_filesystem_callbacks_include_usage_only[sqlite]
+8 failed, 3 passed, 11 skipped in 2.03s
