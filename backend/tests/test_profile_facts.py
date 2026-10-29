@@ -132,6 +132,13 @@ def test_run_freezes_latest_confirmed_scope_and_old_context_survives_edit(run_cl
     assert agent_runs.retry_run(career_db, 1, old.id).status == 'queued'
 
 
+def fact_proposal(tools, run_id, epoch, fact):
+    context = tools.application_context(run_id, epoch)
+    return [{'section': '/self_summary', 'before': context['resume']['structured']['self_summary'],
+             'after': 'Old fact', 'reason': '已有经历', 'requires_input': False,
+             'fact_refs': [{'kind': 'profile_fact', 'factId': fact['id'], 'revision': fact['revision']}]}]
+
+
 def test_draft_only_cites_frozen_versions_and_rejects_deleted_family(run_client, career_db, fact_tools):
     first = create_fact(run_client, confirmed=True)
     old = run(career_db)
@@ -139,29 +146,33 @@ def test_draft_only_cites_frozen_versions_and_rejects_deleted_family(run_client,
     another = run(career_db, 'deleted-facts-run')
     updated = revise(run_client, first, confirmed=True).json()
     with pytest.raises(agent_runs.RunError) as outside:
-        fact_tools.save_draft(old.id, epoch, {}, [updated['id']])
+        fact_tools.save_draft(old.id, epoch, fact_proposal(fact_tools, old.id, epoch, updated))
     assert outside.value.code == 'invalid_fact'
-    artifact_id = fact_tools.save_draft(old.id, epoch, {'summary': 'Old fact'}, [first['id']])
+    artifact_id = fact_tools.save_draft(old.id, epoch, fact_proposal(fact_tools, old.id, epoch, first))
     assert run_client.delete(URL + '/' + updated['id'] + '?expectedRevision=2', headers=headers()).status_code == 200
     # Replaying a completed operation preserves the historical artifact.
-    assert fact_tools.save_draft(old.id, epoch, {}, [first['id']]) == artifact_id
+    assert fact_tools.save_draft(old.id, epoch, fact_proposal(fact_tools, old.id, epoch, first)) == artifact_id
+    historical = run_client.get('/api/resume-versions/' + artifact_id, headers=headers()).json()
+    assert historical['sources'][0]['content']['text'] == 'Built APIs'
+    assert historical['changedInputs'] == ['facts'] and historical['basedOnOldInput']
     other_epoch = agent_runs.claim_run(career_db, another.id)
     with pytest.raises(agent_runs.RunError) as deleted:
-        fact_tools.save_draft(another.id, other_epoch, {}, [first['id']])
+        fact_tools.save_draft(another.id, other_epoch, fact_proposal(fact_tools, another.id, other_epoch, first))
     assert deleted.value.code == 'invalid_fact'
     career_db.rollback()
-    assert career_db.get(ResumeVersion, artifact_id).fact_refs == [{'factId': first['id'], 'revision': 1}]
+    assert career_db.get(ResumeVersion, artifact_id).fact_refs == [{'kind': 'profile_fact', 'factId': first['id'], 'revision': 1}]
 
 
 def test_pre_t08_run_without_fact_snapshot_reads_empty_and_cannot_cite_today(run_client, career_db, fact_tools):
     first = create_fact(run_client, confirmed=True)
     old = run(career_db)
     old.input_versions = {key: value for key, value in old.input_versions.items() if key != 'facts'}
+    old.input_json = {key: value for key, value in old.input_json.items() if key != 'contextSnapshot'}
     career_db.commit()
     epoch = agent_runs.claim_run(career_db, old.id)
     assert fact_tools.application_context(old.id, epoch)['facts'] == []
     with pytest.raises(agent_runs.RunError) as error:
-        fact_tools.save_draft(old.id, epoch, {}, [first['id']])
+        fact_tools.save_draft(old.id, epoch, fact_proposal(fact_tools, old.id, epoch, first))
     assert error.value.code == 'invalid_fact'
 
 

@@ -1,27 +1,32 @@
-"""Browser-test worker entrypoint; only the model is replaced, never the graph/tools."""
+"""Browser-test worker: deterministic model; real graph, tools and persistence."""
 import time
 
 from backend.agent_runtime import factory
 from backend.tests.agent_fixtures import DraftModel
-from backend.worker import app  # Celery imports this entrypoint in an independent process.
+from backend.worker import app
 
 
 class BrowserDraftModel(DraftModel):
     ask: bool = True
 
     def _generate(self, messages, **kwargs):
-        # A short deterministic call window makes cancellation while running observable.
-        time.sleep(0.7)
-        result = super()._generate(messages, **kwargs)
-        message = result.generations[0].message
-        for call in message.tool_calls:
-            if call['name'] == 'create_resume_draft':
-                call['args']['content'] = {
-                    'summary': 'API development。' + '负责示例项目中的 API 和数据库设计，与团队核对接口需求并维护数据结构。' * 8,
-                    'work_experience': [{'company': '示例团队', 'title': 'API 工程师',
-                                         'description': '将实际项目职责整理为待本人核对的草稿。' * 8}],
-                }
-        return result
+        time.sleep(0.7)  # Observable real cancellation window.
+        return super()._generate(messages, **kwargs)
+
+    def draft_changes(self, context):
+        changes = super().draft_changes(context)
+        # Long but source-bound wording exercises wrapping without inventing metrics.
+        changes[0]['after'] = changes[0]['before'] + '。' + '负责 API 和数据库设计，与团队核对接口需求。' * 8
+        changes[0]['reason'] = '使用原简历与本次补充的接口职责，突出和岗位相关的实际工作。' * 3
+        if context.get('facts'):
+            fact = context['facts'][0]
+            changes[0]['fact_refs'].append({'kind': 'profile_fact', 'factId': fact['id'], 'revision': fact['revision']})
+        work = context['resume']['structured'].get('work_experience', [])
+        if work:
+            changes.append({'section': '/work_experience/0/description', 'before': work[0]['description'],
+                            'after': None, 'reason': '职责已知，但没有可核对的规模或效果指标；请补充后再修改。',
+                            'fact_refs': [], 'requires_input': True})
+        return changes
 
 
 factory.model_for_user = lambda user_id: BrowserDraftModel()

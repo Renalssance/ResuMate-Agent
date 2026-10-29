@@ -1,0 +1,240 @@
+FFFFFF....FF..                                                           [100%]
+=================================== FAILURES ===================================
+____________ test_agent_creates_one_business_artifact[sqlite-False] ____________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10dc4d5e0>
+repeat = False
+
+    @pytest.mark.parametrize('repeat', [False, True])
+    def test_agent_creates_one_business_artifact(runtime, career_db, repeat):
+        runner, model = runtime
+        model.repeat = repeat
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        run = career_db.get(AgentRun, run_id)
+>       assert run.status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:39: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run ffc8de9f-3163-47b6-b880-5fc4189feaff stopped (KeyError)
+____________ test_agent_creates_one_business_artifact[sqlite-True] _____________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...time/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, repeat=True))
+career_db = <sqlalchemy.orm.session.Session object at 0x10fbfb5f0>
+repeat = True
+
+    @pytest.mark.parametrize('repeat', [False, True])
+    def test_agent_creates_one_business_artifact(runtime, career_db, repeat):
+        runner, model = runtime
+        model.repeat = repeat
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        run = career_db.get(AgentRun, run_id)
+>       assert run.status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:39: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 06f99b3a-5401-4898-a004-95191805d6c6 stopped (KeyError)
+____________ test_agent_creates_one_business_artifact[mysql-False] _____________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x10fd3b590>
+repeat = False
+
+    @pytest.mark.parametrize('repeat', [False, True])
+    def test_agent_creates_one_business_artifact(runtime, career_db, repeat):
+        runner, model = runtime
+        model.repeat = repeat
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        run = career_db.get(AgentRun, run_id)
+>       assert run.status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:39: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run bdddcba8-42a3-40b2-8929-b132d72e4bc3 stopped (KeyError)
+_____________ test_agent_creates_one_business_artifact[mysql-True] _____________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...time/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, repeat=True))
+career_db = <sqlalchemy.orm.session.Session object at 0x10ff541a0>
+repeat = True
+
+    @pytest.mark.parametrize('repeat', [False, True])
+    def test_agent_creates_one_business_artifact(runtime, career_db, repeat):
+        runner, model = runtime
+        model.repeat = repeat
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        run = career_db.get(AgentRun, run_id)
+>       assert run.status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:39: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 50f205f1-0bc9-4c78-8c5b-d80fc6dbd331 stopped (KeyError)
+________ test_interrupt_answer_reopens_checkpoint_and_finishes[sqlite] _________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, ask=True))
+career_db = <sqlalchemy.orm.session.Session object at 0x1100735c0>
+
+    def test_interrupt_answer_reopens_checkpoint_and_finishes(runtime, career_db):
+        runner, model = runtime
+        model.ask = True
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run_id).status == RunStatus.WAITING_INPUT
+        action = career_db.query(AgentAction).one()
+        agent_runs.answer_action(career_db, 1, run_id, action.id,
+                                ActionResponse(decision='submit', answers={'role': 'API'}, expected_revision=1))
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+>       assert career_db.get(AgentRun, run_id).status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:56: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 40f448d1-5263-4386-b4c1-e27fc26d16f5 stopped (KeyError)
+_________ test_interrupt_answer_reopens_checkpoint_and_finishes[mysql] _________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, ask=True))
+career_db = <sqlalchemy.orm.session.Session object at 0x1100cbc80>
+
+    def test_interrupt_answer_reopens_checkpoint_and_finishes(runtime, career_db):
+        runner, model = runtime
+        model.ask = True
+        run_id = new_run(career_db).id
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run_id).status == RunStatus.WAITING_INPUT
+        action = career_db.query(AgentAction).one()
+        agent_runs.answer_action(career_db, 1, run_id, action.id,
+                                ActionResponse(decision='submit', answers={'role': 'API'}, expected_revision=1))
+        runner.run_agent(run_id, agent_runs.claim_run(career_db, run_id))
+        career_db.expire_all()
+>       assert career_db.get(AgentRun, run_id).status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:56: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run b8e456b4-a227-4378-bd69-7f717e8a06d9 stopped (KeyError)
+________________ test_new_run_clears_previous_workspace[sqlite] ________________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x11032c410>
+
+    def test_new_run_clears_previous_workspace(runtime, career_db):
+        from backend.schemas.agent_runs import RunCreate
+        from backend.agent_runtime.factory import build_agent
+        from backend.worker_tasks import state_directory
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        runner, model = runtime
+        first = new_run(career_db)
+        runner.run_agent(first.id, agent_runs.claim_run(career_db, first.id))
+        config = {'configurable': {'thread_id': first.session_id}}
+        with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
+            agent = build_agent(1, saver, run_id=first.id, epoch=1)
+            agent.update_state(config, {'files': {'/old-job.txt': {'content': ['Previous job private notes'],
+                               'created_at': '2026-10-29T00:00:00', 'modified_at': '2026-10-29T00:00:00'}},
+                                       'todos': [{'content': 'old task', 'status': 'pending'}],
+                                       '_summarization_event': {'cutoff_index': 1, 'summary_message': HumanMessage(content='old summary')},
+                                       '_summarization_session_id': 'old-session'})
+        second = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jd_id=1, resume_id=1,
+                                       session_id=first.session_id, request_id='new-job'))
+        runner.run_agent(second.id, agent_runs.claim_run(career_db, second.id))
+        with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
+            agent = build_agent(1, saver, run_id=second.id, epoch=1)
+            state = agent.get_state(config).values
+            assert '/old-job.txt' not in state.get('files', {})
+            assert state.get('todos', []) == []
+            assert state.get('_summarization_event') is None
+            assert state.get('_summarization_session_id') != 'old-session'
+        career_db.expire_all()
+>       assert career_db.get(AgentRun, second.id).status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:113: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 84bc9e72-a77a-4e74-a643-9bab9e26de2a stopped (KeyError)
+WARNING  backend.agent_runtime.runner:runner.py:81 Run e401c552-6fc8-4101-aabb-c0cdf84b1541 stopped (KeyError)
+________________ test_new_run_clears_previous_workspace[mysql] _________________
+
+runtime = (<module 'backend.agent_runtime.runner' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/...end/agent_runtime/runner.py'>, DraftModel(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}))
+career_db = <sqlalchemy.orm.session.Session object at 0x110477830>
+
+    def test_new_run_clears_previous_workspace(runtime, career_db):
+        from backend.schemas.agent_runs import RunCreate
+        from backend.agent_runtime.factory import build_agent
+        from backend.worker_tasks import state_directory
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        runner, model = runtime
+        first = new_run(career_db)
+        runner.run_agent(first.id, agent_runs.claim_run(career_db, first.id))
+        config = {'configurable': {'thread_id': first.session_id}}
+        with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
+            agent = build_agent(1, saver, run_id=first.id, epoch=1)
+            agent.update_state(config, {'files': {'/old-job.txt': {'content': ['Previous job private notes'],
+                               'created_at': '2026-10-29T00:00:00', 'modified_at': '2026-10-29T00:00:00'}},
+                                       'todos': [{'content': 'old task', 'status': 'pending'}],
+                                       '_summarization_event': {'cutoff_index': 1, 'summary_message': HumanMessage(content='old summary')},
+                                       '_summarization_session_id': 'old-session'})
+        second = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jd_id=1, resume_id=1,
+                                       session_id=first.session_id, request_id='new-job'))
+        runner.run_agent(second.id, agent_runs.claim_run(career_db, second.id))
+        with SqliteSaver.from_conn_string(str(state_directory() / 'checkpoints.sqlite')) as saver:
+            agent = build_agent(1, saver, run_id=second.id, epoch=1)
+            state = agent.get_state(config).values
+            assert '/old-job.txt' not in state.get('files', {})
+            assert state.get('todos', []) == []
+            assert state.get('_summarization_event') is None
+            assert state.get('_summarization_session_id') != 'old-session'
+        career_db.expire_all()
+>       assert career_db.get(AgentRun, second.id).status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E         
+E         - succeeded
+E         + failed
+
+backend/tests/test_agent_runtime.py:113: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.runner:runner.py:81 Run 8db40357-c052-40c8-84da-2946d7e8b27f stopped (KeyError)
+WARNING  backend.agent_runtime.runner:runner.py:81 Run bc89b8f8-c78d-445e-916d-e4d4b60e6df2 stopped (KeyError)
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_runtime.py::test_agent_creates_one_business_artifact[sqlite-False]
+FAILED backend/tests/test_agent_runtime.py::test_agent_creates_one_business_artifact[sqlite-True]
+FAILED backend/tests/test_agent_runtime.py::test_agent_creates_one_business_artifact[mysql-False]
+FAILED backend/tests/test_agent_runtime.py::test_agent_creates_one_business_artifact[mysql-True]
+FAILED backend/tests/test_agent_runtime.py::test_interrupt_answer_reopens_checkpoint_and_finishes[sqlite]
+FAILED backend/tests/test_agent_runtime.py::test_interrupt_answer_reopens_checkpoint_and_finishes[mysql]
+FAILED backend/tests/test_agent_runtime.py::test_new_run_clears_previous_workspace[sqlite]
+FAILED backend/tests/test_agent_runtime.py::test_new_run_clears_previous_workspace[mysql]
+8 failed, 6 passed in 3.44s

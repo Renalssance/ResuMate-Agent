@@ -6,9 +6,19 @@ export interface AgentRunItem {
   runId: string; sessionId: string; kind: string; status: RunStatus
   createdAt: string; updatedAt: string; input: Record<string, unknown>; errorCode: string | null
 }
+export type ArtifactReference =
+  | { kind: 'resume'; resumeId: number; inputVersion: string; section: string; sourceRefs: unknown[] }
+  | { kind: 'profile_fact'; factId: string; revision: number }
+  | { kind: 'applicant_answer'; actionId: string }
+export interface ArtifactSource { reference: ArtifactReference; label: string; content: unknown }
+export interface TailoringChange {
+  id: string; section: string; before: string; after: string | null; reason: string
+  fact_refs: ArtifactReference[]; requires_input: boolean; status: 'pending'
+}
 export interface RunArtifact {
   id: string; runId: string; resumeId: number; jdId: number; revision: number; status: string
   structuredContent: Record<string, unknown>; factRefs: unknown[]; createdAt: string
+  sources?: ArtifactSource[]; basedOnOldInput?: boolean; changedInputs?: string[]
 }
 export interface CreateAgentRun { kind: 'tailoring'; jdId: number; resumeId: number; requestId: string }
 export interface ActionAnswer { decision: 'submit' | 'approve' | 'reject'; answers: Record<string, string>; expectedRevision: number }

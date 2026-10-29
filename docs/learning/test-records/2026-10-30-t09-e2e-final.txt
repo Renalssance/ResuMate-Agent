@@ -1,0 +1,13 @@
+
+> test:e2e
+> playwright test tailoring.spec.ts
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-80aqkh
+
+Running 1 test using 1 worker
+
+(node:95476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/tailoring.spec.ts:21:1 › 任务固定旧资料，草稿逐项展示来源、补问与缺失信息 (5.7s)
+
+  1 passed (11.8s)

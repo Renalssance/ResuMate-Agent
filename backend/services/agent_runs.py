@@ -39,23 +39,25 @@ def list_runs(db: Session, user_id: int, *, limit: int = 20, offset: int = 0) ->
             'status': run.status,
             'createdAt': run.created_at.replace(tzinfo=timezone.utc).isoformat(),
             'updatedAt': run.updated_at.replace(tzinfo=timezone.utc).isoformat(),
-            'input': run.input_json, 'errorCode': run.error_code,
+            'input': _public_input(run), 'errorCode': run.error_code,
         } for run in runs[:limit]],
         'hasMore': len(runs) > limit,
     }
 
 
 def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
-    get_run(db, user_id, run_id)
-    versions = db.scalars(select(ResumeVersion).where(
+    run = get_run(db, user_id, run_id)
+    versions = list(db.scalars(select(ResumeVersion).where(
         ResumeVersion.run_id == run_id, ResumeVersion.user_id == user_id,
-    ).order_by(ResumeVersion.created_at.desc(), ResumeVersion.id.desc()))
-    return [{
-        'id': version.id, 'runId': version.run_id, 'resumeId': version.resume_id,
-        'jdId': version.jd_id, 'revision': version.revision, 'status': version.status,
-        'structuredContent': version.structured_content, 'factRefs': version.fact_refs,
-        'createdAt': version.created_at.replace(tzinfo=timezone.utc).isoformat(),
-    } for version in versions]
+    ).order_by(ResumeVersion.created_at.desc(), ResumeVersion.id.desc())))
+    from backend.services.resume_versions import serialize_version
+    from backend.agent_runtime.context import changed_inputs
+    input_changes = changed_inputs(db, run) if versions else []
+    return [serialize_version(db, user_id, version, input_changes=input_changes) for version in versions]
+
+
+def _public_input(run: AgentRun) -> dict:
+    return {key: run.input_json.get(key) for key in ('jdId', 'resumeId')}
 
 
 def _input_versions(db: Session, user_id: int, jd_id: int, resume_id: int) -> dict:
@@ -72,7 +74,7 @@ def _existing_request(db: Session, user_id: int, request: RunCreate) -> AgentRun
     run = db.scalar(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.request_id == request.request_id))
     if run is not None and (
         run.kind != request.kind
-        or run.input_json != {'jdId': request.jd_id, 'resumeId': request.resume_id}
+        or _public_input(run) != {'jdId': request.jd_id, 'resumeId': request.resume_id}
         or (request.session_id is not None and run.session_id != request.session_id)
     ):
         raise RunError(409, 'request_conflict', '该 requestId 已用于另一项请求')
@@ -96,6 +98,8 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
     from backend.services.profile_facts import latest_facts
     versions['facts'] = [{'factId': fact.id, 'revision': fact.revision} for fact in latest_facts(
         db, user_id, source_document_id=request.resume_id, confirmed_only=True)]
+    from backend.agent_runtime.context import capture_context
+    context = capture_context(db, user_id, request.jd_id, request.resume_id, versions)
     if request.session_id:
         session = db.scalar(select(AgentSession).where(AgentSession.id == request.session_id, AgentSession.user_id == user_id))
         if session is None:
@@ -105,7 +109,7 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         db.add(session)
     run = AgentRun(id=str(uuid4()), user_id=user_id, session_id=session.id,
                    request_id=request.request_id, kind=request.kind,
-                   input_json={'jdId': request.jd_id, 'resumeId': request.resume_id},
+                   input_json={'jdId': request.jd_id, 'resumeId': request.resume_id, 'contextSnapshot': context},
                    input_versions=versions)
     try:
         # Flush session explicitly because these models intentionally have no ORM relationship.
@@ -157,12 +161,8 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
     if run.status != RunStatus.FAILED:
         raise RunError(409, 'invalid_state', '只有失败任务可以重试')
-    try:
-        versions = _input_versions(db, user_id, run.input_json['jdId'], run.input_json['resumeId'])
-    except RunError as error:
-        raise RunError(409, 'input_changed', '原资料已删除，请创建新任务') from error
-    if any(run.input_versions.get(key) != value for key, value in versions.items()):
-        raise RunError(409, 'input_changed', '资料已变化，请创建新任务')
+    from backend.agent_runtime.context import read_context
+    read_context(db, run)
     _claim_session(db, user_id, run.session_id, run.id)
     run.status = RunStatus.QUEUED
     run.attempt += 1
@@ -190,7 +190,7 @@ def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
     actions = [row[2] for row in rows if row[2] is not None]
     return {
         'runId': run.id, 'sessionId': run.session_id, 'status': run.status,
-        'kind': run.kind, 'input': run.input_json, 'inputVersions': run.input_versions,
+        'kind': run.kind, 'input': _public_input(run), 'inputVersions': run.input_versions,
         'attempt': run.attempt, 'lastSeq': last_seq, 'errorCode': run.error_code,
         'cancelRequested': run.cancel_requested_at is not None,
         'outputRefs': run.output_refs,

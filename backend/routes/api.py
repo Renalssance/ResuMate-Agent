@@ -25,6 +25,7 @@ from backend.routes.settings import router as settings_router
 from backend.routes.agent_runs import router as agent_runs_router
 from backend.routes.profile_facts import router as profile_facts_router
 from backend.routes.jobs import router as jobs_router
+from backend.routes.resume_versions import router as resume_versions_router
 
 router = APIRouter()
 
@@ -86,3 +87,5 @@ router.include_router(agent_runs_router)
 router.include_router(profile_facts_router)
 
 router.include_router(jobs_router)
+
+router.include_router(resume_versions_router)

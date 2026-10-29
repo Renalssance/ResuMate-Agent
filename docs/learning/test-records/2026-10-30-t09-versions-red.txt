@@ -1,0 +1,932 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                               [100%]
+=================================== FAILURES ===================================
+_______ test_draft_preserves_base_and_api_resolves_fixed_sources[sqlite] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x10d205190>
+run_client = <starlette.testclient.TestClient object at 0x10db7e2a0>
+
+    def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+>       version_id = tools.save_draft(run.id, epoch, [change])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:40: TypeError
+_______ test_draft_preserves_base_and_api_resolves_fixed_sources[mysql] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x10d9bf410>
+run_client = <starlette.testclient.TestClient object at 0x10d9bf860>
+
+    def test_draft_preserves_base_and_api_resolves_fixed_sources(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+>       version_id = tools.save_draft(run.id, epoch, [change])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:40: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch0] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110847380>
+patch = {'section': '/work_experience/99/description'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch1] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110883470>
+patch = {'section': '/candidate_name'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch2] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110883bc0>
+patch = {'section': '/summary'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch3] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x11095bc20>
+patch = {'before': 'Wrong original'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch4] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110a670e0>
+patch = {'after': None}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch5] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1108e9130>
+patch = {'fact_refs': []}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch6] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110a1ee70>
+patch = {'requires_input': True}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch7] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110ad7f20>
+patch = {'requires_input': 'true'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch8] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110a82a80>
+patch = {'reason': ' '}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[sqlite-patch9] _______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110babb90>
+patch = {'after': {'arbitrary': 'object'}}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch0] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1086067b0>
+patch = {'section': '/work_experience/99/description'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch1] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110c09850>
+patch = {'section': '/candidate_name'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch2] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110d63770>
+patch = {'section': '/summary'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch3] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110dc7ec0>
+patch = {'before': 'Wrong original'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch4] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110e70410>
+patch = {'after': None}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch5] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110effec0>
+patch = {'fact_refs': []}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch6] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110cdf530>
+patch = {'requires_input': True}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch7] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110e73080>
+patch = {'requires_input': 'true'}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch8] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110dc4920>
+patch = {'reason': ' '}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_______ test_invalid_proposal_does_not_write_any_artifact[mysql-patch9] ________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110f4e570>
+patch = {'after': {'arbitrary': 'object'}}
+
+    @pytest.mark.parametrize('patch', [
+        {'section': '/work_experience/99/description'},
+        {'section': '/candidate_name'},
+        {'section': '/summary'},
+        {'before': 'Wrong original'},
+        {'after': None},
+        {'fact_refs': []},
+        {'requires_input': True},
+        {'requires_input': 'true'},
+        {'reason': ' '},
+        {'after': {'arbitrary': 'object'}},
+    ])
+    def test_invalid_proposal_does_not_write_any_artifact(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError) as error:
+>           tools.save_draft(run.id, epoch, [{**change, **patch}])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:72: TypeError
+_ test_duplicate_field_rejected_and_missing_input_has_no_invented_after[sqlite] _
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x11114ffb0>
+
+    def test_duplicate_field_rejected_and_missing_input_has_no_invented_after(proposal, career_db):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change, change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:82: TypeError
+_ test_duplicate_field_rejected_and_missing_input_has_no_invented_after[mysql] _
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1111bb080>
+
+    def test_duplicate_field_rejected_and_missing_input_has_no_invented_after(proposal, career_db):
+        tools, run, epoch, change = proposal
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change, change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:82: TypeError
+_____ test_resume_sources_must_match_fixed_applicant_input[sqlite-patch0] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...86', 'kind': 'job', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x11114fb90>
+patch = {'kind': 'job'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+_____ test_resume_sources_must_match_fixed_applicant_input[sqlite-patch1] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 2, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1111224b0>
+patch = {'resumeId': 2}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+_____ test_resume_sources_must_match_fixed_applicant_input[sqlite-patch2] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1112f40b0>
+patch = {'inputVersion': 'new-version'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+_____ test_resume_sources_must_match_fixed_applicant_input[sqlite-patch3] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...10-29T16:29:55.470610', 'kind': 'resume', 'resumeId': 1, 'section': '/missing', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1112f64e0>
+patch = {'section': '/missing'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+_____ test_resume_sources_must_match_fixed_applicant_input[sqlite-patch4] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1111d4320>
+patch = {'sourceRefs': [9]}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+______ test_resume_sources_must_match_fixed_applicant_input[mysql-patch0] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...56', 'kind': 'job', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1110c79e0>
+patch = {'kind': 'job'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+______ test_resume_sources_must_match_fixed_applicant_input[mysql-patch1] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 2, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x111070200>
+patch = {'resumeId': 2}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+______ test_resume_sources_must_match_fixed_applicant_input[mysql-patch2] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1110c79e0>
+patch = {'inputVersion': 'new-version'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+______ test_resume_sources_must_match_fixed_applicant_input[mysql-patch3] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b... '2026-10-29T16:29:56', 'kind': 'resume', 'resumeId': 1, 'section': '/missing', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x11105fc80>
+patch = {'section': '/missing'}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+______ test_resume_sources_must_match_fixed_applicant_input[mysql-patch4] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x11120ba40>
+patch = {'sourceRefs': [9]}
+
+    @pytest.mark.parametrize('patch', [
+        {'kind': 'job'}, {'resumeId': 2}, {'inputVersion': 'new-version'},
+        {'section': '/missing'}, {'sourceRefs': [9]},
+    ])
+    def test_resume_sources_must_match_fixed_applicant_input(proposal, career_db, patch):
+        tools, run, epoch, change = proposal
+        change['fact_refs'] = [{**change['fact_refs'][0], **patch}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:98: TypeError
+_____ test_answer_source_only_accepts_answered_input_from_same_run[sqlite] _____
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...': [{'actionId': 'fe8f3817-00e7-412a-834d-670dad84ba54', 'kind': 'applicant_answer'}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1110dd640>
+
+    def test_answer_source_only_accepts_answered_input_from_same_run(proposal, career_db):
+        tools, run, epoch, change = proposal
+        action = AgentAction(id=str(uuid4()), run_id=run.id, interrupt_id='ask-1', kind='input',
+                             payload={'question': '做了什么？'}, status='pending')
+        career_db.add(action)
+        career_db.commit()
+        change['fact_refs'] = [{'kind': 'applicant_answer', 'actionId': action.id}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:110: TypeError
+_____ test_answer_source_only_accepts_answered_input_from_same_run[mysql] ______
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...': [{'actionId': '0a9fe503-24c7-498a-8b2d-827cdbfd9cbc', 'kind': 'applicant_answer'}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110cdccb0>
+
+    def test_answer_source_only_accepts_answered_input_from_same_run(proposal, career_db):
+        tools, run, epoch, change = proposal
+        action = AgentAction(id=str(uuid4()), run_id=run.id, interrupt_id='ask-1', kind='input',
+                             payload={'question': '做了什么？'}, status='pending')
+        career_db.add(action)
+        career_db.commit()
+        change['fact_refs'] = [{'kind': 'applicant_answer', 'actionId': action.id}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:110: TypeError
+_____________________ test_foreign_answer_rejected[sqlite] _____________________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...': [{'actionId': 'fe4e6e45-70d5-4d35-a558-52c8388d8c2f', 'kind': 'applicant_answer'}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110cdf530>
+
+    def test_foreign_answer_rejected(proposal, career_db):
+        tools, run, epoch, change = proposal
+        other = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jd_id=1, resume_id=1, request_id='another'))
+        action = AgentAction(id=str(uuid4()), run_id=other.id, interrupt_id='ask-2', kind='input',
+                             payload={'question': 'Other'}, status='answered', response={'answers': {'text': 'Other'}})
+        career_db.add(action)
+        career_db.commit()
+        change['fact_refs'] = [{'kind': 'applicant_answer', 'actionId': action.id}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:129: TypeError
+_____________________ test_foreign_answer_rejected[mysql] ______________________
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b...': [{'actionId': '8acae59f-f170-4b64-a1b0-fbf16f49e1b6', 'kind': 'applicant_answer'}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110bf67b0>
+
+    def test_foreign_answer_rejected(proposal, career_db):
+        tools, run, epoch, change = proposal
+        other = agent_runs.create_run(career_db, 1, RunCreate(kind='tailoring', jd_id=1, resume_id=1, request_id='another'))
+        action = AgentAction(id=str(uuid4()), run_id=other.id, interrupt_id='ask-2', kind='input',
+                             payload={'question': 'Other'}, status='answered', response={'answers': {'text': 'Other'}})
+        career_db.add(action)
+        career_db.commit()
+        change['fact_refs'] = [{'kind': 'applicant_answer', 'actionId': action.id}]
+        with pytest.raises(agent_runs.RunError):
+>           tools.save_draft(run.id, epoch, [change])
+E           TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:129: TypeError
+__ test_edited_then_deleted_inputs_leave_historical_sources_readable[sqlite] ___
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110a80b30>
+run_client = <starlette.testclient.TestClient object at 0x110933770>
+
+    def test_edited_then_deleted_inputs_leave_historical_sources_readable(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+>       version_id = tools.save_draft(run.id, epoch, [change])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:134: TypeError
+___ test_edited_then_deleted_inputs_leave_historical_sources_readable[mysql] ___
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110a1ccb0>
+run_client = <starlette.testclient.TestClient object at 0x1108e8e60>
+
+    def test_edited_then_deleted_inputs_leave_historical_sources_readable(proposal, career_db, run_client):
+        tools, run, epoch, change = proposal
+>       version_id = tools.save_draft(run.id, epoch, [change])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:134: TypeError
+____ test_shared_source_union_is_unique_and_empty_changes_keep_base[sqlite] ____
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x1108ea360>
+
+    def test_shared_source_union_is_unique_and_empty_changes_keep_base(proposal, career_db):
+        tools, run, epoch, change = proposal
+        second = {**deepcopy(change), 'section': '/projects/0/description',
+                  'before': 'Designed an API', 'after': 'Designed a reliable API'}
+>       version_id = tools.save_draft(run.id, epoch, [change, second])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:153: TypeError
+____ test_shared_source_union_is_unique_and_empty_changes_keep_base[mysql] _____
+
+proposal = (<module 'backend.agent_runtime.tools' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/b..., 'kind': 'resume', 'resumeId': 1, 'section': '/work_experience/0/description', ...}], 'reason': '突出已有 API 开发经历', ...})
+career_db = <sqlalchemy.orm.session.Session object at 0x110baaf60>
+
+    def test_shared_source_union_is_unique_and_empty_changes_keep_base(proposal, career_db):
+        tools, run, epoch, change = proposal
+        second = {**deepcopy(change), 'section': '/projects/0/description',
+                  'before': 'Designed an API', 'after': 'Designed a reliable API'}
+>       version_id = tools.save_draft(run.id, epoch, [change, second])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: save_draft() missing 1 required positional argument: 'fact_refs'
+
+backend/tests/test_resume_versions.py:153: TypeError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_resume_versions.py::test_draft_preserves_base_and_api_resolves_fixed_sources[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_draft_preserves_base_and_api_resolves_fixed_sources[mysql]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch0]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch1]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch2]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch3]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch4]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch5]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch6]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch7]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch8]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[sqlite-patch9]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch0]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch1]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch2]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch3]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch4]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch5]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch6]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch7]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch8]
+FAILED backend/tests/test_resume_versions.py::test_invalid_proposal_does_not_write_any_artifact[mysql-patch9]
+FAILED backend/tests/test_resume_versions.py::test_duplicate_field_rejected_and_missing_input_has_no_invented_after[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_duplicate_field_rejected_and_missing_input_has_no_invented_after[mysql]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[sqlite-patch0]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[sqlite-patch1]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[sqlite-patch2]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[sqlite-patch3]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[sqlite-patch4]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[mysql-patch0]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[mysql-patch1]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[mysql-patch2]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[mysql-patch3]
+FAILED backend/tests/test_resume_versions.py::test_resume_sources_must_match_fixed_applicant_input[mysql-patch4]
+FAILED backend/tests/test_resume_versions.py::test_answer_source_only_accepts_answered_input_from_same_run[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_answer_source_only_accepts_answered_input_from_same_run[mysql]
+FAILED backend/tests/test_resume_versions.py::test_foreign_answer_rejected[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_foreign_answer_rejected[mysql]
+FAILED backend/tests/test_resume_versions.py::test_edited_then_deleted_inputs_leave_historical_sources_readable[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_edited_then_deleted_inputs_leave_historical_sources_readable[mysql]
+FAILED backend/tests/test_resume_versions.py::test_shared_source_union_is_unique_and_empty_changes_keep_base[sqlite]
+FAILED backend/tests/test_resume_versions.py::test_shared_source_union_is_unique_and_empty_changes_keep_base[mysql]
+42 failed, 7 warnings in 6.83s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

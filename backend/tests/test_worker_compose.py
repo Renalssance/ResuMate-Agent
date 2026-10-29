@@ -70,7 +70,7 @@ def test_committed_draft_survives_broker_failure_and_worker_kill(tmp_path, monke
     with Session(engine) as db:
         db.add(User(id=1, username='compose-test', password_hash='not-a-login'))
         db.flush()
-        db.add_all([Resume(id=1, user_id=1, filename='synthetic.txt', raw_text='Built an API'),
+        db.add_all([Resume(id=1, user_id=1, filename='synthetic.txt', raw_text='Built an API', structured_data={'self_summary': 'Built an API'}),
                     JobDescription(id=1, user_id=1, title='Engineer', raw_text='API development')])
         db.commit()
         run_id = agent_runs.create_run(db, 1, RunCreate(kind='tailoring', jd_id=1, resume_id=1, request_id='compose-request')).id

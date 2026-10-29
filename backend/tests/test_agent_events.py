@@ -166,15 +166,16 @@ def test_usage_resumes_from_persisted_total(runtime, career_db, career_engine):
 def test_artifact_and_event_rollback_together(runtime, career_db, monkeypatch):
     import pytest
     from backend.agent_runtime import tools
-    original_append = tools.append_event
+    from backend.services import resume_versions
+    original_append = resume_versions.append_event
     def fail_after_append(db, run_id, event_type, payload):
         original_append(db, run_id, event_type, payload)
         raise RuntimeError('transaction failure')
-    monkeypatch.setattr(tools, 'append_event', fail_after_append)
+    monkeypatch.setattr(resume_versions, 'append_event', fail_after_append)
     run_id = new_run(career_db).id
     epoch = agent_runs.claim_run(career_db, run_id)
     with pytest.raises(RuntimeError, match='transaction failure'):
-        tools.save_draft(run_id, epoch, {'summary': 'real work'}, [])
+        tools.save_draft(run_id, epoch, DraftModel().draft_changes(tools.application_context(run_id, epoch)))
     assert events(career_db, run_id, 'artifact.created') == []
     assert career_db.query(ResumeVersion).count() == 0
     assert career_db.query(ToolOperation).count() == 0

@@ -137,12 +137,15 @@ def test_only_failed_run_retries_and_keeps_input_snapshot(run_client, career_db)
     career_db.expire_all()
     run = career_db.get(AgentRun,run_id)
     assert run.attempt == 2 and run.error_code is None
-    assert run.input_json == {'jdId':1,'resumeId':1}
+    assert {key: run.input_json[key] for key in ('jdId', 'resumeId')} == {'jdId':1,'resumeId':1}
+    assert run.input_json['contextSnapshot']['resume']['id'] == 1
     assert run_client.post(url,headers=headers()).status_code == 409
 
 
-def test_changed_input_requires_new_run(run_client, career_db):
+def test_changed_legacy_input_requires_new_run(run_client, career_db):
     run_id = create(run_client).json()['runId']
+    career_db.get(AgentRun,run_id).input_json = {'jdId':1,'resumeId':1}
+    career_db.commit()
     fail_run(career_db,run_id)
     resume = career_db.get(Resume,1)
     resume.updated_at += timedelta(seconds=1)

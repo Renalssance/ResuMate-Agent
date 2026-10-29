@@ -43,7 +43,7 @@ def career_db(career_engine):
     with Session(career_engine) as db:
         db.add_all([User(id=1, username='alice', password_hash='test'), User(id=2, username='bob', password_hash='test')])
         db.flush()
-        db.add_all([Resume(id=1, user_id=1, filename='resume.txt'),
+        db.add_all([Resume(id=1, user_id=1, filename='resume.txt', structured_data={'self_summary': 'API development'}),
                     JobDescription(id=1, user_id=1, title='Engineer', raw_text='Build APIs')])
         db.commit()
         yield db

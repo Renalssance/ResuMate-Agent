@@ -57,7 +57,7 @@ test('页面发起、刷新补问并读取真实 worker 生成的材料', async 
   await page.getByRole('button', { name: '继续任务' }).focus()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('heading', { name: '材料已生成', exact: true })).toBeVisible()
-  await expect(page.getByText(/API development/)).toBeVisible()
+  await expect(page.getByText(/API development/).first()).toBeVisible()
   const completed = await waitForRun(api, runId, 'succeeded')
   expect(completed.actions).toHaveLength(0)
   expect(completed.outputRefs).toHaveLength(1)
@@ -119,7 +119,7 @@ test('提交后离开页面不会隐式取消 worker，返回可读取产物', a
   expect(finished.outputRefs).toHaveLength(1)
   await page.goto(`/agent/tasks/${runId}`)
   await expect(page.getByRole('heading', { name: '材料已生成', exact: true })).toBeVisible()
-  await expect(page.getByText(/API development/)).toBeVisible()
+  await expect(page.getByText(/API development/).first()).toBeVisible()
 })
 
 test('等待补问时可明确取消任务', async ({ page, api }) => {

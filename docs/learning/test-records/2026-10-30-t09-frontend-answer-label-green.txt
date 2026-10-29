@@ -1,0 +1,13 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/components/agent/ArtifactCard.spec.ts src/components/agent/RunDisplay.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  00:35:29
+   Duration  771ms (transform 221ms, setup 0ms, import 438ms, tests 39ms, environment 905ms)
+

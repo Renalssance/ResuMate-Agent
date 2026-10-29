@@ -42,6 +42,8 @@ def seed_run(db, run_id, *, owner=1, created_at=datetime(2026, 10, 29, 10), **ex
     run = AgentRun(id=run_id, session_id=session_id, user_id=owner,
                    request_id='request-' + run_id, kind='tailoring',
                    input_json={'resumeId': 1, 'jdId': 1},
+                   input_versions={'resume': db.get(Resume, 1).updated_at.replace(tzinfo=None).isoformat(),
+                                   'jd': db.get(JobDescription, 1).updated_at.replace(tzinfo=None).isoformat(), 'facts': []},
                    created_at=created_at, updated_at=created_at, **extra)
     db.add(run)
     db.commit()
@@ -118,6 +120,7 @@ def test_artifacts_include_owned_drafts_before_run_finishes(workspace_client, ca
         'id': 'draft', 'runId': 'run-draft', 'resumeId': 1, 'jdId': 1, 'revision': 2,
         'status': 'draft', 'structuredContent': {'summary': 'API development'},
         'factRefs': ['fact-1'], 'createdAt': '2026-10-29T11:00:00+00:00',
+        'basedOnOldInput': False, 'changedInputs': [], 'sources': [],
     }]
     career_db.execute(delete(Resume).where(Resume.id == 1))
     career_db.execute(delete(JobDescription).where(JobDescription.id == 1))
@@ -155,6 +158,6 @@ def test_workspace_reads_use_bounded_queries(workspace_client, career_db, career
         selects.clear()
         artifacts = workspace_client.get('/api/agent/runs/run-many/artifacts', headers=headers())
         assert artifacts.status_code == 200 and len(artifacts.json()) == 5
-        assert len(selects) <= 3  # Authentication, owned run, and all owned versions.
+        assert len(selects) <= 6  # Auth, Run, versions, and one shared current-input comparison.
     finally:
         event.remove(career_engine, 'before_cursor_execute', record_select)

@@ -1,0 +1,126 @@
+....................FF                                                   [100%]
+=================================== FAILURES ===================================
+_______________ test_workspace_reads_use_bounded_queries[sqlite] _______________
+
+workspace_client = <starlette.testclient.TestClient object at 0x112bfa6c0>
+career_db = <sqlalchemy.orm.session.Session object at 0x112afdeb0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-97/test_workspace_reads_use_bound0/career.db)
+
+    def test_workspace_reads_use_bounded_queries(workspace_client, career_db, career_engine):
+        seed_run(career_db, 'run-many')
+        for n in range(5):
+            seed_run(career_db, f'run-{n}')
+            career_db.add(ResumeVersion(id=f'version-{n}', user_id=1, run_id='run-many'))
+        career_db.commit()
+        selects = []
+        def record_select(_conn, _cursor, statement, _parameters, _context, _executemany):
+            if statement.lstrip().upper().startswith('SELECT'):
+                selects.append(statement)
+        event.listen(career_engine, 'before_cursor_execute', record_select)
+        try:
+            listing = workspace_client.get('/api/agent/runs', headers=headers())
+            assert listing.status_code == 200 and len(listing.json()['items']) == 6
+            assert len(selects) == 2  # Authentication plus one paginated query.
+            selects.clear()
+            artifacts = workspace_client.get('/api/agent/runs/run-many/artifacts', headers=headers())
+            assert artifacts.status_code == 200 and len(artifacts.json()) == 5
+>           assert len(selects) <= 6  # Auth, Run, versions, and one shared current-input comparison.
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert 23 <= 6
+E            +  where 23 = len(['SELECT users.id AS users_id, users.username AS users_username, users.password_hash AS users_password_hash, users.rol...descriptions.updated_at \nFROM job_descriptions \nWHERE job_descriptions.id = ? AND job_descriptions.user_id = ?', ...])
+
+backend/tests/test_agent_workspace.py:161: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:36:43,637 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-30 00:36:43,639 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+2026-10-30 00:36:43,639 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs "HTTP/1.1 200 OK"
+2026-10-30 00:36:43,640 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/run-many/artifacts client=testclient
+2026-10-30 00:36:43,645 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/run-many/artifacts status=200 duration_ms=5
+2026-10-30 00:36:43,645 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/run-many/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/run-many/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/run-many/artifacts status=200 duration_ms=5
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/run-many/artifacts "HTTP/1.1 200 OK"
+_______________ test_workspace_reads_use_bounded_queries[mysql] ________________
+
+workspace_client = <starlette.testclient.TestClient object at 0x112c80cb0>
+career_db = <sqlalchemy.orm.session.Session object at 0x112914920>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_2d740fe6e5014b129b60206ab845537d?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_workspace_reads_use_bounded_queries(workspace_client, career_db, career_engine):
+        seed_run(career_db, 'run-many')
+        for n in range(5):
+            seed_run(career_db, f'run-{n}')
+            career_db.add(ResumeVersion(id=f'version-{n}', user_id=1, run_id='run-many'))
+        career_db.commit()
+        selects = []
+        def record_select(_conn, _cursor, statement, _parameters, _context, _executemany):
+            if statement.lstrip().upper().startswith('SELECT'):
+                selects.append(statement)
+        event.listen(career_engine, 'before_cursor_execute', record_select)
+        try:
+            listing = workspace_client.get('/api/agent/runs', headers=headers())
+            assert listing.status_code == 200 and len(listing.json()['items']) == 6
+            assert len(selects) == 2  # Authentication plus one paginated query.
+            selects.clear()
+            artifacts = workspace_client.get('/api/agent/runs/run-many/artifacts', headers=headers())
+            assert artifacts.status_code == 200 and len(artifacts.json()) == 5
+>           assert len(selects) <= 6  # Auth, Run, versions, and one shared current-input comparison.
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert 23 <= 6
+E            +  where 23 = len(['SELECT users.id AS users_id, users.username AS users_username, users.password_hash AS users_password_hash, users.`ro...d_at \nFROM job_descriptions \nWHERE job_descriptions.id = %(id_1)s AND job_descriptions.user_id = %(user_id_1)s', ...])
+
+backend/tests/test_agent_workspace.py:161: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 00:36:43,916 | INFO | backend.app | Request start | method=GET path=/api/agent/runs client=testclient
+2026-10-30 00:36:43,918 | INFO | backend.app | Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+2026-10-30 00:36:43,919 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs "HTTP/1.1 200 OK"
+2026-10-30 00:36:43,919 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/run-many/artifacts client=testclient
+2026-10-30 00:36:43,926 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/run-many/artifacts status=200 duration_ms=6
+2026-10-30 00:36:43,926 | INFO | httpx | HTTP Request: GET http://testserver/api/agent/runs/run-many/artifacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs "HTTP/1.1 200 OK"
+INFO     backend.app:app.py:63 Request start | method=GET path=/api/agent/runs/run-many/artifacts client=testclient
+INFO     backend.app:app.py:76 Request end | method=GET path=/api/agent/runs/run-many/artifacts status=200 duration_ms=6
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/api/agent/runs/run-many/artifacts "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_workspace.py::test_workspace_reads_use_bounded_queries[sqlite]
+FAILED backend/tests/test_agent_workspace.py::test_workspace_reads_use_bounded_queries[mysql]
+2 failed, 20 passed, 7 warnings in 4.05s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
