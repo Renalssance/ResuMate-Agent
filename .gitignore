@@ -57,6 +57,9 @@ scripts/test_analysis_module.py
 data/
 docs/*
 !docs/design/
+!docs/development.md
+!docs/learning/
+!docs/superpowers/
 log/
 logs/
 .superpowers/
@@ -78,3 +81,7 @@ Thumbs.db
 # Claude files
 CLAUDE.md
 .claude/
+
+# Browser test artifacts
+test-results/
+playwright-report/

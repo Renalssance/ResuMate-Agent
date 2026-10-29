@@ -1,0 +1,16 @@
+✔ extension/tests/auth.test.mjs (100.654333ms)
+✔ extension/tests/autofill-problem-fields.test.mjs (75.617666ms)
+✔ extension/tests/field-matcher.test.mjs (74.347084ms)
+✔ extension/tests/fill-engine-combobox.test.mjs (76.164917ms)
+✔ extension/tests/i18n.test.mjs (70.281333ms)
+✔ extension/tests/label-utils.test.mjs (71.527916ms)
+✔ extension/tests/match-diagnostics.test.mjs (67.939208ms)
+✔ extension/tests/visibility-utils.test.mjs (74.588541ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 107.453917

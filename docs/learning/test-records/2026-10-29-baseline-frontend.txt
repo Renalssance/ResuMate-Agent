@@ -1,0 +1,11 @@
+
+> resumate-agent-frontend@0.1.0 test
+> vue-tsc --noEmit && node --experimental-strip-types src/utils/search.test.ts && node --experimental-strip-types src/utils/applicationSchedule.test.ts && node src/utils/applicationExport.test.mjs && node --experimental-strip-types src/utils/applicationChart.test.ts && node --experimental-strip-types src/utils/applicationGrouping.test.ts && node src/services/taskResult.test.mjs && node --experimental-strip-types src/utils/profileDraft.test.ts && node src/components/copyFieldButton.test.mjs && node src/api/auth.test.mjs
+
+中文、拼音全拼、首字母及原有英文数字搜索测试通过
+Application XLSX export passed: columns, separate positions, links, and complete chronological timelines.
+Async API mappings, independent subscriptions, pending waits, and failures passed.
+Profile draft checks passed.
+Profile template checks passed.
+Copy field checks passed.
+Auth API: unavailable service, rejected credentials, and registration response passed.

@@ -1,0 +1,38 @@
+
+> test:e2e
+> playwright test
+
+[WebServer] (node:64328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:64352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/auth.spec.ts:3:1 › 注册密码不一致时保留输入并在浏览器阻止提交 (1ms)
+
+
+  1) [chromium] › tests/e2e/auth.spec.ts:3:1 › 注册密码不一致时保留输入并在浏览器阻止提交 ───────────────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/bono/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     npx playwright install                                 ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/auth-注册密码不一致时保留输入并在浏览器阻止提交-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-注册密码不一致时保留输入并在浏览器阻止提交-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/auth-注册密码不一致时保留输入并在浏览器阻止提交-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/auth.spec.ts:3:1 › 注册密码不一致时保留输入并在浏览器阻止提交 ────────────────────────────────
