@@ -11,10 +11,10 @@
 
 ## 安装与验证
 
-在仓库根目录运行，使用 Python 3.12、Node 24。锁文件记录本项目实测版本；不要为了安装测试工具执行全量依赖升级。
+在仓库根目录运行，使用 Python 3.12、Node 24；当前本机验证版本为Python 3.12.14、Node 24.22.2，Node版本固定在 `.nvmrc`。新终端先执行 `source ~/.nvm/nvm.sh`、`nvm use` 和 `source .venv/bin/activate`。锁文件记录本项目实测版本；不要为了安装测试工具执行全量依赖升级。
 
 ```sh
-uv sync --frozen --group dev
+uv sync --frozen --group dev --extra telemetry
 npm --prefix frontend ci
 npm ci
 npx playwright install chromium
@@ -82,3 +82,5 @@ npm run test:e2e -- resume-export.spec.ts
 Linux 测试只创建测试自己的 Compose 项目和合成确认版本，输出 PDF、逐页 PNG、提取文本与日志，结束时清理自身容器/卷。测试默认显式跳过，不把普通单元套件的通过当作 Linux PDF 已验收。浏览器成功路径实际打印并下载；进行中/一次失败由专用测试 worker 控制，不是产品开关。
 
 详见[第十一课](learning/11-pdf-and-submission-snapshots.md)及[T11 测试记录](learning/test-records/2026-10-30-t11.md)。
+
+当前环境配置、旧环境删除范围与验证结果见[环境整理记录](learning/test-records/2026-10-30-environment.md)。

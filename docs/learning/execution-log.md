@@ -205,3 +205,8 @@ Python环境实际文件已随工作树迁入新目录，更新45个启动/激�
 已将已验收版本的Python及Node依赖移入原目录，原环境和子工作树本地缓存保存在临时备份 `/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-primary-switch-0zhoxix9`，原修改另有stash备份。更新45个Python启动/激活脚本，删除多余子工作树登记与目录。工作区现在只有 `/Users/bono/Desktop/code/ResuMate-Agent`，使用开发分支，main分支提交未改动。
 
 验证：`npm --prefix frontend test` exit0，包含Vue类型检查、资料模板补齐、复制按钮和原前端工具测试；根目录 `.venv/bin/python` 成功导入FastAPI，`.venv/bin/pytest --version`成功；Git无未解决冲突，diff空白检查通过。未启动预览或调用真实模型，原有预览继续关闭。
+
+
+## 2026-10-30：当前环境配置与清理旧依赖
+
+按用户要求保留唯一项目工作区，按锁文件同步Python及Node依赖；修正Node engine不匹配，项目固定Node24.22.2。Python兼容检查、两种Chromium启动、前端原测试、177组件测试及生产构建通过。删除5处旧依赖目录/链接，关闭独立测试MySQL，删除两条旧镜像标签；保留数据、最终镜像、系统运行时和原未提交修改。[完整配置、清理与验证记录](test-records/2026-10-30-environment.md)。

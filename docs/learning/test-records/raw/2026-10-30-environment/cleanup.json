@@ -1,0 +1,10 @@
+{
+  "removed": [
+    "/private/tmp/resumate-cloudbase-tools/node_modules",
+    "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-primary-switch-0zhoxix9/previous-environments/.venv",
+    "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-primary-switch-0zhoxix9/previous-environments/frontend/node_modules",
+    "/private/tmp/resumate-preview-t20-AvaIqZ/.venv (link)",
+    "/private/tmp/resumate-preview-t20-AvaIqZ/frontend/node_modules (link)"
+  ],
+  "test_mysql_pid": 89066
+}

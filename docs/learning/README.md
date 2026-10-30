@@ -34,6 +34,7 @@ T20后续验收、T21与教学录屏已取消，当前执行范围为T01–T19�
 
 ## 已有资料
 
+- [当前环境配置与旧环境清理](test-records/2026-10-30-environment.md)
 - [连续开发执行记录](execution-log.md)
 
 - [第一课：开发基线与 Agent 恢复契约](01-development-baseline.md)

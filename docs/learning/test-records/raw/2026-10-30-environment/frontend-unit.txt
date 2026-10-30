@@ -1,0 +1,13 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 /Users/bono/Desktop/code/ResuMate-Agent/frontend
+
+
+ Test Files  28 passed (28)
+      Tests  177 passed (177)
+   Start at  12:45:41
+   Duration  3.04s (transform 2.37s, setup 0ms, import 5.46s, tests 2.67s, environment 13.82s)
+
