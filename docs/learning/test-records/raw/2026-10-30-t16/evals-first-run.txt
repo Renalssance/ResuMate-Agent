@@ -1,0 +1,127 @@
+..........FFFFFF.                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_six_interview_cases_execute_real_sql_and_graph_trajectories _______
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+
+    def test_six_interview_cases_execute_real_sql_and_graph_trajectories(executed_interview_cases):
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:135: AssertionError
+_ test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-eight-turn-limit-extra_turn] _
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+case_id = 'interview-eight-turn-limit', mutation = 'extra_turn'
+
+    @pytest.mark.parametrize('case_id,mutation', [
+        ('interview-eight-turn-limit', 'extra_turn'),
+        ('interview-command-replay', 'changed_ack'),
+        ('interview-cancel-late-result', 'late_result'),
+        ('interview-frozen-submission', 'changed_source'),
+        ('interview-feedback-memory', 'invented_fact'),
+    ])
+    def test_executed_case_oracle_rejects_corrupted_sql_or_observation(executed_interview_cases, case_id, mutation):
+        from evals.interview_verifiers import verify_interview
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:167: AssertionError
+_ test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-command-replay-changed_ack] _
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+case_id = 'interview-command-replay', mutation = 'changed_ack'
+
+    @pytest.mark.parametrize('case_id,mutation', [
+        ('interview-eight-turn-limit', 'extra_turn'),
+        ('interview-command-replay', 'changed_ack'),
+        ('interview-cancel-late-result', 'late_result'),
+        ('interview-frozen-submission', 'changed_source'),
+        ('interview-feedback-memory', 'invented_fact'),
+    ])
+    def test_executed_case_oracle_rejects_corrupted_sql_or_observation(executed_interview_cases, case_id, mutation):
+        from evals.interview_verifiers import verify_interview
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:167: AssertionError
+_ test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-cancel-late-result-late_result] _
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+case_id = 'interview-cancel-late-result', mutation = 'late_result'
+
+    @pytest.mark.parametrize('case_id,mutation', [
+        ('interview-eight-turn-limit', 'extra_turn'),
+        ('interview-command-replay', 'changed_ack'),
+        ('interview-cancel-late-result', 'late_result'),
+        ('interview-frozen-submission', 'changed_source'),
+        ('interview-feedback-memory', 'invented_fact'),
+    ])
+    def test_executed_case_oracle_rejects_corrupted_sql_or_observation(executed_interview_cases, case_id, mutation):
+        from evals.interview_verifiers import verify_interview
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:167: AssertionError
+_ test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-frozen-submission-changed_source] _
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+case_id = 'interview-frozen-submission', mutation = 'changed_source'
+
+    @pytest.mark.parametrize('case_id,mutation', [
+        ('interview-eight-turn-limit', 'extra_turn'),
+        ('interview-command-replay', 'changed_ack'),
+        ('interview-cancel-late-result', 'late_result'),
+        ('interview-frozen-submission', 'changed_source'),
+        ('interview-feedback-memory', 'invented_fact'),
+    ])
+    def test_executed_case_oracle_rejects_corrupted_sql_or_observation(executed_interview_cases, case_id, mutation):
+        from evals.interview_verifiers import verify_interview
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:167: AssertionError
+_ test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-feedback-memory-invented_fact] _
+
+executed_interview_cases = (CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-.../folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0'))
+case_id = 'interview-feedback-memory', mutation = 'invented_fact'
+
+    @pytest.mark.parametrize('case_id,mutation', [
+        ('interview-eight-turn-limit', 'extra_turn'),
+        ('interview-command-replay', 'changed_ack'),
+        ('interview-cancel-late-result', 'late_result'),
+        ('interview-frozen-submission', 'changed_source'),
+        ('interview-feedback-memory', 'invented_fact'),
+    ])
+    def test_executed_case_oracle_rejects_corrupted_sql_or_observation(executed_interview_cases, case_id, mutation):
+        from evals.interview_verifiers import verify_interview
+        process, report, invocation = executed_interview_cases
+>       assert process.returncode == 0, json.dumps(report)
+E       AssertionError: {"mode": "stub", "results": [{"case_id": "interview-followup", "category": "interview", "status": "pass", "error_code": null, "artifact": "cases/interview-followup.json"}, {"case_id": "interview-eight-turn-limit", "category": "interview", "status": "incomplete", "error_code": "harness_error", "artifact": "cases/interview-eight-turn-limit.json"}, {"case_id": "interview-command-replay", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-cancel-late-result", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-frozen-submission", "category": "interview", "status": "not_run", "error_code": "harness_error"}, {"case_id": "interview-feedback-memory", "category": "interview", "status": "not_run", "error_code": "harness_error"}], "counts": {"pass": 1, "fail": 0, "incomplete": 1, "not_run": 4}, "executed_count": 1, "error_code": null, "semantic_status": "not_applicable", "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-225/interview-eval0/out/20261030T020546Z-0dc1f1d0\n', stderr='').returncode
+
+backend/tests/test_interview_evals.py:167: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_evals.py::test_six_interview_cases_execute_real_sql_and_graph_trajectories
+FAILED backend/tests/test_interview_evals.py::test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-eight-turn-limit-extra_turn]
+FAILED backend/tests/test_interview_evals.py::test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-command-replay-changed_ack]
+FAILED backend/tests/test_interview_evals.py::test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-cancel-late-result-late_result]
+FAILED backend/tests/test_interview_evals.py::test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-frozen-submission-changed_source]
+FAILED backend/tests/test_interview_evals.py::test_executed_case_oracle_rejects_corrupted_sql_or_observation[interview-feedback-memory-invented_fact]
+6 failed, 11 passed in 3.72s

@@ -1,0 +1,351 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_two_cancel_ids_only_emit_one_actual_cancel_event[sqlite] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10b5632c0>
+
+    def test_two_cancel_ids_only_emit_one_actual_cancel_event(career_db):
+        seed_application(career_db)
+        accepted = create(career_db)
+        first_command = command('generation.cancel', mid='cancel-1', turn=0, runId=accepted['runId'])
+        first = interview_commands.handle_command(career_db, 1, accepted['interviewId'], first_command)
+        interview_commands.handle_command(career_db, 1, accepted['interviewId'],
+            command('generation.cancel', mid='cancel-2', turn=0, runId=accepted['runId']))
+        assert interview_commands.handle_command(career_db, 1, accepted['interviewId'], first_command) == first
+>       assert career_db.query(InterviewEvent).filter_by(type='generation.cancelled').count() == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = count()
+E        +    where count = <sqlalchemy.orm.query.Query object at 0x10bce7e90>.count
+E        +      where <sqlalchemy.orm.query.Query object at 0x10bce7e90> = filter_by(type='generation.cancelled')
+E        +        where filter_by = <sqlalchemy.orm.query.Query object at 0x10b81eb70>.filter_by
+E        +          where <sqlalchemy.orm.query.Query object at 0x10b81eb70> = query(InterviewEvent)
+E        +            where query = <sqlalchemy.orm.session.Session object at 0x10b5632c0>.query
+
+backend/tests/test_interviews.py:254: AssertionError
+_________ test_two_cancel_ids_only_emit_one_actual_cancel_event[mysql] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10bc9e600>
+
+    def test_two_cancel_ids_only_emit_one_actual_cancel_event(career_db):
+        seed_application(career_db)
+        accepted = create(career_db)
+        first_command = command('generation.cancel', mid='cancel-1', turn=0, runId=accepted['runId'])
+        first = interview_commands.handle_command(career_db, 1, accepted['interviewId'], first_command)
+        interview_commands.handle_command(career_db, 1, accepted['interviewId'],
+            command('generation.cancel', mid='cancel-2', turn=0, runId=accepted['runId']))
+        assert interview_commands.handle_command(career_db, 1, accepted['interviewId'], first_command) == first
+>       assert career_db.query(InterviewEvent).filter_by(type='generation.cancelled').count() == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = count()
+E        +    where count = <sqlalchemy.orm.query.Query object at 0x10bed3c80>.count
+E        +      where <sqlalchemy.orm.query.Query object at 0x10bed3c80> = filter_by(type='generation.cancelled')
+E        +        where filter_by = <sqlalchemy.orm.query.Query object at 0x10be73c80>.filter_by
+E        +          where <sqlalchemy.orm.query.Query object at 0x10be73c80> = query(InterviewEvent)
+E        +            where query = <sqlalchemy.orm.session.Session object at 0x10bc9e600>.query
+
+backend/tests/test_interviews.py:254: AssertionError
+_ test_additive_upgrade_preserves_legacy_interview_without_inventing_context[sqlite] _
+
+self = <sqlalchemy.engine.base.Connection object at 0x10bed0920>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10bf5dfa0>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10bf79df0>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10bf7a0c0>
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10bf5dfa0>
+cursor = <sqlite3.Cursor object at 0x10bf89ec0>
+statement = 'SELECT agent_session_id,source_snapshot FROM interview_sessions'
+parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10bf79df0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: no such column: agent_session_id
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10ba41940>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-214/test_additive_upgrade_preserve0/career.db)
+
+    def test_additive_upgrade_preserves_legacy_interview_without_inventing_context(career_db, career_engine):
+        from pathlib import Path
+        from sqlalchemy import inspect, text
+        from backend.db import database
+        app = seed_application(career_db)
+        version_id = app.resume_version_id
+        career_db.close()
+        with career_engine.begin() as connection:
+            # Recreate the immediately preceding four-table skeleton with its real columns.
+            for table in ('interview_commands', 'interview_events', 'interview_turns', 'interview_sessions'):
+                connection.execute(text(f'DROP TABLE {table}'))
+            connection.execute(text('''CREATE TABLE interview_sessions (
+                id VARCHAR(36) PRIMARY KEY, user_id INTEGER NOT NULL, application_id INTEGER,
+                jd_id INTEGER, resume_version_id VARCHAR(36) NOT NULL, status VARCHAR(8) NOT NULL,
+                created_at DATETIME NOT NULL,
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY(application_id) REFERENCES job_applications(id) ON DELETE SET NULL,
+                FOREIGN KEY(jd_id) REFERENCES job_descriptions(id) ON DELETE SET NULL,
+                FOREIGN KEY(resume_version_id) REFERENCES resume_versions(id))'''))
+            connection.execute(text('''CREATE TABLE interview_turns (
+                id INTEGER PRIMARY KEY, interview_id VARCHAR(36) NOT NULL, turn_index INTEGER NOT NULL,
+                question TEXT NOT NULL, answer TEXT, feedback JSON,
+                CONSTRAINT uq_interview_turn UNIQUE(interview_id,turn_index),
+                FOREIGN KEY(interview_id) REFERENCES interview_sessions(id) ON DELETE CASCADE)'''))
+            connection.execute(text('''CREATE TABLE interview_commands (
+                id INTEGER PRIMARY KEY, interview_id VARCHAR(36) NOT NULL, user_id INTEGER NOT NULL,
+                client_message_id VARCHAR(100) NOT NULL, type VARCHAR(40) NOT NULL,
+                result_ref VARCHAR(255), status VARCHAR(9) NOT NULL,
+                CONSTRAINT uq_interview_command UNIQUE(interview_id,client_message_id),
+                FOREIGN KEY(interview_id) REFERENCES interview_sessions(id) ON DELETE CASCADE,
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE)'''))
+            InterviewEvent.__table__.create(connection)
+            connection.execute(text('''INSERT INTO interview_sessions
+                (id,user_id,resume_version_id,status,created_at) VALUES ('legacy',1,:version,'active',CURRENT_TIMESTAMP)'''), {'version':version_id})
+            connection.execute(text("INSERT INTO interview_turns (id,interview_id,turn_index,question) VALUES (1,'legacy',1,'Original question')"))
+            connection.execute(text("INSERT INTO interview_commands (id,interview_id,user_id,client_message_id,type,status) VALUES (1,'legacy',1,'old','answer.submit','accepted')"))
+        if career_engine.dialect.name == 'sqlite':
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+            sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/005_text_interviews.sql').read_text()
+            with career_engine.begin() as connection:
+                for statement in sql.split(';'):
+                    if statement.strip(): connection.execute(text(statement))
+        with career_engine.connect() as connection:
+>           assert connection.execute(text('SELECT agent_session_id,source_snapshot FROM interview_sessions')).one() == (None,None)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_interviews.py:302:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10bf5dfa0>
+cursor = <sqlite3.Cursor object at 0x10bf89ec0>
+statement = 'SELECT agent_session_id,source_snapshot FROM interview_sessions'
+parameters = ()
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10bf79df0>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: agent_session_id
+E       [SQL: SELECT agent_session_id,source_snapshot FROM interview_sessions]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: OperationalError
+_ test_additive_upgrade_preserves_legacy_interview_without_inventing_context[mysql] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10bf5e060>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_5a6eaabba8204e0793faef236c45ad46?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_additive_upgrade_preserves_legacy_interview_without_inventing_context(career_db, career_engine):
+        from pathlib import Path
+        from sqlalchemy import inspect, text
+        from backend.db import database
+        app = seed_application(career_db)
+        version_id = app.resume_version_id
+        career_db.close()
+        with career_engine.begin() as connection:
+            # Recreate the immediately preceding four-table skeleton with its real columns.
+            for table in ('interview_commands', 'interview_events', 'interview_turns', 'interview_sessions'):
+                connection.execute(text(f'DROP TABLE {table}'))
+            connection.execute(text('''CREATE TABLE interview_sessions (
+                id VARCHAR(36) PRIMARY KEY, user_id INTEGER NOT NULL, application_id INTEGER,
+                jd_id INTEGER, resume_version_id VARCHAR(36) NOT NULL, status VARCHAR(8) NOT NULL,
+                created_at DATETIME NOT NULL,
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY(application_id) REFERENCES job_applications(id) ON DELETE SET NULL,
+                FOREIGN KEY(jd_id) REFERENCES job_descriptions(id) ON DELETE SET NULL,
+                FOREIGN KEY(resume_version_id) REFERENCES resume_versions(id))'''))
+            connection.execute(text('''CREATE TABLE interview_turns (
+                id INTEGER PRIMARY KEY, interview_id VARCHAR(36) NOT NULL, turn_index INTEGER NOT NULL,
+                question TEXT NOT NULL, answer TEXT, feedback JSON,
+                CONSTRAINT uq_interview_turn UNIQUE(interview_id,turn_index),
+                FOREIGN KEY(interview_id) REFERENCES interview_sessions(id) ON DELETE CASCADE)'''))
+            connection.execute(text('''CREATE TABLE interview_commands (
+                id INTEGER PRIMARY KEY, interview_id VARCHAR(36) NOT NULL, user_id INTEGER NOT NULL,
+                client_message_id VARCHAR(100) NOT NULL, type VARCHAR(40) NOT NULL,
+                result_ref VARCHAR(255), status VARCHAR(9) NOT NULL,
+                CONSTRAINT uq_interview_command UNIQUE(interview_id,client_message_id),
+                FOREIGN KEY(interview_id) REFERENCES interview_sessions(id) ON DELETE CASCADE,
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE)'''))
+            InterviewEvent.__table__.create(connection)
+            connection.execute(text('''INSERT INTO interview_sessions
+                (id,user_id,resume_version_id,status,created_at) VALUES ('legacy',1,:version,'active',CURRENT_TIMESTAMP)'''), {'version':version_id})
+            connection.execute(text("INSERT INTO interview_turns (id,interview_id,turn_index,question) VALUES (1,'legacy',1,'Original question')"))
+            connection.execute(text("INSERT INTO interview_commands (id,interview_id,user_id,client_message_id,type,status) VALUES (1,'legacy',1,'old','answer.submit','accepted')"))
+        if career_engine.dialect.name == 'sqlite':
+            database.ensure_sqlite_schema(career_engine)
+            database.ensure_sqlite_schema(career_engine)
+        else:
+>           sql = (Path(__file__).resolve().parents[2] / 'deploy/schema/005_text_interviews.sql').read_text()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_interviews.py:297:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/005_text_interviews.sql')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/deploy/schema/005_text_interviews.sql'
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interviews.py::test_two_cancel_ids_only_emit_one_actual_cancel_event[sqlite]
+FAILED backend/tests/test_interviews.py::test_two_cancel_ids_only_emit_one_actual_cancel_event[mysql]
+FAILED backend/tests/test_interviews.py::test_additive_upgrade_preserves_legacy_interview_without_inventing_context[sqlite]
+FAILED backend/tests/test_interviews.py::test_additive_upgrade_preserves_legacy_interview_without_inventing_context[mysql]
+4 failed, 29 deselected in 1.05s

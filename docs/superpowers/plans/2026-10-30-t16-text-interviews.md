@@ -1,14 +1,14 @@
 # T16 多轮文字模拟面试 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. 用户已授权自主推进；由根代理分配实施，本计划本身不启动实现或提交。
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking. 用户已授权自主推进；由根代理分配实施，本计划本身不启动实现或提交。
 
 **Goal:** 用户从已经关联投递材料的申请记录开始最多八轮文字面试练习，安全地重发回答、恢复当前轮，并在明确确认后保存练习反馈为业务记忆。
 
-**Architecture:** SQL 保存面试、每轮材料、命令与事件；`interview_generation` 进入现有 Celery 单 worker 的 `execute_run` 派发，使用独立执行函数和真实 Deep Agents 图，不增加进程、队列或自写 Agent 循环。每个生成 Run 只产出本轮反馈及下一问题，SQL 决定轮数与提交权；HTTP 和 T21 WebSocket 共用同一个命令处理服务。
+**Architecture:** SQL 保存面试、每轮材料、命令与事件；`interview_generation` 进入现有 Celery 单 worker 的 `execute_run` 派发，使用独立执行函数和真实 Deep Agents 图，不增加进程、队列或自写 Agent 循环。每个生成 Run 只产出本轮反馈及下一问题，SQL 决定轮数与提交权；HTTP 接口使用统一命令处理服务；用户已取消 T21，不再接 WebSocket。
 
 **Tech Stack:** 现有 FastAPI/Pydantic、SQLAlchemy（SQLite 与 MySQL）、Celery/Redis、Deep Agents/LangGraph/SQLite checkpointer、Vue 3/Pinia、pytest/Vitest/Playwright。
 
-**Spec:** [总计划 T16/T21](2026-10-29-ai-fullstack-agent-development.md)、[T20 已有 SQL 事件与 Redis 通知合同](2026-10-30-t20-redis-cross-process.md)。本文细化 T16；T21 同步采用本文增加的 `generation.retry`，不维护另一份业务状态机。
+**Spec:** [总计划 T16](2026-10-29-ai-fullstack-agent-development.md)、[T20 已有 SQL 事件与 Redis 通知合同](2026-10-30-t20-redis-cross-process.md)。本文细化 T16；2026-10-30 用户取消 T21，保留 HTTP 命令和快照方案。
 
 ## 全局边界
 
@@ -55,7 +55,7 @@ ack_json: dict | None         # 接受时的原 ack；以后不改成“完成�
 
 不额外增加 current_turn/last_seq/status 副本：当前轮取最后一条 Turn，seq 在写锁住 InterviewSession 后，对事件尾行作 current locking read 再加一，生成状态读取关联 AgentSession/Run。Session 仍只有 `active|finished`。反馈中的服务端 `memoryId` 为确认记忆幂等关联，不由模型输出。
 
-### HTTP 与未来 WS 共用类型
+### HTTP 命令类型
 
 新增 `backend/schemas/interviews.py`；全部 `extra='forbid'`，使用 discriminated union 校验每个 payload。ID 长度沿用命令 1..100；回答去除首尾空白后 1..4000 字。错误继续使用已有 `code/message/requestId` 响应形状。
 
@@ -80,7 +80,7 @@ type InterviewAck = {
 |---|---|
 | `POST /api/interviews` | 202 `{interviewId,runId}`；同用户 requestId+applicationId 重放返回原创建结果，不再次冻结或生成 |
 | `GET /api/interviews/{id}` | 本人 SQL snapshot：材料版本/岗位采集时点、status、turns、currentTurn、generation（当前/最近 Run）、lastSeq、sessionInvalidated |
-| `POST /api/interviews/{id}/commands` | 202 原始 InterviewAck；HTTP/WS 都调用 `handle_command(db,user_id,interview_id,command)` |
+| `POST /api/interviews/{id}/commands` | 202 原始 InterviewAck；HTTP 调用 `handle_command(db,user_id,interview_id,command)` |
 | `GET /api/interviews/{id}/events?after=0&limit=100` | 复用 `read_interview_events`，after≥0，limit 1..100，返回按 seq 排序持久事件 |
 | `POST /api/interviews/{id}/turns/{turn_index}/memory` | `{confirmed:true}`，显示并保存该轮服务端 `practiceFocus`，返回现有 Memory 序列化结构 |
 
@@ -98,7 +98,7 @@ type InterviewAck = {
 
 ack 只表示已经接受，不因 worker 成功/失败改写。`InterviewCommand.status` 如需反映完成，可以更新该列但不能改 ack。生成状态/错误从 Run 与 snapshot 读取。
 
-持久事件采用 T21 已有 `answer.accepted/question.completed/feedback.ready/generation.cancelled/session.finished`。`generation.cancelled` 只在真正取消时写，queued 取消在命令事务内写；正常 worker 的取消收尾使用面试锁序写。通用 stale recovery/记忆删除可能直接终止 Run 且没有面试 handler，因此 T16 必须从关联 Run 派生真实终态，不把缺少面试事件误当还在生成。不要在持 Run 锁的通用恢复分支反向取得 InterviewSession；T21 接入时须补充面试终态事件投影：在既有 Run 事务提交之后，以 memory→InterviewSession→Run→AgentSession 的一致锁序启动独立短事务，幂等确认 Run 终态并写面试事件，且用 SQL snapshot/补查覆盖通知遗漏。该投影属于 T21，不在 T16 改通用恢复锁序；不允许在持 Run 锁时反向取 InterviewSession。T16 不假造 `question.delta`；实际流聚合与 WS 属于 T21。
+持久事件采用 `answer.accepted/question.completed/feedback.ready/generation.cancelled/session.finished`。`generation.cancelled` 只在真正取消时写，queued 取消在命令事务内写；正常 worker 的取消收尾使用面试锁序写。通用 stale recovery/记忆删除可能直接终止 Run 且没有面试 handler，因此 T16 从关联 Run 派生真实终态，不把缺少面试事件误当还在生成。不能在持 Run 锁的通用恢复分支反向取得 InterviewSession。原先为T21规划的终态事件补投影和question.delta随T21取消，不加入当前HTTP快照方案；页面依据SQL snapshot和Run状态恢复。
 
 ### 事务与执行函数
 
@@ -153,8 +153,8 @@ class InterviewStep(BaseModel):
 
 **Interfaces:** 提供上文 HTTP/函数/ack；`RunCreate` 精确新增 interview 字段，其他 kind 不接受它们；事务函数只 flush；单元 B 只通过这些函数落库。
 
-- [ ] RED：写创建快照和请求重放；本人/草稿/未提交/缺失岗位拒绝；源改动后原 snapshot 不变；旧 kind 字段组合仍拒绝。
-- [ ] RED：先写以下实际回滚和 lost-ack 测试，使用真实 `career_db`，只让队列发布变成可观察的 stub。
+- [x] RED：写创建快照和请求重放；本人/草稿/未提交/缺失岗位拒绝；源改动后原 snapshot 不变；旧 kind 字段组合仍拒绝。
+- [x] RED：先写以下实际回滚和 lost-ack 测试，使用真实 `career_db`，只让队列发布变成可观察的 stub。
 
 ```python
 def test_lost_ack_replays_one_answer_and_one_run(career_db, interview_factory):
@@ -170,9 +170,9 @@ def test_lost_ack_replays_one_answer_and_one_run(career_db, interview_factory):
 # answer、InterviewCommand、AgentRun、InterviewEvent 均不增加。
 ```
 
-- [ ] GREEN：完成五列与现有部署方式的增量、创建/读取/命令、flush-only Run 核心；将 interview 通用 Run 写入口封回共享服务。
-- [ ] GREEN：queued/running cancel、finish、retry、旧轮提交、取消第一问、回答 8 的接受合同；精确重放在状态变化后仍返回原 ack。补 MySQL 已打开 RR 快照的两连接竞争、其他 kind 不能占用面试 AgentSession、发布失败后 SQL queued 可被既有扫描补发。
-- [ ] 定向双库：`RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock .venv/bin/python -m pytest backend/tests/test_interviews.py backend/tests/test_worker_delivery.py -q`。覆盖故障为孤儿会话/半条回答/重复 Run/误派发；出现失败先定位事务，不用新增重试装饰器掩盖。
+- [x] GREEN：完成五列与现有部署方式的增量、创建/读取/命令、flush-only Run 核心；将 interview 通用 Run 写入口封回共享服务。
+- [x] GREEN：queued/running cancel、finish、retry、旧轮提交、取消第一问、回答 8 的接受合同；精确重放在状态变化后仍返回原 ack。补 MySQL 已打开 RR 快照的两连接竞争、其他 kind 不能占用面试 AgentSession、发布失败后 SQL queued 可被既有扫描补发。
+- [x] 定向双库：`RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock .venv/bin/python -m pytest backend/tests/test_interviews.py backend/tests/test_worker_delivery.py -q`。覆盖故障为孤儿会话/半条回答/重复 Run/误派发；出现失败先定位事务，不用新增重试装饰器掩盖。
 
 测试 helper 在 `backend/tests/interview_fixtures.py` 提供真实行种子、查询计数与可控模型响应，不提供复刻业务判断的 fake repository。现有 career_db fixture 已支持 SQLite/MySQL；不能另建“看起来像 MySQL”的引擎。
 
@@ -182,9 +182,9 @@ def test_lost_ack_replays_one_answer_and_one_run(career_db, interview_factory):
 
 **Interfaces:** `run_interview_generation(run_id,epoch)` 被现有 execute_run 调用；接受 A 的冻结 snapshot/expectedTurn；输出 typed InterviewStep；使用 A 的事务核心。两个实施者先冻结公共函数，不同时编辑 agent_runs.py。
 
-- [ ] RED：真实 create→claim→handler→SQL，一次首问、两次 follow_up、一次 new_topic；断言完整问题/答案/反馈/引用，不仅断言模型被调用。
-- [ ] RED：第八回答之后 feedback 存在、Session finished、Turn count=8，即使模型返回第九题也拒绝写入；错误结构/无效引用不产生业务结果。
-- [ ] RED：用 barrier 暂停模型返回，另连接取消或结束；释放模型后业务结果/成功事件为零。另测 epoch 改变、重复 handler、事务中间异常和同 Run checkpoint 恢复。
+- [x] RED：真实 create→claim→handler→SQL，一次首问、两次 follow_up、一次 new_topic；断言完整问题/答案/反馈/引用，不仅断言模型被调用。
+- [x] RED：第八回答之后 feedback 存在、Session finished、Turn count=8，即使模型返回第九题也拒绝写入；错误结构/无效引用不产生业务结果。
+- [x] RED：用 barrier 暂停模型返回，另连接取消或结束；释放模型后业务结果/成功事件为零。另测 epoch 改变、重复 handler、事务中间异常和同 Run checkpoint 恢复。
 
 ```python
 assert after.turn_count == before.turn_count
@@ -194,9 +194,9 @@ assert stopped_run.result_json is None
 # 取消不删除已接受 answer；generation.retry 新 Run 只生成一次合法结果。
 ```
 
-- [ ] GREEN：只新增独立执行函数与派发分支；沿用 worker 单槽、心跳/恢复、checkpointer/telemetry。摘要和框架重试也通过 fresh SQL guard；未配置模型/超出预算使用已有明确错误。
-- [ ] GREEN：成功写入 feedback/下一题/operation/events/Run result/terminal 一个事务；正常 running 取消按面试锁序收尾；覆盖 stale recovery 耗尽/排队取消后快照正确派生终态和重试资格，不依赖旧 worker 一定回来，也不在通用恢复反向锁面试。
-- [ ] 定向：`.venv/bin/python -m pytest backend/tests/test_interview_runtime.py backend/tests/test_agent_context.py backend/tests/test_worker_delivery.py -q`，并用现有 MySQL fixture 跑取消/回滚测试。若恢复结果重复，修持久化边界，不假定模型不重跑。
+- [x] GREEN：只新增独立执行函数与派发分支；沿用 worker 单槽、心跳/恢复、checkpointer/telemetry。摘要和框架重试也通过 fresh SQL guard；未配置模型/超出预算使用已有明确错误。
+- [x] GREEN：成功写入 feedback/下一题/operation/events/Run result/terminal 一个事务；正常 running 取消按面试锁序收尾；覆盖 stale recovery 耗尽/排队取消后快照正确派生终态和重试资格，不依赖旧 worker 一定回来，也不在通用恢复反向锁面试。
+- [x] 定向：`.venv/bin/python -m pytest backend/tests/test_interview_runtime.py backend/tests/test_agent_context.py backend/tests/test_worker_delivery.py -q`，并用现有 MySQL fixture 跑取消/回滚测试。若恢复结果重复，修持久化边界，不假定模型不重跑。
 
 ### 单元 C：确认反馈记忆与删除传播
 
@@ -204,10 +204,10 @@ assert stopped_run.result_json is None
 
 **Interfaces:** memory sourceRef 新增 interview_turn 分支；现有手工接口不改。返回 Memory 继续由现有序列化函数负责。
 
-- [ ] RED：无确认/false/他人会话/未生成反馈拒绝；确认后 sourceRef 精确绑定真实 turn，重复只一行；前后 ProfileFact count 相同。
-- [ ] RED：确认后的下一 Run 可用记忆；删除后下一次主模型/摘要调用前拦截，运行中迟到输出不写，checkpoint 清理状态真实可见；再次确认不恢复已删行。
-- [ ] GREEN：仅增加面试实际需要的 kind 判断与来源绑定保存；不冻结已删 memory 正文、不建立另一个记忆管理器。
-- [ ] 双库定向：`RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock .venv/bin/python -m pytest backend/tests/test_interview_memory.py backend/tests/test_agent_memory.py -q`。失败意味着业务记忆删除后仍被用到，应修实际 Run/会话关联和守卫。
+- [x] RED：无确认/false/他人会话/未生成反馈拒绝；确认后 sourceRef 精确绑定真实 turn，重复只一行；前后 ProfileFact count 相同。
+- [x] RED：确认后的下一 Run 可用记忆；删除后下一次主模型/摘要调用前拦截，运行中迟到输出不写，checkpoint 清理状态真实可见；再次确认不恢复已删行。
+- [x] GREEN：仅增加面试实际需要的 kind 判断与来源绑定保存；不冻结已删 memory 正文、不建立另一个记忆管理器。
+- [x] 双库定向：`RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock .venv/bin/python -m pytest backend/tests/test_interview_memory.py backend/tests/test_agent_memory.py -q`。失败意味着业务记忆删除后仍被用到，应修实际 Run/会话关联和守卫。
 
 ### 单元 D：面试页面与 HTTP 恢复
 
@@ -215,11 +215,11 @@ assert stopped_run.result_json is None
 
 **Interfaces:** 只消费固定 HTTP 合同。导航 `/interviews/:id`；Application 已关联材料卡显示“模拟面试”，同时标明投递版本/岗位取材时点。
 
-- [ ] RED：模拟丢失 ack 后同 ID/同 payload 重发；编辑草稿不改变待重发命令；刷新取 SQL 当前轮；账号变化清理 draft/pending command/旧快照，旧响应不能写入新账号视图。
-- [ ] GREEN：回答草稿与冻结 pending command 分离；按 userId/interviewId/turn 存当前浏览器会话的草稿和待重发命令，接受后清理。重复点击禁止再造 clientMessageId；超时显示可重发，不能当作业务失败清空正文。
-- [ ] GREEN：显示生成中、正在停止、失败可重试、已结束、会话因记忆删除失效；取消/结束有清楚操作含义，结束不被关页触发。反馈区标“练习反馈”，引用可展开，记忆确认先展示确切内容。
-- [ ] GREEN：桌面左历史右当前轮，移动单列；长问题/引用/版本名换行，按钮不遮挡输入。空状态提供回到申请材料的入口。
-- [ ] 定向：`npm --prefix frontend run test:unit -- src/views/InterviewView.spec.ts src/views/ApplicationsView.spec.ts`；`npm --prefix frontend run lint`。这里发现的是交互/类型问题，不能替代真实图、SQL 或浏览器截图。
+- [x] RED：模拟丢失 ack 后同 ID/同 payload 重发；编辑草稿不改变待重发命令；刷新取 SQL 当前轮；账号变化清理 draft/pending command/旧快照，旧响应不能写入新账号视图。
+- [x] GREEN：回答草稿与冻结 pending command 分离；按 userId/interviewId/turn 存当前浏览器会话的草稿和待重发命令，接受后清理。重复点击禁止再造 clientMessageId；超时显示可重发，不能当作业务失败清空正文。
+- [x] GREEN：显示生成中、正在停止、失败可重试、已结束、会话因记忆删除失效；取消/结束有清楚操作含义，结束不被关页触发。反馈区标“练习反馈”，引用可展开，记忆确认先展示确切内容。
+- [x] GREEN：桌面左历史右当前轮，移动单列；长问题/引用/版本名换行，按钮不遮挡输入。空状态提供回到申请材料的入口。
+- [x] 定向：`npm --prefix frontend run test:unit -- src/views/InterviewView.spec.ts src/views/ApplicationsView.spec.ts`；`npm --prefix frontend run build`（含vue-tsc类型检查）。这里发现的是交互/类型问题，不能替代真实图、SQL 或浏览器截图。
 
 ### 单元 E：六个真实持久服务评测
 
@@ -236,25 +236,30 @@ assert stopped_run.result_json is None
 | `interview-frozen-submission` | 修改源内容后仍用提交快照与面试开始岗位；他人/缺失来源拒绝 |
 | `interview-feedback-memory` | 未确认零写、确认一份、删后不复活、ProfileFact 不变 |
 
-- [ ] RED：缺轨迹/SQL snapshot/未执行时不能判 pass；一案故意错 oracle 应 fail；不支持的 live 新案必须 not_run。
-- [ ] GREEN：只 stub 外部模型响应，走真实持久服务与图调用边界；输出可审阅的题目、反馈、引用和 SQL 变化。
-- [ ] 局部验证：`.venv/bin/python -m pytest backend/tests/test_interview_evals.py -q`；再运行 `.venv/bin/python -m evals.run --suite core --mode stub --output /tmp/resumate-t16-interviews --cases interview-followup,interview-eight-turn-limit,interview-command-replay,interview-cancel-late-result,interview-frozen-submission,interview-feedback-memory`。根代理最后统一完整核心评测。
-- [ ] 总数为 30。普通 stub 无本轮真实 Compose 证据仍是 26 executed / 4 not_run，退出码 2；提供同一次 invocation 的四个真实恢复证据才可算 30 executed。不能借用上轮 crash 的 pass 冒充本轮，也不能把 stub 文案质量当真实模型评测。
+- [x] RED：缺轨迹/SQL snapshot/未执行时不能判 pass；一案故意错 oracle 应 fail；不支持的 live 新案必须 not_run。
+- [x] GREEN：只 stub 外部模型响应，走真实持久服务与图调用边界；输出可审阅的题目、反馈、引用和 SQL 变化。
+- [x] 局部验证：`.venv/bin/python -m pytest backend/tests/test_interview_evals.py -q`；测试实际调用同一CLI入口并生成六案完整产物，不额外重复同一批。完整后端内包含30案目录及普通core的26执行/4未执行回归；四次新Compose证据在T19交付验收执行。
+- [x] 总数为 30。普通 stub 无本轮真实 Compose 证据仍是 26 executed / 4 not_run，退出码 2；提供同一次 invocation 的四个真实恢复证据才可算 30 executed。不能借用上轮 crash 的 pass 冒充本轮，也不能把 stub 文案质量当真实模型评测。
 
 ### 单元 F：真实浏览器、教学与收口
 
 **Files:** 新增 `tests/e2e/interview.spec.ts`、`docs/learning/16-text-interviews.md`、`docs/learning/test-records/2026-10-30-t16.md`；由根代理维护 `tests/e2e/support/server.py`/实际 worker fixture、教学导航与总计划。
 
-- [ ] 场景 1：真实登录→Application 已关联版本→开始→第一题→两次回答/两次追问→展开引用→刷新仍为 SQL 当前轮→用户结束。验证 browser reload 并未创建新面试/重复回答。
-- [ ] 场景 2：冻结源材料后修改原数据，页面仍显示原取材；长问题、长引用、空状态，桌面/390/320px。
-- [ ] 场景 3：模型 barrier 显示生成中→取消→迟到输出不出现→重试；失败与记忆失效状态有实际后端来源，不只切前端布尔值截图。
-- [ ] 场景 4：实际丢弃一次成功命令的 HTTP 响应再重发，刷新并查 SQL 一条答案/一个 Run；确认反馈写记忆前后真实 API 验证，账号切换清理。
-- [ ] 使用现有真实 API+worker+SQL 和隔离合成模型 transport，不 route.fulfill 整个 interview API，不只组件 mock。`.venv/bin/python` fixture 和 Playwright 环境由根代理统一启动；执行 `npm run test:e2e -- interview.spec.ts`。
-- [ ] 保存最终桌面、390、320px 问题/反馈引用/生成/失败/结束图，实际打开图片确认换行/滚动/按钮/米棕视觉。截图只证明看到的 UI；SQL 与原始日志分别证明去重和取消，不用截图替代事务证据。
-- [ ] 教学解释：ack 与结果分离、冻结投递事实与练习答案的区别、单事务/epoch防迟到、框架 checkpoint 与 SQL 当前轮各自职责、为什么确认后才进入记忆。保留红绿、实际浏览器发现、修复范围、未测边界与未发生的付费调用。
+- [x] 场景 1：真实登录→Application 已关联版本→开始→第一题→两次回答/两次追问→展开引用→刷新仍为 SQL 当前轮→用户结束。验证 browser reload 并未创建新面试/重复回答。
+- [x] 场景 2：冻结源材料后修改原数据，页面仍显示原取材；长问题、长引用、空状态，桌面/390/320px。
+- [x] 场景 3：模型 barrier 显示生成中→取消→迟到输出不出现→重试；失败与记忆失效状态有实际后端来源，不只切前端布尔值截图。
+- [x] 场景 4：实际丢弃一次成功命令的 HTTP 响应再重发，刷新并查 SQL 一条答案/一个 Run；确认反馈写记忆前后真实 API 验证，账号切换清理。
+- [x] 使用现有真实 API+worker+SQL 和隔离合成模型 transport，不 route.fulfill 整个 interview API，不只组件 mock。`.venv/bin/python` fixture 和 Playwright 环境由根代理统一启动；执行 `npm run test:e2e -- interview.spec.ts`。
+- [x] 保存最终桌面、390、320px 问题/反馈引用/生成/失败/结束图，实际打开图片确认换行/滚动/按钮/米棕视觉。截图只证明看到的 UI；SQL 与原始日志分别证明去重和取消，不用截图替代事务证据。
+- [x] 教学解释：ack 与结果分离、冻结投递事实与练习答案的区别、单事务/epoch防迟到、框架 checkpoint 与 SQL 当前轮各自职责、为什么确认后才进入记忆。保留红绿、实际浏览器发现、修复范围、未测边界与未发生的付费调用。
 
 ## 分工与交付
 
 A 先冻结 schema/命令/Run 事务接口；B 接真实 Deep Agents 与执行函数；C 记忆可由 A/B 中一人顺序完成，避免共享文件冲突；根代理负责 UI/浏览器/最终检查，另一个空闲工作者可独占六案 eval。不要为本计划自动增开 agent。
 
-每单元交付行为、变更文件、明确的失败与修复、执行命令/计数、原始日志和教学要点；不在局部通过时宣布 T16 完成。主计划与 T21 的 generation.retry 类型同步由根代理在实施收口时完成。
+每单元交付行为、变更文件、明确的失败与修复、执行命令/计数、原始日志和教学要点；不在局部通过时宣布 T16 完成。根代理在实施收口时同步主计划；T21已取消，不增加WS类型或接线。
+
+
+## 收口（2026-10-30）
+
+实现与确定性验收完成，证据见[测试记录](../../learning/test-records/2026-10-30-t16.md)。A/C双库93passed/3skip；图与边界37项在根完整后端通过；六案6/6实际执行、17定向测试通过；前端148全量后追加审查修复15定向通过；四个实际浏览器场景通过、审查后受影响两场景再通过；11张截图逐张查看并修复两处可见问题。完整后端首轮1076pass/2fail/17skip，旧遥测测试对象补kind后2失败定向通过，未宣称完整首轮全绿。最终生产包816.47kB作为T17基线。T21用户取消，后续T17/T18→T19；真实模型质量未验收。

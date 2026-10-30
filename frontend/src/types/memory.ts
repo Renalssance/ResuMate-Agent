@@ -4,7 +4,7 @@ export interface BusinessMemory {
   id: string
   kind: MemoryKind
   content: string
-  sourceRef: { kind: 'manual' }
+  sourceRef: { kind: 'manual' } | { kind: 'interview_turn'; interviewId: string; turnId: number }
   confirmedAt: string
   createdAt: string
 }

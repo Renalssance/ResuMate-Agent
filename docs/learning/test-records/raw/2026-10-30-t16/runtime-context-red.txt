@@ -1,0 +1,304 @@
+FFFFFFFFFFFF                                                             [100%]
+=================================== FAILURES ===================================
+________ test_quotes_bind_only_server_frozen_version_job_and_answer_ids ________
+
+    def test_quotes_bind_only_server_frozen_version_job_and_answer_ids():
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference0] __
+
+reference = {'kind': 'resume', 'quote': 'API development', 'section': '/missing'}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference1] __
+
+reference = {'kind': 'resume', 'quote': 'invented experience', 'section': '/self_summary'}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference2] __
+
+reference = {'kind': 'job', 'quote': 'unmentioned skill'}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference3] __
+
+reference = {'kind': 'answer', 'quote': '使用单个数据库事务', 'turnIndex': 2}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference4] __
+
+reference = {'kind': 'answer', 'quote': 'never answered', 'turnIndex': 1}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+__ test_invalid_or_model_owned_reference_does_not_become_a_result[reference5] __
+
+reference = {'kind': 'resume', 'quote': 'API development', 'resumeVersionId': 'injected', 'section': '/self_summary'}
+
+    @pytest.mark.parametrize('reference', [
+        {'kind': 'resume', 'section': '/missing', 'quote': 'API development'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'invented experience'},
+        {'kind': 'job', 'quote': 'unmentioned skill'},
+        {'kind': 'answer', 'turnIndex': 2, 'quote': '使用单个数据库事务'},
+        {'kind': 'answer', 'turnIndex': 1, 'quote': 'never answered'},
+        {'kind': 'resume', 'section': '/self_summary', 'quote': 'API development', 'resumeVersionId': 'injected'},
+    ])
+    def test_invalid_or_model_owned_reference_does_not_become_a_result(reference):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+_ test_follow_up_requires_the_previous_accepted_answer_and_eighth_has_no_question _
+
+    def test_follow_up_requires_the_previous_accepted_answer_and_eighth_has_no_question():
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:68:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+_ test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[empty_refs] __
+
+change = 'empty_refs'
+
+    @pytest.mark.parametrize('change', ['empty_refs', 'no_feedback', 'opening_after_answer', 'feedback_before_answer'])
+    def test_wrong_step_shape_cannot_silently_drop_unsupported_feedback(change):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+_ test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[no_feedback] _
+
+change = 'no_feedback'
+
+    @pytest.mark.parametrize('change', ['empty_refs', 'no_feedback', 'opening_after_answer', 'feedback_before_answer'])
+    def test_wrong_step_shape_cannot_silently_drop_unsupported_feedback(change):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+_ test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[opening_after_answer] _
+
+change = 'opening_after_answer'
+
+    @pytest.mark.parametrize('change', ['empty_refs', 'no_feedback', 'opening_after_answer', 'feedback_before_answer'])
+    def test_wrong_step_shape_cannot_silently_drop_unsupported_feedback(change):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+_ test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[feedback_before_answer] _
+
+change = 'feedback_before_answer'
+
+    @pytest.mark.parametrize('change', ['empty_refs', 'no_feedback', 'opening_after_answer', 'feedback_before_answer'])
+    def test_wrong_step_shape_cannot_silently_drop_unsupported_feedback(change):
+>       module = context_module()
+                 ^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:83:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def context_module():
+>       assert importlib.util.find_spec('backend.agent_runtime.interview_context'), 'Interview frozen context/output validation is required'
+E       AssertionError: Interview frozen context/output validation is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a23bba0>('backend.agent_runtime.interview_context')
+E        +    where <function find_spec at 0x10a23bba0> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:12: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_runtime.py::test_quotes_bind_only_server_frozen_version_job_and_answer_ids
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference0]
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference1]
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference2]
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference3]
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference4]
+FAILED backend/tests/test_interview_runtime.py::test_invalid_or_model_owned_reference_does_not_become_a_result[reference5]
+FAILED backend/tests/test_interview_runtime.py::test_follow_up_requires_the_previous_accepted_answer_and_eighth_has_no_question
+FAILED backend/tests/test_interview_runtime.py::test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[empty_refs]
+FAILED backend/tests/test_interview_runtime.py::test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[no_feedback]
+FAILED backend/tests/test_interview_runtime.py::test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[opening_after_answer]
+FAILED backend/tests/test_interview_runtime.py::test_wrong_step_shape_cannot_silently_drop_unsupported_feedback[feedback_before_answer]
+12 failed in 0.32s

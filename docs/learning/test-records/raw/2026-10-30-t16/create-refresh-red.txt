@@ -1,0 +1,39 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/ApplicationsView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/ApplicationsView.spec.ts (4 tests | 1 failed) 222ms
+   × only starts from submitted materials and reuses the create request after a lost response 36ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > only starts from submitted materials and reuses the create request after a lost response
+AssertionError: expected [ 10, …(1) ] to deeply equal [ 10, …(1) ]
+
+- Expected
++ Received
+
+  [
+    10,
+-   "cf23dec4-2dd1-489e-b546-71cb60cec222",
++   "40ad187c-64af-4f2a-8fa1-918005a7f09e",
+  ]
+
+ ❯ src/views/ApplicationsView.spec.ts:83:51
+     81|  view.wrapper.unmount(); view = await setup('')
+     82|  await view.wrapper.findAll('button').find(button => button.text() ===…
+     83|  expect(vi.mocked(createInterview).mock.calls[1]).toEqual(first)
+       |                                                   ^
+     84|  expect(first?.[0]).toBe(10)
+     85|  expect(view.router.currentRoute.value.path).toBe('/interviews/intervi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  09:54:58
+   Duration  1.08s (transform 170ms, setup 0ms, import 328ms, tests 222ms, environment 432ms)

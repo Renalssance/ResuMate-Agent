@@ -55,3 +55,25 @@ def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int, telemetr
         middleware=[filesystem, summarization],
         permissions=[FilesystemPermission(operations=['write'], paths=['/inputs/**'], mode='deny')],
         checkpointer=checkpointer)
+
+
+def build_interview_agent(user_id: int, checkpointer, *, run_id: str, epoch: int, telemetry=None):
+    from backend.agent_runtime.interview_context import InterviewContextMiddleware, InterviewStep, interview_tools
+    model = model_for_user(user_id)
+    attach_model_telemetry(model, telemetry)
+    name = model.model_name
+    register_harness_profile(name if name.startswith('openai:') else f'openai:{name}', HarnessProfile(
+        excluded_tools=frozenset({'execute', 'task'}),
+        general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False)))
+    backend = StateBackend()
+    budget = model_budget(model)
+    input_budget = budget['availableInputEstimatedTokens']
+    filesystem = FilesystemMiddleware(backend=backend,
+        tool_token_limit_before_evict=max(128, int(input_budget * .15 / 4)))
+    return create_deep_agent(model=model,
+        tools=interview_tools(run_id, epoch, inline_token_limit=int(input_budget * .1), budget=budget),
+        system_prompt=(Path(__file__).parent / 'skills/interview-prep/SKILL.md').read_text(),
+        response_format=InterviewStep, state_schema=RunState, backend=backend,
+        middleware=[filesystem, InterviewContextMiddleware(model=model, backend=backend, run_id=run_id, epoch=epoch)],
+        permissions=[FilesystemPermission(operations=['write'], paths=['/inputs/**'], mode='deny')],
+        checkpointer=checkpointer)

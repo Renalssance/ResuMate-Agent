@@ -51,7 +51,7 @@ def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
         from backend.services.resume_export import pdf_artifact
         artifact = pdf_artifact(run)
         return [artifact] if artifact else []
-    if run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
+    if run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation'):
         return []
     if run.kind != 'tailoring':
         raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
@@ -73,6 +73,7 @@ def _public_input(run: AgentRun) -> dict:
         'match_analysis': ('jdId', 'resumeIds', 'analysisJobId'),
         'question_generation': ('analysisJobId', 'candidateId', 'questionCount'),
         'answer_followup': ('followup',),
+        'interview_generation': ('interviewId', 'expectedTurn'),
     }.get(run.kind, ())
     return {key: run.input_json.get(key) for key in keys}
 
@@ -99,6 +100,8 @@ def _request_input(request: RunCreate) -> dict:
     if request.kind == 'question_generation':
         return {'analysisJobId': request.analysis_job_id, 'candidateId': request.candidate_id,
                 'questionCount': request.question_count}
+    if request.kind == 'interview_generation':
+        return {'interviewId': request.interview_id, 'expectedTurn': request.expected_turn}
     if request.kind == 'answer_followup':
         return {'followup': request.followup.model_dump(mode='json')}
     raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
@@ -202,7 +205,7 @@ def _capture_task_inputs(db: Session, user_id: int, request: RunCreate, inputs: 
 
 
 def require_valid_session(db: Session, run: AgentRun) -> None:
-    if run.kind == 'tailoring' and db.scalar(select(AgentSession.id).where(
+    if run.kind in ('tailoring', 'interview_generation') and db.scalar(select(AgentSession.id).where(
             AgentSession.id == run.session_id, AgentSession.context_invalidated_at.is_not(None)).with_for_update()) is not None:
         raise RunError(409, 'session_context_invalidated', '记忆已删除，请新建会话继续任务')
 
@@ -211,16 +214,17 @@ def _claim_session(db: Session, user_id: int, session_id: str, run_id: str, *, k
     result = db.execute(update(AgentSession).where(
         AgentSession.id == session_id, AgentSession.user_id == user_id,
         AgentSession.active_run_id.is_(None),
-        True if kind != 'tailoring' else AgentSession.context_invalidated_at.is_(None),
+        True if kind not in ('tailoring', 'interview_generation') else AgentSession.context_invalidated_at.is_(None),
     ).values(active_run_id=run_id))
     if result.rowcount != 1:
-        if kind == 'tailoring' and db.scalar(select(AgentSession.id).where(
+        if kind in ('tailoring', 'interview_generation') and db.scalar(select(AgentSession.id).where(
                 AgentSession.id == session_id, AgentSession.context_invalidated_at.is_not(None)).with_for_update()):
             raise RunError(409, 'session_context_invalidated', '记忆已删除，请新建会话继续任务')
         raise RunError(409, 'session_busy', '当前会话已有活动任务')
 
 
-def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
+def create_run_in_transaction(db: Session, user_id: int, request: RunCreate) -> AgentRun:
+    """Accept a Run in the caller's transaction; never commits or rolls back."""
     existing = _existing_request(db, user_id, request)
     if existing is not None:
         require_valid_session(db, existing)
@@ -240,6 +244,9 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
             db, user_id, source_document_id=request.resume_id, confirmed_only=True)]
         from backend.agent_runtime.context import capture_context
         inputs['contextSnapshot'] = capture_context(db, user_id, request.jd_id, request.resume_id, versions)
+    elif request.kind == 'interview_generation':
+        from backend.services.interviews import capture_interview_run
+        versions = capture_interview_run(db, user_id, request, inputs)
     elif request.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
         versions = _capture_task_inputs(db, user_id, request, inputs)
     else:
@@ -248,6 +255,8 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
         session = db.scalar(select(AgentSession).where(AgentSession.id == request.session_id, AgentSession.user_id == user_id))
         if session is None:
             raise RunError(404, 'not_found', '会话不存在')
+        if session.purpose == 'interview_generation' and request.kind != 'interview_generation':
+            raise RunError(409, 'interview_command_required', '请通过面试命令操作此会话')
     else:
         session = AgentSession(id=str(uuid4()), user_id=user_id, purpose=request.kind)
         db.add(session)
@@ -255,17 +264,24 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
                    request_id=request.request_id, kind=request.kind,
                    input_json=inputs,
                    input_versions=versions)
+    # Flush session explicitly: these models intentionally have no ORM relationship.
+    db.flush()
+    db.add(run)
+    db.flush()
+    _claim_session(db, user_id, session.id, run.id, kind=run.kind)
+    append_event(db, run.id, 'run.status', {'status': run.status})
+    return run
+
+
+def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
+    if request.kind == 'interview_generation':
+        raise RunError(409, 'interview_command_required', '请通过面试命令创建生成任务')
     try:
-        # Flush session explicitly because these models intentionally have no ORM relationship.
-        db.flush()
-        db.add(run)
-        db.flush()
-        _claim_session(db, user_id, session.id, run.id, kind=run.kind)
-        append_event(db, run.id, 'run.status', {'status': run.status})
+        run = create_run_in_transaction(db, user_id, request)
         db.commit()
+        return run
     except IntegrityError:
         db.rollback()
-        # Another request may have committed the same user/request key while we waited.
         existing = _existing_request(db, user_id, request)
         if existing is not None:
             require_valid_session(db, existing)
@@ -274,7 +290,6 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
     except RunError:
         db.rollback()
         raise
-    return run
 
 
 def _mark_stopped_document(db: Session, run: AgentRun, status: RunStatus) -> None:
@@ -287,7 +302,7 @@ def _mark_stopped_document(db: Session, run: AgentRun, status: RunStatus) -> Non
                .values(parse_status=status.value))
 
 
-def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
+def cancel_run_in_transaction(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
     if run.status in (RunStatus.SUCCEEDED, RunStatus.FAILED, RunStatus.CANCELLED):
         return run
@@ -308,13 +323,24 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         _mark_stopped_document(db, run, RunStatus.CANCELLED)
         append_event(db, run.id, 'run.status', {'status': RunStatus.CANCELLED})
     # A running call stops cooperatively in T04/T05. Do not claim it stopped here.
-    db.commit()
+    db.flush()
     db.refresh(run)
+    return run
+
+
+def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
+    run = get_run(db, user_id, run_id)
+    if run.kind == 'interview_generation':
+        raise RunError(409, 'interview_command_required', '请通过面试命令取消生成')
+    run = cancel_run_in_transaction(db, user_id, run_id)
+    db.commit()
     return run
 
 
 def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = get_run(db, user_id, run_id, lock=True)
+    if run.kind == 'interview_generation':
+        raise RunError(409, 'interview_command_required', '请通过面试命令重试生成')
     require_valid_session(db, run)
     if run.status != RunStatus.FAILED:
         raise RunError(409, 'invalid_state', '只有失败任务可以重试')
@@ -359,7 +385,7 @@ def run_snapshot(db: Session, user_id: int, run_id: str) -> dict:
         'runId': run.id, 'sessionId': run.session_id, 'status': run.status,
         'kind': run.kind, 'input': _public_input(run), 'inputVersions': run.input_versions,
         'attempt': run.attempt, 'lastSeq': last_seq, 'errorCode': run.error_code,
-        'sessionInvalidated': run.kind == 'tailoring' and invalidated_at is not None,
+        'sessionInvalidated': run.kind in ('tailoring', 'interview_generation') and invalidated_at is not None,
         'cancelRequested': run.cancel_requested_at is not None,
         'outputRefs': run.output_refs, 'result': run.result_json,
         'actions': [{'actionId': a.id, 'kind': a.kind, 'payload': a.payload, 'revision': 1} for a in actions],
@@ -432,7 +458,7 @@ def claim_run(db: Session, run_id: str) -> int | None:
 
 
 def _valid_execution_session():
-    return (AgentRun.kind != 'tailoring') | AgentRun.session_id.in_(
+    return AgentRun.kind.not_in(('tailoring', 'interview_generation')) | AgentRun.session_id.in_(
         select(AgentSession.id).where(AgentSession.context_invalidated_at.is_(None)))
 
 

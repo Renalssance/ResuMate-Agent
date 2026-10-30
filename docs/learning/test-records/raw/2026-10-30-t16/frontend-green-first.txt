@@ -1,0 +1,156 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/InterviewView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/InterviewView.spec.ts (5 tests | 3 failed) 61ms
+   × replays the exact pending command after a lost ack even when the draft is edited 44ms
+   × restores a frozen pending command after remount and does not create an answer on refresh 4ms
+   × uses server generation state for stopping and only permits retry after a terminal result 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/InterviewView.spec.ts > replays the exact pending command after a lost ack even when the draft is edited
+TypeError: Cannot read properties of undefined (reading '1')
+ ❯ src/views/InterviewView.spec.ts:32:60
+     30|  await wrapper.get('textarea').setValue('用事务和唯一键去重')
+     31|  await wrapper.get('form').trigger('submit'); await flushPromises()
+     32|  const first = vi.mocked(sendInterviewCommand).mock.calls[0]![1]
+       |                                                            ^
+     33|  expect(first).toMatchObject({ type: 'answer.submit', expectedTurn: 1,…
+     34|  await wrapper.get('textarea').setValue('之后编辑的草稿')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/views/InterviewView.spec.ts > restores a frozen pending command after remount and does not create an answer on refresh
+TypeError: Cannot read properties of undefined (reading '1')
+ ❯ src/views/InterviewView.spec.ts:44:60
+     42|  await view.wrapper.get('textarea').setValue('刷新后仍保留')
+     43|  await view.wrapper.get('form').trigger('submit'); await flushPromises…
+     44|  const first = vi.mocked(sendInterviewCommand).mock.calls[0]![1]
+       |                                                            ^
+     45|  view.wrapper.unmount(); view = await setup()
+     46|  expect(sendInterviewCommand).toHaveBeenCalledTimes(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/views/InterviewView.spec.ts > uses server generation state for stopping and only permits retry after a terminal result
+AssertionError: expected last "vi.fn()" call to have been called with [ 'interview-1', ObjectContaining{…} ]
+
+- Expected:
+[
+  "interview-1",
+  ObjectContaining {
+    "expectedTurn": 1,
+    "payload": {
+      "runId": "run-2",
+    },
+    "type": "generation.retry",
+  },
+]
+
++ Received:
+undefined
+
+ ❯ src/views/InterviewView.spec.ts:74:31
+     72|  await button(wrapper, '刷新进度').trigger('click'); await flushPromises()
+     73|  await button(wrapper, '重试生成').trigger('click'); await flushPromises()
+     74|  expect(sendInterviewCommand).toHaveBeenLastCalledWith('interview-1', …
+       |                               ^
+     75|  wrapper.unmount()
+     76| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 3 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+DataCloneError: #<Object> could not be cloned.
+ ❯ new DOMException node:internal/per_context/domexception:76:18
+ ❯ structuredClone node:internal/worker/js_transferable:126:26
+ ❯ deliverPending src/views/InterviewView.vue:135:18
+    133| async function deliverPending() {
+    134|  if (!pending.value || sending.value) return
+    135|  const command = structuredClone(pending.value), ownEpoch = epoch
+       |                  ^
+    136|  sending.value = true; error.value = ''
+    137|  try {
+ ❯ queue src/views/InterviewView.vue:153:130
+ ❯ submitAnswer src/views/InterviewView.vue:156:2
+ ❯ node_modules/@vue/runtime-dom/dist/runtime-dom.cjs.js:1792:12
+ ❯ callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:200:19
+ ❯ Object.callWithAsyncErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:207:17
+ ❯ Proxy.invoker node_modules/@vue/runtime-dom/dist/runtime-dom.cjs.js:704:19
+ ❯ Proxy.callTheUserObjectsOperation node_modules/jsdom/lib/generated/idl/EventListener.js:26:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 25, INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, HIERARCHY_REQUEST_ERR: 3, WRONG_DOCUMENT_ERR: 4, INVALID_CHARACTER_ERR: 5, NO_DATA_ALLOWED_ERR: 6, NO_MODIFICATION_ALLOWED_ERR: 7, NOT_FOUND_ERR: 8, NOT_SUPPORTED_ERR: 9, INUSE_ATTRIBUTE_ERR: 10, INVALID_STATE_ERR: 11, SYNTAX_ERR: 12, INVALID_MODIFICATION_ERR: 13, NAMESPACE_ERR: 14, INVALID_ACCESS_ERR: 15, VALIDATION_ERR: 16, TYPE_MISMATCH_ERR: 17, SECURITY_ERR: 18, NETWORK_ERR: 19, ABORT_ERR: 20, URL_MISMATCH_ERR: 21, QUOTA_EXCEEDED_ERR: 22, TIMEOUT_ERR: 23, INVALID_NODE_TYPE_ERR: 24, DATA_CLONE_ERR: 25 }
+This error originated in "src/views/InterviewView.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "replays the exact pending command after a lost ack even when the draft is edited". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+DataCloneError: #<Object> could not be cloned.
+ ❯ new DOMException node:internal/per_context/domexception:76:18
+ ❯ structuredClone node:internal/worker/js_transferable:126:26
+ ❯ deliverPending src/views/InterviewView.vue:135:18
+    133| async function deliverPending() {
+    134|  if (!pending.value || sending.value) return
+    135|  const command = structuredClone(pending.value), ownEpoch = epoch
+       |                  ^
+    136|  sending.value = true; error.value = ''
+    137|  try {
+ ❯ queue src/views/InterviewView.vue:153:130
+ ❯ submitAnswer src/views/InterviewView.vue:156:2
+ ❯ node_modules/@vue/runtime-dom/dist/runtime-dom.cjs.js:1792:12
+ ❯ callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:200:19
+ ❯ Object.callWithAsyncErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:207:17
+ ❯ Proxy.invoker node_modules/@vue/runtime-dom/dist/runtime-dom.cjs.js:704:19
+ ❯ Proxy.callTheUserObjectsOperation node_modules/jsdom/lib/generated/idl/EventListener.js:26:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 25, INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, HIERARCHY_REQUEST_ERR: 3, WRONG_DOCUMENT_ERR: 4, INVALID_CHARACTER_ERR: 5, NO_DATA_ALLOWED_ERR: 6, NO_MODIFICATION_ALLOWED_ERR: 7, NOT_FOUND_ERR: 8, NOT_SUPPORTED_ERR: 9, INUSE_ATTRIBUTE_ERR: 10, INVALID_STATE_ERR: 11, SYNTAX_ERR: 12, INVALID_MODIFICATION_ERR: 13, NAMESPACE_ERR: 14, INVALID_ACCESS_ERR: 15, VALIDATION_ERR: 16, TYPE_MISMATCH_ERR: 17, SECURITY_ERR: 18, NETWORK_ERR: 19, ABORT_ERR: 20, URL_MISMATCH_ERR: 21, QUOTA_EXCEEDED_ERR: 22, TIMEOUT_ERR: 23, INVALID_NODE_TYPE_ERR: 24, DATA_CLONE_ERR: 25 }
+This error originated in "src/views/InterviewView.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "restores a frozen pending command after remount and does not create an answer on refresh". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+DataCloneError: #<Object> could not be cloned.
+ ❯ new DOMException node:internal/per_context/domexception:76:18
+ ❯ structuredClone node:internal/worker/js_transferable:126:26
+ ❯ deliverPending src/views/InterviewView.vue:135:18
+    133| async function deliverPending() {
+    134|  if (!pending.value || sending.value) return
+    135|  const command = structuredClone(pending.value), ownEpoch = epoch
+       |                  ^
+    136|  sending.value = true; error.value = ''
+    137|  try {
+ ❯ queue src/views/InterviewView.vue:153:130
+ ❯ Proxy.issue src/views/InterviewView.vue:162:38
+ ❯ $setup.snapshot.$setup.canRetry.onClick._cache.<computed>._cache.<computed> src/views/InterviewView.vue:24:113
+ ❯ callWithErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:200:19
+ ❯ Object.callWithAsyncErrorHandling node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:207:17
+ ❯ HTMLButtonElement.invoker node_modules/@vue/runtime-dom/dist/runtime-dom.cjs.js:704:19
+ ❯ HTMLButtonElement.callTheUserObjectsOperation node_modules/jsdom/lib/generated/idl/EventListener.js:26:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 25, INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, HIERARCHY_REQUEST_ERR: 3, WRONG_DOCUMENT_ERR: 4, INVALID_CHARACTER_ERR: 5, NO_DATA_ALLOWED_ERR: 6, NO_MODIFICATION_ALLOWED_ERR: 7, NOT_FOUND_ERR: 8, NOT_SUPPORTED_ERR: 9, INUSE_ATTRIBUTE_ERR: 10, INVALID_STATE_ERR: 11, SYNTAX_ERR: 12, INVALID_MODIFICATION_ERR: 13, NAMESPACE_ERR: 14, INVALID_ACCESS_ERR: 15, VALIDATION_ERR: 16, TYPE_MISMATCH_ERR: 17, SECURITY_ERR: 18, NETWORK_ERR: 19, ABORT_ERR: 20, URL_MISMATCH_ERR: 21, QUOTA_EXCEEDED_ERR: 22, TIMEOUT_ERR: 23, INVALID_NODE_TYPE_ERR: 24, DATA_CLONE_ERR: 25 }
+This error originated in "src/views/InterviewView.spec.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "uses server generation state for stopping and only permits retry after a terminal result". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+     Errors  3 errors
+   Start at  09:49:15
+   Duration  500ms (transform 77ms, setup 0ms, import 132ms, tests 61ms, environment 246ms)

@@ -274,6 +274,7 @@
         </div>
       </div>
       <p v-if="exportError" class="error-note" role="alert">{{ exportError }}</p>
+      <p v-if="interviewError" class="error-note" role="alert">{{ interviewError }}</p>
 
       <div v-if="showApplicationForm" class="application-entry-panel">
         <div class="section-head compact">
@@ -396,6 +397,7 @@
                 <ExternalLink class="app-icon" aria-hidden="true" />
                 <span>打开</span>
               </button>
+              <button v-if="application.submittedSnapshot" class="action-button" type="button" :disabled="startingInterview !== null" @click="startInterview(application.id)"><span>{{ startingInterview === application.id ? '正在开始…' : '模拟面试' }}</span></button>
               <button v-if="application.submittedSnapshot" class="action-button" type="button" @click="toggleSubmission(application.id)"><span>{{ expandedSubmissions.has(application.id) ? '收起提交时材料' : '查看提交时材料' }}</span></button>
               <button class="action-button" type="button" @click="startEdit(application)">
                 <Pencil class="app-icon" aria-hidden="true" />
@@ -575,9 +577,11 @@
 <script setup lang="ts">
 import { buildSearchIndex, matchesSearch } from '../utils/search'
 import { ArrowLeft, ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CircleDot, ExternalLink, ListTree, Pencil, Plus, Save, Trash2, X } from '@lucide/vue'
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { fetchResumeVersion } from '../api/resumeVersions'
+import { createInterview } from '../api/interviews'
+import { useAuthStore } from '../stores/auth'
 import type { ResumeVersionArtifact } from '../api/agentRuns'
 import { decisionsFor, projectResume, reviewChanges } from '../utils/resumeReview'
 import ResumePreview from '../components/resume/ResumePreview.vue'
@@ -607,6 +611,34 @@ import {
 
 const store = useApplicationStore()
 const documentStore = useDocumentStore()
+const auth = useAuthStore()
+const startingInterview = ref<number | null>(null), interviewError = ref('')
+const interviewRequests = new Map<number, string>()
+let interviewPageActive = true
+onBeforeUnmount(() => { interviewPageActive = false })
+watch(() => auth.token, () => {
+  interviewRequests.clear(); startingInterview.value = null; interviewError.value = ''
+  try { for (const key of Object.keys(sessionStorage)) if (key.startsWith('resumate:interview:start:')) sessionStorage.removeItem(key) } catch { /* Keep in-memory behavior when browser storage is unavailable. */ }
+})
+async function startInterview(applicationId: number) {
+  if (startingInterview.value !== null) return
+  const token = auth.token
+  const storageKey = `resumate:interview:start:${auth.username}:${applicationId}`
+  let requestId = interviewRequests.get(applicationId)
+  try { requestId ||= sessionStorage.getItem(storageKey) || undefined } catch { /* The in-memory request still prevents double clicks. */ }
+  requestId ||= crypto.randomUUID()
+  interviewRequests.set(applicationId, requestId)
+  try { sessionStorage.setItem(storageKey, requestId) } catch { /* A refresh cannot restore a request when storage is disabled. */ }
+  startingInterview.value = applicationId; interviewError.value = ''
+  try {
+    const result = await createInterview(applicationId, requestId)
+    if (!interviewPageActive || auth.token !== token) return
+    interviewRequests.delete(applicationId)
+    try { sessionStorage.removeItem(storageKey) } catch { /* No persisted request to clear. */ }
+    await router.push(`/interviews/${result.interviewId}`)
+  } catch (cause) { if (interviewPageActive && auth.token === token) interviewError.value = cause instanceof Error ? cause.message : '未能开始练习，请重试' }
+  finally { if (interviewPageActive && auth.token === token) startingInterview.value = null }
+}
 const route = useRoute(), router = useRouter()
 const submissionVersionId = computed(() => String(route.query.resumeVersionId || ''))
 const selectedVersion = ref<ResumeVersionArtifact | null>(null)

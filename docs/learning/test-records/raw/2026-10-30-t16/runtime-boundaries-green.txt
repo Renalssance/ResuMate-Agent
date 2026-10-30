@@ -1,0 +1,106 @@
+............................FFF                                          [100%]
+=================================== FAILURES ===================================
+_ test_completed_checkpoint_recovers_without_another_model_call_and_fences_old_epoch[mysql] _
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...c1f82ae?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10cda42c0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10caf3410>
+
+    def test_completed_checkpoint_recovers_without_another_model_call_and_fences_old_epoch(runtime, career_db, monkeypatch):
+        from datetime import timedelta
+        from backend.db.models import utcnow
+        from backend.worker_tasks import execution_lock
+        module, model, accepted, _ = runtime
+        original = module._persist_step
+        def process_exit(*args):
+            raise SystemExit('synthetic crash after durable graph completion, before SQL step')
+        monkeypatch.setattr(module, '_persist_step', process_exit)
+        epoch = agent_runs.claim_run(career_db, accepted['runId'])
+        with pytest.raises(SystemExit):
+            module.run_interview_generation(accepted['runId'], epoch)
+        calls = len(model.calls)
+        career_db.expire_all()
+        run = career_db.get(AgentRun, accepted['runId'])
+        run.heartbeat_at = utcnow() - timedelta(minutes=5)
+        career_db.commit()
+        with execution_lock() as held:
+            assert held and agent_runs.recover_stale_runs(career_db) == 1
+        epoch2 = agent_runs.claim_run(career_db, run.id)
+        assert epoch2 > epoch
+        monkeypatch.setattr(module, '_persist_step', original)
+        module.run_interview_generation(run.id, epoch)
+        career_db.expire_all()
+        assert career_db.get(AgentRun, run.id).status == RunStatus.RUNNING
+        assert career_db.query(InterviewTurn).count() == 0
+        module.run_interview_generation(run.id, epoch2)
+        career_db.expire_all()
+>       assert career_db.get(AgentRun, run.id).status == RunStatus.SUCCEEDED
+E       AssertionError: assert <RunStatus.RUNNING: 'running'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + running
+
+backend/tests/test_interview_runtime.py:287: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.interviews:interviews.py:99 Interview Run 419be88e-db0c-4833-9a6a-a414ff0d9ae5 stopped (RunError)
+_ test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[sqlite] _
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...0000gn/T/pytest-of-bono/pytest-221/test_large_frozen_context_uses0/career.db), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10cfe6ea0>
+
+    def test_large_frozen_context_uses_real_file_pages_without_latest_document_changes(runtime, career_db):
+        from backend.db.models import Resume, JobDescription
+        module, model, accepted, _ = runtime
+        # Seed a supported long submitted paragraph before the first generation reads it.
+        session = career_db.get(InterviewSession, accepted['interviewId'])
+        source = deepcopy(session.source_snapshot)
+        paragraph = '曾负责接口设计和数据库事务。' * 700
+        source['structuredContent']['resume']['self_summary'] = paragraph
+        session.source_snapshot = source
+        career_db.get(Resume, 1).structured_data = {'self_summary': 'LATEST_RESUME_MUST_NOT_APPEAR'}
+        career_db.get(JobDescription, 1).raw_text = 'LATEST_JOB_MUST_NOT_APPEAR'
+        career_db.commit()
+        run = execute(career_db, module, accepted['runId'])
+>       assert run.status == RunStatus.SUCCEEDED, run.error_code
+E       AssertionError: agent_failed
+E       assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + failed
+
+backend/tests/test_interview_runtime.py:305: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.interviews:interviews.py:99 Interview Run e7a28e28-f38d-41ad-990e-e134c9e66ec5 stopped (JSONDecodeError)
+_ test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[mysql] _
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...fa0d41e?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10d16c290>
+
+    def test_large_frozen_context_uses_real_file_pages_without_latest_document_changes(runtime, career_db):
+        from backend.db.models import Resume, JobDescription
+        module, model, accepted, _ = runtime
+        # Seed a supported long submitted paragraph before the first generation reads it.
+        session = career_db.get(InterviewSession, accepted['interviewId'])
+        source = deepcopy(session.source_snapshot)
+        paragraph = '曾负责接口设计和数据库事务。' * 700
+        source['structuredContent']['resume']['self_summary'] = paragraph
+        session.source_snapshot = source
+        career_db.get(Resume, 1).structured_data = {'self_summary': 'LATEST_RESUME_MUST_NOT_APPEAR'}
+        career_db.get(JobDescription, 1).raw_text = 'LATEST_JOB_MUST_NOT_APPEAR'
+        career_db.commit()
+        run = execute(career_db, module, accepted['runId'])
+>       assert run.status == RunStatus.SUCCEEDED, run.error_code
+E       AssertionError: agent_failed
+E       assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + failed
+
+backend/tests/test_interview_runtime.py:305: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.interviews:interviews.py:99 Interview Run 40ce137c-6900-4b0e-8a22-53719d9a191f stopped (JSONDecodeError)
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_runtime.py::test_completed_checkpoint_recovers_without_another_model_call_and_fences_old_epoch[mysql]
+FAILED backend/tests/test_interview_runtime.py::test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[sqlite]
+FAILED backend/tests/test_interview_runtime.py::test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[mysql]
+3 failed, 28 passed in 5.31s

@@ -5,13 +5,32 @@ from backend.tests import e2e_legacy_fixture  # noqa: F401
 
 from backend.agent_runtime import factory
 from backend.tests.agent_fixtures import DraftModel
+from backend.tests.interview_model_fixture import ScriptedInterviewModel
+from pydantic import PrivateAttr
 from backend.worker import app
 
 
 class BrowserDraftModel(DraftModel):
     ask: bool = True
+    _interview_model: ScriptedInterviewModel | None = PrivateAttr(default=None)
+
+    def bind_tools(self, tools, **kwargs):
+        names = {getattr(tool, 'name', None) or tool['function']['name'] for tool in tools}
+        if 'get_interview_context' in names or 'InterviewStep' in names:
+            if self._interview_model is None:
+                state = Path(os.environ['RESUMATE_E2E_ROOT'])
+                self._interview_model = ScriptedInterviewModel(
+                    profile=self.profile, max_tokens=self.max_tokens,
+                    long_question=(state / 'interview-long').exists(),
+                    before_generate=browser_interview_before,
+                    transform_step=browser_interview_step,
+                )
+            return self._interview_model.bind_tools(tools, **kwargs)
+        return super().bind_tools(tools, **kwargs)
 
     def _generate(self, messages, **kwargs):
+        if self._interview_model is not None:
+            return self._interview_model._generate(messages, **kwargs)
         time.sleep(0.7)  # Observable real cancellation window.
         return super()._generate(messages, **kwargs)
 
@@ -66,3 +85,20 @@ def browser_render_pdf(content, output_path):
 
 
 resume_export.render_pdf = browser_render_pdf
+
+
+def browser_interview_before(required):
+    state = Path(os.environ['RESUMATE_E2E_ROOT'])
+    deadline = time.monotonic() + 20
+    while (state / 'interview-pause').exists() and time.monotonic() < deadline:
+        time.sleep(0.1)
+
+
+def browser_interview_step(step, context):
+    failure = Path(os.environ['RESUMATE_E2E_ROOT']) / 'interview-fail-once'
+    if failure.exists():
+        failure.unlink()
+        # A valid SDK schema with unsupported evidence must fail in the actual
+        # business validator, rather than disappear into a model retry.
+        step['question']['refs'][0]['quote'] = '此句不存在于任何冻结资料或已接受回答'
+    return step

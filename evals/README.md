@@ -1,4 +1,4 @@
-# T13 / T14：本地任务评测
+# T13 / T14 / T16：本地任务评测
 
 默认使用合成输入和确定性模型；生产 `create_run → claim_run → run_agent → answer_action`、工具事务与 SqliteSaver 均真实执行。每案在独立子进程、SQLite 数据库与 checkpoint 目录内运行，不发布到现有队列。
 
@@ -9,7 +9,7 @@ uv run python -m evals.run --suite core --mode stub --cases normal-api,ask-metri
 
 原 12 案涵盖正常定制 3、补问 2、拒绝/取消 2、工具失败 2、重复保存 1、来源冲突 1、长上下文 1。故障与重放只在评测 harness 注入。长案必须观察实际 SDK 摘要、文件读取、补问后的 checkpoint 重开与必保留上下文；缺覆盖会失败。
 
-T14 扩展后 `core` 共 24 案；未显式提供本轮真实 Compose 证据时，完整 stub 为 20 执行、4 未执行，退出码 2。具体调用见末尾 T14 小节。
+T16 扩展后 `core` 共 30 案：原 12 案、T14 的 12 案和 T16 的 6 案。未显式提供本轮真实 Compose 证据时，完整 stub 为 26 执行、4 未执行，退出码 2。真实进程证据的门禁保持不变。
 
 每次执行创建唯一 invocation 子目录：
 
@@ -93,7 +93,7 @@ uv run pytest backend/tests/test_eval_budget.py backend/tests/test_eval_runner.p
 - 8 条 `durable` 案在独立子进程里调用真实 `create_run → claim_run → handler`，解析上传还通过真实 HTTP 路由接受文件。数据库、原件、SQL 向量表均位于该案例的隔离目录；仅结构化模型响应和 embedding 使用确定性夹具。产物包含具体响应、模型调用次数、完整相关 SQL 行和只读判定结果。
 - 4 条 `compose` 案分别在模型未返回、草稿已提交、checkpoint 已完成但 Run 未终止、回答已提交但未投递时实际杀死 worker。普通 stub 不启动 Docker，也不把历史集成测试结果当作本轮执行。
 
-未提供真实崩溃证据时，完整 `core --mode stub` 应报告 **20 executed / 4 not_run**，退出码 **2**。可以单独运行八条任务案例：
+T14 的 24 案在未提供真实崩溃证据时为 **20 executed / 4 not_run**；加入 T16 后，当前完整 `core --mode stub` 应报告 **26 executed / 4 not_run**，退出码仍为 **2**。可以单独运行八条任务案例：
 
 ```sh
 python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-tasks \
@@ -110,6 +110,33 @@ python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-complet
   --recovery-evidence /tmp/task-14-recovery-evidence.json
 ```
 
-只有 invocation、case ID 与输入精确对应，而且该进程场景实际执行并满足恢复 oracle，才计为通过。缺证据为 `requires_compose`；其他 invocation 或不同输入为 `recovery_evidence_mismatch`，保持 `not_run`。完整报告可以计入 24 案的前提是本轮四个真实崩溃实验也确实通过。原始 12 案仍按原来的隔离、预算、事实来源和人工语义审阅约束执行。
+只有 invocation、case ID 与输入精确对应，而且该进程场景实际执行并满足恢复 oracle，才计为通过。缺证据为 `requires_compose`；其他 invocation 或不同输入为 `recovery_evidence_mismatch`，保持 `not_run`。当前完整报告可以计入 30 案的前提是本轮四个真实崩溃实验也确实通过，且另外 26 案实际执行通过。原始 12 案仍按原来的隔离、预算、事实来源和人工语义审阅约束执行。
 
 这些结果证明业务持久化和恢复边界。它们不证明真实模型语义质量，也不证明模型只计费一次。旧 Harness 的 usage 仍是用户级记录，未自动关联 T13 的 Run/attempt/epoch；被杀死的未完成调用 usage 未知，不能记成零。
+
+
+## T16：文本模拟面试六条真实业务轨迹
+
+`cases/interviews.jsonl` 的六案使用同一 `core` 入口。每案独立 SQLite、子进程和 SqliteSaver，执行真实 `attach_submission → create_interview → handle_command → claim_run → run_interview_generation` 及 Deep Agents 图。只有外部模型替换为共享 `ScriptedInterviewModel`；该模型实际读取上下文工具和 StateBackend 文件，返回结构化工具结果。HTTP、队列和浏览器的验证另有记录，本运行器直接驱动已经持久接受的 Run。
+
+```sh
+python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-interviews \
+  --cases interview-followup,interview-eight-turn-limit,interview-command-replay,interview-cancel-late-result,interview-frozen-submission,interview-feedback-memory
+```
+
+六案分别检查：
+
+- 两次回答进入实际模型上下文，形成两次有来源的追问。
+- 第八轮回答得到反馈并结束，不能生成第九题。
+- 同一命令丢失确认后、会话结束后均重放原确认；不同正文冲突，答案与生成 Run 不重复。
+- 真实模型调用在屏障处等待时，取消生成和结束会话使迟到输出不能写入；重试保留已经提交的答案。
+- 接受时冻结的投递版本及岗位在原资料编辑、岗位删除后仍用于问答；本人边界和新面试所需来源缺失仍被拒绝。
+- 反馈只有明确确认才创建来源绑定记忆；重复确认不重复写入，删除后旧上下文失效，练习内容不写入履历事实。
+
+案例产物保存实际模型输入与结构化输出、每条命令及确认、SQL 快照、取消前后对照、冻结来源与记忆操作。独立只读 oracle 检查轮次、引用、持久事件、Run 结果和业务操作的一致性，并用篡改证据的测试检验它会拒绝假成功。模型调用使用 `openai:scripted-interview` 标识；没有供应商请求，不把合成响应当成语义质量证明。
+
+`--mode live` 的六案尚未实现，明确为 `not_run / interview_live_not_implemented`，不建立模型客户端或预算账本。SQLite 评测不替代双库测试、真实进程恢复、WS 或浏览器验收。
+
+```sh
+uv run pytest backend/tests/test_interview_evals.py -q
+```

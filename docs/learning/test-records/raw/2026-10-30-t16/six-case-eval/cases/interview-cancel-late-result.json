@@ -1,0 +1,4130 @@
+{
+  "case_id": "interview-cancel-late-result",
+  "category": "interview",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "interview-cancel-late-result",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ]
+    }
+  },
+  "output": {
+    "executed": true,
+    "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+    "model": "openai:scripted-interview",
+    "model_calls": [
+      {
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"1800ea6a-f6b7-47f8-ab42-5e29338c2abe\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":0,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":null,\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/turns.json\",\"lines\":1}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "c04a504e-0064-4647-8c7e-e5d9a4445a4a"
+          }
+        ]
+      },
+      {
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"1800ea6a-f6b7-47f8-ab42-5e29338c2abe\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":0,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":null,\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/1800ea6a-f6b7-47f8-ab42-5e29338c2abe/turns.json\",\"lines\":1}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "c04a504e-0064-4647-8c7e-e5d9a4445a4a"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--01a18a93-d0a4-7463-9586-569aa194dbfa-0",
+            "tool_calls": [
+              {
+                "name": "get_interview_context",
+                "args": {},
+                "id": "interview-call-1",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": null
+          },
+          {
+            "content": "{\"interviewId\": \"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\", \"expectedTurn\": 0, \"source\": {\"resumeVersionId\": \"3b88b889-8b80-4aa3-a437-ef423230af08\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T02:11:45.317901Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T02:11:45.367170+00:00\"}}, \"turns\": [], \"memories\": []}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_interview_context",
+            "id": "8b1d6072-f83d-41fa-aa5e-08b2176c7c80",
+            "tool_call_id": "interview-call-1",
+            "artifact": null,
+            "status": "success"
+          }
+        ],
+        "context": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 0,
+          "source": {
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T02:11:45.317901Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+            }
+          },
+          "turns": [],
+          "memories": []
+        },
+        "step": {
+          "feedback": null,
+          "question": {
+            "text": "请介绍「Built an API」的具体经历。",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":1,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":{\"turnId\":1,\"turnIndex\":1,\"question\":\"请介绍「Built an API」的具体经历。\",\"answer\":\"I validated fields inside one SQL transaction.\"},\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e/turns.json\",\"lines\":21}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "64b26e31-8b35-4a37-adb6-abf37f88b8d1"
+          }
+        ]
+      },
+      {
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/e327902b-ee25-4387-8190-e4812e48609d/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/e327902b-ee25-4387-8190-e4812e48609d/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"e327902b-ee25-4387-8190-e4812e48609d\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":1,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":{\"turnId\":1,\"turnIndex\":1,\"question\":\"请介绍「Built an API」的具体经历。\",\"answer\":\"I validated fields inside one SQL transaction.\"},\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/e327902b-ee25-4387-8190-e4812e48609d/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/e327902b-ee25-4387-8190-e4812e48609d/turns.json\",\"lines\":21}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "206470d8-aa16-4d58-a2a5-144e302fd5a2"
+          }
+        ]
+      },
+      {
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/e327902b-ee25-4387-8190-e4812e48609d/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/e327902b-ee25-4387-8190-e4812e48609d/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"e327902b-ee25-4387-8190-e4812e48609d\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":1,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":{\"turnId\":1,\"turnIndex\":1,\"question\":\"请介绍「Built an API」的具体经历。\",\"answer\":\"I validated fields inside one SQL transaction.\"},\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/e327902b-ee25-4387-8190-e4812e48609d/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/e327902b-ee25-4387-8190-e4812e48609d/turns.json\",\"lines\":21}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "206470d8-aa16-4d58-a2a5-144e302fd5a2"
+          },
+          {
+            "content": "",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "ai",
+            "name": null,
+            "id": "lc_run--01a18a93-d0e8-7b93-b49b-442a520cc8cc-0",
+            "tool_calls": [
+              {
+                "name": "get_interview_context",
+                "args": {},
+                "id": "interview-call-4",
+                "type": "tool_call"
+              }
+            ],
+            "invalid_tool_calls": [],
+            "usage_metadata": null
+          },
+          {
+            "content": "{\"interviewId\": \"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\", \"expectedTurn\": 1, \"source\": {\"resumeVersionId\": \"3b88b889-8b80-4aa3-a437-ef423230af08\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T02:11:45.317901Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T02:11:45.367170+00:00\"}}, \"turns\": [{\"id\": 1, \"turnIndex\": 1, \"question\": \"请介绍「Built an API」的具体经历。\", \"questionContext\": {\"mode\": \"opening\", \"refs\": [{\"kind\": \"resume\", \"section\": \"/self_summary\", \"quote\": \"Built an API\", \"resumeVersionId\": \"3b88b889-8b80-4aa3-a437-ef423230af08\", \"revision\": 3}]}, \"answer\": \"I validated fields inside one SQL transaction.\", \"feedback\": null}], \"memories\": []}",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "tool",
+            "name": "get_interview_context",
+            "id": "af83b565-213e-430b-9792-2b2800c8df8f",
+            "tool_call_id": "interview-call-4",
+            "artifact": null,
+            "status": "success"
+          }
+        ],
+        "context": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "source": {
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T02:11:45.317901Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+            }
+          },
+          "turns": [
+            {
+              "id": 1,
+              "turnIndex": 1,
+              "question": "请介绍「Built an API」的具体经历。",
+              "questionContext": {
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API",
+                    "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                    "revision": 3
+                  }
+                ]
+              },
+              "answer": "I validated fields inside one SQL transaction.",
+              "feedback": null
+            }
+          ],
+          "memories": []
+        },
+        "step": {
+          "feedback": {
+            "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "required": {
+          "kind": "interview_generation",
+          "runId": "edd61903-5f93-414f-996c-23eb77392f45",
+          "sessionId": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 2,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+            "revision": 3,
+            "submittedAt": "2026-10-30T02:11:45.317901Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 2,
+            "turnIndex": 2,
+            "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "answer": "I checked rollback using a failed insert."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/edd61903-5f93-414f-996c-23eb77392f45/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/edd61903-5f93-414f-996c-23eb77392f45/turns.json",
+              "lines": 68
+            }
+          ]
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "type": "text",
+                "text": "# 基于冻结投递材料的文字面试练习\n\n先使用 get_interview_context 读取本次冻结简历、岗位、已接受回答与本人确认的练习记忆。\n如果返回文件清单，使用 read_file 分页读取对应原文，textChunks 连续拼接。摘要不代替原文。\n本任务是模拟练习，不能声称真实面试评价、自动投递或修改简历。岗位要求不能证明候选人的经历。\n\n最终通过 InterviewStep 结构化输出一次结果。expectedTurn 为已接受回答的轮次：\n- 0：feedback=null，生成 opening 首题；引用冻结简历或岗位。\n- 1..7：评价这一轮已接受回答，并选择 follow_up 追问具体缺口或 new_topic 切换话题。\n- 8：只给反馈，question=null；不能生成第九题。\n\n反馈包含简短 summary、strengths、improvements、practiceFocus。每条评价须有真实引用，指出有依据的优点和可练习的具体改进。\n不要把未提到的指标、规模、技能或职责补成事实。不确定的信息以练习建议表达。\nfollow_up 至少引用前一条已接受回答，不要仅复述岗位。避免无依据夸奖或生硬逐字重复。\n\n引用只允许：resume 的 section JSON路径与 quote；job 的 quote；answer 的 turnIndex 与 quote。\nquote 必须逐字出现在对应冻结字段或已接受回答中。不要输出数据库 ID、版本号或 memoryId，服务端会绑定。\n本人确认的记忆仅指导练习重点，不属于简历证据。练习回答不能写入 ProfileFact。\n"
+              },
+              {
+                "type": "text",
+                "text": "必保留业务上下文\n{\"kind\":\"interview_generation\",\"runId\":\"edd61903-5f93-414f-996c-23eb77392f45\",\"sessionId\":\"067f22b6-2d50-4e1b-9b2a-549443ca900e\",\"interviewId\":\"912e73f2-ad7b-4f0d-973d-04dd1f68c5c4\",\"expectedTurn\":2,\"maxQuestions\":8,\"sourceIdentity\":{\"applicationId\":1,\"resumeVersionId\":\"3b88b889-8b80-4aa3-a437-ef423230af08\",\"revision\":3,\"submittedAt\":\"2026-10-30T02:11:45.317901Z\"},\"jobIdentity\":{\"jdId\":1,\"capturedAt\":\"2026-10-30T02:11:45.367170+00:00\"},\"currentAnswer\":{\"turnId\":2,\"turnIndex\":2,\"question\":\"请进一步说明「I validated fields inside one SQL transaction.」的具体过程。\",\"answer\":\"I checked rollback using a failed insert.\"},\"constraints\":[\"只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。\",\"这是模拟练习；回答和反馈不能成为候选人经历事实。\",\"expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。\",\"追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。\",\"记忆只指导练习偏好，不能作为简历事实或引用来源。\"],\"memories\":[],\"artifacts\":[{\"kind\":\"source\",\"path\":\"/inputs/edd61903-5f93-414f-996c-23eb77392f45/source.json\",\"lines\":26},{\"kind\":\"turns\",\"path\":\"/inputs/edd61903-5f93-414f-996c-23eb77392f45/turns.json\",\"lines\":68}]}"
+              }
+            ],
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "system",
+            "name": null,
+            "id": null
+          },
+          {
+            "content": "请依据冻结材料和本轮已接受回答，生成本轮 InterviewStep。",
+            "additional_kwargs": {},
+            "response_metadata": {},
+            "type": "human",
+            "name": null,
+            "id": "27493daa-c139-4a06-97c4-b00f9f1d7f2c"
+          }
+        ]
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-1",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-2",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": null,
+              "question": {
+                "text": "请介绍「Built an API」的具体经历。",
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-3",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-4",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-5",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": {
+                "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                "strengths": [
+                  {
+                    "text": "回答给出了明确的方法。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "补充验证结果与失败处理的具体过程。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+              },
+              "question": {
+                "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-6",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      }
+    ],
+    "summary_calls": [],
+    "observations": {
+      "retry_run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+      "stops": [
+        {
+          "type": "generation.cancel",
+          "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "before": {
+            "interviews": [
+              {
+                "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "agent_session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "source_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z",
+                  "applicationId": 1,
+                  "job": {
+                    "jdId": 1,
+                    "title": "API Engineer",
+                    "company": "Synthetic",
+                    "rawText": "Build APIs and explain SQL transactions.",
+                    "structuredData": {},
+                    "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+                  }
+                },
+                "application_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "status": "active",
+                "created_at": "2026-10-30T02:11:45.367776"
+              }
+            ],
+            "turns": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 1,
+                "question": "请介绍「Built an API」的具体经历。",
+                "question_context": {
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API",
+                      "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                      "revision": 3
+                    }
+                  ]
+                },
+                "answer": "I validated fields inside one SQL transaction.",
+                "feedback": null
+              }
+            ],
+            "commands": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "expectedTurn": 1,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I validated fields inside one SQL transaction."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              }
+            ],
+            "events": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 1,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.456423"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 2,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 1,
+                  "turnId": 1,
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.463260"
+              }
+            ],
+            "runs": [
+              {
+                "id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "interview-eval-start",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "feedback": null,
+                  "question": {
+                    "text": "请介绍「Built an API」的具体经历。",
+                    "mode": "opening",
+                    "refs": [
+                      {
+                        "kind": "resume",
+                        "section": "/self_summary",
+                        "quote": "Built an API",
+                        "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                        "revision": 3
+                      }
+                    ],
+                    "turnIndex": 1
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.457371",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.369494",
+                "updated_at": "2026-10-30T02:11:45.458369"
+              },
+              {
+                "id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "6deb3c3a-4f18-4532-a2d1-9bf82d896876",
+                "kind": "interview_generation",
+                "status": "running",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.480593",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.462654",
+                "updated_at": "2026-10-30T02:11:45.480759"
+              }
+            ],
+            "sessions": [
+              {
+                "id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "user_id": 1,
+                "purpose": "interview_generation",
+                "context_invalidated_at": null,
+                "checkpoint_deleted_at": null,
+                "active_run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "created_at": "2026-10-30T02:11:45.367464"
+              }
+            ],
+            "operations": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              }
+            ],
+            "run_events": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.370427"
+              },
+              {
+                "id": 2,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.372640"
+              },
+              {
+                "id": 3,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.458885"
+              },
+              {
+                "id": 4,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.463024"
+              },
+              {
+                "id": 5,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.464649"
+              }
+            ],
+            "facts": [],
+            "memories": [],
+            "applications": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "resume_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "submitted_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "jdId": 1,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z"
+                },
+                "company": "Synthetic",
+                "position": "API Engineer",
+                "applied_date": "2026-10-30",
+                "status": "applied",
+                "job_url": "",
+                "source": "",
+                "notes": "",
+                "created_at": "2026-10-30T02:11:45.316043",
+                "updated_at": "2026-10-30T02:11:45.317901"
+              }
+            ],
+            "versions": [
+              {
+                "id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "user_id": 1,
+                "run_id": null,
+                "resume_id": 1,
+                "jd_id": 1,
+                "parent_version_id": null,
+                "revision": 3,
+                "structured_content": {
+                  "resume": {
+                    "self_summary": "Built an API",
+                    "work_experience": [
+                      {
+                        "description": "Designed SQL transactions"
+                      }
+                    ]
+                  },
+                  "changes": []
+                },
+                "fact_refs": [],
+                "status": "confirmed",
+                "created_at": "2026-10-30T02:11:45.315644"
+              }
+            ],
+            "resumes": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "filename": "synthetic-resume.txt",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Built an API and designed SQL transactions in a test environment.",
+                "structured_data": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "created_at": "2026-10-30T02:11:45.315247",
+                "updated_at": "2026-10-30T02:11:45.315247"
+              }
+            ],
+            "jobs": [
+              {
+                "primary_resume_id": null,
+                "source_url": null,
+                "source_site": null,
+                "source_job_id": null,
+                "captured_at": null,
+                "status": "saved",
+                "id": 1,
+                "user_id": 1,
+                "title": "API Engineer",
+                "company": "Synthetic",
+                "filename": "",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Build APIs and explain SQL transactions.",
+                "structured_data": {},
+                "created_at": "2026-10-30T02:11:45.314807",
+                "updated_at": "2026-10-30T02:11:45.314808"
+              }
+            ]
+          },
+          "after": {
+            "interviews": [
+              {
+                "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "agent_session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "source_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z",
+                  "applicationId": 1,
+                  "job": {
+                    "jdId": 1,
+                    "title": "API Engineer",
+                    "company": "Synthetic",
+                    "rawText": "Build APIs and explain SQL transactions.",
+                    "structuredData": {},
+                    "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+                  }
+                },
+                "application_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "status": "active",
+                "created_at": "2026-10-30T02:11:45.367776"
+              }
+            ],
+            "turns": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 1,
+                "question": "请介绍「Built an API」的具体经历。",
+                "question_context": {
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API",
+                      "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                      "revision": 3
+                    }
+                  ]
+                },
+                "answer": "I validated fields inside one SQL transaction.",
+                "feedback": null
+              }
+            ],
+            "commands": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "expectedTurn": 1,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I validated fields inside one SQL transaction."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                "type": "generation.cancel",
+                "request_json": {
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "expectedTurn": 1,
+                  "type": "generation.cancel",
+                  "payload": {
+                    "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              }
+            ],
+            "events": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 1,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.456423"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 2,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 1,
+                  "turnId": 1,
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.463260"
+              },
+              {
+                "id": 3,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 3,
+                "type": "generation.cancelled",
+                "payload": {
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.489396"
+              }
+            ],
+            "runs": [
+              {
+                "id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "interview-eval-start",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "feedback": null,
+                  "question": {
+                    "text": "请介绍「Built an API」的具体经历。",
+                    "mode": "opening",
+                    "refs": [
+                      {
+                        "kind": "resume",
+                        "section": "/self_summary",
+                        "quote": "Built an API",
+                        "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                        "revision": 3
+                      }
+                    ],
+                    "turnIndex": 1
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.457371",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.369494",
+                "updated_at": "2026-10-30T02:11:45.458369"
+              },
+              {
+                "id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "6deb3c3a-4f18-4532-a2d1-9bf82d896876",
+                "kind": "interview_generation",
+                "status": "cancelled",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.489486",
+                "cancel_requested_at": "2026-10-30T02:11:45.483948",
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.462654",
+                "updated_at": "2026-10-30T02:11:45.489956"
+              }
+            ],
+            "sessions": [
+              {
+                "id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "user_id": 1,
+                "purpose": "interview_generation",
+                "context_invalidated_at": null,
+                "checkpoint_deleted_at": null,
+                "active_run_id": null,
+                "created_at": "2026-10-30T02:11:45.367464"
+              }
+            ],
+            "operations": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              }
+            ],
+            "run_events": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.370427"
+              },
+              {
+                "id": 2,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.372640"
+              },
+              {
+                "id": 3,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.458885"
+              },
+              {
+                "id": 4,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.463024"
+              },
+              {
+                "id": 5,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.464649"
+              },
+              {
+                "id": 6,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "cancelled",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.490860"
+              }
+            ],
+            "facts": [],
+            "memories": [],
+            "applications": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "resume_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "submitted_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "jdId": 1,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z"
+                },
+                "company": "Synthetic",
+                "position": "API Engineer",
+                "applied_date": "2026-10-30",
+                "status": "applied",
+                "job_url": "",
+                "source": "",
+                "notes": "",
+                "created_at": "2026-10-30T02:11:45.316043",
+                "updated_at": "2026-10-30T02:11:45.317901"
+              }
+            ],
+            "versions": [
+              {
+                "id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "user_id": 1,
+                "run_id": null,
+                "resume_id": 1,
+                "jd_id": 1,
+                "parent_version_id": null,
+                "revision": 3,
+                "structured_content": {
+                  "resume": {
+                    "self_summary": "Built an API",
+                    "work_experience": [
+                      {
+                        "description": "Designed SQL transactions"
+                      }
+                    ]
+                  },
+                  "changes": []
+                },
+                "fact_refs": [],
+                "status": "confirmed",
+                "created_at": "2026-10-30T02:11:45.315644"
+              }
+            ],
+            "resumes": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "filename": "synthetic-resume.txt",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Built an API and designed SQL transactions in a test environment.",
+                "structured_data": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "created_at": "2026-10-30T02:11:45.315247",
+                "updated_at": "2026-10-30T02:11:45.315247"
+              }
+            ],
+            "jobs": [
+              {
+                "primary_resume_id": null,
+                "source_url": null,
+                "source_site": null,
+                "source_job_id": null,
+                "captured_at": null,
+                "status": "saved",
+                "id": 1,
+                "user_id": 1,
+                "title": "API Engineer",
+                "company": "Synthetic",
+                "filename": "",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Build APIs and explain SQL transactions.",
+                "structured_data": {},
+                "created_at": "2026-10-30T02:11:45.314807",
+                "updated_at": "2026-10-30T02:11:45.314808"
+              }
+            ]
+          },
+          "ack": {
+            "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+            "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+            "status": "accepted",
+            "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+            "acceptedSeq": 2
+          },
+          "model_calls_at_stop": 3,
+          "model_calls_after": 3
+        },
+        {
+          "type": "session.finish",
+          "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+          "before": {
+            "interviews": [
+              {
+                "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "agent_session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "source_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z",
+                  "applicationId": 1,
+                  "job": {
+                    "jdId": 1,
+                    "title": "API Engineer",
+                    "company": "Synthetic",
+                    "rawText": "Build APIs and explain SQL transactions.",
+                    "structuredData": {},
+                    "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+                  }
+                },
+                "application_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "status": "active",
+                "created_at": "2026-10-30T02:11:45.367776"
+              }
+            ],
+            "turns": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 1,
+                "question": "请介绍「Built an API」的具体经历。",
+                "question_context": {
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API",
+                      "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                      "revision": 3
+                    }
+                  ]
+                },
+                "answer": "I validated fields inside one SQL transaction.",
+                "feedback": {
+                  "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                  "strengths": [
+                    {
+                      "text": "回答给出了明确的方法。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction.",
+                          "turnId": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "improvements": [
+                    {
+                      "text": "补充验证结果与失败处理的具体过程。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction.",
+                          "turnId": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                }
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 2,
+                "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                "question_context": {
+                  "mode": "follow_up",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                },
+                "answer": "I checked rollback using a failed insert.",
+                "feedback": null
+              }
+            ],
+            "commands": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "expectedTurn": 1,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I validated fields inside one SQL transaction."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                "type": "generation.cancel",
+                "request_json": {
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "expectedTurn": 1,
+                  "type": "generation.cancel",
+                  "payload": {
+                    "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              },
+              {
+                "id": 3,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                "type": "generation.retry",
+                "request_json": {
+                  "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                  "expectedTurn": 1,
+                  "type": "generation.retry",
+                  "payload": {
+                    "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                  "status": "accepted",
+                  "resultRef": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "acceptedSeq": 3
+                },
+                "result_ref": "e327902b-ee25-4387-8190-e4812e48609d",
+                "status": "accepted"
+              },
+              {
+                "id": 4,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                  "expectedTurn": 2,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I checked rollback using a failed insert."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                  "status": "accepted",
+                  "resultRef": "edd61903-5f93-414f-996c-23eb77392f45",
+                  "acceptedSeq": 6
+                },
+                "result_ref": "edd61903-5f93-414f-996c-23eb77392f45",
+                "status": "accepted"
+              }
+            ],
+            "events": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 1,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.456423"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 2,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 1,
+                  "turnId": 1,
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.463260"
+              },
+              {
+                "id": 3,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 3,
+                "type": "generation.cancelled",
+                "payload": {
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.489396"
+              },
+              {
+                "id": 4,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 4,
+                "type": "feedback.ready",
+                "payload": {
+                  "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.521341"
+              },
+              {
+                "id": 5,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 5,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "turnIndex": 2,
+                  "turnId": 2
+                },
+                "created_at": "2026-10-30T02:11:45.521600"
+              },
+              {
+                "id": 6,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 6,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 2,
+                  "turnId": 2,
+                  "runId": "edd61903-5f93-414f-996c-23eb77392f45"
+                },
+                "created_at": "2026-10-30T02:11:45.526252"
+              }
+            ],
+            "runs": [
+              {
+                "id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "interview-eval-start",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "feedback": null,
+                  "question": {
+                    "text": "请介绍「Built an API」的具体经历。",
+                    "mode": "opening",
+                    "refs": [
+                      {
+                        "kind": "resume",
+                        "section": "/self_summary",
+                        "quote": "Built an API",
+                        "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                        "revision": 3
+                      }
+                    ],
+                    "turnIndex": 1
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.457371",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.369494",
+                "updated_at": "2026-10-30T02:11:45.458369"
+              },
+              {
+                "id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "6deb3c3a-4f18-4532-a2d1-9bf82d896876",
+                "kind": "interview_generation",
+                "status": "cancelled",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.489486",
+                "cancel_requested_at": "2026-10-30T02:11:45.483948",
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.462654",
+                "updated_at": "2026-10-30T02:11:45.489956"
+              },
+              {
+                "id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "c0e1eac6-31c3-4596-8645-99afc9331c79",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "feedback": {
+                    "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                    "strengths": [
+                      {
+                        "text": "回答给出了明确的方法。",
+                        "refs": [
+                          {
+                            "kind": "answer",
+                            "turnIndex": 1,
+                            "quote": "I validated fields inside one SQL transaction.",
+                            "turnId": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "improvements": [
+                      {
+                        "text": "补充验证结果与失败处理的具体过程。",
+                        "refs": [
+                          {
+                            "kind": "answer",
+                            "turnIndex": 1,
+                            "quote": "I validated fields inside one SQL transaction.",
+                            "turnId": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                  },
+                  "question": {
+                    "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                    "mode": "follow_up",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ],
+                    "turnIndex": 2
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.522103",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.493838",
+                "updated_at": "2026-10-30T02:11:45.522465"
+              },
+              {
+                "id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "1f68c0f2-e19b-48da-bc73-c153743799ad",
+                "kind": "interview_generation",
+                "status": "running",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 2,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.544209",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.525653",
+                "updated_at": "2026-10-30T02:11:45.544373"
+              }
+            ],
+            "sessions": [
+              {
+                "id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "user_id": 1,
+                "purpose": "interview_generation",
+                "context_invalidated_at": null,
+                "checkpoint_deleted_at": null,
+                "active_run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "created_at": "2026-10-30T02:11:45.367464"
+              }
+            ],
+            "operations": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              },
+              {
+                "id": 2,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              }
+            ],
+            "run_events": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.370427"
+              },
+              {
+                "id": 2,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.372640"
+              },
+              {
+                "id": 3,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.458885"
+              },
+              {
+                "id": 4,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.463024"
+              },
+              {
+                "id": 5,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.464649"
+              },
+              {
+                "id": 6,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "cancelled",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.490860"
+              },
+              {
+                "id": 7,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.494232"
+              },
+              {
+                "id": 8,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.495504"
+              },
+              {
+                "id": 9,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.522748"
+              },
+              {
+                "id": 10,
+                "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.526020"
+              },
+              {
+                "id": 11,
+                "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.527423"
+              }
+            ],
+            "facts": [],
+            "memories": [],
+            "applications": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "resume_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "submitted_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "jdId": 1,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z"
+                },
+                "company": "Synthetic",
+                "position": "API Engineer",
+                "applied_date": "2026-10-30",
+                "status": "applied",
+                "job_url": "",
+                "source": "",
+                "notes": "",
+                "created_at": "2026-10-30T02:11:45.316043",
+                "updated_at": "2026-10-30T02:11:45.317901"
+              }
+            ],
+            "versions": [
+              {
+                "id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "user_id": 1,
+                "run_id": null,
+                "resume_id": 1,
+                "jd_id": 1,
+                "parent_version_id": null,
+                "revision": 3,
+                "structured_content": {
+                  "resume": {
+                    "self_summary": "Built an API",
+                    "work_experience": [
+                      {
+                        "description": "Designed SQL transactions"
+                      }
+                    ]
+                  },
+                  "changes": []
+                },
+                "fact_refs": [],
+                "status": "confirmed",
+                "created_at": "2026-10-30T02:11:45.315644"
+              }
+            ],
+            "resumes": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "filename": "synthetic-resume.txt",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Built an API and designed SQL transactions in a test environment.",
+                "structured_data": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "created_at": "2026-10-30T02:11:45.315247",
+                "updated_at": "2026-10-30T02:11:45.315247"
+              }
+            ],
+            "jobs": [
+              {
+                "primary_resume_id": null,
+                "source_url": null,
+                "source_site": null,
+                "source_job_id": null,
+                "captured_at": null,
+                "status": "saved",
+                "id": 1,
+                "user_id": 1,
+                "title": "API Engineer",
+                "company": "Synthetic",
+                "filename": "",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Build APIs and explain SQL transactions.",
+                "structured_data": {},
+                "created_at": "2026-10-30T02:11:45.314807",
+                "updated_at": "2026-10-30T02:11:45.314808"
+              }
+            ]
+          },
+          "after": {
+            "interviews": [
+              {
+                "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "agent_session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "source_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z",
+                  "applicationId": 1,
+                  "job": {
+                    "jdId": 1,
+                    "title": "API Engineer",
+                    "company": "Synthetic",
+                    "rawText": "Build APIs and explain SQL transactions.",
+                    "structuredData": {},
+                    "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+                  }
+                },
+                "application_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "status": "finished",
+                "created_at": "2026-10-30T02:11:45.367776"
+              }
+            ],
+            "turns": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 1,
+                "question": "请介绍「Built an API」的具体经历。",
+                "question_context": {
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API",
+                      "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                      "revision": 3
+                    }
+                  ]
+                },
+                "answer": "I validated fields inside one SQL transaction.",
+                "feedback": {
+                  "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                  "strengths": [
+                    {
+                      "text": "回答给出了明确的方法。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction.",
+                          "turnId": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "improvements": [
+                    {
+                      "text": "补充验证结果与失败处理的具体过程。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction.",
+                          "turnId": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                }
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "turn_index": 2,
+                "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                "question_context": {
+                  "mode": "follow_up",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                },
+                "answer": "I checked rollback using a failed insert.",
+                "feedback": null
+              }
+            ],
+            "commands": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "expectedTurn": 1,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I validated fields inside one SQL transaction."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                "type": "generation.cancel",
+                "request_json": {
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "expectedTurn": 1,
+                  "type": "generation.cancel",
+                  "payload": {
+                    "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+                  "status": "accepted",
+                  "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                  "acceptedSeq": 2
+                },
+                "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "status": "accepted"
+              },
+              {
+                "id": 3,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                "type": "generation.retry",
+                "request_json": {
+                  "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                  "expectedTurn": 1,
+                  "type": "generation.retry",
+                  "payload": {
+                    "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+                  "status": "accepted",
+                  "resultRef": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "acceptedSeq": 3
+                },
+                "result_ref": "e327902b-ee25-4387-8190-e4812e48609d",
+                "status": "accepted"
+              },
+              {
+                "id": 4,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                "type": "answer.submit",
+                "request_json": {
+                  "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                  "expectedTurn": 2,
+                  "type": "answer.submit",
+                  "payload": {
+                    "text": "I checked rollback using a failed insert."
+                  }
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+                  "status": "accepted",
+                  "resultRef": "edd61903-5f93-414f-996c-23eb77392f45",
+                  "acceptedSeq": 6
+                },
+                "result_ref": "edd61903-5f93-414f-996c-23eb77392f45",
+                "status": "accepted"
+              },
+              {
+                "id": 5,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "user_id": 1,
+                "client_message_id": "39abd191-1334-4d16-a1b2-b973d4891915",
+                "type": "session.finish",
+                "request_json": {
+                  "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+                  "expectedTurn": 2,
+                  "type": "session.finish",
+                  "payload": {}
+                },
+                "ack_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+                  "status": "accepted",
+                  "resultRef": null,
+                  "acceptedSeq": 7
+                },
+                "result_ref": null,
+                "status": "accepted"
+              }
+            ],
+            "events": [
+              {
+                "id": 1,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 1,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.456423"
+              },
+              {
+                "id": 2,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 2,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 1,
+                  "turnId": 1,
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.463260"
+              },
+              {
+                "id": 3,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 3,
+                "type": "generation.cancelled",
+                "payload": {
+                  "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+                },
+                "created_at": "2026-10-30T02:11:45.489396"
+              },
+              {
+                "id": 4,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 4,
+                "type": "feedback.ready",
+                "payload": {
+                  "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "turnIndex": 1,
+                  "turnId": 1
+                },
+                "created_at": "2026-10-30T02:11:45.521341"
+              },
+              {
+                "id": 5,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 5,
+                "type": "question.completed",
+                "payload": {
+                  "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+                  "turnIndex": 2,
+                  "turnId": 2
+                },
+                "created_at": "2026-10-30T02:11:45.521600"
+              },
+              {
+                "id": 6,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 6,
+                "type": "answer.accepted",
+                "payload": {
+                  "turnIndex": 2,
+                  "turnId": 2,
+                  "runId": "edd61903-5f93-414f-996c-23eb77392f45"
+                },
+                "created_at": "2026-10-30T02:11:45.526252"
+              },
+              {
+                "id": 7,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 7,
+                "type": "session.finished",
+                "payload": {},
+                "created_at": "2026-10-30T02:11:45.548723"
+              },
+              {
+                "id": 8,
+                "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                "seq": 8,
+                "type": "generation.cancelled",
+                "payload": {
+                  "runId": "edd61903-5f93-414f-996c-23eb77392f45"
+                },
+                "created_at": "2026-10-30T02:11:45.553010"
+              }
+            ],
+            "runs": [
+              {
+                "id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "interview-eval-start",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 0,
+                  "feedback": null,
+                  "question": {
+                    "text": "请介绍「Built an API」的具体经历。",
+                    "mode": "opening",
+                    "refs": [
+                      {
+                        "kind": "resume",
+                        "section": "/self_summary",
+                        "quote": "Built an API",
+                        "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                        "revision": 3
+                      }
+                    ],
+                    "turnIndex": 1
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.457371",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.369494",
+                "updated_at": "2026-10-30T02:11:45.458369"
+              },
+              {
+                "id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "6deb3c3a-4f18-4532-a2d1-9bf82d896876",
+                "kind": "interview_generation",
+                "status": "cancelled",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.489486",
+                "cancel_requested_at": "2026-10-30T02:11:45.483948",
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.462654",
+                "updated_at": "2026-10-30T02:11:45.489956"
+              },
+              {
+                "id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "c0e1eac6-31c3-4596-8645-99afc9331c79",
+                "kind": "interview_generation",
+                "status": "succeeded",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 1,
+                  "feedback": {
+                    "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                    "strengths": [
+                      {
+                        "text": "回答给出了明确的方法。",
+                        "refs": [
+                          {
+                            "kind": "answer",
+                            "turnIndex": 1,
+                            "quote": "I validated fields inside one SQL transaction.",
+                            "turnId": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "improvements": [
+                      {
+                        "text": "补充验证结果与失败处理的具体过程。",
+                        "refs": [
+                          {
+                            "kind": "answer",
+                            "turnIndex": 1,
+                            "quote": "I validated fields inside one SQL transaction.",
+                            "turnId": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                  },
+                  "question": {
+                    "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                    "mode": "follow_up",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ],
+                    "turnIndex": 2
+                  }
+                },
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.522103",
+                "cancel_requested_at": null,
+                "error_code": null,
+                "output_refs": [
+                  {
+                    "type": "interview",
+                    "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+                  }
+                ],
+                "created_at": "2026-10-30T02:11:45.493838",
+                "updated_at": "2026-10-30T02:11:45.522465"
+              },
+              {
+                "id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "user_id": 1,
+                "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "request_id": "1f68c0f2-e19b-48da-bc73-c153743799ad",
+                "kind": "interview_generation",
+                "status": "cancelled",
+                "input_json": {
+                  "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+                  "expectedTurn": 2,
+                  "applicationId": 1
+                },
+                "input_versions": {
+                  "memories": []
+                },
+                "result_json": null,
+                "attempt": 1,
+                "execution_epoch": 1,
+                "heartbeat_at": "2026-10-30T02:11:45.553101",
+                "cancel_requested_at": "2026-10-30T02:11:45.547844",
+                "error_code": null,
+                "output_refs": [],
+                "created_at": "2026-10-30T02:11:45.525653",
+                "updated_at": "2026-10-30T02:11:45.553497"
+              }
+            ],
+            "sessions": [
+              {
+                "id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+                "user_id": 1,
+                "purpose": "interview_generation",
+                "context_invalidated_at": null,
+                "checkpoint_deleted_at": null,
+                "active_run_id": null,
+                "created_at": "2026-10-30T02:11:45.367464"
+              }
+            ],
+            "operations": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              },
+              {
+                "id": 2,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "operation_key": "interview:step",
+                "tool_name": "interview_step",
+                "status": "succeeded",
+                "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+              }
+            ],
+            "run_events": [
+              {
+                "id": 1,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.370427"
+              },
+              {
+                "id": 2,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.372640"
+              },
+              {
+                "id": 3,
+                "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.458885"
+              },
+              {
+                "id": 4,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.463024"
+              },
+              {
+                "id": 5,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.464649"
+              },
+              {
+                "id": 6,
+                "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "cancelled",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.490860"
+              },
+              {
+                "id": 7,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.494232"
+              },
+              {
+                "id": 8,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.495504"
+              },
+              {
+                "id": 9,
+                "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "succeeded",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.522748"
+              },
+              {
+                "id": 10,
+                "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "seq": 1,
+                "type": "run.status",
+                "payload": {
+                  "status": "queued",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.526020"
+              },
+              {
+                "id": 11,
+                "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "seq": 2,
+                "type": "run.status",
+                "payload": {
+                  "status": "running",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.527423"
+              },
+              {
+                "id": 12,
+                "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+                "seq": 3,
+                "type": "run.status",
+                "payload": {
+                  "status": "cancelled",
+                  "error_code": null
+                },
+                "created_at": "2026-10-30T02:11:45.553740"
+              }
+            ],
+            "facts": [],
+            "memories": [],
+            "applications": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "resume_id": 1,
+                "jd_id": 1,
+                "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "submitted_snapshot": {
+                  "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                  "revision": 3,
+                  "jdId": 1,
+                  "structuredContent": {
+                    "resume": {
+                      "self_summary": "Built an API",
+                      "work_experience": [
+                        {
+                          "description": "Designed SQL transactions"
+                        }
+                      ]
+                    },
+                    "changes": []
+                  },
+                  "factRefs": [],
+                  "submittedAt": "2026-10-30T02:11:45.317901Z"
+                },
+                "company": "Synthetic",
+                "position": "API Engineer",
+                "applied_date": "2026-10-30",
+                "status": "applied",
+                "job_url": "",
+                "source": "",
+                "notes": "",
+                "created_at": "2026-10-30T02:11:45.316043",
+                "updated_at": "2026-10-30T02:11:45.317901"
+              }
+            ],
+            "versions": [
+              {
+                "id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "user_id": 1,
+                "run_id": null,
+                "resume_id": 1,
+                "jd_id": 1,
+                "parent_version_id": null,
+                "revision": 3,
+                "structured_content": {
+                  "resume": {
+                    "self_summary": "Built an API",
+                    "work_experience": [
+                      {
+                        "description": "Designed SQL transactions"
+                      }
+                    ]
+                  },
+                  "changes": []
+                },
+                "fact_refs": [],
+                "status": "confirmed",
+                "created_at": "2026-10-30T02:11:45.315644"
+              }
+            ],
+            "resumes": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "filename": "synthetic-resume.txt",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Built an API and designed SQL transactions in a test environment.",
+                "structured_data": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "created_at": "2026-10-30T02:11:45.315247",
+                "updated_at": "2026-10-30T02:11:45.315247"
+              }
+            ],
+            "jobs": [
+              {
+                "primary_resume_id": null,
+                "source_url": null,
+                "source_site": null,
+                "source_job_id": null,
+                "captured_at": null,
+                "status": "saved",
+                "id": 1,
+                "user_id": 1,
+                "title": "API Engineer",
+                "company": "Synthetic",
+                "filename": "",
+                "file_path": "",
+                "content_hash": "",
+                "document_size": 0,
+                "parse_status": "pending",
+                "raw_text": "Build APIs and explain SQL transactions.",
+                "structured_data": {},
+                "created_at": "2026-10-30T02:11:45.314807",
+                "updated_at": "2026-10-30T02:11:45.314808"
+              }
+            ]
+          },
+          "ack": {
+            "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+            "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+            "status": "accepted",
+            "resultRef": null,
+            "acceptedSeq": 7
+          },
+          "model_calls_at_stop": 6,
+          "model_calls_after": 6
+        }
+      ]
+    },
+    "trajectory": [
+      {
+        "action": "created",
+        "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe"
+      },
+      {
+        "action": "claimed",
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "epoch": 1
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+          "type": "answer.submit",
+          "expectedTurn": 1,
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+          "status": "accepted",
+          "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "acceptedSeq": 2
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "epoch": 1
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+          "type": "generation.cancel",
+          "expectedTurn": 1,
+          "payload": {
+            "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+          }
+        },
+        "ack": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+          "status": "accepted",
+          "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "acceptedSeq": 2
+        }
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "epoch": 1
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+          "type": "generation.retry",
+          "expectedTurn": 1,
+          "payload": {
+            "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+          }
+        },
+        "ack": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+          "status": "accepted",
+          "resultRef": "e327902b-ee25-4387-8190-e4812e48609d",
+          "acceptedSeq": 3
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "epoch": 1
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+          "type": "answer.submit",
+          "expectedTurn": 2,
+          "payload": {
+            "text": "I checked rollback using a failed insert."
+          }
+        },
+        "ack": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+          "status": "accepted",
+          "resultRef": "edd61903-5f93-414f-996c-23eb77392f45",
+          "acceptedSeq": 6
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "epoch": 1
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+          "type": "session.finish",
+          "expectedTurn": 2,
+          "payload": {}
+        },
+        "ack": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+          "status": "accepted",
+          "resultRef": null,
+          "acceptedSeq": 7
+        }
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "epoch": 1
+      }
+    ],
+    "baseline_facts": [],
+    "checkpoint_files": [
+      "checkpoints.sqlite"
+    ]
+  },
+  "db_snapshot": {
+    "interviews": [
+      {
+        "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "agent_session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "source_snapshot": {
+          "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T02:11:45.317901Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T02:11:45.367170+00:00"
+          }
+        },
+        "application_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+        "status": "finished",
+        "created_at": "2026-10-30T02:11:45.367776"
+      }
+    ],
+    "turns": [
+      {
+        "id": 1,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "turn_index": 1,
+        "question": "请介绍「Built an API」的具体经历。",
+        "question_context": {
+          "mode": "opening",
+          "refs": [
+            {
+              "kind": "resume",
+              "section": "/self_summary",
+              "quote": "Built an API",
+              "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+              "revision": 3
+            }
+          ]
+        },
+        "answer": "I validated fields inside one SQL transaction.",
+        "feedback": {
+          "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+          "strengths": [
+            {
+              "text": "回答给出了明确的方法。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "improvements": [
+            {
+              "text": "补充验证结果与失败处理的具体过程。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+        }
+      },
+      {
+        "id": 2,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "turn_index": 2,
+        "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+        "question_context": {
+          "mode": "follow_up",
+          "refs": [
+            {
+              "kind": "answer",
+              "turnIndex": 1,
+              "quote": "I validated fields inside one SQL transaction.",
+              "turnId": 1
+            }
+          ]
+        },
+        "answer": "I checked rollback using a failed insert.",
+        "feedback": null
+      }
+    ],
+    "commands": [
+      {
+        "id": 1,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "client_message_id": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+        "type": "answer.submit",
+        "request_json": {
+          "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+          "expectedTurn": 1,
+          "type": "answer.submit",
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "af196237-9cd6-42af-94d3-52cd51f0dca2",
+          "status": "accepted",
+          "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "acceptedSeq": 2
+        },
+        "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "status": "accepted"
+      },
+      {
+        "id": 2,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "client_message_id": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+        "type": "generation.cancel",
+        "request_json": {
+          "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+          "expectedTurn": 1,
+          "type": "generation.cancel",
+          "payload": {
+            "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+          }
+        },
+        "ack_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "86842b9e-7438-43b3-9e18-2abcd3f976a9",
+          "status": "accepted",
+          "resultRef": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+          "acceptedSeq": 2
+        },
+        "result_ref": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "status": "accepted"
+      },
+      {
+        "id": 3,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "client_message_id": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+        "type": "generation.retry",
+        "request_json": {
+          "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+          "expectedTurn": 1,
+          "type": "generation.retry",
+          "payload": {
+            "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+          }
+        },
+        "ack_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "6c0b6337-42f2-4f0d-a2f1-21b0075af954",
+          "status": "accepted",
+          "resultRef": "e327902b-ee25-4387-8190-e4812e48609d",
+          "acceptedSeq": 3
+        },
+        "result_ref": "e327902b-ee25-4387-8190-e4812e48609d",
+        "status": "accepted"
+      },
+      {
+        "id": 4,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "client_message_id": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+        "type": "answer.submit",
+        "request_json": {
+          "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+          "expectedTurn": 2,
+          "type": "answer.submit",
+          "payload": {
+            "text": "I checked rollback using a failed insert."
+          }
+        },
+        "ack_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "64e601ba-88fb-49a6-9c7a-5fec47f61bc0",
+          "status": "accepted",
+          "resultRef": "edd61903-5f93-414f-996c-23eb77392f45",
+          "acceptedSeq": 6
+        },
+        "result_ref": "edd61903-5f93-414f-996c-23eb77392f45",
+        "status": "accepted"
+      },
+      {
+        "id": 5,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "user_id": 1,
+        "client_message_id": "39abd191-1334-4d16-a1b2-b973d4891915",
+        "type": "session.finish",
+        "request_json": {
+          "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+          "expectedTurn": 2,
+          "type": "session.finish",
+          "payload": {}
+        },
+        "ack_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "clientMessageId": "39abd191-1334-4d16-a1b2-b973d4891915",
+          "status": "accepted",
+          "resultRef": null,
+          "acceptedSeq": 7
+        },
+        "result_ref": null,
+        "status": "accepted"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 1,
+        "type": "question.completed",
+        "payload": {
+          "runId": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T02:11:45.456423"
+      },
+      {
+        "id": 2,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 2,
+        "type": "answer.accepted",
+        "payload": {
+          "turnIndex": 1,
+          "turnId": 1,
+          "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+        },
+        "created_at": "2026-10-30T02:11:45.463260"
+      },
+      {
+        "id": 3,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 3,
+        "type": "generation.cancelled",
+        "payload": {
+          "runId": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e"
+        },
+        "created_at": "2026-10-30T02:11:45.489396"
+      },
+      {
+        "id": 4,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 4,
+        "type": "feedback.ready",
+        "payload": {
+          "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T02:11:45.521341"
+      },
+      {
+        "id": 5,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 5,
+        "type": "question.completed",
+        "payload": {
+          "runId": "e327902b-ee25-4387-8190-e4812e48609d",
+          "turnIndex": 2,
+          "turnId": 2
+        },
+        "created_at": "2026-10-30T02:11:45.521600"
+      },
+      {
+        "id": 6,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 6,
+        "type": "answer.accepted",
+        "payload": {
+          "turnIndex": 2,
+          "turnId": 2,
+          "runId": "edd61903-5f93-414f-996c-23eb77392f45"
+        },
+        "created_at": "2026-10-30T02:11:45.526252"
+      },
+      {
+        "id": 7,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 7,
+        "type": "session.finished",
+        "payload": {},
+        "created_at": "2026-10-30T02:11:45.548723"
+      },
+      {
+        "id": 8,
+        "interview_id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+        "seq": 8,
+        "type": "generation.cancelled",
+        "payload": {
+          "runId": "edd61903-5f93-414f-996c-23eb77392f45"
+        },
+        "created_at": "2026-10-30T02:11:45.553010"
+      }
+    ],
+    "runs": [
+      {
+        "id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "user_id": 1,
+        "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "request_id": "interview-eval-start",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 0,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 0,
+          "feedback": null,
+          "question": {
+            "text": "请介绍「Built an API」的具体经历。",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API",
+                "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+                "revision": 3
+              }
+            ],
+            "turnIndex": 1
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T02:11:45.457371",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+          }
+        ],
+        "created_at": "2026-10-30T02:11:45.369494",
+        "updated_at": "2026-10-30T02:11:45.458369"
+      },
+      {
+        "id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "user_id": 1,
+        "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "request_id": "6deb3c3a-4f18-4532-a2d1-9bf82d896876",
+        "kind": "interview_generation",
+        "status": "cancelled",
+        "input_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T02:11:45.489486",
+        "cancel_requested_at": "2026-10-30T02:11:45.483948",
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-30T02:11:45.462654",
+        "updated_at": "2026-10-30T02:11:45.489956"
+      },
+      {
+        "id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "user_id": 1,
+        "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "request_id": "c0e1eac6-31c3-4596-8645-99afc9331c79",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 1,
+          "feedback": {
+            "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction.",
+                "turnId": 1
+              }
+            ],
+            "turnIndex": 2
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T02:11:45.522103",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+          }
+        ],
+        "created_at": "2026-10-30T02:11:45.493838",
+        "updated_at": "2026-10-30T02:11:45.522465"
+      },
+      {
+        "id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "user_id": 1,
+        "session_id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "request_id": "1f68c0f2-e19b-48da-bc73-c153743799ad",
+        "kind": "interview_generation",
+        "status": "cancelled",
+        "input_json": {
+          "interviewId": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4",
+          "expectedTurn": 2,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T02:11:45.553101",
+        "cancel_requested_at": "2026-10-30T02:11:45.547844",
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-30T02:11:45.525653",
+        "updated_at": "2026-10-30T02:11:45.553497"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "067f22b6-2d50-4e1b-9b2a-549443ca900e",
+        "user_id": 1,
+        "purpose": "interview_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T02:11:45.367464"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+      },
+      {
+        "id": 2,
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "912e73f2-ad7b-4f0d-973d-04dd1f68c5c4"
+      }
+    ],
+    "run_events": [
+      {
+        "id": 1,
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.370427"
+      },
+      {
+        "id": 2,
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.372640"
+      },
+      {
+        "id": 3,
+        "run_id": "1800ea6a-f6b7-47f8-ab42-5e29338c2abe",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.458885"
+      },
+      {
+        "id": 4,
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.463024"
+      },
+      {
+        "id": 5,
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.464649"
+      },
+      {
+        "id": 6,
+        "run_id": "c473ac9d-754d-41e5-8e10-fc8ccfc4ad6e",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "cancelled",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.490860"
+      },
+      {
+        "id": 7,
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.494232"
+      },
+      {
+        "id": 8,
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.495504"
+      },
+      {
+        "id": 9,
+        "run_id": "e327902b-ee25-4387-8190-e4812e48609d",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.522748"
+      },
+      {
+        "id": 10,
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.526020"
+      },
+      {
+        "id": 11,
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.527423"
+      },
+      {
+        "id": 12,
+        "run_id": "edd61903-5f93-414f-996c-23eb77392f45",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "cancelled",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T02:11:45.553740"
+      }
+    ],
+    "facts": [],
+    "memories": [],
+    "applications": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+        "submitted_snapshot": {
+          "resumeVersionId": "3b88b889-8b80-4aa3-a437-ef423230af08",
+          "revision": 3,
+          "jdId": 1,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T02:11:45.317901Z"
+        },
+        "company": "Synthetic",
+        "position": "API Engineer",
+        "applied_date": "2026-10-30",
+        "status": "applied",
+        "job_url": "",
+        "source": "",
+        "notes": "",
+        "created_at": "2026-10-30T02:11:45.316043",
+        "updated_at": "2026-10-30T02:11:45.317901"
+      }
+    ],
+    "versions": [
+      {
+        "id": "3b88b889-8b80-4aa3-a437-ef423230af08",
+        "user_id": 1,
+        "run_id": null,
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 3,
+        "structured_content": {
+          "resume": {
+            "self_summary": "Built an API",
+            "work_experience": [
+              {
+                "description": "Designed SQL transactions"
+              }
+            ]
+          },
+          "changes": []
+        },
+        "fact_refs": [],
+        "status": "confirmed",
+        "created_at": "2026-10-30T02:11:45.315644"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T02:11:45.315247",
+        "updated_at": "2026-10-30T02:11:45.315247"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "Synthetic",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build APIs and explain SQL transactions.",
+        "structured_data": {},
+        "created_at": "2026-10-30T02:11:45.314807",
+        "updated_at": "2026-10-30T02:11:45.314808"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "actual_execution",
+        "passed": true,
+        "reason": "The case reached real generation calls and persisted their Run identities",
+        "evidence_refs": [
+          "output.model_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "owned_frozen_session",
+        "passed": true,
+        "reason": "An owned interview keeps the accepted frozen source",
+        "evidence_refs": [
+          "interviews",
+          "runs"
+        ]
+      },
+      {
+        "name": "bounded_unique_rounds",
+        "passed": true,
+        "reason": "Persisted rounds are contiguous, unique, and bounded by eight",
+        "evidence_refs": [
+          "turns"
+        ]
+      },
+      {
+        "name": "frozen_reference_integrity",
+        "passed": true,
+        "reason": "Question and feedback quotes resolve to the exact snapshot or accepted answer",
+        "evidence_refs": [
+          "turns",
+          "interviews.source_snapshot"
+        ]
+      },
+      {
+        "name": "durable_question_feedback_events",
+        "passed": true,
+        "reason": "Each committed question/feedback has exactly one ordered SQL event",
+        "evidence_refs": [
+          "turns",
+          "events"
+        ]
+      },
+      {
+        "name": "run_result_operation_atomicity",
+        "passed": true,
+        "reason": "Successful steps own one immutable result and operation; stopped steps own neither",
+        "evidence_refs": [
+          "runs",
+          "operations"
+        ]
+      },
+      {
+        "name": "practice_does_not_create_facts",
+        "passed": true,
+        "reason": "Practice answers do not become ProfileFact records",
+        "evidence_refs": [
+          "facts",
+          "output.baseline_facts"
+        ]
+      },
+      {
+        "name": "cancel_and_finish_fence_inflight_results",
+        "passed": true,
+        "reason": "Both commands commit while an actual model call is blocked; late output adds no business result",
+        "evidence_refs": [
+          "output.observations.stops",
+          "interviews"
+        ]
+      },
+      {
+        "name": "retry_keeps_original_answer",
+        "passed": true,
+        "reason": "A new generation retries the accepted first answer without replacing it",
+        "evidence_refs": [
+          "runs",
+          "turns"
+        ]
+      }
+    ],
+    "limitations": [
+      "The external model is deterministic; quoted text existing is not proof of semantic quality.",
+      "This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.",
+      "No live interview model calls are implemented or authorized by this runner."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

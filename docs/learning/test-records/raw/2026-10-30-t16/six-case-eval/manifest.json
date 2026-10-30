@@ -1,0 +1,31 @@
+{
+  "suite": "core",
+  "suite_version": 3,
+  "invocation_id": "6dbe44ff-266c-406a-a494-b991e100fa7c",
+  "mode": "stub",
+  "case_ids": [
+    "interview-followup",
+    "interview-eight-turn-limit",
+    "interview-command-replay",
+    "interview-cancel-late-result",
+    "interview-frozen-submission",
+    "interview-feedback-memory"
+  ],
+  "created_at": "2026-10-30T02:11:39.930028+00:00",
+  "git_commit": "19e1e35288af86902a846de8f8317097c702d144",
+  "dependencies": {
+    "deepagents": "0.7.32",
+    "langchain-core": "1.7.1",
+    "langchain-openai": "1.1.11",
+    "langgraph": "1.2.18",
+    "openai": "2.29.0"
+  },
+  "synthetic_inputs": true,
+  "model": "synthetic eval stub",
+  "tracing": "disabled in isolated harness",
+  "checkpoint_retention": "stub retained; live removed after child exit, including failures",
+  "failure_injection": "Harness-only read failure, transactional rollback and live duplicate tool replay",
+  "rubric_version": "v1",
+  "config": null,
+  "preflight": "passed"
+}

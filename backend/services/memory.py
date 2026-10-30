@@ -41,7 +41,7 @@ def capture_memory_ids(db: Session, user_id: int) -> list[dict]:
 
 def memories_for_run(db: Session, run: AgentRun) -> list[dict]:
     ids = [ref['memoryId'] for ref in run.input_versions.get('memories', [])]
-    if not ids or run.kind != 'tailoring':
+    if not ids or run.kind not in ('tailoring', 'interview_generation'):
         return []
     rows = {item.id: item for item in db.scalars(_active(run.user_id).where(BusinessMemory.id.in_(ids)))}
     return [serialize(rows[memory_id]) for memory_id in ids if memory_id in rows]
@@ -75,7 +75,7 @@ def _deletion_status(db: Session, memory_id: str, runs: list[AgentRun]) -> dict:
 def list_memories(db: Session, user_id: int) -> dict:
     items = list(db.scalars(select(BusinessMemory).where(BusinessMemory.user_id == user_id)
                            .order_by(BusinessMemory.created_at, BusinessMemory.id)))
-    runs = list(db.scalars(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.kind == 'tailoring')))
+    runs = list(db.scalars(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.kind.in_(('tailoring', 'interview_generation')))))
     pending = []
     for item in items:
         if item.deleted_at:
@@ -95,7 +95,7 @@ def delete_memory(db: Session, user_id: int, memory_id: str) -> dict:
     db.execute(update(BusinessMemory).where(BusinessMemory.id == memory_id).values(
         content='', source_ref={}, deleted_at=func.coalesce(BusinessMemory.deleted_at, utcnow())))
     runs = list(db.scalars(select(AgentRun).where(
-        AgentRun.user_id == user_id, AgentRun.kind == 'tailoring').with_for_update()))
+        AgentRun.user_id == user_id, AgentRun.kind.in_(('tailoring', 'interview_generation'))).with_for_update()))
     affected = _affected_runs(runs, memory_id)
     session_ids = {run.session_id for run in affected}
     if session_ids:

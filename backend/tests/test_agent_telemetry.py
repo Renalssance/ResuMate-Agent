@@ -291,7 +291,7 @@ def test_sdk_file_result_preserves_typed_outcome_without_private_body(fake_langf
     from deepagents.middleware.filesystem import FilesystemMiddleware
     from langchain_core.messages import ToolMessage
     from backend.agent_runtime.telemetry import RunTelemetry, SDKToolTelemetry
-    trace = RunTelemetry(SimpleNamespace(id=str(uuid4()), session_id=str(uuid4()),
+    trace = RunTelemetry(SimpleNamespace(kind='tailoring', id=str(uuid4()), session_id=str(uuid4()),
         request_id=str(uuid4()), input_versions={}, attempt=1, execution_epoch=1))
     path = tmp_path / (PRIVATE + '.txt')
     if file_exists:

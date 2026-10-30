@@ -1,0 +1,29 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/ApplicationsView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/ApplicationsView.spec.ts (4 tests | 1 failed) 166ms
+   × only starts from submitted materials and reuses the create request after a lost response 19ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > only starts from submitted materials and reuses the create request after a lost response
+TypeError: Cannot read properties of undefined (reading 'trigger')
+ ❯ src/views/ApplicationsView.spec.ts:78:78
+     76|  vi.mocked(createInterview).mockRejectedValueOnce(new Error('响应丢失')).m…
+     77|  view = await setup('')
+     78|  await view.wrapper.findAll('button').find(button => button.text() ===…
+       |                                                                              ^
+     79|  expect(view.wrapper.text()).toContain('响应丢失')
+     80|  const first = vi.mocked(createInterview).mock.calls[0]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  09:50:26
+   Duration  1.06s (transform 182ms, setup 0ms, import 350ms, tests 166ms, environment 478ms)

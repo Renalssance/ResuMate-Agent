@@ -1,0 +1,40 @@
+............EsEs                                                         [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_real_graph_eight_rounds_two_followups_new_topic_and_immutable_results[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d9f8860>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-212/test_real_graph_eight_rounds_t0/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10df38c80>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-212/test_real_graph_eight_rounds_t0')
+
+    @pytest.fixture
+    def runtime(career_db, career_engine, monkeypatch, tmp_path):
+>       assert importlib.util.find_spec('backend.agent_runtime.interviews'), 'Real interview handler is required'
+E       AssertionError: Real interview handler is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a3bfd80>('backend.agent_runtime.interviews')
+E        +    where <function find_spec at 0x10a3bfd80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:107: AssertionError
+_ ERROR at setup of test_worker_dispatches_interview_and_duplicate_delivery_is_noop[sqlite] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dd66cf0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-212/test_worker_dispatches_intervi0/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10df64380>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-212/test_worker_dispatches_intervi0')
+
+    @pytest.fixture
+    def runtime(career_db, career_engine, monkeypatch, tmp_path):
+>       assert importlib.util.find_spec('backend.agent_runtime.interviews'), 'Real interview handler is required'
+E       AssertionError: Real interview handler is required
+E       assert None
+E        +  where None = <function find_spec at 0x10a3bfd80>('backend.agent_runtime.interviews')
+E        +    where <function find_spec at 0x10a3bfd80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+backend/tests/test_interview_runtime.py:107: AssertionError
+=========================== short test summary info ============================
+ERROR backend/tests/test_interview_runtime.py::test_real_graph_eight_rounds_two_followups_new_topic_and_immutable_results[sqlite]
+ERROR backend/tests/test_interview_runtime.py::test_worker_dispatches_interview_and_duplicate_delivery_is_noop[sqlite]
+12 passed, 2 skipped, 2 errors in 0.49s

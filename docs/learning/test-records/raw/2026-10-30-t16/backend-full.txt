@@ -1,0 +1,108 @@
+........................................................................ [  6%]
+..ss...s................ssss.............................s.............. [ 13%]
+..............................FF........................................ [ 19%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 39%]
+........................................................................ [ 46%]
+........................................................................ [ 52%]
+........................................................................ [ 59%]
+........................................................................ [ 65%]
+........................................................................ [ 72%]
+......................................................................ss [ 78%]
+sssss..........................................s........................ [ 85%]
+........................................................................ [ 92%]
+....................................................................s... [ 98%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+___ test_sdk_file_result_preserves_typed_outcome_without_private_body[False] ___
+
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x120968d70>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-234/test_sdk_file_result_preserves0')
+file_exists = False
+
+    @pytest.mark.parametrize('file_exists', [False, True])
+    def test_sdk_file_result_preserves_typed_outcome_without_private_body(fake_langfuse, tmp_path, file_exists):
+        from deepagents.backends import FilesystemBackend
+        from deepagents.middleware.filesystem import FilesystemMiddleware
+        from langchain_core.messages import ToolMessage
+        from backend.agent_runtime.telemetry import RunTelemetry, SDKToolTelemetry
+        trace = RunTelemetry(SimpleNamespace(id=str(uuid4()), session_id=str(uuid4()),
+            request_id=str(uuid4()), input_versions={}, attempt=1, execution_epoch=1))
+        path = tmp_path / (PRIVATE + '.txt')
+        if file_exists:
+            path.write_text(PRIVATE)
+        middleware = FilesystemMiddleware(backend=FilesystemBackend(root_dir=tmp_path), tools=['read_file'])
+        read_file = next(tool for tool in middleware.tools if tool.name == 'read_file')
+        output = read_file.invoke({'file_path': '/' + path.name,
+            'runtime': SimpleNamespace(tool_call_id='filesystem-test')},
+            config={'callbacks': [SDKToolTelemetry(trace)]})
+        assert isinstance(output, ToolMessage)
+        assert output.status == ('success' if file_exists else 'error')
+        assert PRIVATE in output.content  # Successful content and missing-path errors are both private.
+        spans = [span for span in fake_langfuse.observations if span.kind == 'tool']
+>       assert len(spans) == 1 and spans[0].ended
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:308: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:12:09,859 | WARNING | backend.agent_runtime.telemetry | Optional telemetry unavailable; continuing business execution
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.telemetry:telemetry.py:89 Optional telemetry unavailable; continuing business execution
+___ test_sdk_file_result_preserves_typed_outcome_without_private_body[True] ____
+
+fake_langfuse = <test_agent_telemetry.FakeClient object at 0x1208a4a40>
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-234/test_sdk_file_result_preserves1')
+file_exists = True
+
+    @pytest.mark.parametrize('file_exists', [False, True])
+    def test_sdk_file_result_preserves_typed_outcome_without_private_body(fake_langfuse, tmp_path, file_exists):
+        from deepagents.backends import FilesystemBackend
+        from deepagents.middleware.filesystem import FilesystemMiddleware
+        from langchain_core.messages import ToolMessage
+        from backend.agent_runtime.telemetry import RunTelemetry, SDKToolTelemetry
+        trace = RunTelemetry(SimpleNamespace(id=str(uuid4()), session_id=str(uuid4()),
+            request_id=str(uuid4()), input_versions={}, attempt=1, execution_epoch=1))
+        path = tmp_path / (PRIVATE + '.txt')
+        if file_exists:
+            path.write_text(PRIVATE)
+        middleware = FilesystemMiddleware(backend=FilesystemBackend(root_dir=tmp_path), tools=['read_file'])
+        read_file = next(tool for tool in middleware.tools if tool.name == 'read_file')
+        output = read_file.invoke({'file_path': '/' + path.name,
+            'runtime': SimpleNamespace(tool_call_id='filesystem-test')},
+            config={'callbacks': [SDKToolTelemetry(trace)]})
+        assert isinstance(output, ToolMessage)
+        assert output.status == ('success' if file_exists else 'error')
+        assert PRIVATE in output.content  # Successful content and missing-path errors are both private.
+        spans = [span for span in fake_langfuse.observations if span.kind == 'tool']
+>       assert len(spans) == 1 and spans[0].ended
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+backend/tests/test_agent_telemetry.py:308: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:12:09,949 | WARNING | backend.agent_runtime.telemetry | Optional telemetry unavailable; continuing business execution
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.telemetry:telemetry.py:89 Optional telemetry unavailable; continuing business execution
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/tests/test_conversation_storage.py::test_conversation_storage_round_trips_without_cache
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/agent.py:62: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_agent_telemetry.py::test_sdk_file_result_preserves_typed_outcome_without_private_body[False]
+FAILED backend/tests/test_agent_telemetry.py::test_sdk_file_result_preserves_typed_outcome_without_private_body[True]
+2 failed, 1076 passed, 17 skipped, 6 warnings in 218.31s (0:03:38)

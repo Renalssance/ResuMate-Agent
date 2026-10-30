@@ -4,19 +4,21 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import ApplicationsView from './ApplicationsView.vue'
 import { request } from '../services/request'
+import { createInterview } from '../api/interviews'
+vi.mock('../api/interviews', () => ({ createInterview: vi.fn() }))
 const records = vi.hoisted(() => ({ calls: [] as { url?: string; method?: string; data: Record<string, unknown> }[] }))
 vi.mock('../stores/document', () => ({ useDocumentStore: () => ({ parsedResumes: [{ id: 'resume:1', filename: '已修改的主简历.pdf' }], loadDocuments: vi.fn() }) }))
 const version = { id: 'v1', kind: 'resume_version', runId: 'r1', resumeId: 1, jdId: 2, revision: 3, status: 'confirmed', createdAt: '', factRefs: [], structuredContent: { resume: { candidate_name: '张同学', summary: '确认时的简历正文' } } }
 const record = { id: 10, company: '示例公司', position: '产品经理', applied_date: '2026-10-30', status: 'applied', resume_id: null, resume_filename: '旧投递简历.pdf', job_url: '', source: '', notes: '', status_events: [], schedules: [], created_at: '', updated_at: '', jd_id: null, resume_version_id: null, submitted_snapshot: null }
 const linked = { ...record, resume_id: 1, jd_id: 2, resume_version_id: 'v1', submitted_snapshot: { resumeVersionId: 'v1', revision: 3, jdId: 2, structuredContent: version.structuredContent, factRefs: [], submittedAt: '2026-10-30T12:00:00Z' } }
 async function setup(query = '?resumeVersionId=v1&jdId=2') {
- const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/applications', component: ApplicationsView }, { path: '/resume-versions/:id', component: { template: '<p>简历</p>' } }] })
+ const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/applications', component: ApplicationsView }, { path: '/resume-versions/:id', component: { template: '<p>简历</p>' } }, { path: '/interviews/:id', component: { template: '<p>面试</p>' } }] })
  await router.push('/applications' + query); await router.isReady()
  const wrapper = mount(ApplicationsView, { global: { plugins: [createPinia(), router] } }); await flushPromises()
  return { wrapper, router }
 }
 beforeEach(() => {
- records.calls = []
+ records.calls = []; sessionStorage.clear()
  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(version))))
  request.defaults.adapter = async config => {
   records.calls.push({ url: config.url, method: config.method, data: config.data ? JSON.parse(config.data) : {} })
@@ -64,4 +66,36 @@ it('defaults a new application to the local calendar day during early morning ho
  await wrapper.findAll('button').find(button => button.text() === '新增投递')!.trigger('click')
  expect(wrapper.get<HTMLInputElement>('input[type="date"]').element.value).toBe('2026-10-30')
  wrapper.unmount()
+})
+
+it('only starts from submitted materials and reuses the create request after a lost response', async () => {
+ let view = await setup('')
+ expect(view.wrapper.findAll('button').some(button => button.text() === '模拟面试')).toBe(false)
+ view.wrapper.unmount()
+ request.defaults.adapter = async config => ({ data: [linked], status: 200, statusText: 'OK', headers: {}, config })
+ vi.mocked(createInterview).mockRejectedValueOnce(new Error('响应丢失')).mockResolvedValueOnce({ interviewId: 'interview-1', runId: 'run-1' })
+ view = await setup('')
+ await view.wrapper.findAll('button').find(button => button.text() === '模拟面试')!.trigger('click'); await flushPromises()
+ expect(view.wrapper.text()).toContain('响应丢失')
+ const first = vi.mocked(createInterview).mock.calls[0]
+ view.wrapper.unmount(); view = await setup('')
+ await view.wrapper.findAll('button').find(button => button.text() === '模拟面试')!.trigger('click'); await flushPromises()
+ expect(vi.mocked(createInterview).mock.calls[1]).toEqual(first)
+ expect(first?.[0]).toBe(10)
+ expect(view.router.currentRoute.value.path).toBe('/interviews/interview-1')
+ view.wrapper.unmount()
+})
+
+it('does not navigate from a late create response after leaving the applications page', async () => {
+ request.defaults.adapter = async config => ({ data: [linked], status: 200, statusText: 'OK', headers: {}, config })
+ let resolve!: (value: { interviewId: string; runId: string }) => void
+ vi.mocked(createInterview).mockReset().mockImplementationOnce(() => new Promise(done => { resolve = done }))
+ const { wrapper, router } = await setup('')
+ await wrapper.findAll('button').find(button => button.text() === '模拟面试')!.trigger('click'); await flushPromises()
+ const requestId = vi.mocked(createInterview).mock.calls[0]![1]
+ wrapper.unmount()
+ await router.push('/resume-versions/v1')
+ resolve({ interviewId: 'late-interview', runId: 'late-run' }); await flushPromises()
+ expect(router.currentRoute.value.path).toBe('/resume-versions/v1')
+ expect(Object.keys(sessionStorage).some(key => key.startsWith('resumate:interview:start:') && sessionStorage.getItem(key) === requestId)).toBe(true)
 })

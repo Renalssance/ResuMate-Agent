@@ -1,0 +1,81 @@
+...................................F.................................... [ 76%]
+..............ss...s..                                                   [100%]
+=================================== FAILURES ===================================
+________ test_concurrent_initial_request_returns_one_interview[sqlite] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x1121ab830>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-217/test_concurrent_initial_reques0/career.db)
+
+    def test_concurrent_initial_request_returns_one_interview(career_db, career_engine):
+        seed_application(career_db)
+        career_db.close()
+        def submit():
+            with Session(career_engine) as db:
+                return create(db, 'same-request')
+        with ThreadPoolExecutor(max_workers=2) as pool:
+>           results = list(pool.map(lambda _: submit(), range(2)))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_interviews.py:331:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:619: in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:317: in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/concurrent/futures/thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_interviews.py:331: in <lambda>
+    results = list(pool.map(lambda _: submit(), range(2)))
+                                      ^^^^^^^^
+backend/tests/test_interviews.py:329: in submit
+    return create(db, 'same-request')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_interviews.py:22: in create
+    return interviews.create_interview(db, 1, InterviewCreate(requestId=key, applicationId=1))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/services/interviews.py:99: in create_interview
+    run = agent_runs.create_run_in_transaction(db, user_id, RunCreate(kind='interview_generation',
+backend/services/agent_runs.py:228: in create_run_in_transaction
+    existing = _existing_request(db, user_id, request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+db = <sqlalchemy.orm.session.Session object at 0x112263860>, user_id = 1
+request = RunCreate(session_id='1c8ad1ef-12ce-4c4e-8676-9af4b707a2e5', kind='interview_generation', jd_id=None, resume_id=None, ...unt=10, interview_id='80823035-98d7-4a0a-8b52-2b0dccab8af0', expected_turn=0, followup=None, request_id='same-request')
+
+    def _existing_request(db: Session, user_id: int, request: RunCreate) -> AgentRun | None:
+        run = db.scalar(select(AgentRun).where(AgentRun.user_id == user_id, AgentRun.request_id == request.request_id))
+        inputs = _request_input(request)
+        if run is not None and (
+            run.kind != request.kind
+            or {key: run.input_json.get(key) for key in inputs} != inputs
+            or (request.session_id is not None and run.session_id != request.session_id)
+        ):
+>           raise RunError(409, 'request_conflict', '该 requestId 已用于另一项请求')
+E           backend.services.agent_runs.RunError: 该 requestId 已用于另一项请求
+
+backend/services/agent_runs.py:118: RunError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_interviews.py::test_concurrent_initial_request_returns_one_interview[sqlite]
+1 failed, 90 passed, 3 skipped, 5 warnings in 20.57s

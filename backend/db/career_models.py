@@ -47,6 +47,8 @@ class InterviewSession(Base):
     __tablename__ = 'interview_sessions'
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    agent_session_id: Mapped[str | None] = mapped_column(ForeignKey('agent_sessions.id'), index=True)
+    source_snapshot: Mapped[dict | None] = mapped_column(JSON)
     application_id: Mapped[int | None] = mapped_column(ForeignKey('job_applications.id', ondelete='SET NULL'))
     jd_id: Mapped[int | None] = mapped_column(ForeignKey('job_descriptions.id', ondelete='SET NULL'))
     resume_version_id: Mapped[str] = mapped_column(ForeignKey('resume_versions.id'))
@@ -61,6 +63,7 @@ class InterviewTurn(Base):
     interview_id: Mapped[str] = mapped_column(ForeignKey('interview_sessions.id', ondelete='CASCADE'))
     turn_index: Mapped[int] = mapped_column(Integer)
     question: Mapped[str] = mapped_column(LARGE_TEXT)
+    question_context: Mapped[dict | None] = mapped_column(JSON)
     answer: Mapped[str | None] = mapped_column(LARGE_TEXT)
     feedback: Mapped[dict | None] = mapped_column(JSON)
 
@@ -84,6 +87,8 @@ class InterviewCommand(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     client_message_id: Mapped[str] = mapped_column(String(100))
     type: Mapped[str] = mapped_column(String(40))
+    request_json: Mapped[dict | None] = mapped_column(JSON)
+    ack_json: Mapped[dict | None] = mapped_column(JSON)
     result_ref: Mapped[str | None] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(Enum('accepted', 'succeeded', 'failed', native_enum=False, create_constraint=True, name='interview_command_status'), default='accepted')
 

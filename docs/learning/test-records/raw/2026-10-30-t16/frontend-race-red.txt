@@ -1,0 +1,50 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/InterviewView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/InterviewView.spec.ts (7 tests | 2 failed) 60ms
+   × keeps a concrete rejection visible and leaves the draft editable without a pending replay 5ms
+   × does not let an earlier manual refresh overwrite a later snapshot 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/InterviewView.spec.ts > keeps a concrete rejection visible and leaves the draft editable without a pending replay
+AssertionError: expected '基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于…' to contain '当前轮已变化，请检查回答'
+
+Expected: "当前轮已变化，请检查回答"
+Received: "基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于练习，不会改写简历或投递进展。返回投递记录示例公司 · 后端开发投递简历 · 第 3 版岗位取材于练习开始时 · 2026/10/30 12:00:00等待你的回答当前第 1 / 8 题刷新进度结束练习第 1 题说说你的思路如何保证重复请求只保存一次？查看依据岗位要求可靠的业务流程你的回答6 / 4000 字 · 草稿保留在当前浏览器会话提交回答问答回顾保留已接受的回答和练习反馈。提交第一份回答后，在这里回顾。"
+
+ ❯ src/views/InterviewView.spec.ts:98:25
+     96|  await wrapper.get('textarea').setValue('待检查的草稿')
+     97|  await wrapper.get('form').trigger('submit'); await flushPromises()
+     98|  expect(wrapper.text()).toContain('当前轮已变化，请检查回答')
+       |                         ^
+     99|  expect(wrapper.get<HTMLTextAreaElement>('textarea').element.value).to…
+    100|  expect(wrapper.text()).not.toContain('重新发送原回答')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/views/InterviewView.spec.ts > does not let an earlier manual refresh overwrite a later snapshot
+AssertionError: expected '基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于…' to contain '新一轮问题'
+
+Expected: "新一轮问题"
+Received: "基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于练习，不会改写简历或投递进展。返回投递记录示例公司 · 后端开发投递简历 · 第 3 版岗位取材于练习开始时 · 2026/10/30 12:00:00等待你的回答当前第 1 / 8 题刷新进度结束练习第 1 题说说你的思路如何保证重复请求只保存一次？查看依据岗位要求可靠的业务流程你的回答0 / 4000 字 · 草稿保留在当前浏览器会话提交回答问答回顾保留已接受的回答和练习反馈。提交第一份回答后，在这里回顾。"
+
+ ❯ src/views/InterviewView.spec.ts:112:25
+    110|  expect(wrapper.text()).toContain('新一轮问题')
+    111|  resolve(initial() as never); await flushPromises()
+    112|  expect(wrapper.text()).toContain('新一轮问题')
+       |                         ^
+    113|  wrapper.unmount()
+    114| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  09:51:18
+   Duration  704ms (transform 81ms, setup 0ms, import 134ms, tests 60ms, environment 447ms)

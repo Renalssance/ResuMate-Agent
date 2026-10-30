@@ -45,3 +45,11 @@ RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock uv run pytest back
 解析、匹配、问题生成、追问的原成功 HTTP 响应在业务写入、操作记录、事件与终态的同一事务保存。成功 Run 重放读取自己的响应，后来的显式问题生成不会替换旧 Run 的结果。仍沿用上述备份、检查目标结构及 DDL 部分执行恢复方式，无自动 MySQL DDL。
 
 定向验证 `backend/tests/test_long_task_core.py::test_old_database_upgrade_preserves_existing_run` 会模拟立即前一版结构，在临时 SQLite/MySQL 库运行真实升级，确认旧 Run 保留且结果为 NULL。本地验证不代表已执行远程 CloudBase 升级。
+
+## T16：文字面试的冻结材料与命令
+
+在已执行 001→002→003→004 的 MySQL 库中，一次执行 `005_text_interviews.sql`。它只为既有面试骨架增加五个可空列：InterviewSession 的 AgentSession 关联/冻结材料、Turn 的问题上下文、Command 的规范化请求/不可变接受响应，另加关联索引和外键。空库顺序为基础 `deploy/cloudbase/mysql-schema.sql` → 001 → 002 → 003 → 004 → 005。沿用备份与 DDL 部分执行检查，不自动执行生产 MySQL 升级。
+
+既有问题、回答、命令和事件保留；新列为 NULL，不用当前简历或岗位伪造历史快照。旧骨架访问时返回 `interview_context_missing`，用户可以新建练习。新面试从投递时简历快照和开始练习时的岗位材料创建，二者采集时点分别保存。SQLite 启动可重复追加列和索引。
+
+`backend/tests/test_interviews.py::test_additive_upgrade_preserves_legacy_interview_without_inventing_context` 在独立 SQLite/MySQL 测试库模拟立即前一版四张面试表，运行真实升级并验证原行、NULL 字段、索引及旧上下文错误；不代表已执行 CloudBase 远程升级。

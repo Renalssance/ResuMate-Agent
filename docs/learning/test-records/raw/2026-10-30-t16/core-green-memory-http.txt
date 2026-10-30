@@ -1,0 +1,16 @@
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+backend/tests/test_interviews.py::test_http_admission_outside_sql_and_accepted_replay_skips_redis[sqlite]
+backend/tests/test_interviews.py::test_http_admission_outside_sql_and_accepted_replay_skips_redis[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_interviews.py::test_http_admission_outside_sql_and_accepted_replay_skips_redis[sqlite]
+backend/tests/test_interviews.py::test_http_admission_outside_sql_and_accepted_replay_skips_redis[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_interviews.py::test_http_admission_outside_sql_and_accepted_replay_skips_redis[sqlite]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+37 passed, 5 warnings in 7.49s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

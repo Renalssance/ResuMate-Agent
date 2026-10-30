@@ -1,0 +1,57 @@
+{
+  "mode": "stub",
+  "results": [
+    {
+      "case_id": "interview-followup",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-followup.json"
+    },
+    {
+      "case_id": "interview-eight-turn-limit",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-eight-turn-limit.json"
+    },
+    {
+      "case_id": "interview-command-replay",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-command-replay.json"
+    },
+    {
+      "case_id": "interview-cancel-late-result",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-cancel-late-result.json"
+    },
+    {
+      "case_id": "interview-frozen-submission",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-frozen-submission.json"
+    },
+    {
+      "case_id": "interview-feedback-memory",
+      "category": "interview",
+      "status": "pass",
+      "error_code": null,
+      "artifact": "cases/interview-feedback-memory.json"
+    }
+  ],
+  "counts": {
+    "pass": 6,
+    "fail": 0,
+    "incomplete": 0,
+    "not_run": 0
+  },
+  "executed_count": 6,
+  "error_code": null,
+  "semantic_status": "not_applicable",
+  "note": "Exit code 0 means deterministic checks passed; it does not approve semantic quality."
+}

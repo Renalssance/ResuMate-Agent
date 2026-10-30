@@ -137,7 +137,7 @@ RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
 class RunCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
     session_id: str | None = Field(default=None, alias='sessionId', min_length=1, max_length=36)
-    kind: Literal['tailoring', 'resume_export', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup']
+    kind: Literal['tailoring', 'resume_export', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation']
     jd_id: int | None = Field(default=None, alias='jdId', gt=0)
     resume_id: int | None = Field(default=None, alias='resumeId', gt=0)
     resume_version_id: str | None = Field(default=None, alias='resumeVersionId', min_length=1, max_length=36)
@@ -147,6 +147,8 @@ class RunCreate(BaseModel):
     analysis_job_id: int | None = Field(default=None, alias='analysisJobId', gt=0)
     candidate_id: int | None = Field(default=None, alias='candidateId', gt=0)
     question_count: int = Field(default=10, alias='questionCount', ge=1, le=10)
+    interview_id: str | None = Field(default=None, alias='interviewId', min_length=1, max_length=36)
+    expected_turn: int | None = Field(default=None, alias='expectedTurn', ge=0, le=8)
     followup: FollowUpAnalysisRequest | None = None
     request_id: str = Field(alias='requestId', min_length=1, max_length=100)
 
@@ -159,11 +161,14 @@ class RunCreate(BaseModel):
             'match_analysis': {'jd_id', 'resume_ids'},
             'question_generation': {'analysis_job_id', 'candidate_id', 'question_count'},
             'answer_followup': {'followup'},
+            'interview_generation': {'interview_id', 'expected_turn'},
         }[self.kind]
         if self.model_fields_set - fields - {'kind', 'session_id', 'request_id'}:
             raise ValueError('不能混用其他任务类型的字段')
         if any(getattr(self, field) is None for field in fields):
             raise ValueError('缺少任务需要的输入字段')
+        if self.kind == 'interview_generation' and not self.session_id:
+            raise ValueError('面试生成需要会话')
         if self.kind == 'document_parse' and self.parse_mode == 'saved_job' and not self.document_id.startswith('jd:'):
             raise ValueError('已保存岗位解析需要岗位文档')
         if self.kind == 'match_analysis' and len(set(self.resume_ids)) != len(self.resume_ids):

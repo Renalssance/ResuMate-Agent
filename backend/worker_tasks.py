@@ -67,7 +67,7 @@ def cleanup_invalidated_sessions() -> None:
                         # Holding the OS lock proves any old executor has stopped,
                         # including a restart before the stale-heartbeat timeout.
                         running = list(db.scalars(select(AgentRun).where(
-                            AgentRun.session_id == session.id, AgentRun.kind == 'tailoring',
+                            AgentRun.session_id == session.id, AgentRun.kind.in_(['tailoring', 'interview_generation']),
                             AgentRun.status == RunStatus.RUNNING)))
                         for run in running:
                             agent_runs.finish_run(db, run.id, run.execution_epoch, RunStatus.CANCELLED)
@@ -100,6 +100,9 @@ def execute_run(run_id: str) -> None:
                 if kind == 'tailoring':
                     from backend.agent_runtime.runner import run_agent
                     run_agent(run_id, epoch)
+                elif kind == 'interview_generation':
+                    from backend.agent_runtime.interviews import run_interview_generation
+                    run_interview_generation(run_id, epoch)
                 elif kind == 'resume_export':
                     from backend.services.resume_export import run_resume_export
                     run_resume_export(run_id, epoch)

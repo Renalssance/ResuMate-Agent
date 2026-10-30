@@ -21,7 +21,9 @@ sys.path.insert(0, str(ROOT))
 STATE = Path(os.environ.get('RESUMATE_E2E_ROOT') or tempfile.mkdtemp(prefix='resumate-e2e-'))
 STATE.mkdir(parents=True, exist_ok=True)
 PYTHON = str(ROOT / '.venv/bin/python')
-API = 'http://127.0.0.1:4174'
+FRONTEND_PORT = int(os.environ.get('RESUMATE_E2E_FRONTEND_PORT', '4173'))
+API_PORT = int(os.environ.get('RESUMATE_E2E_API_PORT', '4174'))
+API = f'http://127.0.0.1:{API_PORT}'
 USER = 'browser-fixture'
 PASSWORD = 'synthetic-browser-password'
 children = []
@@ -66,7 +68,7 @@ def main():
     # Refuse to attach to another API accidentally; Vite also uses --strictPort.
     with socket.socket() as probe:
         probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        probe.bind(('127.0.0.1', 4174))
+        probe.bind(('127.0.0.1', API_PORT))
     with socket.socket() as probe:
         probe.bind(('127.0.0.1', 0))
         redis_port = probe.getsockname()[1]
@@ -117,7 +119,7 @@ def main():
         except redis.ConnectionError:
             return False
     wait_for(redis_ready, 'disposable Redis')
-    start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', '127.0.0.1', '--port', '4174'], env, 'api')
+    start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', '127.0.0.1', '--port', str(API_PORT)], env, 'api')
     # Solo avoids macOS fork restrictions while exercising the actual Celery delivery/task.
     worker = start([PYTHON, '-m', 'celery', '-A', 'backend.tests.e2e_worker_fixture:app', 'worker',
            '--pool=solo', '--concurrency=1', '--loglevel=WARNING', '--without-gossip', '--without-mingle'], env, 'worker')
@@ -140,7 +142,7 @@ def main():
                  'real checkpoint-backed paused Run')
     (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id, 'workerPid': worker.pid, 'redisUrl': env['REDIS_URL'], 'redisNamespace': 'resumate:' + env['RESUMATE_ENV']}))
     start(['npm', '--prefix', 'frontend', 'run', 'dev', '--', '--host', '127.0.0.1',
-           '--port', '4173', '--strictPort'], env, 'frontend')
+           '--port', str(FRONTEND_PORT), '--strictPort'], env, 'frontend')
     start(['node', 'extension/fixtures/static-server.js'], env, 'extension-fixtures')
     print(f'E2E services ready; isolated SQL/checkpoints/logs: {STATE}', flush=True)
     while not stopping:

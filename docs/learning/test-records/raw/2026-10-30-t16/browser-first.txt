@@ -1,0 +1,16 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-EggYon
+
+Running 4 tests using 1 worker
+
+(node:76731) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  1 [chromium] › tests/e2e/interview.spec.ts:81:1 › 从固定投递材料开始、两次追问与刷新恢复，确认结束保留问答 (10.4s)
+
+  ✓  2 [chromium] › tests/e2e/interview.spec.ts:111:1 › 生成中停止、迟到结果不出现，失败后只重试原轮生成 (11.5s)
+
+  ✓  3 [chromium] › tests/e2e/interview.spec.ts:143:1 › 丢弃真实成功响应后重发原命令，确认记忆后删除使旧练习失效 (11.2s)
+
+  ✓  4 [chromium] › tests/e2e/interview.spec.ts:195:1 › 缺失会话显示返回入口，源材料变化不替换已经冻结的练习 (5.4s)
+
+  4 passed (45.8s)

@@ -13,10 +13,10 @@ TASK_IDS = ['parse-upload-stable-identity', 'parse-reparse-saved-job', 'match-pa
             'source-deleted-or-reassigned', 'business-write-rollback']
 
 
-def test_core_adds_exactly_twelve_explicit_runners_without_changing_originals():
+def test_core_keeps_t14_runner_identities_when_interviews_are_added():
     cases = load_cases()
     originals = [json.loads(line) for line in Path('evals/cases/core.jsonl').read_text().splitlines()]
-    assert len(cases) == 24
+    assert len(cases) == 30
     assert [case['id'] for case in cases[:12]] == [case['id'] for case in originals]
     assert {case['id'] for case in cases if case.get('runner') == 'compose'} == set(CRASH_IDS)
     assert {case['id'] for case in cases if case.get('runner') == 'durable'} == set(TASK_IDS)
@@ -95,14 +95,14 @@ def test_matching_evidence_is_accepted_but_changed_case_input_is_not():
     assert merge_case(case,context,missing_process)['status']=='fail'
 
 
-def test_full_core_without_compose_evidence_executes_twenty_and_leaves_four_unrun(tmp_path):
+def test_full_core_without_compose_evidence_executes_twenty_six_and_leaves_four_unrun(tmp_path):
     """Root runs this once with the full backend suite; no imported historical evidence."""
     process, report, invocation = launch(tmp_path, '--mode', 'stub')
     assert process.returncode == 2, json.dumps(report)
-    assert report['counts'] == {'pass':20,'fail':0,'incomplete':0,'not_run':4}
-    assert report['executed_count'] == 20
+    assert report['counts'] == {'pass':26,'fail':0,'incomplete':0,'not_run':4}
+    assert report['executed_count'] == 26
     missing = [item for item in report['results'] if item['status']=='not_run']
     assert {item['case_id'] for item in missing} == set(CRASH_IDS)
     assert {item['error_code'] for item in missing} == {'requires_compose'}
-    assert len(list((invocation/'cases').glob('*.json'))) == 20
-    assert len(list(invocation.glob('state/*/eval.sqlite'))) == 20
+    assert len(list((invocation/'cases').glob('*.json'))) == 26
+    assert len(list(invocation.glob('state/*/eval.sqlite'))) == 26

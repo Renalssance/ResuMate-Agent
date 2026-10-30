@@ -1,0 +1,36 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/InterviewView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/InterviewView.spec.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/InterviewView.spec.ts [ src/views/InterviewView.spec.ts ]
+Error: Failed to resolve import "./InterviewView.vue" from "src/views/InterviewView.spec.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend/src/views/InterviewView.spec.ts:6:0
+  6  |  const __vi_import_2__ = await import("vue");
+  7  |  const __vi_import_3__ = await import("vue-router");
+  8  |  const __vi_import_4__ = await import("./InterviewView.vue");
+     |                                       ^
+  9  |  const __vi_import_5__ = await import("../api/interviews");
+  10 |
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42658:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42655:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40634:23
+ ❯ node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40753:37
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:40680:7
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42453:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:35845:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  09:48:09
+   Duration  564ms (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 446ms)

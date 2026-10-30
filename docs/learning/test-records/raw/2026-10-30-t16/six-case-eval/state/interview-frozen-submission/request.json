@@ -1,0 +1,33 @@
+{
+  "case": {
+    "id": "interview-frozen-submission",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ],
+      "replacement_resume": "Changed source resume after interview creation.",
+      "replacement_job": "Changed job after interview creation."
+    }
+  },
+  "mode": "stub",
+  "config": null,
+  "invocation": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-235/interview-eval0/out/20261030T021139Z-3c7b7185"
+}

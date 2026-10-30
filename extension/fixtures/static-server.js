@@ -30,6 +30,6 @@ http.createServer((request, response) => {
     response.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' });
     response.end(data);
   });
-}).listen(8899, '127.0.0.1', () => {
-  console.log('fixture server on http://127.0.0.1:8899');
+}).listen(Number(process.env.RESUMATE_E2E_FIXTURE_PORT || 8899), '127.0.0.1', () => {
+  console.log(`fixture server on http://127.0.0.1:${process.env.RESUMATE_E2E_FIXTURE_PORT || 8899}`);
 });

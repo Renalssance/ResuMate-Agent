@@ -14,6 +14,8 @@ export interface RunSnapshot {
   actions: Array<{ actionId: string; revision: number; payload: { question: string } }>
 }
 
+const apiURL = `http://127.0.0.1:${process.env.RESUMATE_E2E_API_PORT || '4174'}`
+
 interface Login { access_token: string; username: string; role: string }
 export const test = base.extend<{ api: APIRequestContext; resetAdmission: void }, { login: Login }>({
   resetAdmission: [async ({ login: _login }, use) => {
@@ -28,7 +30,7 @@ export const test = base.extend<{ api: APIRequestContext; resetAdmission: void }
     await use()
   }, { auto: true }],
   login: [async ({ playwright }, use) => {
-    const auth = await playwright.request.newContext({ baseURL: 'http://127.0.0.1:4174' })
+    const auth = await playwright.request.newContext({ baseURL: apiURL })
     const response = await auth.post('/auth/login', {
       data: { username: 'browser-fixture', password: 'synthetic-browser-password' },
     })
@@ -43,7 +45,7 @@ export const test = base.extend<{ api: APIRequestContext; resetAdmission: void }
       localStorage.setItem('role', role)
     }, login)
     const api = await playwright.request.newContext({
-      baseURL: 'http://127.0.0.1:4174',
+      baseURL: apiURL,
       extraHTTPHeaders: { Authorization: `Bearer ${login.access_token}` },
     })
     await use(api)

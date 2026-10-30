@@ -77,7 +77,7 @@ class RunTelemetry:
             if request_id:
                 self.metadata['request_id'] = request_id
             self.enabled = True
-            self.root = self._start(client, 'tailoring', 'agent', {},
+            self.root = self._start(client, run.kind, 'agent', {},
                                     trace_context={'trace_id': UUID(run.id).hex})
         except Exception:
             self.disable()

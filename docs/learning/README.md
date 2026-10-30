@@ -22,10 +22,11 @@
 | M3 / T14 | 故障恢复与旧任务迁移 | 完成确定性验收；四个真实中断通过，24案全通过，最终140前端组件，20张截图已查看 |
 | M4 / T15 | 扩展收藏与确认版本填表 | 完成；899 后端、30 扩展、140 前端通过，实际 ZIP 与原生侧栏已验收 |
 | M4 / T20 | Redis 跨进程协作 | 完成；真实集成 7 passed、旧 SQLite PDF 1 passed、浏览器 27 passed；完整首轮失败与定向修复分别留证 |
-| M4 / T16、T21 | 多轮面试、WebSocket | T16 局部计划已冻结，下一单元实施；T21 待接线 |
+| M4 / T16 | 持久文字面试 | 完成确定性验收；六案6/6、最终15前端定向、4浏览器与11实际截图通过，后端首轮失败及修复分别留证 |
+| T21 | 实时双向面试 | 2026-10-30用户取消；不再开发或计入剩余任务 |
 | M5 / T17–T19 | 性能、安全回归、部署、整体验收 | 待开发 |
 
-最新结果见 [T20 测试记录](test-records/2026-10-30-t20.md)：保留三次 `executed:false` 环境失败与修复，最终双 API/MySQL/Redis/worker 七项通过；27 个浏览器场景、三张实际截图和旧 SQLite 中文两页 PDF 已验证。严格 lock 依赖层加当前完整源码通过，不等于生产 Dockerfile fresh 构建成功；该项留在 T19。下一步按 [T16 局部计划](../superpowers/plans/2026-10-30-t16-text-interviews.md)实施文字面试。真实模型试运行与首批评测共享用户授权的 3 元预算；正式首案返回额度不足，2 次失败均无用量，预留 2.43941760 元并停止，其余 11 案未执行。预留不是实付账单。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
+最新结果见 [T20 测试记录](test-records/2026-10-30-t20.md)：保留三次 `executed:false` 环境失败与修复，最终双 API/MySQL/Redis/worker 七项通过；27 个浏览器场景、三张实际截图和旧 SQLite 中文两页 PDF 已验证。严格 lock 依赖层加当前完整源码通过，不等于生产 Dockerfile fresh 构建成功；该项留在 T19。当前按 [T16 局部计划](../superpowers/plans/2026-10-30-t16-text-interviews.md)完成文字面试，当前进入T17/T18→T19；T21已取消，最终评测保持30案。真实模型试运行与首批评测共享用户授权的 3 元预算；正式首案返回额度不足，2 次失败均无用量，预留 2.43941760 元并停止，其余 11 案未执行。预留不是实付账单。规划修订见[总计划](../superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)。
 
 ## 已有资料
 
@@ -46,6 +47,8 @@
 - [第十三课：怎样证明 Agent 做对了事情](13-tracing-and-core-evals.md)
 - [第十四课：把旧长任务接入可恢复的执行链](14-durable-long-tasks.md)
 - [第十五课：扩展的采集、认证与版本边界](15-extension-capture-and-version-fill.md)
+- [第十六课：可恢复的文字面试](16-text-interviews.md)
+- [T16 开发、测试与截图记录](test-records/2026-10-30-t16.md)
 - [第二十课：让两个 API 共享短期状态](20-redis-cross-process.md)
 - [T20 Redis、真实故障恢复与 PDF 回归记录](test-records/2026-10-30-t20.md)
 - [T15 扩展、下载包、实际浏览器与原生侧栏记录](test-records/2026-10-30-t15.md)

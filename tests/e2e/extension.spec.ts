@@ -5,8 +5,8 @@ import { join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { test as base, expect, createRun, snapshot, waitForRun } from './support/fixtures'
 
-const API = 'http://127.0.0.1:4174'
-const SITE = 'http://127.0.0.1:8899/extension/fixtures'
+const API = `http://127.0.0.1:${process.env.RESUMATE_E2E_API_PORT || '4174'}`
+const SITE = `http://127.0.0.1:${process.env.RESUMATE_E2E_FIXTURE_PORT || '8899'}/extension/fixtures`
 const frozenWork = '已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。'
 interface Extension { context: BrowserContext; panel: Page; target: Page; worker: Worker; id: string; activate: () => Promise<void> }
 const test = base.extend<{ extension: Extension }>({

@@ -1,0 +1,164 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_latest_generation_uses_command_order_when_mysql_timestamps_tie[sqlite] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10df39a60>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10df3a000>
+
+    def test_latest_generation_uses_command_order_when_mysql_timestamps_tie(career_db, monkeypatch):
+        from datetime import datetime
+        from uuid import UUID
+        from sqlalchemy import update
+        identifiers = iter([UUID('ffffffff-ffff-ffff-ffff-ffffffffffff'),
+                            UUID('00000000-0000-0000-0000-000000000001'),
+                            UUID('00000000-0000-0000-0000-000000000002')])
+        monkeypatch.setattr(agent_runs, 'uuid4', lambda: next(identifiers))
+        seed_application(career_db)
+        first = create(career_db)
+        seed_question(career_db, first)
+        ack = interview_commands.handle_command(career_db, 1, first['interviewId'], answer_command())
+        # MySQL DATETIME has second precision; synthetic model turns can share a second.
+        career_db.execute(update(AgentRun).values(created_at=datetime(2026, 10, 30, 10, 0)))
+        career_db.commit()
+>       assert interviews.interview_snapshot(career_db, 1, first['interviewId'])['generation']['runId'] == ack['resultRef']
+E       AssertionError: assert 'ffffffff-fff...-ffffffffffff' == '00000000-000...-000000000001'
+E
+E         - 00000000-0000-0000-0000-000000000001
+E         + ffffffff-ffff-ffff-ffff-ffffffffffff
+
+backend/tests/test_interviews.py:376: AssertionError
+__ test_latest_generation_uses_command_order_when_mysql_timestamps_tie[mysql] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e5fec90>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e6750a0>
+
+    def test_latest_generation_uses_command_order_when_mysql_timestamps_tie(career_db, monkeypatch):
+        from datetime import datetime
+        from uuid import UUID
+        from sqlalchemy import update
+        identifiers = iter([UUID('ffffffff-ffff-ffff-ffff-ffffffffffff'),
+                            UUID('00000000-0000-0000-0000-000000000001'),
+                            UUID('00000000-0000-0000-0000-000000000002')])
+        monkeypatch.setattr(agent_runs, 'uuid4', lambda: next(identifiers))
+        seed_application(career_db)
+        first = create(career_db)
+        seed_question(career_db, first)
+        ack = interview_commands.handle_command(career_db, 1, first['interviewId'], answer_command())
+        # MySQL DATETIME has second precision; synthetic model turns can share a second.
+        career_db.execute(update(AgentRun).values(created_at=datetime(2026, 10, 30, 10, 0)))
+        career_db.commit()
+>       assert interviews.interview_snapshot(career_db, 1, first['interviewId'])['generation']['runId'] == ack['resultRef']
+E       AssertionError: assert 'ffffffff-fff...-ffffffffffff' == '00000000-000...-000000000001'
+E
+E         - 00000000-0000-0000-0000-000000000001
+E         + ffffffff-ffff-ffff-ffff-ffffffffffff
+
+backend/tests/test_interviews.py:376: AssertionError
+_ test_next_generation_uses_confirmed_memory_and_delete_fences_session[sqlite-False] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e8775c0>
+running = False
+
+    @pytest.mark.parametrize('running', [False, True])
+    def test_next_generation_uses_confirmed_memory_and_delete_fences_session(career_db, running):
+        created, _ = feedback_seed(career_db)
+        iid = created['interviewId']
+        saved = interviews.confirm_feedback_memory(career_db, 1, iid, 1, confirmed=True)
+        ack = interview_commands.handle_command(career_db, 1, iid, answer_command(turn=2))
+        run = career_db.get(AgentRun, ack['resultRef'])
+        assert run.input_versions['memories'] == [{'memoryId': saved['id']}]
+        assert memory.memories_for_run(career_db, run) == [saved]
+        epoch = agent_runs.claim_run(career_db, run.id) if running else None
+        deletion = memory.delete_memory(career_db, 1, saved['id'])
+        assert deletion['newSessionRequired'] is True
+        assert deletion['cleanupStatus'] == 'pending'
+        assert set(deletion['affectedRunIds']) == {created['runId'], run.id}
+        assert memory.memories_for_run(career_db, run) == []
+        assert interviews.interview_snapshot(career_db, 1, iid)['sessionInvalidated'] is True
+>       assert agent_runs.run_snapshot(career_db, 1, run.id)['sessionInvalidated'] is True
+E       assert False is True
+
+backend/tests/test_interview_memory.py:71: AssertionError
+_ test_next_generation_uses_confirmed_memory_and_delete_fences_session[sqlite-True] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e9880e0>
+running = True
+
+    @pytest.mark.parametrize('running', [False, True])
+    def test_next_generation_uses_confirmed_memory_and_delete_fences_session(career_db, running):
+        created, _ = feedback_seed(career_db)
+        iid = created['interviewId']
+        saved = interviews.confirm_feedback_memory(career_db, 1, iid, 1, confirmed=True)
+        ack = interview_commands.handle_command(career_db, 1, iid, answer_command(turn=2))
+        run = career_db.get(AgentRun, ack['resultRef'])
+        assert run.input_versions['memories'] == [{'memoryId': saved['id']}]
+        assert memory.memories_for_run(career_db, run) == [saved]
+        epoch = agent_runs.claim_run(career_db, run.id) if running else None
+        deletion = memory.delete_memory(career_db, 1, saved['id'])
+        assert deletion['newSessionRequired'] is True
+        assert deletion['cleanupStatus'] == 'pending'
+        assert set(deletion['affectedRunIds']) == {created['runId'], run.id}
+        assert memory.memories_for_run(career_db, run) == []
+        assert interviews.interview_snapshot(career_db, 1, iid)['sessionInvalidated'] is True
+>       assert agent_runs.run_snapshot(career_db, 1, run.id)['sessionInvalidated'] is True
+E       assert False is True
+
+backend/tests/test_interview_memory.py:71: AssertionError
+_ test_next_generation_uses_confirmed_memory_and_delete_fences_session[mysql-False] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10e91bf20>
+running = False
+
+    @pytest.mark.parametrize('running', [False, True])
+    def test_next_generation_uses_confirmed_memory_and_delete_fences_session(career_db, running):
+        created, _ = feedback_seed(career_db)
+        iid = created['interviewId']
+        saved = interviews.confirm_feedback_memory(career_db, 1, iid, 1, confirmed=True)
+        ack = interview_commands.handle_command(career_db, 1, iid, answer_command(turn=2))
+        run = career_db.get(AgentRun, ack['resultRef'])
+        assert run.input_versions['memories'] == [{'memoryId': saved['id']}]
+        assert memory.memories_for_run(career_db, run) == [saved]
+        epoch = agent_runs.claim_run(career_db, run.id) if running else None
+        deletion = memory.delete_memory(career_db, 1, saved['id'])
+        assert deletion['newSessionRequired'] is True
+        assert deletion['cleanupStatus'] == 'pending'
+        assert set(deletion['affectedRunIds']) == {created['runId'], run.id}
+        assert memory.memories_for_run(career_db, run) == []
+        assert interviews.interview_snapshot(career_db, 1, iid)['sessionInvalidated'] is True
+>       assert agent_runs.run_snapshot(career_db, 1, run.id)['sessionInvalidated'] is True
+E       assert False is True
+
+backend/tests/test_interview_memory.py:71: AssertionError
+_ test_next_generation_uses_confirmed_memory_and_delete_fences_session[mysql-True] _
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10f6ecf50>
+running = True
+
+    @pytest.mark.parametrize('running', [False, True])
+    def test_next_generation_uses_confirmed_memory_and_delete_fences_session(career_db, running):
+        created, _ = feedback_seed(career_db)
+        iid = created['interviewId']
+        saved = interviews.confirm_feedback_memory(career_db, 1, iid, 1, confirmed=True)
+        ack = interview_commands.handle_command(career_db, 1, iid, answer_command(turn=2))
+        run = career_db.get(AgentRun, ack['resultRef'])
+        assert run.input_versions['memories'] == [{'memoryId': saved['id']}]
+        assert memory.memories_for_run(career_db, run) == [saved]
+        epoch = agent_runs.claim_run(career_db, run.id) if running else None
+        deletion = memory.delete_memory(career_db, 1, saved['id'])
+        assert deletion['newSessionRequired'] is True
+        assert deletion['cleanupStatus'] == 'pending'
+        assert set(deletion['affectedRunIds']) == {created['runId'], run.id}
+        assert memory.memories_for_run(career_db, run) == []
+        assert interviews.interview_snapshot(career_db, 1, iid)['sessionInvalidated'] is True
+>       assert agent_runs.run_snapshot(career_db, 1, run.id)['sessionInvalidated'] is True
+E       assert False is True
+
+backend/tests/test_interview_memory.py:71: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interviews.py::test_latest_generation_uses_command_order_when_mysql_timestamps_tie[sqlite]
+FAILED backend/tests/test_interviews.py::test_latest_generation_uses_command_order_when_mysql_timestamps_tie[mysql]
+FAILED backend/tests/test_interview_memory.py::test_next_generation_uses_confirmed_memory_and_delete_fences_session[sqlite-False]
+FAILED backend/tests/test_interview_memory.py::test_next_generation_uses_confirmed_memory_and_delete_fences_session[sqlite-True]
+FAILED backend/tests/test_interview_memory.py::test_next_generation_uses_confirmed_memory_and_delete_fences_session[mysql-False]
+FAILED backend/tests/test_interview_memory.py::test_next_generation_uses_confirmed_memory_and_delete_fences_session[mysql-True]
+6 failed, 45 deselected in 1.38s

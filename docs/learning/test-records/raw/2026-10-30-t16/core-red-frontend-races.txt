@@ -1,0 +1,53 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/views/InterviewView.spec.ts src/views/ApplicationsView.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+ ❯ src/views/InterviewView.spec.ts (10 tests | 2 failed) 100ms
+   × keeps a confirmed memory when an older refresh finishes before confirmation 7ms
+   × keeps a confirmed memory when an older refresh finishes after confirmation 10ms
+ ❯ src/views/ApplicationsView.spec.ts (5 tests | 1 failed) 190ms
+   × does not navigate from a late create response after leaving the applications page 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/ApplicationsView.spec.ts > does not navigate from a late create response after leaving the applications page
+AssertionError: expected '/interviews/late-interview' to be '/resume-versions/v1' // Object.is equality
+
+Expected: "/resume-versions/v1"
+Received: "/interviews/late-interview"
+
+ ❯ src/views/ApplicationsView.spec.ts:99:41
+     97|  await router.push('/resume-versions/v1')
+     98|  resolve({ interviewId: 'late-interview', runId: 'late-run' }); await …
+     99|  expect(router.currentRoute.value.path).toBe('/resume-versions/v1')
+       |                                         ^
+    100|  expect(Object.keys(sessionStorage).some(key => key.startsWith('resuma…
+    101| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/views/InterviewView.spec.ts > keeps a confirmed memory when an older refresh finishes before confirmation
+ FAIL  src/views/InterviewView.spec.ts > keeps a confirmed memory when an older refresh finishes after confirmation
+AssertionError: expected '基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于…' to contain '已保存练习记忆'
+
+Expected: "已保存练习记忆"
+Received: "基于本次投递 · 文字练习模拟面试一次练习最多八题。这里的回答与反馈只用于练习，不会改写简历或投递进展。返回投递记录示例公司 · 后端开发投递简历 · 第 3 版岗位取材于练习开始时 · 2026/10/30 12:00:00练习已结束当前第 1 / 8 题刷新进度第 1 题本次练习已结束如何保证重复请求只保存一次？查看依据岗位要求可靠的业务流程问答与反馈已保留。你可以回顾练习，再从投递记录开始新一轮。问答回顾保留已接受的回答和练习反馈。第 1 题如何保证重复请求只保存一次？你的回答单事务练习反馈思路清楚下次练习要点解释事务边界。保存练习要点"
+
+ ❯ src/views/InterviewView.spec.ts:144:25
+    142|  save({ id: 'saved-memory' } as never); await flushPromises()
+    143|  if (order === 'after') { refresh(structuredClone(finished) as never);…
+    144|  expect(wrapper.text()).toContain('已保存练习记忆')
+       |                         ^
+    145|  expect(button(wrapper, '保存练习要点')).toBeUndefined()
+    146|  expect(confirmInterviewMemory).toHaveBeenCalledTimes(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 12 passed (15)
+   Start at  10:13:45
+   Duration  1.22s (transform 391ms, setup 0ms, import 660ms, tests 290ms, environment 1.05s)

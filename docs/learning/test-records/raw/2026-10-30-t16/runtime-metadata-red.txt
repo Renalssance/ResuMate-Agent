@@ -1,0 +1,87 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_______________ test_frozen_job_title_is_a_valid_material_quote ________________
+
+    def test_frozen_job_title_is_a_valid_material_quote():
+        payload = step_payload()
+        payload['question']['refs'] = [{'kind': 'job', 'quote': 'Engineer'}]
+>       assert context_module().validate_step(payload, fixed_context())['question']['refs'][0]['jdId'] == 1
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_runtime.py:173:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/agent_runtime/interview_context.py:114: in validate_step
+    question['refs'] = [_bind_ref(ref, context) for ref in question['refs']]
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+reference = {'kind': 'job', 'quote': 'Engineer'}
+context = {'expectedTurn': 0, 'interviewId': 'interview-1', 'memories': [], 'source': {'applicationId': 1, 'factRefs': [], 'job'...pany': 'Synthetic', 'jdId': 1, 'rawText': 'Design reliable APIs', ...}, 'resumeVersionId': 'version-frozen', ...}, ...}
+
+    def _bind_ref(reference: dict, context: dict) -> dict:
+        source = context['source']
+        kind, quote = reference['kind'], reference['quote']
+        valid, identifiers = False, {}
+        if kind == 'resume':
+            content, _refs = _section(source['structuredContent']['resume'], reference['section'])
+            valid = _contains_quote(content, quote)
+            identifiers = {'resumeVersionId': source['resumeVersionId'], 'revision': source['revision']}
+        elif kind == 'job':
+            job = source['job']
+            valid = _contains_quote([job['rawText'], job['structuredData']], quote)
+            identifiers = {'jdId': job['jdId'], 'capturedAt': job['capturedAt']}
+        elif kind == 'answer':
+            turn = next((turn for turn in context['turns'] if turn['turnIndex'] == reference['turnIndex']), None)
+            valid = turn is not None and turn['answer'] is not None and quote in turn['answer']
+            if valid:
+                identifiers = {'turnId': turn['id']}
+        if not valid:
+>           raise RunError(422, 'invalid_interview_reference', '练习引用不在冻结材料或已接受回答中')
+E           backend.services.agent_runs.RunError: 练习引用不在冻结材料或已接受回答中
+
+backend/agent_runtime/interview_context.py:92: RunError
+______________ test_telemetry_uses_actual_interview_kind[sqlite] _______________
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...0000gn/T/pytest-of-bono/pytest-219/test_telemetry_uses_actual_int0/career.db), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10e0627e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e0a33b0>
+
+    def test_telemetry_uses_actual_interview_kind(runtime, career_db, monkeypatch):
+        from backend.agent_runtime import telemetry
+        from backend.tests.test_agent_telemetry import FakeClient
+        client = FakeClient()
+        monkeypatch.setattr(telemetry, '_configured_client', lambda: client)
+        module, _model, accepted, _ = runtime
+        assert execute(career_db, module, accepted['runId']).status == RunStatus.SUCCEEDED
+>       assert client.observations[0].name == 'interview_generation'
+E       AssertionError: assert 'tailoring' == 'interview_generation'
+E
+E         - interview_generation
+E         + tailoring
+
+backend/tests/test_interview_runtime.py:183: AssertionError
+_______________ test_telemetry_uses_actual_interview_kind[mysql] _______________
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...cc8f824?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10e2024e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e2dfd70>
+
+    def test_telemetry_uses_actual_interview_kind(runtime, career_db, monkeypatch):
+        from backend.agent_runtime import telemetry
+        from backend.tests.test_agent_telemetry import FakeClient
+        client = FakeClient()
+        monkeypatch.setattr(telemetry, '_configured_client', lambda: client)
+        module, _model, accepted, _ = runtime
+        assert execute(career_db, module, accepted['runId']).status == RunStatus.SUCCEEDED
+>       assert client.observations[0].name == 'interview_generation'
+E       AssertionError: assert 'tailoring' == 'interview_generation'
+E
+E         - interview_generation
+E         + tailoring
+
+backend/tests/test_interview_runtime.py:183: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_runtime.py::test_frozen_job_title_is_a_valid_material_quote
+FAILED backend/tests/test_interview_runtime.py::test_telemetry_uses_actual_interview_kind[sqlite]
+FAILED backend/tests/test_interview_runtime.py::test_telemetry_uses_actual_interview_kind[mysql]
+3 failed, 28 deselected in 1.31s

@@ -1,0 +1,12 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+
+ Test Files  27 passed (27)
+      Tests  148 passed (148)
+   Start at  10:00:21
+   Duration  4.86s (transform 4.45s, setup 0ms, import 9.54s, tests 2.81s, environment 24.97s)

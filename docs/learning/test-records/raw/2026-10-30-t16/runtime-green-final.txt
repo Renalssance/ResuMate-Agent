@@ -1,0 +1,62 @@
+.............................FF......                                    [100%]
+=================================== FAILURES ===================================
+_ test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[sqlite] _
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...0000gn/T/pytest-of-bono/pytest-226/test_large_frozen_context_uses0/career.db), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10ee3bdd0>
+
+    def test_large_frozen_context_uses_real_file_pages_without_latest_document_changes(runtime, career_db):
+        from backend.db.models import Resume, JobDescription
+        module, model, accepted, _ = runtime
+        # Seed a supported long submitted paragraph before the first generation reads it.
+        session = career_db.get(InterviewSession, accepted['interviewId'])
+        source = deepcopy(session.source_snapshot)
+        paragraph = '曾负责接口设计和数据库事务。' * 700
+        source['structuredContent']['resume']['self_summary'] = paragraph
+        session.source_snapshot = source
+        career_db.get(Resume, 1).structured_data = {'self_summary': 'LATEST_RESUME_MUST_NOT_APPEAR'}
+        career_db.get(JobDescription, 1).raw_text = 'LATEST_JOB_MUST_NOT_APPEAR'
+        career_db.commit()
+        run = execute(career_db, module, accepted['runId'])
+>       assert run.status == RunStatus.SUCCEEDED, run.error_code
+E       AssertionError: agent_failed
+E       assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + failed
+
+backend/tests/test_interview_runtime.py:305: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.interviews:interviews.py:99 Interview Run f6b9a9d1-27d0-4820-84a0-6651b5d77b7f stopped (JSONDecodeError)
+_ test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[mysql] _
+
+runtime = (<module 'backend.agent_runtime.interviews' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Ag...fa5af5b?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock), autoflush=True, expire_on_commit=False))
+career_db = <sqlalchemy.orm.session.Session object at 0x10f3cfe60>
+
+    def test_large_frozen_context_uses_real_file_pages_without_latest_document_changes(runtime, career_db):
+        from backend.db.models import Resume, JobDescription
+        module, model, accepted, _ = runtime
+        # Seed a supported long submitted paragraph before the first generation reads it.
+        session = career_db.get(InterviewSession, accepted['interviewId'])
+        source = deepcopy(session.source_snapshot)
+        paragraph = '曾负责接口设计和数据库事务。' * 700
+        source['structuredContent']['resume']['self_summary'] = paragraph
+        session.source_snapshot = source
+        career_db.get(Resume, 1).structured_data = {'self_summary': 'LATEST_RESUME_MUST_NOT_APPEAR'}
+        career_db.get(JobDescription, 1).raw_text = 'LATEST_JOB_MUST_NOT_APPEAR'
+        career_db.commit()
+        run = execute(career_db, module, accepted['runId'])
+>       assert run.status == RunStatus.SUCCEEDED, run.error_code
+E       AssertionError: agent_failed
+E       assert <RunStatus.FAILED: 'failed'> == <RunStatus.SU...: 'succeeded'>
+E
+E         - succeeded
+E         + failed
+
+backend/tests/test_interview_runtime.py:305: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agent_runtime.interviews:interviews.py:99 Interview Run a282259e-69ec-4f82-bed1-3277905cfefa stopped (JSONDecodeError)
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_runtime.py::test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[sqlite]
+FAILED backend/tests/test_interview_runtime.py::test_large_frozen_context_uses_real_file_pages_without_latest_document_changes[mysql]
+2 failed, 35 passed in 11.02s

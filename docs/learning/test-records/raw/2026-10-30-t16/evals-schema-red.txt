@@ -1,0 +1,113 @@
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+_____________ test_verifier_requires_actual_execution_and_sql_rows _____________
+
+    def test_verifier_requires_actual_execution_and_sql_rows():
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:62: ModuleNotFoundError
+______________ test_verifier_accepts_supported_followup_evidence _______________
+
+    def test_verifier_accepts_supported_followup_evidence():
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:70: ModuleNotFoundError
+__________ test_verifier_rejects_false_followup_success[missing_call] __________
+
+mutation = 'missing_call'
+
+    @pytest.mark.parametrize('mutation', ['missing_call', 'wrong_quote', 'duplicate_operation',
+                                          'missing_question_event', 'missing_answer_context'])
+    def test_verifier_rejects_false_followup_success(mutation):
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:78: ModuleNotFoundError
+__________ test_verifier_rejects_false_followup_success[wrong_quote] ___________
+
+mutation = 'wrong_quote'
+
+    @pytest.mark.parametrize('mutation', ['missing_call', 'wrong_quote', 'duplicate_operation',
+                                          'missing_question_event', 'missing_answer_context'])
+    def test_verifier_rejects_false_followup_success(mutation):
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:78: ModuleNotFoundError
+______ test_verifier_rejects_false_followup_success[duplicate_operation] _______
+
+mutation = 'duplicate_operation'
+
+    @pytest.mark.parametrize('mutation', ['missing_call', 'wrong_quote', 'duplicate_operation',
+                                          'missing_question_event', 'missing_answer_context'])
+    def test_verifier_rejects_false_followup_success(mutation):
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:78: ModuleNotFoundError
+_____ test_verifier_rejects_false_followup_success[missing_question_event] _____
+
+mutation = 'missing_question_event'
+
+    @pytest.mark.parametrize('mutation', ['missing_call', 'wrong_quote', 'duplicate_operation',
+                                          'missing_question_event', 'missing_answer_context'])
+    def test_verifier_rejects_false_followup_success(mutation):
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:78: ModuleNotFoundError
+_____ test_verifier_rejects_false_followup_success[missing_answer_context] _____
+
+mutation = 'missing_answer_context'
+
+    @pytest.mark.parametrize('mutation', ['missing_call', 'wrong_quote', 'duplicate_operation',
+                                          'missing_question_event', 'missing_answer_context'])
+    def test_verifier_rejects_false_followup_success(mutation):
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:78: ModuleNotFoundError
+____________ test_verifier_unknown_case_cannot_pass_generic_checks _____________
+
+    def test_verifier_unknown_case_cannot_pass_generic_checks():
+>       from evals.interview_verifiers import verify_interview
+E       ModuleNotFoundError: No module named 'evals.interview_verifiers'
+
+backend/tests/test_interview_evals.py:94: ModuleNotFoundError
+___ test_catalogue_keeps_original_inputs_and_adds_six_interview_trajectories ___
+
+    def test_catalogue_keeps_original_inputs_and_adds_six_interview_trajectories():
+        cases = load_cases()
+        original = [json.loads(line) for line in Path('evals/cases/core.jsonl').read_text().splitlines()]
+        # Long input expansion is intentional existing behavior, compare frozen source fields on other cases.
+        assert [case['id'] for case in cases[:12]] == [case['id'] for case in original]
+        for before, after in zip(original, cases[:12]):
+            if not before.get('long'):
+                assert before == after
+        added = [case for case in cases if case.get('runner') == 'interview']
+>       assert {case['id'] for case in added} == set(INTERVIEW_IDS)
+E       AssertionError: assert set() == {'interview-c...n-submission'}
+E
+E         Extra items in the right set:
+E         'interview-frozen-submission'
+E         'interview-feedback-memory'
+E         'interview-followup'
+E         'interview-command-replay'
+E         'interview-cancel-late-result'
+E         'interview-eight-turn-limit'
+E         Use -v to get more diff
+
+backend/tests/test_interview_evals.py:109: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_evals.py::test_verifier_requires_actual_execution_and_sql_rows
+FAILED backend/tests/test_interview_evals.py::test_verifier_accepts_supported_followup_evidence
+FAILED backend/tests/test_interview_evals.py::test_verifier_rejects_false_followup_success[missing_call]
+FAILED backend/tests/test_interview_evals.py::test_verifier_rejects_false_followup_success[wrong_quote]
+FAILED backend/tests/test_interview_evals.py::test_verifier_rejects_false_followup_success[duplicate_operation]
+FAILED backend/tests/test_interview_evals.py::test_verifier_rejects_false_followup_success[missing_question_event]
+FAILED backend/tests/test_interview_evals.py::test_verifier_rejects_false_followup_success[missing_answer_context]
+FAILED backend/tests/test_interview_evals.py::test_verifier_unknown_case_cannot_pass_generic_checks
+FAILED backend/tests/test_interview_evals.py::test_catalogue_keeps_original_inputs_and_adds_six_interview_trajectories
+9 failed, 1 deselected in 0.44s

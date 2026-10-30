@@ -6,13 +6,13 @@
 
 **Architecture:** Vue 工作台和浏览器扩展通过 FastAPI 调用业务服务。业务数据库保存权威数据、Run 和事件；Celery/Redis 驱动独立 worker；Deep Agents 执行决策和工具调用，LangGraph checkpoint 保存执行状态。业务写入与图状态分别管理，以业务幂等保证重复执行不会重复产生结果。
 
-**Tech Stack:** Vue 3、TypeScript、Pinia、Vite、FastAPI、Pydantic、SQLAlchemy、MySQL/本地 SQLite、Celery、Redis（redis-py / Lua / Pub/Sub）、WebSocket、SSE、Deep Agents、LangGraph SQLite checkpoint、Playwright、Vitest/Vue Test Utils、pytest、Langfuse、Docker Compose。
+**Tech Stack:** Vue 3、TypeScript、Pinia、Vite、FastAPI、Pydantic、SQLAlchemy、MySQL/本地 SQLite、Celery、Redis（redis-py / Lua / Pub/Sub）、SSE、Deep Agents、LangGraph SQLite checkpoint、Playwright、Vitest/Vue Test Utils、pytest、Langfuse、Docker Compose。
 
 **Spec:** [已确认范围与设计边界](../specs/2026-10-29-ai-fullstack-agent-scope.md)。执行前先读该文件和仓库根目录 AGENTS.md。
 
 ## 实测驱动修订（2026-10-29）
 
-本次依据 T01–T03 已提交成果、T04/T05 实现与故障实验调整依赖和验收，保留原有 21 个任务 ID 与产品范围。任务的基础测试、跨进程恢复、真实模型 smoke 和内容质量评测分别记录，不能互相替代；原工期为初始估计，不是当前剩余工期。
+本次依据 T01–T03 已提交成果、T04/T05 实现与故障实验调整依赖和验收，保留任务编号以追溯历史；2026-10-30 用户明确取消 T21 实时双向面试，执行范围调整为其余 20 个任务。任务的基础测试、跨进程恢复、真实模型 smoke 和内容质量评测分别记录，不能互相替代；原工期为初始估计，不是当前剩余工期。
 
 | 任务 | 当前状态 | 已有证据与未完成边界 |
 |---|---|---|
@@ -32,7 +32,9 @@
 | T14 | 实现与确定性验收完成 | 四个真实SIGKILL恢复、最终24案通过；140前端组件、实际浏览器及20张截图；完整后端旧断言迁移见T14记录 |
 | T15 | 完成确定性验收 | 899 后端、30 扩展、140 前端通过；实际 ZIP、浏览器和原生侧栏截图已验证 |
 | T20 | 实现与真实跨进程验收完成 | 七场景 7 passed / 86.52s；旧 SQLite PDF 1 passed / 14.17s、两页已查看；浏览器 27 passed；完整首轮 969 passed/2 failed/10 skipped 后两失败定向修复通过；fresh 生产镜像留 T19 |
-| T16–T19、T21 | 下一单元 T16 | T16 局部计划已冻结；T16→T21→T17/T18→T19，真实 WS 与性能尚未验收 |
+| T16 | 完成确定性验收 | 六案6/6、双库事务/真实图通过；完整后端1076pass/2旧夹具fail后定向修复通过；最终前端15定向、四浏览器场景与11实际截图，审查后两场景复测通过 |
+| T17–T19 | 待开发 | T16→T17/T18→T19，按 HTTP 文字面试与 SSE 长任务完成后续验收 |
+| T21 | 用户取消（2026-10-30） | 不开发 WebSocket 双向面试，不增加4个实时可靠性评测；保留T16文字面试 |
 
 T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
 
@@ -100,11 +102,8 @@ flowchart TB
   W --> DB
   API --> S[SSE 持久事件流]
   S --> UI
-  UI <--> WS[WebSocket 面试网关]
-  WS --> API
   W --> N[Redis Pub/Sub 唤醒通知]
-  N --> WS
-  WS --> DB
+  N --> API
   W --> O[文件存储 / Langfuse]
 ```
 
@@ -116,18 +115,17 @@ flowchart TB
 - SQL：业务事实、Run 状态、待处理动作和事件均在数据库；Redis 丢失不能使已接受任务永久消失。
 - checkpoint：worker 专属 SQLite 文件；API 不直接操作图 checkpoint。并发扩展需要后续专门切换共享 saver，不在本计划实现。
 - Compose 分阶段落地：T04/T05 初始环境为 Redis、worker、调度器与 SQLite 业务库，API 在宿主机；实测发现 Docker 内 heartbeat 已更新而宿主机连接仍读到旧值，macOS Docker 虚拟机与宿主进程共享 SQLite WAL 不保证一致。已调整为 API、worker、调度器和 Redis 均在 Docker 内，所有业务 SQLite 读写在 Linux 容器侧通过共享持久卷完成；测试使用真实 API 和容器内读库观测。此项修正与 SIGKILL 重试已通过，日志见 T04/T05 测试记录。原生开发则 API/worker 都原生运行，不支持一半宿主、一半容器共享 SQLite 的运行方式。
-- 早期 MySQL 9.6 单元行为测试单独记录。T20 已完成共享 MySQL 8.4.13、两个 API、Redis 和单 worker 的真实七场景验收，T17/T21 复用该环境；T19 完成发布配置、fresh 生产镜像、备份恢复与完整回归。当前完整源码加严格依赖镜像验证不等同于生产 Dockerfile 全新构建完成。
+- 早期 MySQL 9.6 单元行为测试单独记录。T20 已完成共享 MySQL 8.4.13、两个 API、Redis 和单 worker 的真实七场景验收，T17 复用该环境；T19 完成发布配置、fresh 生产镜像、备份恢复与完整回归。当前完整源码加严格依赖镜像验证不等同于生产 Dockerfile 全新构建完成。
 - 文件产物：开发时使用受控数据目录，已有云存储路径继续复用；通过应用校验归属后下载。
 - Langfuse：观测与评测，不成为任务能否执行的依赖。首版可接托管实例；未配置时业务仍可运行。
 
-### HTTP、SSE、WebSocket 与 Redis 分工（AI-Meeting 调研后修订）
+### HTTP、SSE 与 Redis 分工（2026-10-30 按用户要求取消 T21）
 
-- HTTP：业务 CRUD、创建任务、历史快照、下载、申请 WebSocket 临时票据。
+- HTTP：业务 CRUD、创建任务、历史快照、下载，以及文字面试的回答提交、停止生成、重试和结束。面试页按 SQL 快照刷新恢复。
 - SSE：解析、简历生成等单向长任务进度，沿用持久事件游标协议。
-- WebSocket：模拟面试中的回答提交、停止当前回答生成、会话结束、实时反馈。首版文字双向交互；语音、ASR/TTS 仍是后续范围。
-- Redis：Celery broker、跨 API 进程限流、一次性 WS 票据、面试事件唤醒、短期面板统计缓存。使用 redis-py 异步客户端和有限的 Lua 原子操作，不引入 Java Redisson。
+- Redis：Celery broker、跨 API 进程限流、面试事件唤醒、短期面板统计缓存。T20 已测试的一次性票据基础能力保留为历史成果，本轮不接入 WebSocket 产品链路。使用 redis-py 异步客户端和有限的 Lua 原子操作，不引入 Java Redisson。
 - SQL：回答、面试事件、Run、业务操作去重与产物的权威源。Redis Pub/Sub 是至多一次通知，不能用于保证持久消息送达。
-- 发布顺序为 SQL 事务提交 → Pub/Sub 提示 {interviewId,lastSeq}。网关从数据库读取实际事件；通知丢失时每 2 秒对活动连接补查，重连按 seq 补发，避免提交后发布失败造成永久漏消息。
+- 发布顺序为 SQL 事务提交 → Pub/Sub 提示 {interviewId,lastSeq}。通知只是唤醒提示；T16 页面通过 HTTP 读取 SQL 快照，通知丢失不影响恢复当前轮。
 - 不新增 Redis Streams 消费组或 MongoDB：任务已有 Celery，历史已有 SQL/checkpoint，不建设第二套队列和状态源。
 - 保留现有 SQL requestId、ToolOperation、execution_epoch 机制；不另写分布式 single-flight 框架。重复请求共享同一 Run，不能据此承诺崩溃后的 LLM 调用恰好一次。
 
@@ -242,11 +240,11 @@ type RunEvent = {
 | M1 四层最小闭环 | T03–T07 | 12–16 日 | 页面发起 → worker → Deep Agents 补问 → 恢复 → 有权限的流式状态 |
 | M2 申请材料闭环 | T08–T11 | 10–13 日 | 岗位 → 修改审阅 → 版本 → PDF → 投递 |
 | M3 Harness 深度与评测 | T12–T14 | 8–11 日 | 上下文/记忆、可观测性、故障恢复与基准报告 |
-| M4 扩展与实时面试 | T15–T16、T20–T21 | 12–16 日 | 扩展收藏、Redis 工程与 WebSocket 双向面试 |
+| M4 扩展与文字面试 | T15–T16、T20 | 原估12–16日；取消T21后不沿用 | 扩展收藏、Redis工程与HTTP持久文字面试 |
 | M5 性能、安全与交付 | T17–T19 | 9–13 日 | 有条件说明的性能报告、关键安全验证、部署与演示 |
 
 当前主线：T01–T03 已完成 → T04 投递基础 / T05 运行工具实现 → T04/T05 联合恢复验收 → T06 → T07 → T08/T09 → T10 → T11。T07 验收的是内部功能闭环；事实依据和材料内容质量仍由 T08/T09、人工审阅及后续 live 评测验证。
-后续依赖：T13 从 T05 的小数据集开始，长上下文案例依赖 T12；T14 扩展 T13 的评测并迁移现有长任务。T16 使用 T11 的提交版本与 T12 的确认记忆。T04/T06 → T20；T16/T20 → T21；T14/T21 → T17/T18 → T19。T20/T21 为追加编号，实际在 M4 执行，不在发布后补做。
+后续依赖：T13 从 T05 的小数据集开始，长上下文案例依赖 T12；T14 扩展 T13 的评测并迁移现有长任务。T16 使用 T11 的提交版本与 T12 的确认记忆。T04/T06 → T20；T14/T16/T20 → T17/T18 → T19。T20 为追加编号，已在 M4 执行；T21 按用户要求取消，不再构成发布依赖。
 安全基线从 T03/T06 开始，T18 是发布前整体验证，不是最后才加鉴权。
 
 ## 7. 逐任务实施计划
@@ -505,7 +503,7 @@ def test_claim_requires_existing_fact(draft_validator, facts):
 - [x] 独立确定性 verifier 查数据库和产物；保存公开文本及工具提案，逐请求保留上下文证明；固定语义 rubric 已建立，stub 标为 not_applicable。
 - [x] 默认 stub CLI；live 显式启动并配置费用上限，实际调用前预留，达到上限停止后续案例并报告未完成项；本地真实 SDK/假供应商限费回归通过。
 - [ ] 普通 CI 自动运行 stub 并保留作业证据（本轮已运行本地 CLI，未新增 CI 工作流；实际 CI 接入留待 T17）。
-- [ ] 获得 smoke 与首批 12 案共享总预算后执行真实模型评测，记录实际费用与固定 rubric 人工语义审阅；目前尚未付费调用。
+- [ ] 在用户授权的 smoke 与首批 12 案共享 3 元预算内完成真实模型质量验收：已尝试两次均失败、无 usage；正式其余11案未执行，供应商额度与剩余预算不足以继续。保留未知费用预约，实际费用与固定 rubric 人工语义审阅尚未闭环。
 
 **已验证与限制：** 最后 core 12 pass / 0 fail / 0 incomplete / 0 not_run；56 次实际请求均有通过的上下文证明。751 passed / 6 expected skipped 为最后 A/B 修复前全后端结果，修复后分别 33 项 verifier、22 项 runner/budget 及最后 12 案通过；未重跑全后端。详见 [T13 测试记录](../../learning/test-records/2026-10-30-t13.md)。
 
@@ -548,13 +546,13 @@ def verify_single_draft(case, output, db_snapshot):
 ### T16：多轮文字模拟面试
 
 **文件：** 新增 backend/services/interviews.py、backend/routes/interviews.py、backend/tests/test_interviews.py、frontend/src/views/InterviewView.vue、backend/agent_runtime/skills/interview-prep/SKILL.md、tests/e2e/interview.spec.ts；修改 backend/schemas/agent_runs.py、backend/worker_tasks.py。
-**依赖：** T11 的提交版本、T12 的确认记忆；跨进程实时链路由 T20/T21 接入。
+**依赖：** T11 的提交版本、T12 的确认记忆与现有 worker/Run；采用 HTTP 命令提交与快照读取，不再等待 T21。
 
-- [ ] 读取本次投递版本与岗位，创建会话；每轮保存问题、回答、反馈和引用。
-- [ ] 引入面试生成 kind 时同步扩展 `RunCreate`、面试输入契约与 worker 派发，验证不会误入 tailoring 执行器；Agent 根据回答缺口选择追问/换题，固定最多 8 轮或用户结束，不无限循环。不提前增加通用任务框架。
-- [ ] 回答提交去重，刷新后恢复当前轮；区分“练习反馈”与真实面试结果。
-- [ ] 用户确认后将反馈写入业务记忆；不自动把模拟回答中的新经历当成事实。
-- [ ] 增加 6 个面试评测案例，总任务案例达到 30 个。
+- [x] 读取本次投递版本与岗位，创建会话；每轮保存问题、回答、反馈和引用。
+- [x] 引入面试生成 kind 时同步扩展 `RunCreate`、面试输入契约与 worker 派发，验证不会误入 tailoring 执行器；Agent 根据回答缺口选择追问/换题，固定最多 8 轮或用户结束，不无限循环。不提前增加通用任务框架。
+- [x] 回答提交去重，刷新后恢复当前轮；区分“练习反馈”与真实面试结果。
+- [x] 用户确认后将反馈写入业务记忆；不自动把模拟回答中的新经历当成事实。
+- [x] 增加 6 个面试评测案例，总任务案例达到 30 个。
 
 **验证：** `uv run pytest backend/tests/test_interviews.py -q` 与 `npm run test:e2e -- interview.spec.ts`。验收：两轮以上追问、保存、刷新恢复和结束都通过。
 
@@ -591,16 +589,16 @@ def verify_single_draft(case, output, db_snapshot):
 **文件：** 修改 Dockerfile、README.md、.env.example；新增 .github/workflows/ci.yml、docs/deployment.md、docs/architecture.md、docs/demo.md、docs/evaluation-report.md。
 
 - [ ] CI 分开运行后端测试、前端类型/组件测试、构建、扩展测试、stub 评测、关键 E2E；真实模型评测手动触发。
-- [ ] 在 T20 已建立的 API、worker、调度器、Redis、MySQL 集成环境上完成反向代理、checkpoint/产物持久卷与发布配置；秘密从环境或挂载文件读取。此处完成交付验收，不将 T20/T21 所需共享数据库和双 API 环境推迟到本单元。
+- [ ] 在 T20 已建立的 API、worker、调度器、Redis、MySQL 集成环境上完成反向代理、checkpoint/产物持久卷与发布配置；秘密从环境或挂载文件读取。此处完成交付验收，不将 T20 已完成的共享数据库和双 API 环境重复算作本单元新成果。
 - [ ] 将生产 Dockerfile 的 uv 安装采用 `uv --no-cache`（保留锁定安装参数），完成当前完整生产 Dockerfile 的 fresh 镜像构建与启动验证；T20 只完成严格依赖对齐层加完整源码验证，不能抵扣此项。
 - [ ] 健康检查区分进程存活与依赖就绪；部署停止接受新任务、给在途任务有限结束窗口，超时后按恢复策略重启。
 - [ ] 备份演练先停止领取新任务，等待执行静止，备份 SQL、checkpoint 和产物；恢复到独立测试目录验证一条等待中的 Run。不得对运行中的 SQLite 只复制主文件而漏 WAL。
 - [ ] 跑完整主流程与原解析/匹配/投递/扩展回归。只在新增变更影响范围需要时扩大测试，不重复无变化的全套检查。
-- [ ] 报告 34 个评测案例每类结果、失败、模型与配置、延迟与成本；三次 live 重复运行用于估计波动，不声称固定输出。
+- [ ] 报告 30 个评测案例每类结果、失败、模型与配置、延迟与成本；三次 live 重复运行用于估计波动，不声称固定输出。
 - [ ] 制作 5–8 分钟演示：收藏岗位、补问暂停、刷新恢复、审阅来源、导出投递、两轮面试、worker 故障恢复、查看评测。
 - [ ] README 分别说明框架提供和本项目实现的能力；仅填写实测指标，注明单机单 worker 边界。
 
-**发布验收：** 确定性权限/幂等/恢复测试全部通过；34 案例 live 任务完成率目标 >=90%，确认的编造关键经历、越权或重复业务写入为 0。未达标如实记录并修复，不能删掉失败样例提高比例。指标仅适用于这组案例，不外推到所有岗位。
+**发布验收：** 确定性权限/幂等/恢复测试全部通过；30 案例 live 任务完成率目标 >=90%，确认的编造关键经历、越权或重复业务写入为 0。未达标如实记录并修复，不能删掉失败样例提高比例。指标仅适用于这组案例，不外推到所有岗位。
 
 ### T20：Redis 应用工程与跨进程消息通知
 
@@ -608,7 +606,7 @@ def verify_single_draft(case, output, db_snapshot):
 **状态：** 实现与本单元真实验收完成；[细化计划](2026-10-30-t20-redis-cross-process.md)与[测试记录](../../learning/test-records/2026-10-30-t20.md)保存三次未执行、最终七场景和 PDF 回归。
 **依赖：** T04、T06。**接口：** `issue_ws_ticket(user_id, interview_id, auth_expires_at) -> ticket`、`consume_ws_ticket(ticket) -> claims | None`、`publish_interview_hint(interview_id,last_seq)`、`allow_request(user_id,scope) -> (allowed,retry_after)`。
 
-- [x] 跨进程测试前将 T04 的 Compose 开发环境扩展为共享 MySQL、两个 API 进程、Redis、一个 worker 与调度器，保留 worker 专属 checkpoint 卷。记录数据库版本和实际服务配置，供 T21/T17 复用，不将 SQLite 或独立 MySQL 单元测试记作此环境验收。
+- [x] 跨进程测试前将 T04 的 Compose 开发环境扩展为共享 MySQL、两个 API 进程、Redis、一个 worker 与调度器，保留 worker 专属 checkpoint 卷。记录数据库版本和实际服务配置，供 T17 复用，不将 SQLite 或独立 MySQL 单元测试记作此环境验收。
 - [x] 使用 redis-py async 连接池，应用生命周期统一创建/关闭；Pub/Sub 独立连接，不在每条消息中创建客户端。Redis 命令连接超时 1 秒、读取超时 2 秒；Pub/Sub 使用独立长连接超时策略。
 - [x] key 命名：`resumate:{env}:rl:{scope}:{user}`、`resumate:{env}:ws-ticket:{random}`、`resumate:{env}:stats:{user}`；频道也包含环境名，因为 Redis Pub/Sub 不按逻辑数据库隔离。
 - [x] 登录和创建 Run 的分布式限流采用 Lua 原子计数+首次设置 TTL；WS 票据用安全随机值，TTL 30 秒，GETDEL 原子消费；每张票据绑定用户、面试 ID 和原登录过期时间。
@@ -627,48 +625,11 @@ async def test_ws_ticket_can_only_be_consumed_once(ticket_service):
 
 **验证：** 显式集成命令 `RESUMATE_REDIS_INTEGRATION=1 RESUMATE_REDIS_BASE_IMAGE=resumate-t20-deps:aligned .venv/bin/python -m pytest backend/tests/test_redis_integration.py -q -s`，实际 7 passed / 86.52s。真实计数、票据、提示补查、缓存、停机恢复和 OOM 均通过；旧 SQLite PDF 1 passed / 14.17s。依赖严格匹配 lock，当前完整源码挂载；主生产 Dockerfile fresh 构建未通过，列为 T19 待办。T20 不代表真实 WebSocket 或压力性能验收。
 
-### T21：WebSocket 双向面试与连接生命周期
+### T21：实时双向面试（用户已取消）
 
-**文件：** 新增 backend/routes/interview_ws.py、backend/services/interview_commands.py、backend/schemas/interview_events.py、backend/tests/test_interview_ws.py、frontend/src/services/interviewSocket.ts、frontend/src/services/interviewSocket.spec.ts、tests/e2e/interview-reconnect.spec.ts；修改 InterviewView.vue、interviews.py、deploy/nginx.conf。
-**依赖：** T16、T20。**接口：** `handle_command(user_id,interview_id,command) -> ack`；HTTP 和 WS 共用面试业务服务与同一 clientMessageId 唯一约束，不维护两份状态机。
+2026-10-30 用户明确要求不再执行。未实现 WebSocket 网关、浏览器连接生命周期、question.delta 流式展示、跨 API WebSocket 重连及该任务原定的4个实时可靠性评测。T16 的 HTTP 命令、去重、取消、重试、快照恢复、反馈与记忆仍保留；已有 SSE 长任务进度不受影响。
 
-```ts
-type InterviewCommand = {
-  clientMessageId: string;
-  type: 'answer.submit' | 'generation.cancel' | 'session.finish';
-  expectedTurn: number;
-  payload: Record<string, unknown>;
-};
-type InterviewEvent = {
-  interviewId: string; seq: number;
-  type: 'answer.accepted' | 'question.delta' | 'question.completed'
-      | 'feedback.ready' | 'generation.cancelled' | 'session.finished';
-  payload: Record<string, unknown>;
-};
-```
-
-- [ ] POST 获取票据后建立 WebSocket，首帧 auth；长期 Bearer Token 和 ticket 均不放 URL，日志不记录认证帧；校验 Origin 白名单（不能只靠 CORS）。未认证连接最多等待 5 秒，限制待认证连接数量。
-- [ ] 协议分三类：auth/heartbeat 等连接控制帧；带 clientMessageId 的业务命令；带 seq 的持久业务事件。ack 仅表示命令事务已接受，模型结果另发事件；提交后 ack 丢失时重发相同 ID，返回原 ack，不创建第二条回答/第二个 Run。
-- [ ] generation.cancel 只取消当前生成 Run；session.finish 关闭业务会话并取消在途生成；关闭浏览器只断开订阅，不结束面试。下一轮输入校验 expectedTurn，过期命令返回 conflict。
-- [ ] 复用 T16 的持久模型，命令、回答、待执行 Run 在同事务提交；worker 从 Run 执行并写 InterviewEvent。question.delta 按已有 100ms/512 字符聚合，完成文本持久化，不存逐 token 无界日志。
-- [ ] 后端接收协程和有界发送协程分开；每连接发送队列最多 100 条，单消息最大 64KiB。客户端缓冲达到 256KiB 暂停发送新业务命令并显示网络拥塞；服务器队列溢出关闭慢连接，客户端按 seq 恢复，不能丢弃已接受回答。
-- [ ] 应用心跳每 20 秒、60 秒无响应关闭；票据中原登录过期时间到达关闭连接并要求重新登录。重连 1/2/4/8/15 秒加少量抖动，每次重新申请票据，成功后从 lastSeq 补发；失败命令保留为可见的待发送状态。
-- [ ] 事件发布从 SQL 提交后唤醒 Redis 频道；每个 API 只向本地已授权连接发送数据库事件。重连可落到另一 API，不依赖 sticky session；订阅建立后先读库，通知/定时补查统一按 seq 去重以覆盖竞态。
-- [ ] Nginx 显式配置 WebSocket Upgrade/Connection、HTTP/1.1 和 75 秒读超时；与 SSE location 分开配置，部署使用 wss。
-- [ ] 测试票据重放、错误用户、错误 Origin、到期连接、ack 丢失、重复回答、断线跨 API 重连、慢消费者、取消后迟到结果、Redis 断开。新增 4 个实时可靠性案例，完整评测从 30 扩至 34 例。
-
-```python
-def test_replayed_answer_creates_one_turn(ws_client, interview_db):
-    command = {"clientMessageId": "m-1", "type": "answer.submit",
-               "expectedTurn": 1, "payload": {"text": "用事务保证写入一致"}}
-    first = ws_client.submit_and_wait_ack(command)
-    second = ws_client.submit_and_wait_ack(command)
-    assert first["resultRef"] == second["resultRef"]
-    assert interview_db.answer_count(turn=1) == 1
-```
-
-**验证：** `uv run pytest backend/tests/test_interview_ws.py -q`、`npm --prefix frontend run test:unit -- src/services/interviewSocket.spec.ts`、`npm run test:e2e -- interview-reconnect.spec.ts`。fixture 必须实际连接 ASGI WebSocket，跨进程用 Compose 验证。
-**性能预算：** 使用 T20 集成环境，性能测量条件与 T17 一致；30 条 WS（包含两个 API 上的连接）与 30 条 SSE 并存；不含模型等待的命令 ack P95 <=300ms，正常 Pub/Sub 通路事件可见 P95 <=1s；通知故障补查 <=3s。Agent 仍只有一个执行槽，连接吞吐不等于模型并行量。
+T17 负载验收保留两个 API、一个 worker、30 条 SSE，不再加入30条WS。T19 最终案例规模为30（原24 + T16新增6），不把取消的任务计为已通过，也不为了缩小范围删除已有失败案例。T20已经完成的票据/通知基础测试作为历史证据保留，不追加本轮未使用的连接设施。
 
 ## 8. 测试分层与必要性
 
@@ -699,6 +660,8 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 ## 10. AI-Meeting 参考结论与官方依据
 
+以下保留调研依据；其中WebSocket资料属于已取消T21的历史参考，不构成本轮执行要求。
+
 参考范围：仅检查公开开源仓库 README 和部分源码；未运行该项目，不把 README 描述的商业 SaaS 能力算作开源实现。
 
 - [AI-Meeting README](https://github.com/lishuangqiang/AI-Meeting)：区分开源仓库与商业版；开源技术组合包括 HTTP/SSE/WebSocket 和 Redis。
@@ -724,6 +687,6 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 T01–T04、T06–T15 已完成各自注明边界的确定性验收；T05/T13 的真实调用已在用户授权 3 元共享预算内尝试并停止：smoke 与正式首案均失败且无 usage，正式其余 11 案未执行，未知预约保留，不能写成质量通过。内部功能闭环不等于真实内容质量验收。
 
-T20 真实跨进程七场景与旧 SQLite PDF 代表回归现已完成，完整首轮失败及修复单独留证。下一单元按 [T16 局部计划](2026-10-30-t16-text-interviews.md)实现持久文字面试，再接 T21 WebSocket，之后 T17/T18→T19。T19 仍须完成生产 `uv --no-cache` 安装下的完整 fresh 镜像构建。原有产品范围与 21 个任务 ID 保持不变，不因本轮 Redis 验收增加额外平台或 Agent 角色。
+T20 真实跨进程七场景与旧 SQLite PDF 代表回归现已完成，完整首轮失败及修复单独留证。下一单元按 [T16 局部计划](2026-10-30-t16-text-interviews.md)完成持久文字面试；当前进入T17/T18→T19，T21已取消。T19 仍须完成生产 `uv --no-cache` 安装下的完整 fresh 镜像构建。保留原任务ID以追溯历史，执行范围排除T21；不增加额外平台或Agent角色。
 
 每个阶段结束更新本文件复选框、实际耗时、已通过验收与尚存限制。阶段完成以可运行成果和测试证据为准，不以文件数量或技术名词数量为准。

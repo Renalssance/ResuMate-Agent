@@ -1,0 +1,10 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-Iyz6PT
+
+Running 1 test using 1 worker
+
+(node:77672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  1 [chromium] › tests/e2e/interview.spec.ts:143:1 › 丢弃真实成功响应后重发原命令，确认记忆后删除使旧练习失效 (9.9s)
+
+  1 passed (17.2s)

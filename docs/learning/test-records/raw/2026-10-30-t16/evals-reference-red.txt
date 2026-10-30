@@ -1,0 +1,16 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_verifier_resolves_actual_json_pointer_resume_references _________
+
+    def test_verifier_resolves_actual_json_pointer_resume_references():
+        from evals.interview_verifiers import verify_interview
+        case, output, data = followup_evidence()
+        data['turns'][0]['question_context']['refs'] = [{'kind': 'resume', 'section': '/self_summary',
+            'quote': 'Built an API', 'resumeVersionId': 'v1', 'revision': 3}]
+>       assert verify_interview(case, output, data)['passed']
+E       assert False
+
+backend/tests/test_interview_evals.py:190: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_evals.py::test_verifier_resolves_actual_json_pointer_resume_references
+1 failed, 16 deselected in 0.41s
