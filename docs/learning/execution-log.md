@@ -196,3 +196,12 @@ T19按独立计划继续fresh生产镜像、依赖就绪、备份恢复、CI与�
 随后按用户要求停止4173、4175两套预览及其API、worker、扩展示例和两个专属Redis容器。旧启动器退出时会删除测试数据，因此先暂停启动器并正常停止其子服务，再结束启动器，保留原SQL/checkpoint等资料；对子服务已退出的进程组追加清理曾返回权限错误，检查确认均为僵尸子进程，随后结束旧启动器完成回收。新启动器正常退出并保留数据。
 
 Python环境实际文件已随工作树迁入新目录，更新45个启动/激活脚本中的旧路径，然后删除旧位置的链接与空父目录。删除后实际运行Python导入FastAPI、pytest --version、uvicorn --version均成功；4173/4174/4175/4176/8898/8899六个端口均关闭。未修改产品逻辑，不重复功能测试；历史截图、源码运行快照及其原路径记录保持原样。
+
+
+## 2026-10-30：按澄清将开发分支放回原工作区
+
+用户澄清要求原项目目录直接使用开发分支，而非嵌套工作树。先备份main未提交的六个文件并创建stash，再将子工作树分离HEAD，原目录切换到 `codex/resumate-fullstack-learning`，恢复原修改。唯一冲突位于资料页导入，合并保留ProfileFacts、BusinessMemory与fillProfileFromTemplate；六个文件继续保持未暂存状态，不纳入文档提交。原 `.env` 与 `.env.cloudbase` 切换前后逐字节相同，未展示内容。
+
+已将已验收版本的Python及Node依赖移入原目录，原环境和子工作树本地缓存保存在临时备份 `/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-primary-switch-0zhoxix9`，原修改另有stash备份。更新45个Python启动/激活脚本，删除多余子工作树登记与目录。工作区现在只有 `/Users/bono/Desktop/code/ResuMate-Agent`，使用开发分支，main分支提交未改动。
+
+验证：`npm --prefix frontend test` exit0，包含Vue类型检查、资料模板补齐、复制按钮和原前端工具测试；根目录 `.venv/bin/python` 成功导入FastAPI，`.venv/bin/pytest --version`成功；Git无未解决冲突，diff空白检查通过。未启动预览或调用真实模型，原有预览继续关闭。
