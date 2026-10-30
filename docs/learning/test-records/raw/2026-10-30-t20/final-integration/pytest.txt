@@ -1,0 +1,17 @@
+T20 artifact directory: /tmp/task-20-artifacts-723a546aee5345e294ef62a0ab12f421
+.......
+=============================== warnings summary ===============================
+backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 5 warnings in 86.52s (0:01:26)
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

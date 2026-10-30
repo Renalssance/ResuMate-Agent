@@ -1,0 +1,419 @@
+{
+  "invocation_id": "723a546aee5345e294ef62a0ab12f421",
+  "started_at": "2026-10-30T01:37:36.237179+00:00",
+  "project": "resumate-t20-723a546aee",
+  "image": "resumate-t20-deps:aligned",
+  "executed": true,
+  "source": "/tmp/task-20-artifacts-723a546aee5345e294ef62a0ab12f421/source",
+  "model": "existing deterministic DraftModel; no external calls",
+  "results": [
+    {
+      "case_id": "topology",
+      "started_at": "2026-10-30T01:37:49.972932+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "api1": {
+          "hostname": "fdd501ea0c86",
+          "pid": 1,
+          "mysql": "8.4.13",
+          "database": "resumate",
+          "users": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "redis": "7.4.12",
+          "redisPy": "6.4.0",
+          "namespace": "resumate:resumate-t20-723a546aee",
+          "config": {
+            "maxmemory-clients": "0",
+            "maxmemory-samples": "5",
+            "maxmemory": "268435456",
+            "maxmemory-policy": "noeviction",
+            "maxmemory-eviction-tenacity": "10"
+          },
+          "agentStateVisible": false
+        },
+        "api2": {
+          "hostname": "c29245d3141a",
+          "pid": 1,
+          "mysql": "8.4.13",
+          "database": "resumate",
+          "users": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "redis": "7.4.12",
+          "redisPy": "6.4.0",
+          "namespace": "resumate:resumate-t20-723a546aee",
+          "config": {
+            "maxmemory-clients": "0",
+            "maxmemory-samples": "5",
+            "maxmemory": "268435456",
+            "maxmemory-policy": "noeviction",
+            "maxmemory-eviction-tenacity": "10"
+          },
+          "agentStateVisible": false
+        },
+        "worker": {
+          "lock": true,
+          "directory": true
+        }
+      },
+      "completed_at": "2026-10-30T01:37:51.295270+00:00"
+    },
+    {
+      "case_id": "rate-limit",
+      "started_at": "2026-10-30T01:37:51.298303+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "statuses": [
+          200,
+          200,
+          429,
+          200,
+          429,
+          200,
+          429,
+          429,
+          200,
+          200,
+          429,
+          429,
+          200,
+          429,
+          200,
+          429,
+          429,
+          429,
+          200,
+          200
+        ],
+        "ttlMs": [
+          59740,
+          58550
+        ],
+        "authStatuses": [
+          401,
+          401,
+          401,
+          401,
+          401,
+          429
+        ]
+      },
+      "completed_at": "2026-10-30T01:37:52.811523+00:00"
+    },
+    {
+      "case_id": "ticket",
+      "started_at": "2026-10-30T01:37:52.813057+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "consumedCount": 1,
+        "claims": [
+          {
+            "userId": 1,
+            "interviewId": "interview-1",
+            "authExpiresAt": "2026-10-30T01:39:52+00:00"
+          }
+        ],
+        "ttlMs": 30000,
+        "expiredTicket": null
+      },
+      "completed_at": "2026-10-30T01:37:54.971571+00:00"
+    },
+    {
+      "case_id": "cache",
+      "started_at": "2026-10-30T01:37:54.974370+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "twentyGetsSql": {
+          "aggregate": 3,
+          "recent": 20,
+          "all": 43
+        },
+        "afterWorker": {
+          "calls": 2,
+          "tokens": 35,
+          "cacheDeleted": true
+        },
+        "ttlExpiryAggregateSql": 3
+      },
+      "completed_at": "2026-10-30T01:38:25.948278+00:00"
+    },
+    {
+      "case_id": "notifications",
+      "started_at": "2026-10-30T01:38:25.953872+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "normalElapsed": 0.027980375016340986,
+        "missingHintElapsed": 1.7580702079867478,
+        "seq": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "completed_at": "2026-10-30T01:38:28.624500+00:00"
+    },
+    {
+      "case_id": "down-restart-recovery",
+      "started_at": "2026-10-30T01:38:29.491661+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "before": {
+          "id": "48cc392e-3db0-4e51-b4df-bcfbe49f8627",
+          "sessionId": "626a3ae0-c4a2-4d79-a44f-2ab697c3d6d0",
+          "status": "queued",
+          "attempt": 1,
+          "executionEpoch": 0,
+          "versions": 0,
+          "operations": 0,
+          "events": [
+            {
+              "seq": 1,
+              "type": "run.status",
+              "payload": {
+                "status": "queued",
+                "error_code": null
+              }
+            }
+          ]
+        },
+        "acceptedStatus": 202,
+        "admissionStatuses": [
+          503,
+          503,
+          503,
+          503,
+          503,
+          503,
+          503,
+          503,
+          503
+        ],
+        "stateBeforeAfter": {
+          "tables": {
+            "agent_runs": 3,
+            "resumes": 1,
+            "job_descriptions": 1,
+            "resume_versions": 2,
+            "llm_usage_events": 3
+          },
+          "files": []
+        },
+        "downUsage": {
+          "calls": 3,
+          "tokens": 44
+        },
+        "after": {
+          "id": "48cc392e-3db0-4e51-b4df-bcfbe49f8627",
+          "sessionId": "626a3ae0-c4a2-4d79-a44f-2ab697c3d6d0",
+          "status": "succeeded",
+          "attempt": 1,
+          "executionEpoch": 1,
+          "versions": 1,
+          "operations": 1,
+          "events": [
+            {
+              "seq": 1,
+              "type": "run.status",
+              "payload": {
+                "status": "queued",
+                "error_code": null
+              }
+            },
+            {
+              "seq": 2,
+              "type": "run.status",
+              "payload": {
+                "status": "running",
+                "error_code": null
+              }
+            },
+            {
+              "seq": 3,
+              "type": "tool.started",
+              "payload": {
+                "tool_name": "get_application_context",
+                "operation_key": "call-0"
+              }
+            },
+            {
+              "seq": 4,
+              "type": "tool.completed",
+              "payload": {
+                "tool_name": "get_application_context",
+                "result_ref": null,
+                "operation_key": "call-0"
+              }
+            },
+            {
+              "seq": 5,
+              "type": "tool.started",
+              "payload": {
+                "tool_name": "create_resume_draft",
+                "operation_key": "draft:1:initial"
+              }
+            },
+            {
+              "seq": 6,
+              "type": "artifact.created",
+              "payload": {
+                "kind": "resume_version",
+                "artifact_id": "eb358c95-4f82-49c8-a4a4-28baab51a291"
+              }
+            },
+            {
+              "seq": 7,
+              "type": "tool.completed",
+              "payload": {
+                "tool_name": "create_resume_draft",
+                "result_ref": "eb358c95-4f82-49c8-a4a4-28baab51a291",
+                "operation_key": "draft:1:initial"
+              }
+            },
+            {
+              "seq": 8,
+              "type": "assistant.delta",
+              "payload": {
+                "text": "请审阅草稿"
+              }
+            },
+            {
+              "seq": 9,
+              "type": "run.status",
+              "payload": {
+                "status": "succeeded",
+                "error_code": null
+              }
+            }
+          ]
+        },
+        "checkpoint": {
+          "exists": true
+        },
+        "postRestartRateStatuses": [
+          200,
+          200,
+          200,
+          429,
+          200,
+          200,
+          200,
+          429,
+          200,
+          429,
+          200,
+          429,
+          200,
+          429,
+          429,
+          429,
+          429,
+          429,
+          200,
+          429
+        ]
+      },
+      "completed_at": "2026-10-30T01:38:56.377573+00:00"
+    },
+    {
+      "case_id": "oom",
+      "started_at": "2026-10-30T01:38:56.387042+00:00",
+      "executed": true,
+      "status": "pass",
+      "observed": {
+        "markerPresent": true,
+        "policy": "noeviction",
+        "usedMemory": 8370400,
+        "maxmemory": 1,
+        "limiterUnavailable": true,
+        "ticketUnavailable": true,
+        "cacheCalls": 3
+      },
+      "completed_at": "2026-10-30T01:38:57.897833+00:00"
+    }
+  ],
+  "dependency_image_reuse": {
+    "image": "resumate-t20-deps:aligned",
+    "full_backend_mount": "/app/backend",
+    "current_lock_installed_versions_match": true,
+    "new_dockerfile_build_succeeded": false
+  },
+  "topology": {
+    "api1": {
+      "hostname": "fdd501ea0c86",
+      "pid": 1,
+      "mysql": "8.4.13",
+      "database": "resumate",
+      "users": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "redis": "7.4.12",
+      "redisPy": "6.4.0",
+      "namespace": "resumate:resumate-t20-723a546aee",
+      "config": {
+        "maxmemory-clients": "0",
+        "maxmemory-samples": "5",
+        "maxmemory": "268435456",
+        "maxmemory-policy": "noeviction",
+        "maxmemory-eviction-tenacity": "10"
+      },
+      "agentStateVisible": false
+    },
+    "api2": {
+      "hostname": "c29245d3141a",
+      "pid": 1,
+      "mysql": "8.4.13",
+      "database": "resumate",
+      "users": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "redis": "7.4.12",
+      "redisPy": "6.4.0",
+      "namespace": "resumate:resumate-t20-723a546aee",
+      "config": {
+        "maxmemory-clients": "0",
+        "maxmemory-samples": "5",
+        "maxmemory": "268435456",
+        "maxmemory-policy": "noeviction",
+        "maxmemory-eviction-tenacity": "10"
+      },
+      "agentStateVisible": false
+    },
+    "worker": {
+      "lock": true,
+      "directory": true
+    }
+  },
+  "completed_at": "2026-10-30T01:39:02.535475+00:00"
+}

@@ -1,5 +1,6 @@
 import { test as base, expect, type APIRequestContext } from '@playwright/test'
 import { randomUUID } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -14,7 +15,18 @@ export interface RunSnapshot {
 }
 
 interface Login { access_token: string; username: string; role: string }
-export const test = base.extend<{ api: APIRequestContext }, { login: Login }>({
+export const test = base.extend<{ api: APIRequestContext; resetAdmission: void }, { login: Login }>({
+  resetAdmission: [async ({ login: _login }, use) => {
+    // Isolate each browser scenario's quota while retaining the actual Redis
+    // limiter. Only this fixture user's run counter is reset, never queue data.
+    execFileSync('.venv/bin/python', ['-c', [
+      'import json, sys, redis',
+      'fixture = json.load(open(sys.argv[1]))',
+      "with redis.Redis.from_url(fixture['redisUrl']) as client:",
+      "    client.delete(fixture['redisNamespace'] + ':rl:run:1')",
+    ].join('\n'), join(process.env.RESUMATE_E2E_ROOT!, 'fixture.json')], { timeout: 10_000 })
+    await use()
+  }, { auto: true }],
   login: [async ({ playwright }, use) => {
     const auth = await playwright.request.newContext({ baseURL: 'http://127.0.0.1:4174' })
     const response = await auth.post('/auth/login', {

@@ -1,0 +1,31 @@
+{
+  "main_services": [
+    "api",
+    "api2",
+    "mysql",
+    "redis",
+    "scheduler",
+    "schema",
+    "worker"
+  ],
+  "sql": "shared MySQL",
+  "api_ports": [
+    "8000",
+    "8001"
+  ],
+  "checkpoint_owners": [
+    "worker"
+  ],
+  "redis_host_ports": [],
+  "redis_maxmemory": "256mb",
+  "redis_policy": "noeviction",
+  "sqlite_fixture_services": [
+    "api",
+    "redis",
+    "scheduler",
+    "worker"
+  ],
+  "build_contexts": "all point to repository root",
+  "old_test_references": 3,
+  "result": "configuration assertions passed; no containers started"
+}

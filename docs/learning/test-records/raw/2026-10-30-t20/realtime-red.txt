@@ -1,0 +1,66 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+________ test_ticket_is_consumed_once_and_bound_to_original_expiration _________
+
+    @pytest.mark.asyncio
+    async def test_ticket_is_consumed_once_and_bound_to_original_expiration():
+>       from backend.services.ws_tickets import WsTickets
+E       ModuleNotFoundError: No module named 'backend.services.ws_tickets'
+
+backend/tests/test_realtime_primitives.py:36: ModuleNotFoundError
+________ test_ticket_never_extends_expired_auth_or_hides_redis_failure _________
+
+    @pytest.mark.asyncio
+    async def test_ticket_never_extends_expired_auth_or_hides_redis_failure():
+>       from backend.services.ws_tickets import WsTickets
+E       ModuleNotFoundError: No module named 'backend.services.ws_tickets'
+
+backend/tests/test_realtime_primitives.py:52: ModuleNotFoundError
+__________ test_auth_context_uses_signed_exp_and_sql_identity[sqlite] __________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d5a7d70>
+
+    def test_auth_context_uses_signed_exp_and_sql_identity(career_db):
+        token = security.create_access_token('alice', 'invented-admin')
+>       context = security.get_current_auth(token, career_db)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.auth.security' has no attribute 'get_current_auth'. Did you mean: 'get_current_user'?
+
+backend/tests/test_realtime_primitives.py:73: AttributeError
+__________ test_auth_context_uses_signed_exp_and_sql_identity[mysql] ___________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dcd3530>
+
+    def test_auth_context_uses_signed_exp_and_sql_identity(career_db):
+        token = security.create_access_token('alice', 'invented-admin')
+>       context = security.get_current_auth(token, career_db)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'backend.auth.security' has no attribute 'get_current_auth'. Did you mean: 'get_current_user'?
+
+backend/tests/test_realtime_primitives.py:73: AttributeError
+________ test_interview_event_pages_are_owned_ordered_and_fresh[sqlite] ________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10ea3ce60>
+
+    def test_interview_event_pages_are_owned_ordered_and_fresh(career_db):
+>       from backend.services.interview_events import read_interview_events
+E       ModuleNotFoundError: No module named 'backend.services.interview_events'
+
+backend/tests/test_realtime_primitives.py:84: ModuleNotFoundError
+________ test_interview_event_pages_are_owned_ordered_and_fresh[mysql] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10debb1d0>
+
+    def test_interview_event_pages_are_owned_ordered_and_fresh(career_db):
+>       from backend.services.interview_events import read_interview_events
+E       ModuleNotFoundError: No module named 'backend.services.interview_events'
+
+backend/tests/test_realtime_primitives.py:84: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_realtime_primitives.py::test_ticket_is_consumed_once_and_bound_to_original_expiration
+FAILED backend/tests/test_realtime_primitives.py::test_ticket_never_extends_expired_auth_or_hides_redis_failure
+FAILED backend/tests/test_realtime_primitives.py::test_auth_context_uses_signed_exp_and_sql_identity[sqlite]
+FAILED backend/tests/test_realtime_primitives.py::test_auth_context_uses_signed_exp_and_sql_identity[mysql]
+FAILED backend/tests/test_realtime_primitives.py::test_interview_event_pages_are_owned_ordered_and_fresh[sqlite]
+FAILED backend/tests/test_realtime_primitives.py::test_interview_event_pages_are_owned_ordered_and_fresh[mysql]
+6 failed in 1.03s

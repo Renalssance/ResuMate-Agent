@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from backend.middleware.rate_limit import require_run_capacity
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
@@ -15,7 +16,7 @@ from backend.services.background_tasks import submit_task
 router = APIRouter(prefix="/api/runs", tags=["runs"])
 
 
-@router.post("", response_model=AnalyzeResponse)
+@router.post("", response_model=AnalyzeResponse, dependencies=[Depends(require_run_capacity)])
 def create_run(
     request: AnalyzeRequest,
     current_user: User = Depends(get_current_user),
@@ -53,7 +54,7 @@ async def get_candidate_report(run_id: int, candidate_id: int, current_user: Use
     return report
 
 
-@router.post("/{run_id}/candidates/{candidate_id}/questions", response_model=CandidateReport)
+@router.post("/{run_id}/candidates/{candidate_id}/questions", response_model=CandidateReport, dependencies=[Depends(require_run_capacity)])
 def generate_candidate_questions(
     run_id: int,
     candidate_id: int,

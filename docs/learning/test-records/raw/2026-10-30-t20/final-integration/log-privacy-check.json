@@ -1,0 +1,7 @@
+{
+  "bearer_header_matches": 0,
+  "jwt_token_matches": 0,
+  "database_url_matches": 0,
+  "password_env_assignment_matches": 0,
+  "ticket_values_never_logged_by_fixture": true
+}

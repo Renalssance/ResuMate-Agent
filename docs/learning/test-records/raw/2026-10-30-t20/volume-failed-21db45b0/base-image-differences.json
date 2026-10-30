@@ -1,0 +1,26 @@
+{
+  "googleapis-common-protos": {
+    "image": "1.56.1",
+    "lock": "1.76.0"
+  },
+  "opentelemetry-exporter-otlp-proto-grpc": {
+    "image": "1.11.1",
+    "lock": "1.45.2"
+  },
+  "opentelemetry-semantic-conventions": {
+    "image": "0.61b0",
+    "lock": "0.66b2"
+  },
+  "opentelemetry-proto": {
+    "image": "1.11.1",
+    "lock": "1.45.2"
+  },
+  "opentelemetry-sdk": {
+    "image": "1.40.0",
+    "lock": "1.45.2"
+  },
+  "opentelemetry-api": {
+    "image": "1.40.0",
+    "lock": "1.45.2"
+  }
+}

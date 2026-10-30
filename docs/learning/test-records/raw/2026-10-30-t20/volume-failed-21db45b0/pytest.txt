@@ -1,0 +1,600 @@
+T20 artifact directory: /tmp/task-20-artifacts-21db45b0c76e472ab9d2e615f0d36520
+EEEEEEE
+==================================== ERRORS ====================================
+____ ERROR at setup of test_topology_shared_sql_and_worker_only_checkpoints ____
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+_ ERROR at setup of test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+___ ERROR at setup of test_ticket_single_consumer_and_expiration_across_apis ___
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+_ ERROR at setup of test_cache_reduces_aggregates_and_real_worker_invalidates __
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+_ ERROR at setup of test_notifications_wake_then_sql_fills_missing_and_duplicate_hints _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+_ ERROR at setup of test_redis_down_rejects_admission_but_committed_run_recovers _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+_ ERROR at setup of test_oom_noeviction_preserves_marker_and_services_fail_as_designed _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+                (value.artifacts / 'runtime-packages.json').write_text(json.dumps(runtime, indent=2))
+                verification = {'missing_direct_dependencies': missing, 'lock_version_differences': mismatches}
+                (value.artifacts / 'runtime-verification.json').write_text(json.dumps(verification, indent=2))
+                assert not missing and not mismatches, verification
+                assert installed['redis'] == '6.4.0'
+                value.evidence['dependency_image_reuse'] = {'image': value.env['T20_IMAGE'], 'full_backend_mount': '/app/backend',
+                    'current_lock_installed_versions_match': True, 'new_dockerfile_build_succeeded': False}
+                value.save()
+            else:
+                value.compose('build', 'api', timeout=1200)
+>           value.compose('up', '-d', '--no-build', '--wait', timeout=240)
+
+backend/tests/test_redis_integration.py:147:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10800c680>, timeout = 240
+check = True, args = ('up', '-d', '--no-build', '--wait')
+result = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('up', '-d') failed: db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_redis-data Creating
+E              Network resumate-t20-21db45b0c7_default Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_agent-state Creating
+E              Volume resumate-t20-21db45b0c7_mysql-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Creating
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_backend-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_mysql-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_redis-data Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Volume resumate-t20-21db45b0c7_agent-state Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Network resumate-t20-21db45b0c7_default Created
+E              Container resumate-t20-21db45b0c7-mysql-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Creating
+E              Container resumate-t20-21db45b0c7-redis-1 Created
+E              Container resumate-t20-21db45b0c7-scheduler-1 Creating
+E              Container resumate-t20-21db45b0c7-mysql-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Creating
+E              Container resumate-t20-21db45b0c7-scheduler-1 Created
+E              Container resumate-t20-21db45b0c7-schema-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Creating
+E              Container resumate-t20-21db45b0c7-api-1 Creating
+E              Container resumate-t20-21db45b0c7-worker-1 Created
+E              Container resumate-t20-21db45b0c7-api2-1 Created
+E              service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E             Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Users/bono/.docker/bin/docker', 'compose', '-p', 'resumate-t20-21db45b0c7', '-f', '/Users/bon...ckend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists\n').returncode
+
+backend/tests/test_redis_integration.py:82: AssertionError
+=========================== short test summary info ============================
+ERROR backend/tests/test_redis_integration.py::test_topology_shared_sql_and_worker_only_checkpoints
+ERROR backend/tests/test_redis_integration.py::test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide
+ERROR backend/tests/test_redis_integration.py::test_ticket_single_consumer_and_expiration_across_apis
+ERROR backend/tests/test_redis_integration.py::test_cache_reduces_aggregates_and_real_worker_invalidates
+ERROR backend/tests/test_redis_integration.py::test_notifications_wake_then_sql_fills_missing_and_duplicate_hints
+ERROR backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+ERROR backend/tests/test_redis_integration.py::test_oom_noeviction_preserves_marker_and_services_fail_as_designed
+7 errors in 25.18s

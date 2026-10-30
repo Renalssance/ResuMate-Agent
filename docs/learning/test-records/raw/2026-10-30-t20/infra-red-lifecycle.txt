@@ -1,0 +1,171 @@
+....FFF                                                                  [100%]
+=================================== FAILURES ===================================
+____________ test_api_lifespans_have_fresh_resources_and_close_them ____________
+
+self = <starlette.datastructures.State object at 0x10d4d6150>, key = 'redis'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+>           return self._state[key]
+                   ^^^^^^^^^^^^^^^^
+E           KeyError: 'redis'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:685: KeyError
+
+During handling of the above exception, another exception occurred:
+
+tracked_api_resources = (<module 'backend.app' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py'>, [])
+
+    def test_api_lifespans_have_fresh_resources_and_close_them(tracked_api_resources):
+        from fastapi.testclient import TestClient
+        from backend.infrastructure import redis_client
+        app_module, created = tracked_api_resources
+        sync_clients = []
+        for _ in range(2):
+            application = app_module.create_app()
+            with TestClient(application) as client:
+>               resources = application.state.redis
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_redis_lifecycle.py:105:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.datastructures.State object at 0x10d4d6150>, key = 'redis'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+            return self._state[key]
+        except KeyError:
+            message = "'{}' object has no attribute '{}'"
+>           raise AttributeError(message.format(self.__class__.__name__, key))
+E           AttributeError: 'State' object has no attribute 'redis'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:688: AttributeError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 09:14:52,379 | INFO | backend.app | Creating FastAPI app
+------------------------------ Captured log setup ------------------------------
+INFO     backend.app:app.py:37 Creating FastAPI app
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 09:14:52,400 | INFO | backend.app | Creating FastAPI app
+2026-10-30 09:14:52,420 | INFO | backend.app | Startup: initializing database
+2026-10-30 09:14:52,420 | INFO | backend.app | Startup: database initialized
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:37 Creating FastAPI app
+INFO     backend.app:app.py:46 Startup: initializing database
+INFO     backend.app:app.py:48 Startup: database initialized
+_______ test_api_lifespan_closes_resources_when_application_body_raises ________
+
+self = <starlette.datastructures.State object at 0x10db228a0>, key = 'redis'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+>           return self._state[key]
+                   ^^^^^^^^^^^^^^^^
+E           KeyError: 'redis'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:685: KeyError
+
+During handling of the above exception, another exception occurred:
+
+tracked_api_resources = (<module 'backend.app' from '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py'>, [])
+
+    @pytest.mark.asyncio
+    async def test_api_lifespan_closes_resources_when_application_body_raises(tracked_api_resources):
+        from backend.infrastructure import redis_client
+        app_module, created = tracked_api_resources
+        application = app_module.create_app()
+        with pytest.raises(RuntimeError, match='application failed'):
+            async with application.router.lifespan_context(application):
+>               assert application.state.redis is created[-1]
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_redis_lifecycle.py:125:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.datastructures.State object at 0x10db228a0>, key = 'redis'
+
+    def __getattr__(self, key: Any) -> Any:
+        try:
+            return self._state[key]
+        except KeyError:
+            message = "'{}' object has no attribute '{}'"
+>           raise AttributeError(message.format(self.__class__.__name__, key))
+E           AttributeError: 'State' object has no attribute 'redis'
+
+.venv/lib/python3.12/site-packages/starlette/datastructures.py:688: AttributeError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 09:14:52,488 | INFO | backend.app | Creating FastAPI app
+2026-10-30 09:14:52,554 | INFO | backend.app | Startup: initializing database
+2026-10-30 09:14:52,555 | INFO | backend.app | Startup: database initialized
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:37 Creating FastAPI app
+INFO     backend.app:app.py:46 Startup: initializing database
+INFO     backend.app:app.py:48 Startup: database initialized
+____________ test_celery_child_lifecycle_resets_sql_and_owns_redis _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10da571d0>
+
+    def test_celery_child_lifecycle_resets_sql_and_owns_redis(monkeypatch):
+        from celery.signals import worker_process_shutdown
+        from backend import worker
+        from backend.db.database import engine
+        from backend.infrastructure import redis_client
+        redis_client.close_sync_redis()
+        dispose = Mock()
+        monkeypatch.setattr(engine, 'dispose', dispose)
+        try:
+            worker.reset_connection_pool()
+            dispose.assert_called_once_with(close=False)
+>           assert redis_client.get_sync_redis() is not None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_redis_lifecycle.py:144:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def get_sync_redis() -> Redis:
+        if _sync_client is None or _sync_pid != getpid():
+>           raise RedisUnavailable('Redis process resources are not initialized')
+E           backend.infrastructure.redis_client.RedisUnavailable: Redis process resources are not initialized
+
+backend/infrastructure/redis_client.py:71: RedisUnavailable
+=============================== warnings summary ===============================
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespan_closes_resources_when_application_body_raises
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespan_closes_resources_when_application_body_raises
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+FAILED backend/tests/test_redis_lifecycle.py::test_api_lifespan_closes_resources_when_application_body_raises
+FAILED backend/tests/test_redis_lifecycle.py::test_celery_child_lifecycle_resets_sql_and_owns_redis
+3 failed, 4 passed, 11 warnings in 1.07s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

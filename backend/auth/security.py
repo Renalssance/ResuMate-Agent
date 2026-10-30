@@ -3,6 +3,7 @@ import base64
 import hashlib
 import hmac
 from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -84,7 +85,7 @@ def authenticate_user(db: Session, username: str, password: str) -> User | None:
     return user
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+def _authenticated_user_and_claims(token: str, db: Session):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="无效或过期的认证令牌",
@@ -101,7 +102,26 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise credentials_exception
+    return user, payload
+
+
+@dataclass(frozen=True)
+class AuthContext:
+    user: User
+    auth_expires_at: datetime
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    user, _claims = _authenticated_user_and_claims(token, db)
     return user
+
+
+def get_current_auth(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> AuthContext:
+    user, claims = _authenticated_user_and_claims(token, db)
+    if 'exp' not in claims:
+        raise HTTPException(status_code=401, detail="认证令牌缺少到期时间",
+                            headers={"WWW-Authenticate": "Bearer"})
+    return AuthContext(user, datetime.fromtimestamp(float(claims['exp']), timezone.utc))
 
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:

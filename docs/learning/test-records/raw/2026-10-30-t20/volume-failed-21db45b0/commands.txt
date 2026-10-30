@@ -1,0 +1,313 @@
+{"at": "2026-10-30T01:34:30.880273+00:00", "args": ["up", "-d", "--no-build", "--wait"], "exit_code": 1}
+ Image public.ecr.aws/docker/library/mysql:8.4 Pulling
+ 82c1018a5ca0 Pulling fs layer 0B
+ 061847e2e7e0 Pulling fs layer 0B
+ 11f62504eea6 Pulling fs layer 0B
+ bcc2860add9b Pulling fs layer 0B
+ 537139ce24ec Pulling fs layer 0B
+ 3d8008949683 Pulling fs layer 0B
+ 8d311624a035 Pulling fs layer 0B
+ 7594687b0cc0 Pulling fs layer 0B
+ 84c3133e6ba0 Pulling fs layer 0B
+ dca13af25e78 Pulling fs layer 0B
+ 0f0ce162a89e Download complete 0B
+ 6655f9e2cb3f Downloading 1.049MB
+ 6655f9e2cb3f Downloading 1.049MB
+ 6655f9e2cb3f Downloading 2.097MB
+ 6655f9e2cb3f Downloading 3.146MB
+ 6655f9e2cb3f Downloading 3.146MB
+ 6655f9e2cb3f Downloading 5.243MB
+ 82c1018a5ca0 Download complete 0B
+ 6655f9e2cb3f Downloading 6.291MB
+ 6655f9e2cb3f Downloading 8.389MB
+ 6655f9e2cb3f Downloading 9.437MB
+ 6655f9e2cb3f Downloading 10.49MB
+ 6655f9e2cb3f Downloading 13.63MB
+ 6655f9e2cb3f Downloading 14.68MB
+ 11f62504eea6 Downloading 1.049MB
+ 11f62504eea6 Downloading 1.049MB
+ 6655f9e2cb3f Download complete 0B
+ 11f62504eea6 Downloading 2.097MB
+ 11f62504eea6 Downloading 2.097MB
+ 11f62504eea6 Downloading 3.146MB
+ 061847e2e7e0 Download complete 0B
+ 11f62504eea6 Downloading 4.194MB
+ 11f62504eea6 Downloading 4.194MB
+ 11f62504eea6 Downloading 5.243MB
+ 11f62504eea6 Downloading 6.291MB
+ 11f62504eea6 Downloading 6.291MB
+ 11f62504eea6 Downloading 7.34MB
+ 11f62504eea6 Downloading 8.389MB
+ 11f62504eea6 Downloading 9.437MB
+ 11f62504eea6 Downloading 10.49MB
+ 11f62504eea6 Downloading 11.53MB
+ 11f62504eea6 Downloading 12.58MB
+ 11f62504eea6 Downloading 13.63MB
+ 11f62504eea6 Downloading 14.68MB
+ bcc2860add9b Download complete 0B
+ 11f62504eea6 Downloading 15.73MB
+ 11f62504eea6 Downloading 16.78MB
+ 11f62504eea6 Downloading 17.83MB
+ 11f62504eea6 Downloading 18.87MB
+ 11f62504eea6 Downloading 18.87MB
+ 11f62504eea6 Downloading 19.92MB
+ 11f62504eea6 Downloading 19.92MB
+ 3d8008949683 Downloading 1.049MB
+ 11f62504eea6 Downloading 22.02MB
+ 3d8008949683 Downloading 1.049MB
+ 11f62504eea6 Downloading 23.07MB
+ 3d8008949683 Downloading 2.097MB
+ 11f62504eea6 Downloading 24.12MB
+ 3d8008949683 Downloading 3.146MB
+ 11f62504eea6 Downloading 25.17MB
+ 3d8008949683 Downloading 3.146MB
+ 11f62504eea6 Downloading 26.21MB
+ 3d8008949683 Download complete 0B
+ 11f62504eea6 Downloading 27.26MB
+ 11f62504eea6 Downloading 28.31MB
+ 11f62504eea6 Downloading 30.41MB
+ 11f62504eea6 Downloading 31.46MB
+ 11f62504eea6 Downloading 32.51MB
+ 11f62504eea6 Downloading 33.55MB
+ 11f62504eea6 Downloading 35.65MB
+ 11f62504eea6 Downloading 36.7MB
+ 11f62504eea6 Downloading 38.8MB
+ 537139ce24ec Download complete 0B
+ 11f62504eea6 Downloading 39.85MB
+ 11f62504eea6 Downloading 40.89MB
+ 11f62504eea6 Downloading 41.94MB
+ 11f62504eea6 Downloading 41.94MB
+ 11f62504eea6 Downloading 42.99MB
+ 11f62504eea6 Downloading 45.73MB
+ 11f62504eea6 Download complete 0B
+ 11f62504eea6 Extracting 1B
+ 11f62504eea6 Extracting 1B
+ 11f62504eea6 Extracting 1B
+ 11f62504eea6 Extracting 1B
+ bcc2860add9b Pull complete 0B
+ 3d8008949683 Extracting 1B
+ 537139ce24ec Pull complete 0B
+ 11f62504eea6 Pull complete 0B
+ 061847e2e7e0 Pull complete 0B
+ 3d8008949683 Pull complete 0B
+ dca13af25e78 Downloading 1.049MB
+ dca13af25e78 Downloading 1.049MB
+ dca13af25e78 Downloading 3.146MB
+ 7594687b0cc0 Download complete 0B
+ dca13af25e78 Downloading 3.146MB
+ 7594687b0cc0 Pull complete 0B
+ dca13af25e78 Downloading 3.146MB
+ dca13af25e78 Downloading 6.291MB
+ dca13af25e78 Downloading 6.291MB
+ dca13af25e78 Downloading 9.437MB
+ dca13af25e78 Downloading 10.49MB
+ 8d311624a035 Downloading 1.049MB
+ dca13af25e78 Downloading 12.58MB
+ 8d311624a035 Downloading 1.049MB
+ 8d311624a035 Downloading 1.049MB
+ dca13af25e78 Downloading 14.68MB
+ 8d311624a035 Downloading 2.097MB
+ dca13af25e78 Downloading 15.73MB
+ 8d311624a035 Downloading 3.146MB
+ dca13af25e78 Downloading 17.83MB
+ 8d311624a035 Downloading 5.243MB
+ dca13af25e78 Downloading 17.83MB
+ 8d311624a035 Downloading 5.243MB
+ 84c3133e6ba0 Download complete 0B
+ dca13af25e78 Downloading 20.97MB
+ 8d311624a035 Downloading 6.291MB
+ dca13af25e78 Downloading 22.02MB
+ dca13af25e78 Downloading 23.07MB
+ 8d311624a035 Downloading 8.389MB
+ dca13af25e78 Downloading 24.12MB
+ 8d311624a035 Downloading 9.437MB
+ dca13af25e78 Downloading 25.17MB
+ 8d311624a035 Downloading 11.53MB
+ dca13af25e78 Downloading 25.17MB
+ 8d311624a035 Downloading 11.53MB
+ dca13af25e78 Downloading 28.31MB
+ 8d311624a035 Downloading 13.63MB
+ 8d311624a035 Downloading 15.73MB
+ dca13af25e78 Downloading 29.36MB
+ dca13af25e78 Downloading 29.36MB
+ 8d311624a035 Downloading 15.73MB
+ dca13af25e78 Downloading 30.41MB
+ 8d311624a035 Downloading 16.78MB
+ dca13af25e78 Downloading 33.55MB
+ 8d311624a035 Downloading 19.92MB
+ 8d311624a035 Downloading 20.97MB
+ dca13af25e78 Downloading 34.6MB
+ dca13af25e78 Downloading 34.6MB
+ 8d311624a035 Downloading 20.97MB
+ 8d311624a035 Downloading 23.07MB
+ dca13af25e78 Downloading 38.8MB
+ 8d311624a035 Downloading 24.12MB
+ dca13af25e78 Downloading 40.89MB
+ 8d311624a035 Downloading 26.21MB
+ dca13af25e78 Downloading 40.89MB
+ 8d311624a035 Downloading 29.36MB
+ dca13af25e78 Downloading 40.89MB
+ 8d311624a035 Downloading 31.46MB
+ dca13af25e78 Downloading 40.89MB
+ 8d311624a035 Downloading 32.51MB
+ dca13af25e78 Downloading 42.99MB
+ 8d311624a035 Downloading 33.55MB
+ dca13af25e78 Downloading 44.04MB
+ dca13af25e78 Downloading 45.09MB
+ 8d311624a035 Downloading 35.65MB
+ 8d311624a035 Downloading 37.75MB
+ dca13af25e78 Downloading 46.14MB
+ 8d311624a035 Downloading 39.85MB
+ dca13af25e78 Downloading 47.19MB
+ dca13af25e78 Downloading 48.23MB
+ 8d311624a035 Downloading 40.89MB
+ 8d311624a035 Downloading 42.99MB
+ dca13af25e78 Downloading 49.28MB
+ 8d311624a035 Downloading 44.04MB
+ dca13af25e78 Downloading 50.33MB
+ dca13af25e78 Downloading 51.38MB
+ 8d311624a035 Downloading 46.14MB
+ 8d311624a035 Downloading 48.23MB
+ dca13af25e78 Downloading 52.43MB
+ 8d311624a035 Downloading 49.86MB
+ dca13af25e78 Downloading 53.48MB
+ 8d311624a035 Download complete 0B
+ dca13af25e78 Downloading 55.57MB
+ 8d311624a035 Extracting 1B
+ dca13af25e78 Downloading 57.67MB
+ 8d311624a035 Extracting 1B
+ dca13af25e78 Downloading 59.77MB
+ 8d311624a035 Extracting 1B
+ dca13af25e78 Downloading 61.87MB
+ 8d311624a035 Extracting 1B
+ dca13af25e78 Downloading 63.96MB
+ 84c3133e6ba0 Pull complete 0B
+ 8d311624a035 Pull complete 0B
+ dca13af25e78 Downloading 67.11MB
+ dca13af25e78 Downloading 69.21MB
+ dca13af25e78 Downloading 72.35MB
+ dca13af25e78 Downloading 74.45MB
+ dca13af25e78 Downloading 75.5MB
+ dca13af25e78 Downloading 78.64MB
+ dca13af25e78 Downloading 79.69MB
+ dca13af25e78 Downloading 81.79MB
+ dca13af25e78 Downloading 82.84MB
+ dca13af25e78 Downloading 84.93MB
+ dca13af25e78 Downloading 88.08MB
+ dca13af25e78 Downloading 90.18MB
+ dca13af25e78 Downloading 92.27MB
+ dca13af25e78 Downloading 95.42MB
+ dca13af25e78 Downloading 98.57MB
+ dca13af25e78 Downloading 100.7MB
+ dca13af25e78 Downloading 103.8MB
+ dca13af25e78 Downloading 107MB
+ dca13af25e78 Downloading 109.1MB
+ dca13af25e78 Downloading 110.1MB
+ dca13af25e78 Downloading 113.2MB
+ dca13af25e78 Downloading 115.3MB
+ dca13af25e78 Downloading 117.4MB
+ dca13af25e78 Downloading 118.5MB
+ dca13af25e78 Downloading 121.6MB
+ dca13af25e78 Downloading 121.6MB
+ dca13af25e78 Downloading 123.7MB
+ dca13af25e78 Downloading 125.8MB
+ dca13af25e78 Downloading 127.9MB
+ dca13af25e78 Downloading 129MB
+ dca13af25e78 Downloading 130.8MB
+ dca13af25e78 Downloading 130.8MB
+ dca13af25e78 Download complete 0B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 1B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ dca13af25e78 Extracting 2B
+ 82c1018a5ca0 Pull complete 0B
+ dca13af25e78 Pull complete 0B
+ Image public.ecr.aws/docker/library/mysql:8.4 Pulled
+ Network resumate-t20-21db45b0c7_default Creating
+ Volume resumate-t20-21db45b0c7_redis-data Creating
+ Volume resumate-t20-21db45b0c7_agent-state Creating
+ Volume resumate-t20-21db45b0c7_mysql-data Creating
+ Volume resumate-t20-21db45b0c7_redis-data Creating
+ Network resumate-t20-21db45b0c7_default Creating
+ Volume resumate-t20-21db45b0c7_backend-data Creating
+ Volume resumate-t20-21db45b0c7_agent-state Creating
+ Volume resumate-t20-21db45b0c7_mysql-data Creating
+ Volume resumate-t20-21db45b0c7_backend-data Creating
+ Volume resumate-t20-21db45b0c7_backend-data Created
+ Volume resumate-t20-21db45b0c7_backend-data Created
+ Volume resumate-t20-21db45b0c7_mysql-data Created
+ Volume resumate-t20-21db45b0c7_mysql-data Created
+ Volume resumate-t20-21db45b0c7_redis-data Created
+ Volume resumate-t20-21db45b0c7_redis-data Created
+ Volume resumate-t20-21db45b0c7_agent-state Created
+ Volume resumate-t20-21db45b0c7_agent-state Created
+ Network resumate-t20-21db45b0c7_default Created
+ Network resumate-t20-21db45b0c7_default Created
+ Container resumate-t20-21db45b0c7-mysql-1 Creating
+ Container resumate-t20-21db45b0c7-redis-1 Creating
+ Container resumate-t20-21db45b0c7-redis-1 Created
+ Container resumate-t20-21db45b0c7-scheduler-1 Creating
+ Container resumate-t20-21db45b0c7-mysql-1 Created
+ Container resumate-t20-21db45b0c7-schema-1 Creating
+ Container resumate-t20-21db45b0c7-scheduler-1 Created
+ Container resumate-t20-21db45b0c7-schema-1 Created
+ Container resumate-t20-21db45b0c7-api2-1 Creating
+ Container resumate-t20-21db45b0c7-worker-1 Creating
+ Container resumate-t20-21db45b0c7-api-1 Creating
+ Container resumate-t20-21db45b0c7-worker-1 Created
+ Container resumate-t20-21db45b0c7-api2-1 Created
+ service:api:1 Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+Error response from daemon: failed to mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: mkdir /var/lib/docker/volumes/resumate-t20-21db45b0c7_backend-data/_data/agent: file exists
+
+{"at": "2026-10-30T01:34:30.964824+00:00", "args": ["logs", "--no-color"], "exit_code": 0}
+
+{"at": "2026-10-30T01:34:31.155205+00:00", "args": ["down", "--volumes", "--remove-orphans"], "exit_code": 0}
+ Container resumate-t20-21db45b0c7-api2-1 Stopping
+ Container resumate-t20-21db45b0c7-worker-1 Stopping
+ Container resumate-t20-21db45b0c7-scheduler-1 Stopping
+ Container resumate-t20-21db45b0c7-api2-1 Stopped
+ Container resumate-t20-21db45b0c7-api2-1 Removing
+ Container resumate-t20-21db45b0c7-worker-1 Stopped
+ Container resumate-t20-21db45b0c7-worker-1 Removing
+ Container resumate-t20-21db45b0c7-scheduler-1 Stopped
+ Container resumate-t20-21db45b0c7-scheduler-1 Removing
+ Container resumate-t20-21db45b0c7-api2-1 Removed
+ Container resumate-t20-21db45b0c7-scheduler-1 Removed
+ Container resumate-t20-21db45b0c7-worker-1 Removed
+ Container resumate-t20-21db45b0c7-redis-1 Stopping
+ Container resumate-t20-21db45b0c7-schema-1 Stopping
+ Container resumate-t20-21db45b0c7-schema-1 Stopped
+ Container resumate-t20-21db45b0c7-schema-1 Removing
+ Container resumate-t20-21db45b0c7-redis-1 Stopped
+ Container resumate-t20-21db45b0c7-redis-1 Removing
+ Container resumate-t20-21db45b0c7-schema-1 Removed
+ Container resumate-t20-21db45b0c7-mysql-1 Stopping
+ Container resumate-t20-21db45b0c7-redis-1 Removed
+ Container resumate-t20-21db45b0c7-mysql-1 Stopped
+ Container resumate-t20-21db45b0c7-mysql-1 Removing
+ Container resumate-t20-21db45b0c7-mysql-1 Removed
+ Volume resumate-t20-21db45b0c7_agent-state Removing
+ Volume resumate-t20-21db45b0c7_mysql-data Removing
+ Volume resumate-t20-21db45b0c7_redis-data Removing
+ Network resumate-t20-21db45b0c7_default Removing
+ Volume resumate-t20-21db45b0c7_backend-data Removing
+ Volume resumate-t20-21db45b0c7_agent-state Removed
+ Volume resumate-t20-21db45b0c7_mysql-data Removed
+ Volume resumate-t20-21db45b0c7_backend-data Removed
+ Volume resumate-t20-21db45b0c7_redis-data Removed
+ Network resumate-t20-21db45b0c7_default Removed

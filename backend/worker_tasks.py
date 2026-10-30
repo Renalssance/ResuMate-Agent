@@ -14,6 +14,7 @@ from backend.schemas.agent_runs import RunStatus
 from backend.services import agent_runs
 from backend.services.run_delivery import publish_run
 from backend.worker import app
+from backend.infrastructure.redis_client import warn_redis_capacity
 
 logger = logging.getLogger(__name__)
 
@@ -127,6 +128,7 @@ def execute_run(run_id: str) -> None:
 
 @app.task(name='resumate.recover_runs')
 def recover_runs() -> int:
+    warn_redis_capacity()
     with execution_lock() as acquired:
         if not acquired:
             return 0

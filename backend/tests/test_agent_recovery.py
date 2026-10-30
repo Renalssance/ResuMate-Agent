@@ -103,7 +103,7 @@ def test_real_process_kill_recovers_durable_state(recovery_context, case_id):
     services['worker']['command'] = ['celery', '-A', 'backend.tests.recovery_worker_fixture:app', 'worker', '--loglevel=INFO', '--concurrency=1']
     # JSON is valid YAML, keeping generated paths and strings unambiguous.
     override.write_text(json.dumps({'services': services}, indent=2))
-    command = [DOCKER, 'compose', '-p', project, '-f', str(root / 'deploy/compose.yaml'), '-f', str(override)]
+    command = [DOCKER, 'compose', '-p', project, '-f', str(root / 'backend/tests/fixtures/compose.sqlite.yaml'), '-f', str(override)]
     command_log = case_dir / 'commands.log'
 
     def compose(*args, timeout=60, check=True):

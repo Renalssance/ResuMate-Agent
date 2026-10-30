@@ -1,0 +1,172 @@
+FFFFFFFFFFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+__ test_cached_summary_excludes_details_and_recent_calls_stay_current[sqlite] __
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10cdf9760>
+
+    @pytest.mark.asyncio
+    async def test_cached_summary_excludes_details_and_recent_calls_stay_current(career_db):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:45: ModuleNotFoundError
+__ test_cached_summary_excludes_details_and_recent_calls_stay_current[mysql] ___
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d4d4710>
+
+    @pytest.mark.asyncio
+    async def test_cached_summary_excludes_details_and_recent_calls_stay_current(career_db):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:45: ModuleNotFoundError
+___ test_twenty_reads_only_aggregate_once_but_read_recent_each_time[sqlite] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d6b3b90>
+
+    @pytest.mark.asyncio
+    async def test_twenty_reads_only_aggregate_once_but_read_recent_each_time(career_db):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:69: ModuleNotFoundError
+____ test_twenty_reads_only_aggregate_once_but_read_recent_each_time[mysql] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d738980>
+
+    @pytest.mark.asyncio
+    async def test_twenty_reads_only_aggregate_once_but_read_recent_each_time(career_db):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:69: ModuleNotFoundError
+___________ test_cache_outage_returns_real_sql_dashboard[sqlite-get] ___________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d705e20>
+failure = 'get'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+___________ test_cache_outage_returns_real_sql_dashboard[sqlite-set] ___________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d890b90>
+failure = 'set'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+_________ test_cache_outage_returns_real_sql_dashboard[sqlite-missing] _________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d8910d0>
+failure = 'missing'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+___________ test_cache_outage_returns_real_sql_dashboard[mysql-get] ____________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d42ad80>
+failure = 'get'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+___________ test_cache_outage_returns_real_sql_dashboard[mysql-set] ____________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10da043b0>
+failure = 'set'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+_________ test_cache_outage_returns_real_sql_dashboard[mysql-missing] __________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d42ad80>
+failure = 'missing'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('failure', ['get', 'set', 'missing'])
+    async def test_cache_outage_returns_real_sql_dashboard(career_db, failure):
+>       from backend.services.dashboard_cache import DashboardCache
+E       ModuleNotFoundError: No module named 'backend.services.dashboard_cache'
+
+backend/tests/test_dashboard_cache.py:96: ModuleNotFoundError
+_________ test_record_commits_before_best_effort_invalidation[sqlite] __________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d893800>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10da59af0>
+
+    def test_record_commits_before_best_effort_invalidation(career_db, monkeypatch):
+>       from backend.services import dashboard_cache, llm_settings
+E       ImportError: cannot import name 'dashboard_cache' from 'backend.services' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/services/__init__.py)
+
+backend/tests/test_dashboard_cache.py:108: ImportError
+__________ test_record_commits_before_best_effort_invalidation[mysql] __________
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10c360ec0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dcdf290>
+
+    def test_record_commits_before_best_effort_invalidation(career_db, monkeypatch):
+>       from backend.services import dashboard_cache, llm_settings
+E       ImportError: cannot import name 'dashboard_cache' from 'backend.services' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/services/__init__.py)
+
+backend/tests/test_dashboard_cache.py:108: ImportError
+______ test_empty_user_summary_and_expired_computation_not_cached[sqlite] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dcdfa10>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dd047a0>
+
+    @pytest.mark.asyncio
+    async def test_empty_user_summary_and_expired_computation_not_cached(career_db, monkeypatch):
+>       from backend.services import dashboard_cache
+E       ImportError: cannot import name 'dashboard_cache' from 'backend.services' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/services/__init__.py)
+
+backend/tests/test_dashboard_cache.py:126: ImportError
+______ test_empty_user_summary_and_expired_computation_not_cached[mysql] _______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dc15b80>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dd04d40>
+
+    @pytest.mark.asyncio
+    async def test_empty_user_summary_and_expired_computation_not_cached(career_db, monkeypatch):
+>       from backend.services import dashboard_cache
+E       ImportError: cannot import name 'dashboard_cache' from 'backend.services' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/services/__init__.py)
+
+backend/tests/test_dashboard_cache.py:126: ImportError
+=========================== short test summary info ============================
+FAILED backend/tests/test_dashboard_cache.py::test_cached_summary_excludes_details_and_recent_calls_stay_current[sqlite]
+FAILED backend/tests/test_dashboard_cache.py::test_cached_summary_excludes_details_and_recent_calls_stay_current[mysql]
+FAILED backend/tests/test_dashboard_cache.py::test_twenty_reads_only_aggregate_once_but_read_recent_each_time[sqlite]
+FAILED backend/tests/test_dashboard_cache.py::test_twenty_reads_only_aggregate_once_but_read_recent_each_time[mysql]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[sqlite-get]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[sqlite-set]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[sqlite-missing]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[mysql-get]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[mysql-set]
+FAILED backend/tests/test_dashboard_cache.py::test_cache_outage_returns_real_sql_dashboard[mysql-missing]
+FAILED backend/tests/test_dashboard_cache.py::test_record_commits_before_best_effort_invalidation[sqlite]
+FAILED backend/tests/test_dashboard_cache.py::test_record_commits_before_best_effort_invalidation[mysql]
+FAILED backend/tests/test_dashboard_cache.py::test_empty_user_summary_and_expired_computation_not_cached[sqlite]
+FAILED backend/tests/test_dashboard_cache.py::test_empty_user_summary_and_expired_computation_not_cached[mysql]
+14 failed in 3.11s

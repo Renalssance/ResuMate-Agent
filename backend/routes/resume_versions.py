@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from backend.middleware.rate_limit import require_run_capacity
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
@@ -31,7 +32,7 @@ def confirm(version_id: str, request: ResumeVersionConfirm,
     return confirm_version(db, user.id, version_id, request)
 
 
-@router.post('/{version_id}/export', status_code=202, response_model=RunAccepted)
+@router.post('/{version_id}/export', status_code=202, response_model=RunAccepted, dependencies=[Depends(require_run_capacity)])
 def export(version_id: str, request: ResumeVersionExport,
            user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = create_run(db, user.id, RunCreate(kind='resume_export', resume_version_id=version_id,

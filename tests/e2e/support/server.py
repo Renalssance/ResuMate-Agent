@@ -74,7 +74,7 @@ def main():
                AGENT_STATE_DIR=str(STATE / 'agent'), RESUME_EXPORT_DIR=str(STATE / 'exports'),
                RESUMATE_E2E_ROOT=str(STATE), DOCUMENT_STORAGE_ROOT=str(STATE / 'documents'),
                CHROMA_PATH=str(STATE / 'chroma'),
-               JWT_SECRET_KEY=uuid4().hex,
+               JWT_SECRET_KEY=uuid4().hex, RESUMATE_ENV='e2e-' + uuid4().hex,
                REDIS_URL=f'redis://127.0.0.1:{redis_port}/0',
                CLOUDBASE_ENV_ID='', CLOUD_STORAGE_PROVIDER='local',
                LANGSMITH_TRACING='false', LOG_LEVEL='WARNING',
@@ -138,7 +138,7 @@ def main():
         paused_id = response.json()['runId']
         wait_for(lambda: client.get('/api/agent/runs/' + paused_id).json()['status'] == 'waiting_input',
                  'real checkpoint-backed paused Run')
-    (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id, 'workerPid': worker.pid, 'redisUrl': env['REDIS_URL']}))
+    (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id, 'workerPid': worker.pid, 'redisUrl': env['REDIS_URL'], 'redisNamespace': 'resumate:' + env['RESUMATE_ENV']}))
     start(['npm', '--prefix', 'frontend', 'run', 'dev', '--', '--host', '127.0.0.1',
            '--port', '4173', '--strictPort'], env, 'frontend')
     start(['node', 'extension/fixtures/static-server.js'], env, 'extension-fixtures')

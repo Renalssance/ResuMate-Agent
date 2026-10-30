@@ -1,0 +1,1006 @@
+{"at": "2026-10-30T01:37:49.897588+00:00", "args": ["up", "-d", "--no-build", "--wait"], "exit_code": 0}
+ Network resumate-t20-723a546aee_default Creating
+ Volume resumate-t20-723a546aee_agent-state Creating
+ Network resumate-t20-723a546aee_default Creating
+ Volume resumate-t20-723a546aee_backend-data Creating
+ Volume resumate-t20-723a546aee_backend-data Creating
+ Volume resumate-t20-723a546aee_agent-state Creating
+ Volume resumate-t20-723a546aee_redis-data Creating
+ Volume resumate-t20-723a546aee_redis-data Creating
+ Volume resumate-t20-723a546aee_mysql-data Creating
+ Volume resumate-t20-723a546aee_mysql-data Creating
+ Volume resumate-t20-723a546aee_agent-state Created
+ Volume resumate-t20-723a546aee_agent-state Created
+ Volume resumate-t20-723a546aee_backend-data Created
+ Volume resumate-t20-723a546aee_backend-data Created
+ Volume resumate-t20-723a546aee_mysql-data Created
+ Volume resumate-t20-723a546aee_mysql-data Created
+ Volume resumate-t20-723a546aee_redis-data Created
+ Volume resumate-t20-723a546aee_redis-data Created
+ Network resumate-t20-723a546aee_default Created
+ Network resumate-t20-723a546aee_default Created
+ Container resumate-t20-723a546aee-redis-1 Creating
+ Container resumate-t20-723a546aee-mysql-1 Creating
+ Container resumate-t20-723a546aee-mysql-1 Created
+ Container resumate-t20-723a546aee-schema-1 Creating
+ Container resumate-t20-723a546aee-redis-1 Created
+ Container resumate-t20-723a546aee-scheduler-1 Creating
+ Container resumate-t20-723a546aee-schema-1 Created
+ Container resumate-t20-723a546aee-api2-1 Creating
+ Container resumate-t20-723a546aee-worker-1 Creating
+ Container resumate-t20-723a546aee-api-1 Creating
+ Container resumate-t20-723a546aee-scheduler-1 Created
+ Container resumate-t20-723a546aee-worker-1 Created
+ Container resumate-t20-723a546aee-api-1 Created
+ Container resumate-t20-723a546aee-api2-1 Created
+ Container resumate-t20-723a546aee-mysql-1 Starting
+ Container resumate-t20-723a546aee-redis-1 Starting
+ Container resumate-t20-723a546aee-mysql-1 Started
+ Container resumate-t20-723a546aee-mysql-1 Waiting
+ Container resumate-t20-723a546aee-redis-1 Started
+ Container resumate-t20-723a546aee-redis-1 Waiting
+ Container resumate-t20-723a546aee-mysql-1 Healthy
+ Container resumate-t20-723a546aee-schema-1 Starting
+ Container resumate-t20-723a546aee-redis-1 Healthy
+ Container resumate-t20-723a546aee-scheduler-1 Starting
+ Container resumate-t20-723a546aee-schema-1 Started
+ Container resumate-t20-723a546aee-schema-1 Waiting
+ Container resumate-t20-723a546aee-schema-1 Waiting
+ Container resumate-t20-723a546aee-redis-1 Waiting
+ Container resumate-t20-723a546aee-schema-1 Waiting
+ Container resumate-t20-723a546aee-scheduler-1 Started
+ Container resumate-t20-723a546aee-redis-1 Healthy
+ Container resumate-t20-723a546aee-schema-1 Exited
+ Container resumate-t20-723a546aee-schema-1 Exited
+ Container resumate-t20-723a546aee-worker-1 Starting
+ Container resumate-t20-723a546aee-api2-1 Starting
+ Container resumate-t20-723a546aee-schema-1 Exited
+ Container resumate-t20-723a546aee-api-1 Starting
+ Container resumate-t20-723a546aee-worker-1 Started
+ Container resumate-t20-723a546aee-api2-1 Started
+ Container resumate-t20-723a546aee-api-1 Started
+ Container resumate-t20-723a546aee-schema-1 Waiting
+ Container resumate-t20-723a546aee-redis-1 Waiting
+ Container resumate-t20-723a546aee-scheduler-1 Waiting
+ Container resumate-t20-723a546aee-api-1 Waiting
+ Container resumate-t20-723a546aee-api2-1 Waiting
+ Container resumate-t20-723a546aee-worker-1 Waiting
+ Container resumate-t20-723a546aee-mysql-1 Waiting
+ Container resumate-t20-723a546aee-mysql-1 Healthy
+ Container resumate-t20-723a546aee-redis-1 Healthy
+ Container resumate-t20-723a546aee-worker-1 Healthy
+ Container resumate-t20-723a546aee-schema-1 Exited
+ Container resumate-t20-723a546aee-scheduler-1 Healthy
+ Container resumate-t20-723a546aee-api-1 Healthy
+ Container resumate-t20-723a546aee-api2-1 Healthy
+
+{"at": "2026-10-30T01:37:51.294781+00:00", "args": ["exec", "-T", "worker", "python", "-c", "import json; from pathlib import Path; from backend.worker_tasks import execution_lock; \nwith execution_lock() as acquired: print(json.dumps({'lock':acquired,'directory':Path('/app/agent-state').exists()}))"], "exit_code": 0}
+{"lock": true, "directory": true}
+
+{"at": "2026-10-30T01:37:51.586897+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "PTTL", "resumate:resumate-t20-723a546aee:rl:run:3"], "exit_code": 0}
+59740
+
+{"at": "2026-10-30T01:37:52.781598+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "PTTL", "resumate:resumate-t20-723a546aee:rl:run:3"], "exit_code": 0}
+58550
+
+{"at": "2026-10-30T01:37:55.231095+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "EXISTS", "resumate:resumate-t20-723a546aee:stats:1"], "exit_code": 0}
+1
+
+{"at": "2026-10-30T01:37:55.761583+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "EXISTS", "resumate:resumate-t20-723a546aee:stats:1"], "exit_code": 0}
+0
+
+{"at": "2026-10-30T01:37:55.853883+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "PTTL", "resumate:resumate-t20-723a546aee:stats:1"], "exit_code": 0}
+29929
+
+{"at": "2026-10-30T01:38:32.946596+00:00", "args": ["stop", "-t", "5", "worker", "scheduler"], "exit_code": 0}
+ Container resumate-t20-723a546aee-scheduler-1 Stopping
+ Container resumate-t20-723a546aee-worker-1 Stopping
+ Container resumate-t20-723a546aee-scheduler-1 Stopped
+ Container resumate-t20-723a546aee-worker-1 Stopped
+
+{"at": "2026-10-30T01:38:33.501799+00:00", "args": ["stop", "-t", "2", "redis"], "exit_code": 0}
+ Container resumate-t20-723a546aee-redis-1 Stopping
+ Container resumate-t20-723a546aee-redis-1 Stopped
+
+{"at": "2026-10-30T01:38:38.930565+00:00", "args": ["start", "redis"], "exit_code": 0}
+ Container resumate-t20-723a546aee-redis-1 Starting
+ Container resumate-t20-723a546aee-redis-1 Started
+
+{"at": "2026-10-30T01:38:38.990822+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "PING"], "exit_code": 0}
+PONG
+
+{"at": "2026-10-30T01:38:44.220020+00:00", "args": ["start", "worker", "scheduler"], "exit_code": 0}
+ Container resumate-t20-723a546aee-mysql-1 Waiting
+ Container resumate-t20-723a546aee-redis-1 Waiting
+ Container resumate-t20-723a546aee-mysql-1 Healthy
+ Container resumate-t20-723a546aee-schema-1 Starting
+ Container resumate-t20-723a546aee-schema-1 Started
+ Container resumate-t20-723a546aee-redis-1 Waiting
+ Container resumate-t20-723a546aee-schema-1 Waiting
+ Container resumate-t20-723a546aee-schema-1 Exited
+ Container resumate-t20-723a546aee-redis-1 Healthy
+ Container resumate-t20-723a546aee-scheduler-1 Starting
+ Container resumate-t20-723a546aee-scheduler-1 Started
+ Container resumate-t20-723a546aee-redis-1 Healthy
+ Container resumate-t20-723a546aee-worker-1 Starting
+ Container resumate-t20-723a546aee-worker-1 Started
+
+{"at": "2026-10-30T01:38:49.135723+00:00", "args": ["exec", "-T", "worker", "python", "-c", "import json; from langgraph.checkpoint.sqlite import SqliteSaver; \nwith SqliteSaver.from_conn_string('/app/agent-state/checkpoints.sqlite') as saver: print(json.dumps({'exists':saver.get_tuple({'configurable':{'thread_id':'626a3ae0-c4a2-4d79-a44f-2ab697c3d6d0'}}) is not None}))"], "exit_code": 0}
+{"exists": true}
+
+{"at": "2026-10-30T01:38:49.508954+00:00", "args": ["exec", "-T", "redis", "redis-cli", "--raw", "PTTL", "resumate:resumate-t20-723a546aee:stats:1"], "exit_code": 0}
+6433
+
+{"at": "2026-10-30T01:38:56.652986+00:00", "args": ["--profile", "oom", "up", "-d", "redis-oom"], "exit_code": 0}
+ Container resumate-t20-723a546aee-redis-oom-1 Creating
+ Container resumate-t20-723a546aee-redis-oom-1 Created
+ Container resumate-t20-723a546aee-redis-oom-1 Starting
+ Container resumate-t20-723a546aee-redis-oom-1 Started
+
+{"at": "2026-10-30T01:38:57.897468+00:00", "args": ["exec", "-T", "api", "python", "-m", "backend.tests.fixtures.redis_oom"], "exit_code": 0}
+{"markerPresent": true, "policy": "noeviction", "usedMemory": 8370400, "maxmemory": 1, "limiterUnavailable": true, "ticketUnavailable": true, "cacheCalls": 3}
+WARNING:backend.infrastructure.redis_client:redis_capacity_high namespace=resumate:resumate-t20-723a546aee used_bytes=8433296 max_bytes=1 ratio=8433296.000
+WARNING:backend.services.dashboard_cache:Usage cache write unavailable error=OutOfMemoryError
+
+{"at": "2026-10-30T01:38:57.992826+00:00", "args": ["logs", "--no-color"], "exit_code": 0}
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-30 01:37:44
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-30 01:37:44,364: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-30 01:37:59,401: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-30 01:38:14,376: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-30 01:38:29,376: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-30 01:38:45
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-30 01:38:45,555: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-30 01:38:45,568: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+api2-1       | 2026-10-30 01:37:47,770 | INFO | backend.app | Creating FastAPI app
+api2-1       | INFO:     Started server process [1]
+api2-1       | INFO:     Waiting for application startup.
+api2-1       | 2026-10-30 01:37:47,795 | INFO | backend.app | Startup: initializing database
+api2-1       | 2026-10-30 01:37:47,824 | INFO | backend.app | Startup: database and Redis resources initialized
+api2-1       | INFO:     Application startup complete.
+api2-1       | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api2-1       | 2026-10-30 01:37:49,458 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:37:49,459 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:42700 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:49,986 | INFO | backend.app | Request start | method=GET path=/__redis_test/topology client=172.18.0.1
+api2-1       | 2026-10-30 01:37:50,014 | INFO | backend.app | Request end | method=GET path=/__redis_test/topology status=200 duration_ms=28
+api2-1       | INFO:     172.18.0.1:55710 - "GET /__redis_test/topology HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,303 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,304 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,305 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,305 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,305 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,307 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,308 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,309 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,331 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=27
+api2-1       | INFO:     172.18.0.1:55718 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,338 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,338 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:37:51,350 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=12
+api2-1       | INFO:     172.18.0.1:55812 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,403 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=100
+api2-1       | INFO:     172.18.0.1:55710 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,440 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=134
+api2-1       | INFO:     172.18.0.1:55740 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,449 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=143
+api2-1       | INFO:     172.18.0.1:55728 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:51,462 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:37:51,463 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=155
+api2-1       | INFO:     172.18.0.1:55764 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:37:51,471 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:37:51,478 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=170
+api2-1       | INFO:     172.18.0.1:55756 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:37:51,481 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:37:51,482 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:37:51,483 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=173
+api2-1       | INFO:     172.18.0.1:55780 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:37:51,485 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=179
+api2-1       | INFO:     172.18.0.1:55730 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:37:51,496 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:37:51,497 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=159
+api2-1       | INFO:     172.18.0.1:55796 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@9d75974e8518 v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-30 01:37:47
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffff7b970680
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . redis_test.record_usage
+mysql-1      | 2026-10-30 01:37:37+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | 2026-10-30 01:37:37+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+mysql-1      | 2026-10-30 01:37:37+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | 2026-10-30 01:37:37+00:00 [Note] [Entrypoint]: Initializing database files
+mysql-1      | 2026-10-30T01:37:37.264944Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+mysql-1      | 2026-10-30T01:37:37.265601Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.13) initializing of server in progress as process 80
+mysql-1      | 2026-10-30T01:37:37.265602Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T01:37:37.271679Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T01:37:37.398836Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T01:37:37.757384Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+mysql-1      | 2026-10-30T01:37:39.193291Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
+mysql-1      | 2026-10-30 01:37:39+00:00 [Note] [Entrypoint]: Database files initialized
+mysql-1      | 2026-10-30 01:37:39+00:00 [Note] [Entrypoint]: Starting temporary server
+mysql-1      | 2026-10-30T01:37:39.233210Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1      | 2026-10-30T01:37:39.394247Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 122
+mysql-1      | 2026-10-30T01:37:39.394249Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T01:37:39.400399Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T01:37:39.483345Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T01:37:39.601116Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1      | 2026-10-30T01:37:39.601131Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1      | 2026-10-30T01:37:39.602065Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1      | 2026-10-30T01:37:39.607637Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
+mysql-1      | 2026-10-30T01:37:39.607673Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
+mysql-1      | 2026-10-30 01:37:39+00:00 [Note] [Entrypoint]: Temporary server started.
+redis-1      | 1:C 30 Oct 2026 01:37:37.135 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1      | 1:C 30 Oct 2026 01:37:37.135 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 30 Oct 2026 01:37:37.135 * Configuration loaded
+redis-1      | 1:M 30 Oct 2026 01:37:37.135 * monotonic clock: POSIX clock_gettime
+redis-1      | 1:M 30 Oct 2026 01:37:37.135 * Running mode=standalone, port=6379.
+redis-1      | 1:M 30 Oct 2026 01:37:37.136 * Server initialized
+redis-1      | 1:M 30 Oct 2026 01:37:37.137 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+redis-1      | 1:M 30 Oct 2026 01:37:37.138 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+redis-1      | 1:M 30 Oct 2026 01:37:37.138 * Ready to accept connections tcp
+redis-1      | 1:signal-handler (1793324313) Received SIGTERM scheduling shutdown...
+redis-1      | 1:M 30 Oct 2026 01:38:33.406 * User requested shutdown...
+redis-1      | 1:M 30 Oct 2026 01:38:33.406 * Calling fsync() on the AOF file.
+redis-1      | 1:M 30 Oct 2026 01:38:33.406 * Saving the final RDB snapshot before exiting.
+redis-1      | 1:M 30 Oct 2026 01:38:33.408 * DB saved on disk
+redis-1      | 1:M 30 Oct 2026 01:38:33.408 # Redis is now ready to exit, bye bye...
+redis-1      | 1:C 30 Oct 2026 01:38:38.923 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1      | 1:C 30 Oct 2026 01:38:38.923 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 30 Oct 2026 01:38:38.923 * Configuration loaded
+redis-1      | 1:M 30 Oct 2026 01:38:38.923 * monotonic clock: POSIX clock_gettime
+mysql-1      | '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * Running mode=standalone, port=6379.
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * Server initialized
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * Reading RDB base file on AOF loading...
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * Loading RDB produced by version 7.4.12
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * RDB age 61 seconds
+api2-1       | 2026-10-30 01:37:52,793 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api2-1       | 2026-10-30 01:37:52,796 | INFO | backend.app | Request end | method=POST path=/auth/login status=401 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+api2-1       | 2026-10-30 01:37:52,802 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api2-1       | 2026-10-30 01:37:52,805 | INFO | backend.app | Request end | method=POST path=/auth/login status=401 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * RDB memory usage when created 0.94 Mb
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * RDB is base AOF
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * Done loading RDB, keys loaded: 0, keys expired: 0.
+redis-1      | 1:M 30 Oct 2026 01:38:38.924 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
+redis-1      | 1:M 30 Oct 2026 01:38:38.925 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.001 seconds
+redis-1      | 1:M 30 Oct 2026 01:38:38.925 * DB loaded from append only file: 0.001 seconds
+redis-1      | 1:M 30 Oct 2026 01:38:38.925 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
+redis-1      | 1:M 30 Oct 2026 01:38:38.925 * Ready to accept connections tcp
+api2-1       | 2026-10-30 01:37:52,809 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api2-1       | 2026-10-30 01:37:52,810 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=auth subject=ip:203.0.113.20 path=/auth/login
+api2-1       | 2026-10-30 01:37:52,810 | INFO | backend.app | Request end | method=POST path=/auth/login status=429 duration_ms=0
+api2-1       | INFO:     172.18.0.1:55710 - "POST /auth/login HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:37:52,821 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api2-1       | 2026-10-30 01:37:52,822 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=200 duration_ms=0
+api2-1       | INFO:     172.18.0.1:55710 - "POST /__redis_test/consume HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:54,668 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:37:54,668 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+mysql-1      | 2026-10-30 01:37:40+00:00 [Note] [Entrypoint]: Creating database resumate
+api2-1       | INFO:     127.0.0.1:59894 - "GET /healthz HTTP/1.1" 200 OK
+mysql-1      | 2026-10-30 01:37:40+00:00 [Note] [Entrypoint]: Creating user resumate
+api2-1       | 2026-10-30 01:37:54,947 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api2-1       | 2026-10-30 01:37:54,949 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "POST /__redis_test/consume HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:54,982 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api2-1       | 2026-10-30 01:37:54,983 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:55710 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+mysql-1      | 2026-10-30 01:37:40+00:00 [Note] [Entrypoint]: Giving user resumate access to schema resumate
+api2-1       | 2026-10-30 01:37:55,008 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+mysql-1      |
+api2-1       | 2026-10-30 01:37:55,020 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=12
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,035 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,041 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=5
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,052 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,056 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=3
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,065 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,069 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=4
+worker-1     |   . resumate.execute_run
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,077 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,079 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,086 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,088 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,094 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,096 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,105 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+worker-1     |   . resumate.recover_runs
+api2-1       | 2026-10-30 01:37:55,107 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+worker-1     |
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,113 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,115 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+mysql-1      | 2026-10-30 01:37:40+00:00 [Note] [Entrypoint]: Stopping temporary server
+worker-1     | [2026-10-30 01:37:47,420: INFO/MainProcess] Connected to redis://redis:6379/0
+mysql-1      | 2026-10-30T01:37:40.148951Z 13 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.4.13).
+worker-1     | [2026-10-30 01:37:47,424: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-30 01:37:48,438: INFO/MainProcess] mingle: all alone
+mysql-1      | 2026-10-30T01:37:41.121169Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.13)  MySQL Community Server - GPL.
+worker-1     | [2026-10-30 01:37:48,459: INFO/MainProcess] celery@9d75974e8518 ready.
+worker-1     | [2026-10-30 01:37:55,364: INFO/MainProcess] Task redis_test.record_usage[aad6cb6d-56dc-4678-91bc-d1133603231b] received
+worker-1     | [2026-10-30 01:37:55,413: INFO/ForkPoolWorker-1] Task redis_test.record_usage[aad6cb6d-56dc-4678-91bc-d1133603231b] succeeded in 0.04815858400002071s: None
+worker-1     | [2026-10-30 01:37:59,414: INFO/MainProcess] Task resumate.recover_runs[bbf901a5-63d8-4e34-8b26-bb6b4524a9cd] received
+worker-1     | [2026-10-30 01:37:59,432: INFO/ForkPoolWorker-1] Task resumate.recover_runs[bbf901a5-63d8-4e34-8b26-bb6b4524a9cd] succeeded in 0.01741900000001806s: 0
+worker-1     | [2026-10-30 01:38:14,381: INFO/MainProcess] Task resumate.recover_runs[231bd97f-528a-44af-baf6-66b33549c75c] received
+worker-1     | [2026-10-30 01:38:14,396: INFO/ForkPoolWorker-1] Task resumate.recover_runs[231bd97f-528a-44af-baf6-66b33549c75c] succeeded in 0.011594833000003746s: 0
+api2-1       | 2026-10-30 01:37:55,123 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,125 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,130 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,130 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=0
+worker-1     | [2026-10-30 01:38:29,381: INFO/MainProcess] Task resumate.recover_runs[239d241e-4a36-4887-998d-d5b3c070473e] received
+mysql-1      | 2026-10-30T01:37:41.121190Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+mysql-1      | 2026-10-30 01:37:41+00:00 [Note] [Entrypoint]: Temporary server stopped
+mysql-1      |
+mysql-1      | 2026-10-30 01:37:41+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.
+mysql-1      |
+mysql-1      | 2026-10-30T01:37:41.161317Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1      | 2026-10-30T01:37:41.312745Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 1
+mysql-1      | 2026-10-30T01:37:41.312747Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T01:37:41.315284Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T01:37:41.385027Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T01:37:41.490212Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1      | 2026-10-30T01:37:41.490227Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1      | 2026-10-30T01:37:41.491076Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+worker-1     | [2026-10-30 01:38:29,386: INFO/ForkPoolWorker-1] Task resumate.recover_runs[239d241e-4a36-4887-998d-d5b3c070473e] succeeded in 0.00480175000006966s: 0
+mysql-1      | 2026-10-30T01:37:41.496497Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+worker-1     |
+mysql-1      | 2026-10-30T01:37:41.496537Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+worker-1     | worker: Warm shutdown (MainProcess)
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+api2-1       | INFO:     172.18.0.1:55710 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:55,763 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:37:55,773 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=9
+api2-1       | INFO:     172.18.0.1:55710 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:37:59,854 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:37:59,855 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+worker-1     |
+api2-1       | INFO:     127.0.0.1:59920 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:05,036 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:05,038 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api2-1       | INFO:     127.0.0.1:35304 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:10,230 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:10,230 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:35312 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:15,407 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:15,407 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:51732 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:20,583 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:20,583 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:51748 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:25,765 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:25,765 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:58392 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:25,958 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:25,959 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:25,968 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=10
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+api2-1       | INFO:     172.18.0.1:59762 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+worker-1     |
+worker-1     |  -------------- celery@9d75974e8518 v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-30 01:38:46
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffffa3c56f30
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+api2-1       | 2026-10-30 01:38:26,236 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:26,238 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:59762 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:26,266 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=200 duration_ms=307
+api2-1       | INFO:     172.18.0.1:59760 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 200 OK
+worker-1     |
+api2-1       | 2026-10-30 01:38:26,270 | INFO | backend.app | Request start | method=POST path=/__redis_test/reader/stop client=172.18.0.1
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . redis_test.record_usage
+worker-1     |   . resumate.execute_run
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-30 01:38:46,935: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-30 01:38:46,936: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-30 01:38:47,948: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-30 01:38:47,966: INFO/MainProcess] celery@9d75974e8518 ready.
+worker-1     | [2026-10-30 01:38:47,970: INFO/MainProcess] Task resumate.recover_runs[18237f02-addc-4cf2-9170-f08e87e0af50] received
+worker-1     | [2026-10-30 01:38:48,041: INFO/ForkPoolWorker-1] Task resumate.recover_runs[18237f02-addc-4cf2-9170-f08e87e0af50] succeeded in 0.07042525000008482s: 1
+worker-1     | [2026-10-30 01:38:48,042: INFO/MainProcess] Task resumate.execute_run[c04fc6f6-9efb-40ee-a650-722980c6265d] received
+worker-1     | [2026-10-30 01:38:48,192: INFO/ForkPoolWorker-1] Task resumate.execute_run[c04fc6f6-9efb-40ee-a650-722980c6265d] succeeded in 0.14995554199992966s: None
+api2-1       | 2026-10-30 01:38:26,272 | INFO | backend.app | Request end | method=POST path=/__redis_test/reader/stop status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:59760 - "POST /__redis_test/reader/stop HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:26,275 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:26,275 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:26,276 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=0
+api2-1       | INFO:     172.18.0.1:59760 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:26,537 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:26,537 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=0
+api2-1       | INFO:     172.18.0.1:59760 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:28,295 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=200 duration_ms=2019
+api2-1       | INFO:     172.18.0.1:59762 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:28,299 | INFO | backend.app | Request start | method=POST path=/__redis_test/reader/start client=172.18.0.1
+api2-1       | 2026-10-30 01:38:28,302 | INFO | backend.app | Request end | method=POST path=/__redis_test/reader/start status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:59760 - "POST /__redis_test/reader/start HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:28,306 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:28,307 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:28,309 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:59760 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:28,574 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:28,575 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:59760 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:47,766 | INFO | backend.app | Creating FastAPI app
+api2-1       | 2026-10-30 01:38:28,613 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=200 duration_ms=306
+api2-1       | INFO:     172.18.0.1:59762 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:30,952 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:30,953 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:58404 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:33,224 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:33,244 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=20
+api-1        | INFO:     Started server process [1]
+api-1        | INFO:     Waiting for application startup.
+api-1        | 2026-10-30 01:37:47,790 | INFO | backend.app | Startup: initializing database
+api-1        | 2026-10-30 01:37:47,823 | INFO | backend.app | Startup: database and Redis resources initialized
+api-1        | INFO:     Application startup complete.
+api-1        | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1        | 2026-10-30 01:37:49,506 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:37:49,507 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:42710 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:49,922 | INFO | backend.app | Request start | method=POST path=/__redis_test/seed client=172.18.0.1
+api2-1       | INFO:     172.18.0.1:59760 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:33,412 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=ConnectionError
+api2-1       | 2026-10-30 01:38:35,421 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=TimeoutError
+api2-1       | 2026-10-30 01:38:36,134 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:36,134 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:43138 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:49,968 | INFO | backend.app | Request end | method=POST path=/__redis_test/seed status=200 duration_ms=45
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/seed HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:49,974 | INFO | backend.app | Request start | method=GET path=/__redis_test/topology client=172.18.0.1
+api-1        | 2026-10-30 01:37:49,979 | INFO | backend.app | Request end | method=GET path=/__redis_test/topology status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/topology HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,302 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,303 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,304 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:37,426 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=TimeoutError
+api2-1       | 2026-10-30 01:38:38,552 | ERROR | asyncio | Future exception was never retrieved
+api2-1       | future: <Future finished exception=gaierror(-2, 'Name or service not known')>
+api2-1       | socket.gaierror: [Errno -2] Name or service not known
+api2-1       | 2026-10-30 01:38:38,554 | ERROR | asyncio | Future exception was never retrieved
+api2-1       | future: <Future finished exception=gaierror(-2, 'Name or service not known')>
+api2-1       | socket.gaierror: [Errno -2] Name or service not known
+api-1        | 2026-10-30 01:37:51,307 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:38,564 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=ConnectionError
+api2-1       | 2026-10-30 01:38:38,732 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api2-1       | 2026-10-30 01:38:38,739 | WARNING | backend.services.dashboard_cache | Usage cache read unavailable error=ConnectionError
+api2-1       | 2026-10-30 01:38:38,746 | WARNING | backend.services.dashboard_cache | Usage cache write unavailable error=ConnectionError
+api-1        | 2026-10-30 01:37:51,308 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:38,748 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=16
+api-1        | 2026-10-30 01:37:51,308 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,310 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,310 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,310 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,326 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=24
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,338 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,350 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=11
+api-1        | INFO:     172.18.0.1:60648 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,437 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=129
+api-1        | INFO:     172.18.0.1:60610 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api2-1       | INFO:     172.18.0.1:55706 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,451 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=141
+api-1        | INFO:     172.18.0.1:60628 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,454 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=144
+api-1        | INFO:     172.18.0.1:60640 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:51,475 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:37:51,478 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=174
+api-1        | INFO:     172.18.0.1:60586 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:37:51,496 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:38,777 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:38,779 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:55706 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:41,316 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:41,316 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:43162 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:46,473 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:46,474 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=1
+api2-1       | INFO:     127.0.0.1:37820 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:49,137 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,497 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:37:51,497 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:37:51,498 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:37:51,498 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=190
+api-1        | INFO:     172.18.0.1:60624 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:37:51,499 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=192
+api-1        | INFO:     172.18.0.1:60594 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:37:51,500 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=189
+api-1        | INFO:     172.18.0.1:60636 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,147 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=200 duration_ms=10
+api2-1       | INFO:     172.18.0.1:63758 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:49,153 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,156 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,156 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,157 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,157 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,158 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,159 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:51,500 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=196
+api-1        | INFO:     172.18.0.1:60592 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:37:52,650 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,657 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=3 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:37:52,659 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=8
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:37:52,782 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,159 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,159 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,160 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api2-1       | 2026-10-30 01:38:49,163 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=10
+api-1        | 2026-10-30 01:37:52,785 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.1:63758 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:52,787 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/chat client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,788 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/chat status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/rate/chat HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:52,789 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,792 | INFO | backend.app | Request end | method=POST path=/auth/login status=401 duration_ms=2
+api2-1       | 2026-10-30 01:38:49,288 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,289 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=133
+api-1        | INFO:     172.18.0.1:60574 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+api-1        | 2026-10-30 01:37:52,798 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,800 | INFO | backend.app | Request end | method=POST path=/auth/login status=401 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+api-1        | 2026-10-30 01:37:52,806 | INFO | backend.app | Request start | method=POST path=/auth/login client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,808 | INFO | backend.app | Request end | method=POST path=/auth/login status=401 duration_ms=1
+api-1        | INFO:     172.18.0.1:60574 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+api-1        | 2026-10-30 01:37:52,813 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,819 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:52,821 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api2-1       | INFO:     172.18.0.1:63774 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:52,821 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/consume HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:52,823 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,823 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/consume HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:49,291 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,292 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,292 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=135
+api2-1       | INFO:     172.18.0.1:63792 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,293 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=135
+api2-1       | INFO:     172.18.0.1:63806 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,294 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=137
+api2-1       | INFO:     172.18.0.1:63784 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,392 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,394 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,394 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,395 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,395 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=237
+api-1        | 2026-10-30 01:37:52,824 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,827 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=404 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 404 Not Found
+api-1        | 2026-10-30 01:37:52,829 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:37:52,832 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:54,703 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:37:54,703 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:59910 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:54,954 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api2-1       | INFO:     172.18.0.1:63822 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,396 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=237
+api2-1       | INFO:     172.18.0.1:63838 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,397 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api2-1       | 2026-10-30 01:38:49,397 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=238
+api2-1       | INFO:     172.18.0.1:63854 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,398 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=238
+api2-1       | INFO:     172.18.0.1:63870 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:49,399 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=238
+api2-1       | INFO:     172.18.0.1:63872 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api2-1       | 2026-10-30 01:38:51,656 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:51,656 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:44458 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:56,086 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:56,087 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api2-1       | 2026-10-30 01:38:56,088 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:62592 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:56,352 | INFO | backend.app | Request start | method=GET path=/__redis_test/consumers client=172.18.0.1
+api2-1       | 2026-10-30 01:38:56,353 | INFO | backend.app | Request end | method=GET path=/__redis_test/consumers status=200 duration_ms=1
+api2-1       | INFO:     172.18.0.1:62592 - "GET /__redis_test/consumers HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:56,375 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=200 duration_ms=287
+api2-1       | INFO:     172.18.0.1:62594 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 01:38:56,807 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api2-1       | 2026-10-30 01:38:56,807 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api2-1       | INFO:     127.0.0.1:44486 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:54,956 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=401 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 401 Unauthorized
+api-1        | 2026-10-30 01:37:54,961 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:37:54,968 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=401 duration_ms=6
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 401 Unauthorized
+api-1        | 2026-10-30 01:37:54,977 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api-1        | 2026-10-30 01:37:54,978 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:54,986 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,004 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=17
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,025 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,030 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,044 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,049 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,059 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,062 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,072 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,074 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,082 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,084 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,091 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,092 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,099 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,102 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,109 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,111 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,118 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,121 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,128 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,128 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,132 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,136 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:60574 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,232 | INFO | backend.app | Request start | method=POST path=/__redis_test/usage client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,363 | INFO | backend.app | Request end | method=POST path=/__redis_test/usage status=200 duration_ms=130
+api-1        | INFO:     172.18.0.1:60574 - "POST /__redis_test/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,365 | INFO | backend.app | Request start | method=GET path=/__redis_test/state client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,369 | INFO | backend.app | Request end | method=GET path=/__redis_test/state status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/state HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,632 | INFO | backend.app | Request start | method=GET path=/__redis_test/state client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,641 | INFO | backend.app | Request end | method=GET path=/__redis_test/state status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/state HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:55,855 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api-1        | 2026-10-30 01:37:55,856 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:60574 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:37:59,862 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:37:59,863 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:59930 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:05,036 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:05,037 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35288 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:10,230 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:10,230 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:35310 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:15,406 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:15,407 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:51730 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:20,583 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:20,583 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:51744 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:25,767 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:25,768 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:58402 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:25,894 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:38:25,935 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=40
+api-1        | INFO:     172.18.0.1:65170 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:25,944 | INFO | backend.app | Request start | method=GET path=/__redis_test/counts client=172.18.0.1
+api-1        | 2026-10-30 01:38:25,945 | INFO | backend.app | Request end | method=GET path=/__redis_test/counts status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:65170 - "GET /__redis_test/counts HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:26,244 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/1 client=172.18.0.1
+api-1        | 2026-10-30 01:38:26,262 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/1 status=200 duration_ms=18
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/events/interview-1/1 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:26,541 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/2 client=172.18.0.1
+api-1        | 2026-10-30 01:38:26,549 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/2 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/events/interview-1/2 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,580 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/3 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,589 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/3 status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/events/interview-1/3 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,593 | INFO | backend.app | Request start | method=POST path=/__redis_test/hint/interview-1/3 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,595 | INFO | backend.app | Request end | method=POST path=/__redis_test/hint/interview-1/3 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/hint/interview-1/3 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,599 | INFO | backend.app | Request start | method=POST path=/__redis_test/hint/interview-1/3 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,601 | INFO | backend.app | Request end | method=POST path=/__redis_test/hint/interview-1/3 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/hint/interview-1/3 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,603 | INFO | backend.app | Request start | method=POST path=/__redis_test/hint/interview-1/3 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,604 | INFO | backend.app | Request end | method=POST path=/__redis_test/hint/interview-1/3 status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/hint/interview-1/3 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,606 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/4 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,610 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/4 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/events/interview-1/4 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:28,616 | INFO | backend.app | Request start | method=POST path=/__redis_test/consumer/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:38:28,621 | INFO | backend.app | Request end | method=POST path=/__redis_test/consumer/interview-1 status=404 duration_ms=5
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/consumer/interview-1 HTTP/1.1" 404 Not Found
+api-1        | 2026-10-30 01:38:29,532 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:38:29,542 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=10
+api-1        | INFO:     172.18.0.1:65170 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:30,952 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:30,953 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:58404 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:32,948 | INFO | backend.app | Request start | method=POST path=/__redis_test/barrier/arm client=172.18.0.1
+api-1        | 2026-10-30 01:38:32,949 | INFO | backend.app | Request end | method=POST path=/__redis_test/barrier/arm status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/barrier/arm HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:32,952 | INFO | backend.app | Request start | method=POST path=/api/agent/runs client=172.18.0.1
+api-1        | 2026-10-30 01:38:32,953 | INFO | backend.app | Request start | method=POST path=/__redis_test/barrier/status client=172.18.0.1
+api-1        | 2026-10-30 01:38:32,953 | INFO | backend.app | Request end | method=POST path=/__redis_test/barrier/status status=200 duration_ms=0
+api-1        | INFO:     172.18.0.1:64200 - "POST /__redis_test/barrier/status HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:33,217 | INFO | backend.app | Request start | method=POST path=/__redis_test/barrier/status client=172.18.0.1
+api-1        | 2026-10-30 01:38:33,219 | INFO | backend.app | Request end | method=POST path=/__redis_test/barrier/status status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:64200 - "POST /__redis_test/barrier/status HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:33,412 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=ConnectionError
+api-1        | 2026-10-30 01:38:33,503 | INFO | backend.app | Request start | method=POST path=/__redis_test/barrier/release client=172.18.0.1
+api-1        | 2026-10-30 01:38:33,506 | INFO | backend.app | Request end | method=POST path=/__redis_test/barrier/release status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:64200 - "POST /__redis_test/barrier/release HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:35,421 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=TimeoutError
+api-1        | 2026-10-30 01:38:36,134 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:36,134 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:43140 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:37,426 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=TimeoutError
+api-1        | 2026-10-30 01:38:38,555 | ERROR | asyncio | Future exception was never retrieved
+api-1        | future: <Future finished exception=gaierror(-2, 'Name or service not known')>
+api-1        | socket.gaierror: [Errno -2] Name or service not known
+api-1        | 2026-10-30 01:38:38,557 | ERROR | asyncio | Future exception was never retrieved
+api-1        | future: <Future finished exception=gaierror(-2, 'Name or service not known')>
+api-1        | socket.gaierror: [Errno -2] Name or service not known
+api-1        | 2026-10-30 01:38:38,561 | WARNING | backend.services.run_delivery | Run 48cc392e-3db0-4e51-b4df-bcfbe49f8627 remains queued; broker unavailable
+api-1        | 2026-10-30 01:38:38,563 | INFO | backend.app | Request end | method=POST path=/api/agent/runs status=202 duration_ms=5611
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/agent/runs HTTP/1.1" 202 Accepted
+api-1        | 2026-10-30 01:38:38,565 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t20-723a546aee:interview-hints error=ConnectionError
+api-1        | 2026-10-30 01:38:38,567 | INFO | backend.app | Request start | method=GET path=/__redis_test/state client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,573 | INFO | backend.app | Request end | method=GET path=/__redis_test/state status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:65170 - "GET /__redis_test/state HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:38,576 | INFO | backend.app | Request start | method=POST path=/api/agent/runs client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,587 | INFO | backend.app | Request end | method=POST path=/api/agent/runs status=503 duration_ms=11
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/agent/runs HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,590 | INFO | backend.app | Request start | method=POST path=/api/agent/runs/run-1/retry client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,600 | INFO | backend.app | Request end | method=POST path=/api/agent/runs/run-1/retry status=503 duration_ms=9
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/agent/runs/run-1/retry HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,607 | INFO | backend.app | Request start | method=POST path=/api/documents client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,620 | INFO | backend.app | Request end | method=POST path=/api/documents status=503 duration_ms=12
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/documents HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,623 | INFO | backend.app | Request start | method=POST path=/api/documents/resume:1/parse client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,632 | INFO | backend.app | Request end | method=POST path=/api/documents/resume:1/parse status=503 duration_ms=9
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/documents/resume%3A1/parse HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,636 | INFO | backend.app | Request start | method=POST path=/api/jobs/1/parse client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,646 | INFO | backend.app | Request end | method=POST path=/api/jobs/1/parse status=503 duration_ms=10
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/jobs/1/parse HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,649 | INFO | backend.app | Request start | method=POST path=/api/runs client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,658 | INFO | backend.app | Request end | method=POST path=/api/runs status=503 duration_ms=8
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/runs HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,660 | INFO | backend.app | Request start | method=POST path=/api/runs/1/candidates/1/questions client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,672 | INFO | backend.app | Request end | method=POST path=/api/runs/1/candidates/1/questions status=503 duration_ms=11
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/runs/1/candidates/1/questions HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,674 | INFO | backend.app | Request start | method=POST path=/api/followups/analyze client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,684 | INFO | backend.app | Request end | method=POST path=/api/followups/analyze status=503 duration_ms=9
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/followups/analyze HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,686 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/version-1/export client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,694 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/version-1/export status=503 duration_ms=7
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/resume-versions/version-1/export HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,696 | INFO | backend.app | Request start | method=GET path=/__redis_test/state client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,699 | INFO | backend.app | Request end | method=GET path=/__redis_test/state status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:65170 - "GET /__redis_test/state HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:38,702 | INFO | backend.app | Request start | method=POST path=/__redis_test/tickets/interview-1 client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,712 | INFO | backend.app | Request end | method=POST path=/__redis_test/tickets/interview-1 status=503 duration_ms=10
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/tickets/interview-1 HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,714 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,719 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=503 duration_ms=5
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/consume HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 01:38:38,721 | INFO | backend.app | Request start | method=POST path=/__redis_test/usage-direct client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,729 | WARNING | backend.services.dashboard_cache | Usage cache invalidation unavailable user_id=1 error=ConnectionError
+api-1        | 2026-10-30 01:38:38,729 | INFO | backend.app | Request end | method=POST path=/__redis_test/usage-direct status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/usage-direct HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:38,750 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,754 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.1:65170 - "GET /api/agent/runs/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:38,756 | INFO | backend.app | Request start | method=POST path=/api/agent/runs/run-cancel/cancel client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,763 | INFO | backend.app | Request end | method=POST path=/api/agent/runs/run-cancel/cancel status=202 duration_ms=6
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/agent/runs/run-cancel/cancel HTTP/1.1" 202 Accepted
+api-1        | 2026-10-30 01:38:38,765 | INFO | backend.app | Request start | method=POST path=/api/agent/runs/run-action/actions/action-action client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,771 | INFO | backend.app | Request end | method=POST path=/api/agent/runs/run-action/actions/action-action status=202 duration_ms=6
+api-1        | INFO:     172.18.0.1:65170 - "POST /api/agent/runs/run-action/actions/action-action HTTP/1.1" 202 Accepted
+api-1        | 2026-10-30 01:38:38,773 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/5 client=172.18.0.1
+api-1        | 2026-10-30 01:38:38,775 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/5 status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:65170 - "POST /__redis_test/events/interview-1/5 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:41,315 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:41,316 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:43154 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:44,224 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:44,237 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=13
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:44,499 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:44,502 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:44,761 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:44,764 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:45,024 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:45,026 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:45,283 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:45,286 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:45,540 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:45,543 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:45,800 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:45,802 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:46,061 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:46,064 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:46,317 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:46,320 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:46,472 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:46,473 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:37806 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:46,575 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:46,578 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:46,833 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:46,835 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:47,090 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:47,095 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=4
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:47,353 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:47,362 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:47,620 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:47,626 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=5
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:47,882 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:47,891 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=8
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:48,150 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:48,152 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=2
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:48,407 | INFO | backend.app | Request start | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 client=172.18.0.1
+api-1        | 2026-10-30 01:38:48,416 | INFO | backend.app | Request end | method=GET path=/__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:62152 - "GET /__redis_test/run/48cc392e-3db0-4e51-b4df-bcfbe49f8627 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,149 | INFO | backend.app | Request start | method=POST path=/__redis_test/consume client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,151 | INFO | backend.app | Request end | method=POST path=/__redis_test/consume status=200 duration_ms=1
+api-1        | INFO:     172.18.0.1:62152 - "POST /__redis_test/consume HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,153 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,155 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,156 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,156 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,157 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,158 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,158 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,158 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,159 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,160 | INFO | backend.app | Request start | method=POST path=/__redis_test/rate/run client=172.18.0.1
+api-1        | 2026-10-30 01:38:49,162 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=9
+api-1        | INFO:     172.18.0.1:62152 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,169 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=13
+api-1        | INFO:     172.18.0.1:62162 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,173 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=15
+api-1        | INFO:     172.18.0.1:62198 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,174 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=17
+api-1        | INFO:     172.18.0.1:62176 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,175 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=18
+api-1        | INFO:     172.18.0.1:62190 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,279 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=119
+api-1        | INFO:     172.18.0.1:62234 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,280 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=121
+api-1        | INFO:     172.18.0.1:62214 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,283 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:38:49,283 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=200 duration_ms=126
+api-1        | INFO:     172.18.0.1:62196 - "POST /__redis_test/rate/run HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:49,283 | WARNING | backend.middleware.rate_limit | Rate limit hit: scope=run subject=7 path=/__redis_test/rate/run
+api-1        | 2026-10-30 01:38:49,284 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=126
+api-1        | INFO:     172.18.0.1:62220 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:38:49,285 | INFO | backend.app | Request end | method=POST path=/__redis_test/rate/run status=429 duration_ms=125
+api-1        | INFO:     172.18.0.1:62232 - "POST /__redis_test/rate/run HTTP/1.1" 429 Too Many Requests
+api-1        | 2026-10-30 01:38:51,656 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:51,656 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:44458 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:56,057 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:38:56,079 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=22
+api-1        | INFO:     172.18.0.1:61588 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:56,358 | INFO | backend.app | Request start | method=POST path=/__redis_test/events/interview-1/6 client=172.18.0.1
+api-1        | 2026-10-30 01:38:56,370 | INFO | backend.app | Request end | method=POST path=/__redis_test/events/interview-1/6 status=200 duration_ms=12
+api-1        | INFO:     172.18.0.1:61588 - "POST /__redis_test/events/interview-1/6 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:56,389 | INFO | backend.app | Request start | method=GET path=/api/settings/usage client=172.18.0.1
+api-1        | 2026-10-30 01:38:56,396 | INFO | backend.app | Request end | method=GET path=/api/settings/usage status=200 duration_ms=7
+api-1        | INFO:     172.18.0.1:61588 - "GET /api/settings/usage HTTP/1.1" 200 OK
+api-1        | 2026-10-30 01:38:56,807 | INFO | backend.app | Request start | method=GET path=/healthz client=127.0.0.1
+api-1        | 2026-10-30 01:38:56,807 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     127.0.0.1:44494 - "GET /healthz HTTP/1.1" 200 OK
+
+{"at": "2026-10-30T01:39:02.535168+00:00", "args": ["down", "--volumes", "--remove-orphans"], "exit_code": 0}
+ Container resumate-t20-723a546aee-scheduler-1 Stopping
+ Container resumate-t20-723a546aee-api-1 Stopping
+ Container resumate-t20-723a546aee-worker-1 Stopping
+ Container resumate-t20-723a546aee-api2-1 Stopping
+ Container resumate-t20-723a546aee-scheduler-1 Stopped
+ Container resumate-t20-723a546aee-scheduler-1 Removing
+ Container resumate-t20-723a546aee-scheduler-1 Removed
+ Container resumate-t20-723a546aee-api2-1 Stopped
+ Container resumate-t20-723a546aee-api2-1 Removing
+ Container resumate-t20-723a546aee-api2-1 Removed
+ Container resumate-t20-723a546aee-api-1 Stopped
+ Container resumate-t20-723a546aee-api-1 Removing
+ Container resumate-t20-723a546aee-api-1 Removed
+ Container resumate-t20-723a546aee-worker-1 Stopped
+ Container resumate-t20-723a546aee-worker-1 Removing
+ Container resumate-t20-723a546aee-worker-1 Removed
+ Container resumate-t20-723a546aee-schema-1 Stopping
+ Container resumate-t20-723a546aee-redis-1 Stopping
+ Container resumate-t20-723a546aee-schema-1 Stopped
+ Container resumate-t20-723a546aee-schema-1 Removing
+ Container resumate-t20-723a546aee-schema-1 Removed
+ Container resumate-t20-723a546aee-mysql-1 Stopping
+ Container resumate-t20-723a546aee-redis-1 Stopped
+ Container resumate-t20-723a546aee-redis-1 Removing
+ Container resumate-t20-723a546aee-redis-1 Removed
+ Container resumate-t20-723a546aee-mysql-1 Stopped
+ Container resumate-t20-723a546aee-mysql-1 Removing
+ Container resumate-t20-723a546aee-mysql-1 Removed
+ Volume resumate-t20-723a546aee_agent-state Removing
+ Network resumate-t20-723a546aee_default Removing
+ Volume resumate-t20-723a546aee_redis-data Removing
+ Volume resumate-t20-723a546aee_mysql-data Removing
+ Volume resumate-t20-723a546aee_backend-data Removing
+ Network resumate-t20-723a546aee_default Resource is still in use
+ Volume resumate-t20-723a546aee_mysql-data Removed
+ Volume resumate-t20-723a546aee_agent-state Removed
+ Volume resumate-t20-723a546aee_backend-data Removed
+ Volume resumate-t20-723a546aee_redis-data Removed

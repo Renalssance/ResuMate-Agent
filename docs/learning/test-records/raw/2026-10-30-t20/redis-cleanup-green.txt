@@ -1,0 +1,6 @@
+ Container resumate-t20-723a546aee-redis-oom-1 Stopping
+ Container resumate-t20-723a546aee-redis-oom-1 Stopped
+ Container resumate-t20-723a546aee-redis-oom-1 Removing
+ Container resumate-t20-723a546aee-redis-oom-1 Removed
+ Network resumate-t20-723a546aee_default Removing
+ Network resumate-t20-723a546aee_default Removed

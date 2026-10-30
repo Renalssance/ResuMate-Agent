@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
 from sqlalchemy.orm import Session, sessionmaker
 
+from backend.middleware.rate_limit import require_run_capacity
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
@@ -30,7 +31,7 @@ class RunRoute(APIRoute):
                 return JSONResponse(status_code=422, content={
                     'code': 'invalid_request', 'message': '请求字段无效', 'requestId': request_id})
             except HTTPException as error:
-                code = {401: 'unauthorized', 403: 'forbidden', 429: 'rate_limited'}.get(error.status_code, 'request_failed')
+                code = {401: 'unauthorized', 403: 'forbidden', 429: 'rate_limited', 503: 'dependency_unavailable'}.get(error.status_code, 'request_failed')
                 return JSONResponse(status_code=error.status_code, headers=error.headers, content={
                     'code': code, 'message': str(error.detail), 'requestId': request_id})
         return route
@@ -39,7 +40,7 @@ class RunRoute(APIRoute):
 router = APIRouter(prefix='/api/agent/runs', tags=['agent-runs'], route_class=RunRoute)
 
 
-@router.post('', status_code=202, response_model=RunAccepted)
+@router.post('', status_code=202, response_model=RunAccepted, dependencies=[Depends(require_run_capacity)])
 def create(request: RunCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = agent_runs.create_run(db, user.id, request)
     if run.status == "queued":
@@ -76,7 +77,7 @@ def cancel(run_id: str, user: User = Depends(get_current_user), db: Session = De
     return RunAccepted(run_id=run.id, status=run.status)
 
 
-@router.post('/{run_id}/retry', status_code=202, response_model=RunAccepted)
+@router.post('/{run_id}/retry', status_code=202, response_model=RunAccepted, dependencies=[Depends(require_run_capacity)])
 def retry(run_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     run = agent_runs.retry_run(db, user.id, run_id)
     if run.status == "queued":

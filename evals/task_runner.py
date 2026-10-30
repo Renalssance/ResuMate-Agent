@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import timedelta
 import json
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
 
@@ -72,6 +72,9 @@ def execute_task_case(request):
             yield db
     app = FastAPI()
     app.include_router(documents.router)
+    # Durable SQL/replay scenarios isolate admission, just as they isolate the
+    # external model. Real multi-process Redis limits have their own T20 suite.
+    app.state.rate_limiter = SimpleNamespace(allow_request=AsyncMock(return_value=(True, 0)))
     app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(id=1)
     app.dependency_overrides[get_db] = request_db
     coverage, subject_runs = {}, []
@@ -87,7 +90,7 @@ def execute_task_case(request):
             response = client.post('/api/documents', data={'document_type':'resume','task_id':key},
                 files={'files':('synthetic-resume.txt', case['input']['resume_text'].encode())}, headers={'Prefer':'respond-async'})
             if response.status_code != 202:
-                raise RuntimeError('Upload acceptance failed')
+                raise RuntimeError(f'Upload acceptance failed (HTTP {response.status_code})')
             return response.json()['taskId']
         if case['id'] == 'parse-upload-stable-identity':
             rid = upload(); same = upload()
@@ -203,7 +206,8 @@ def execute_task_case(request):
                   ('embedding_chunks',DocumentEmbeddingChunk)]
         snapshot = {name:[row(item) for item in db.scalars(select(entity))] for name,entity in models}
     output = {'subject_run_ids':subject_runs,'coverage':coverage,'model_calls':model.calls,'model':'synthetic-durable-task-fixture',
-              'database':'isolated SQLite','source_directory':str(originals)}
+              'database':'isolated SQLite','source_directory':str(originals),
+              'admission':'controlled fixture; real Redis limiting is verified separately'}
     verdict = verify_task(case,output,snapshot)
     detail = dict(case_id=case['id'],category=case['category'],mode='stub',status='pass' if verdict['passed'] else 'fail',
                   input=case,output=output,db_snapshot=snapshot,verdict=verdict,semantic=semantic_review('stub'))

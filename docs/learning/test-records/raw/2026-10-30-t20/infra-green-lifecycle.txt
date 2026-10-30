@@ -1,0 +1,16 @@
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_redis_lifecycle.py::test_api_lifespans_have_fresh_resources_and_close_them
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 5 warnings in 1.07s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

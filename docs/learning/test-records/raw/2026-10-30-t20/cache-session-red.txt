@@ -1,0 +1,88 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_usage_route_releases_auth_session_before_waiting_on_redis[sqlite] ____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10d83aae0>
+
+    @pytest.mark.asyncio
+    async def test_usage_route_releases_auth_session_before_waiting_on_redis(career_db):
+        from types import SimpleNamespace
+        from backend.db.models import User
+        from backend.routes.settings import get_llm_usage
+        user = career_db.query(User).filter(User.id == 1).one()
+        assert career_db.in_transaction()
+        class ObservedCache(CacheBoundary):
+            async def get(self, key):
+                assert not career_db.in_transaction(), 'Auth SQL connection held during Redis wait'
+                return await super().get(key)
+        request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+            redis=SimpleNamespace(commands=ObservedCache(), namespace='resumate:test'))))
+>       result = await get_llm_usage(request, user, career_db)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_dashboard_cache.py:150:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/routes/settings.py:34: in get_llm_usage
+    return await cache.usage_dashboard(current_user.id, sessionmaker(bind=db.get_bind()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/services/dashboard_cache.py:36: in usage_dashboard
+    cached = await self.commands.get(key)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_dashboard_cache.test_usage_route_releases_auth_session_before_waiting_on_redis.<locals>.ObservedCache object at 0x10dd152e0>
+key = 'resumate:test:stats:1'
+
+    async def get(self, key):
+>       assert not career_db.in_transaction(), 'Auth SQL connection held during Redis wait'
+E       AssertionError: Auth SQL connection held during Redis wait
+E       assert not True
+E        +  where True = in_transaction()
+E        +    where in_transaction = <sqlalchemy.orm.session.Session object at 0x10d83aae0>.in_transaction
+
+backend/tests/test_dashboard_cache.py:146: AssertionError
+____ test_usage_route_releases_auth_session_before_waiting_on_redis[mysql] _____
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10dab0ec0>
+
+    @pytest.mark.asyncio
+    async def test_usage_route_releases_auth_session_before_waiting_on_redis(career_db):
+        from types import SimpleNamespace
+        from backend.db.models import User
+        from backend.routes.settings import get_llm_usage
+        user = career_db.query(User).filter(User.id == 1).one()
+        assert career_db.in_transaction()
+        class ObservedCache(CacheBoundary):
+            async def get(self, key):
+                assert not career_db.in_transaction(), 'Auth SQL connection held during Redis wait'
+                return await super().get(key)
+        request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+            redis=SimpleNamespace(commands=ObservedCache(), namespace='resumate:test'))))
+>       result = await get_llm_usage(request, user, career_db)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_dashboard_cache.py:150:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+backend/routes/settings.py:34: in get_llm_usage
+    return await cache.usage_dashboard(current_user.id, sessionmaker(bind=db.get_bind()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/services/dashboard_cache.py:36: in usage_dashboard
+    cached = await self.commands.get(key)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_dashboard_cache.test_usage_route_releases_auth_session_before_waiting_on_redis.<locals>.ObservedCache object at 0x10df20b00>
+key = 'resumate:test:stats:1'
+
+    async def get(self, key):
+>       assert not career_db.in_transaction(), 'Auth SQL connection held during Redis wait'
+E       AssertionError: Auth SQL connection held during Redis wait
+E       assert not True
+E        +  where True = in_transaction()
+E        +    where in_transaction = <sqlalchemy.orm.session.Session object at 0x10dab0ec0>.in_transaction
+
+backend/tests/test_dashboard_cache.py:146: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_dashboard_cache.py::test_usage_route_releases_auth_session_before_waiting_on_redis[sqlite]
+FAILED backend/tests/test_dashboard_cache.py::test_usage_route_releases_auth_session_before_waiting_on_redis[mysql]
+2 failed, 14 deselected in 1.07s

@@ -1,0 +1,32 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+__________ test_hints_wake_only_registered_interview_and_close_reader __________
+
+    @pytest.mark.asyncio
+    async def test_hints_wake_only_registered_interview_and_close_reader():
+>       from backend.services.realtime_bus import InterviewHints
+E       ModuleNotFoundError: No module named 'backend.services.realtime_bus'
+
+backend/tests/test_realtime_bus.py:57: ModuleNotFoundError
+______ test_disconnected_reader_resubscribes_and_commands_fail_explicitly ______
+
+    @pytest.mark.asyncio
+    async def test_disconnected_reader_resubscribes_and_commands_fail_explicitly():
+>       from backend.services.realtime_bus import InterviewHints
+E       ModuleNotFoundError: No module named 'backend.services.realtime_bus'
+
+backend/tests/test_realtime_bus.py:80: ModuleNotFoundError
+___________ test_worker_hint_uses_process_client_and_minimal_payload ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e6e5580>
+
+    def test_worker_hint_uses_process_client_and_minimal_payload(monkeypatch):
+>       from backend.services import realtime_bus
+E       ImportError: cannot import name 'realtime_bus' from 'backend.services' (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/services/__init__.py)
+
+backend/tests/test_realtime_bus.py:101: ImportError
+=========================== short test summary info ============================
+FAILED backend/tests/test_realtime_bus.py::test_hints_wake_only_registered_interview_and_close_reader
+FAILED backend/tests/test_realtime_bus.py::test_disconnected_reader_resubscribes_and_commands_fail_explicitly
+FAILED backend/tests/test_realtime_bus.py::test_worker_hint_uses_process_client_and_minimal_payload
+3 failed in 0.35s

@@ -20,7 +20,7 @@
 | T02 | 完成并提交 | SQLite/MySQL 数据契约与全后端 244 项通过 |
 | T03 | 完成并提交 | Run API、权限、并发与动作回答；全后端 275 passed / 1 skipped |
 | T04 | 基础与联合恢复验收完成 | 31 项 T04/T05 单元通过；全后端 306 passed / 2 skipped；Compose 实验单独 1 passed / 139.91s，真实心跳、SQL 扫描与 SIGKILL 后重放成功，草稿仍为一份 |
-| T05 | 实现及确定性自动验收完成；真实模型 smoke 待执行 | 正常生成、补问恢复、工具失败、重复写入及审查回归通过；未调用付费模型，不能作为内容质量验收 |
+| T05 | 实现及确定性自动验收完成；真实 smoke 失败 | 试运行无输出/usage，旧日志缺具体原因；真实生成质量未验收，费用未知预约保留 |
 | T06 | 实现与自动验收完成 | SQL 事件、鉴权 SSE、断线续接、旧流鉴权；真实 Compose 故障与游标回放 1 passed / 140.85s，详见 T06 记录 |
 | T07 | 完成确定性验收 | 任务工作台、真实 API/worker 浏览器流程与桌面/手机截图通过；真实模型 smoke 仍待 M1 演示前补齐 |
 | T08 | 完成确定性验收 | 岗位、事实版本与来源撤回；后端 442、前端 63、真实浏览器 11 项通过，7 张截图已实际查看 |
@@ -28,10 +28,11 @@
 | T10 | 完成确定性验收 | 552 后端、87 前端、15 浏览器通过；冲突与确认冻结、6 张实际截图验收完成 |
 | T11 | 完成确定性验收 | 626 后端、94 前端、17 浏览器通过；真实 Linux PDF 1 passed，两页1218字及逐页图已查看 |
 | T12 | 完成确定性验收 | 678 后端、20 浏览器通过；14 张实际截图查看；上下文/记忆与审查修复见 T12 学习记录 |
-| T13 | 实现与 stub 确定性验收完成；live 待预算 | 最终 12 案通过，56/56 请求上下文证明；审查修复闭环，真实语义/费用与云端接收未验收，详见 T13 记录 |
+| T13 | 实现与 stub 验收完成；live 停止 | stub 12 案/56 请求上下文证明通过；live 正式首案 403 insufficient_quota，其余 11 案未执行，和 smoke 共预留 2.43941760 元（不是实付账单） |
 | T14 | 实现与确定性验收完成 | 四个真实SIGKILL恢复、最终24案通过；140前端组件、实际浏览器及20张截图；完整后端旧断言迁移见T14记录 |
 | T15 | 完成确定性验收 | 899 后端、30 扩展、140 前端通过；实际 ZIP、浏览器和原生侧栏截图已验证 |
-| T20、T16–T19、T21 | 待开发 | 按T20→T16→T21→T17/T18→T19推进；T20局部计划已完成 |
+| T20 | 实现与真实跨进程验收完成 | 七场景 7 passed / 86.52s；旧 SQLite PDF 1 passed / 14.17s、两页已查看；浏览器 27 passed；完整首轮 969 passed/2 failed/10 skipped 后两失败定向修复通过；fresh 生产镜像留 T19 |
+| T16–T19、T21 | 下一单元 T16 | T16 局部计划已冻结；T16→T21→T17/T18→T19，真实 WS 与性能尚未验收 |
 
 T04/T05 已修复并补回归的实测问题包括：`autoflush=False` 下刷新对象丢失 attempt 导致无限自动重试；取消遇模型超时未进入终态；同 Session 新 Run 沿用旧 files/todos/摘要。学习导航应随新测试记录更新当前状态；T01–T03 记录保留当时环境与验证边界，后续补充通过链接关联，不改写历史结论。
 
@@ -115,7 +116,7 @@ flowchart TB
 - SQL：业务事实、Run 状态、待处理动作和事件均在数据库；Redis 丢失不能使已接受任务永久消失。
 - checkpoint：worker 专属 SQLite 文件；API 不直接操作图 checkpoint。并发扩展需要后续专门切换共享 saver，不在本计划实现。
 - Compose 分阶段落地：T04/T05 初始环境为 Redis、worker、调度器与 SQLite 业务库，API 在宿主机；实测发现 Docker 内 heartbeat 已更新而宿主机连接仍读到旧值，macOS Docker 虚拟机与宿主进程共享 SQLite WAL 不保证一致。已调整为 API、worker、调度器和 Redis 均在 Docker 内，所有业务 SQLite 读写在 Linux 容器侧通过共享持久卷完成；测试使用真实 API 和容器内读库观测。此项修正与 SIGKILL 重试已通过，日志见 T04/T05 测试记录。原生开发则 API/worker 都原生运行，不支持一半宿主、一半容器共享 SQLite 的运行方式。
-- MySQL 9.6 行为测试单独记录，不能据此宣称 Compose MySQL 全链路或 MySQL 8.x 已验证。T20 跨进程测试前补齐共享 MySQL 与两个 API 进程，T17/T21 复用该环境；T19 完成发布配置、备份恢复与完整回归。最终单机集成范围保持 MySQL、Redis 和一个 Agent worker。
+- 早期 MySQL 9.6 单元行为测试单独记录。T20 已完成共享 MySQL 8.4.13、两个 API、Redis 和单 worker 的真实七场景验收，T17/T21 复用该环境；T19 完成发布配置、fresh 生产镜像、备份恢复与完整回归。当前完整源码加严格依赖镜像验证不等同于生产 Dockerfile 全新构建完成。
 - 文件产物：开发时使用受控数据目录，已有云存储路径继续复用；通过应用校验归属后下载。
 - Langfuse：观测与评测，不成为任务能否执行的依赖。首版可接托管实例；未配置时业务仍可运行。
 
@@ -343,7 +344,7 @@ def test_accepted_run_survives_broker_failure(run_service, broker):
 
 **文件：** 新增 backend/agent_runtime/{factory,runner,tools}.py、backend/tests/test_agent_runtime.py、backend/tests/test_tool_idempotency.py、backend/agent_runtime/skills/resume-tailoring/SKILL.md；修改 backend/worker_tasks.py。
 **接口：** 当前实现为 `build_agent(user_id, checkpointer, *, run_id, epoch)`、`run_agent(run_id: str, epoch: int) -> None`；首个工具 `get_application_context()` 和 `create_resume_draft(content, fact_refs)`，岗位、简历与归属 ID 从 Run 注入。
-**当前状态：** 实现及确定性自动验收完成，真实模型 smoke 待执行。真实 Deep Agents/checkpoint 已完成单元与联合 SIGKILL 恢复验证，仍不能把测试模型结果当成真实生成质量。
+**当前状态：** 实现及确定性自动验收完成；2026-10-30 的真实 smoke 已执行但失败，无公开输出和 usage。真实 Deep Agents/checkpoint 已完成单元与联合 SIGKILL 恢复验证，仍不能把测试模型结果当成真实生成质量。
 
 - [x] 在 factory 唯一构建 Deep Agents，接个人模型设置、官方 SQLite saver 和业务工具；thread_id 使用持久化 session_id。同一 Run 恢复保留其执行状态，同 Session 的新 Run 清空旧 messages/files/todos/摘要，不能沿用上一任务材料。
 - [x] 工具闭包/运行上下文注入 user_id、run_id、execution_epoch；这些参数不交给模型填写。
@@ -363,7 +364,7 @@ def test_draft_replay_returns_same_artifact(draft_tool):
 
 真实模型只做一条用户授权配置下的 smoke，不自动向公共 trace 上传简历。该检查与确定性功能验证分别记录；未运行时明确标记未验证，不能宣称真实模型或内容质量验收通过。失败先定位工具语义与运行配置，不以增加 Agent 角色掩盖问题。
 
-执行记录：[T04/T05 联合故障与教学记录](../../learning/test-records/2026-10-29-t04-t05.md)。上面复选框表示代码和确定性测试通过；真实模型 smoke 仍待执行，M1 的用户可演示验收未完成。
+执行记录：[T04/T05 联合故障与教学记录](../../learning/test-records/2026-10-29-t04-t05.md)。上面复选框表示代码和确定性测试通过；真实 smoke 失败，M1 的真实模型演示验收未完成。
 
 ### T06：鉴权 SSE、事件持久化与恢复协议
 
@@ -591,6 +592,7 @@ def verify_single_draft(case, output, db_snapshot):
 
 - [ ] CI 分开运行后端测试、前端类型/组件测试、构建、扩展测试、stub 评测、关键 E2E；真实模型评测手动触发。
 - [ ] 在 T20 已建立的 API、worker、调度器、Redis、MySQL 集成环境上完成反向代理、checkpoint/产物持久卷与发布配置；秘密从环境或挂载文件读取。此处完成交付验收，不将 T20/T21 所需共享数据库和双 API 环境推迟到本单元。
+- [ ] 将生产 Dockerfile 的 uv 安装采用 `uv --no-cache`（保留锁定安装参数），完成当前完整生产 Dockerfile 的 fresh 镜像构建与启动验证；T20 只完成严格依赖对齐层加完整源码验证，不能抵扣此项。
 - [ ] 健康检查区分进程存活与依赖就绪；部署停止接受新任务、给在途任务有限结束窗口，超时后按恢复策略重启。
 - [ ] 备份演练先停止领取新任务，等待执行静止，备份 SQL、checkpoint 和产物；恢复到独立测试目录验证一条等待中的 Run。不得对运行中的 SQLite 只复制主文件而漏 WAL。
 - [ ] 跑完整主流程与原解析/匹配/投递/扩展回归。只在新增变更影响范围需要时扩大测试，不重复无变化的全套检查。
@@ -603,16 +605,17 @@ def verify_single_draft(case, output, db_snapshot):
 ### T20：Redis 应用工程与跨进程消息通知
 
 **文件：** 新增 backend/infrastructure/redis_client.py、backend/services/realtime_bus.py、backend/services/dashboard_cache.py、backend/tests/test_redis_integration.py；修改 backend/middleware/rate_limit.py、deploy/compose.yaml、.env.example。
+**状态：** 实现与本单元真实验收完成；[细化计划](2026-10-30-t20-redis-cross-process.md)与[测试记录](../../learning/test-records/2026-10-30-t20.md)保存三次未执行、最终七场景和 PDF 回归。
 **依赖：** T04、T06。**接口：** `issue_ws_ticket(user_id, interview_id, auth_expires_at) -> ticket`、`consume_ws_ticket(ticket) -> claims | None`、`publish_interview_hint(interview_id,last_seq)`、`allow_request(user_id,scope) -> (allowed,retry_after)`。
 
-- [ ] 跨进程测试前将 T04 的 Compose 开发环境扩展为共享 MySQL、两个 API 进程、Redis、一个 worker 与调度器，保留 worker 专属 checkpoint 卷。记录数据库版本和实际服务配置，供 T21/T17 复用，不将 SQLite 或独立 MySQL 单元测试记作此环境验收。
-- [ ] 使用 redis-py async 连接池，应用生命周期统一创建/关闭；Pub/Sub 独立连接，不在每条消息中创建客户端。Redis 命令连接超时 1 秒、读取超时 2 秒；Pub/Sub 使用独立长连接超时策略。
-- [ ] key 命名：`resumate:{env}:rl:{scope}:{user}`、`resumate:{env}:ws-ticket:{random}`、`resumate:{env}:stats:{user}`；频道也包含环境名，因为 Redis Pub/Sub 不按逻辑数据库隔离。
-- [ ] 登录和创建 Run 的分布式限流采用 Lua 原子计数+首次设置 TTL；WS 票据用安全随机值，TTL 30 秒，GETDEL 原子消费；每张票据绑定用户、面试 ID 和原登录过期时间。
-- [ ] 面板统计缓存只缓存用户自己的汇总数字，TTL 30 秒；写入提交后删除；允许页面最多 30 秒统计陈旧，详情与鉴权不读该缓存。记录 SQL 查询减少量，不缓存模型 Key 和完整简历。
-- [ ] 对 Redis 中断定义不同策略：缓存失效回 SQL；事件通知失效用持久事件补查；票据、限流不可用时拒绝新连接/新昂贵任务并返回 503；已接受 Run 仍保留，恢复后扫描投递，不偷偷改成各进程本地限流。
-- [ ] Compose 单机 Redis 不公开端口；队列与缓存共享实例时采用 noeviction 和缓存 TTL，设置内存上限与容量告警；明确不同逻辑 DB 不能隔离淘汰策略。不得配置 allkeys-lru 让队列键被缓存挤掉。
-- [ ] 两个 API 进程同时限流、重复消费票据、丢失 Pub/Sub 通知、Redis 重启分别测试。只模拟已授权的本地集成环境。
+- [x] 跨进程测试前将 T04 的 Compose 开发环境扩展为共享 MySQL、两个 API 进程、Redis、一个 worker 与调度器，保留 worker 专属 checkpoint 卷。记录数据库版本和实际服务配置，供 T21/T17 复用，不将 SQLite 或独立 MySQL 单元测试记作此环境验收。
+- [x] 使用 redis-py async 连接池，应用生命周期统一创建/关闭；Pub/Sub 独立连接，不在每条消息中创建客户端。Redis 命令连接超时 1 秒、读取超时 2 秒；Pub/Sub 使用独立长连接超时策略。
+- [x] key 命名：`resumate:{env}:rl:{scope}:{user}`、`resumate:{env}:ws-ticket:{random}`、`resumate:{env}:stats:{user}`；频道也包含环境名，因为 Redis Pub/Sub 不按逻辑数据库隔离。
+- [x] 登录和创建 Run 的分布式限流采用 Lua 原子计数+首次设置 TTL；WS 票据用安全随机值，TTL 30 秒，GETDEL 原子消费；每张票据绑定用户、面试 ID 和原登录过期时间。
+- [x] 面板统计缓存只缓存用户自己的汇总数字，TTL 30 秒；写入提交后删除；允许页面最多 30 秒统计陈旧，详情与鉴权不读该缓存。记录 SQL 查询减少量，不缓存模型 Key 和完整简历。
+- [x] 对 Redis 中断定义不同策略：缓存失效回 SQL；事件通知失效用持久事件补查；票据、限流不可用时拒绝新连接/新昂贵任务并返回 503；已接受 Run 仍保留，恢复后扫描投递，不偷偷改成各进程本地限流。
+- [x] Compose 单机 Redis 不公开端口；队列与缓存共享实例时采用 noeviction 和缓存 TTL，设置内存上限与容量告警；明确不同逻辑 DB 不能隔离淘汰策略。不得配置 allkeys-lru 让队列键被缓存挤掉。
+- [x] 两个 API 进程同时限流、重复消费票据、丢失 Pub/Sub 通知、Redis 重启分别测试。只模拟已授权的本地集成环境。
 
 ```python
 async def test_ws_ticket_can_only_be_consumed_once(ticket_service):
@@ -622,7 +625,7 @@ async def test_ws_ticket_can_only_be_consumed_once(ticket_service):
     assert sum(item is not None for item in results) == 1
 ```
 
-**验证：** `uv run pytest backend/tests/test_redis_integration.py -q`，使用真实测试 Redis，不以 mock 替代原子性验证。验收：两个 API 的计数一致、票据不能重放、通知丢失不丢业务事件、缓存不跨用户。
+**验证：** 显式集成命令 `RESUMATE_REDIS_INTEGRATION=1 RESUMATE_REDIS_BASE_IMAGE=resumate-t20-deps:aligned .venv/bin/python -m pytest backend/tests/test_redis_integration.py -q -s`，实际 7 passed / 86.52s。真实计数、票据、提示补查、缓存、停机恢复和 OOM 均通过；旧 SQLite PDF 1 passed / 14.17s。依赖严格匹配 lock，当前完整源码挂载；主生产 Dockerfile fresh 构建未通过，列为 T19 待办。T20 不代表真实 WebSocket 或压力性能验收。
 
 ### T21：WebSocket 双向面试与连接生命周期
 
@@ -719,8 +722,8 @@ def test_replayed_answer_creates_one_turn(ws_client, interview_db):
 
 ## 11. 开始执行的顺序
 
-T01–T04 已完成相应自动验收；T05 实现和确定性自动验收完成，真实模型 smoke 待执行。宿主/容器混合 SQLite 问题已通过 API 与 worker 同处 Docker Linux 内修复，SIGKILL 联合实验通过。T06 持久事件、鉴权 SSE、断线续接及联合崩溃回放已经通过。T07 任务 UI、真实服务联调和截图检查已完成；T08 岗位、T09 有来源建议、T10 审阅确认已完成确定性验收；T11 导出与投递快照现已完成，T12 上下文预算与可维护记忆现已完成，T13 追踪与 stub 评测现已完成实现及确定性验收；真实模型预算/语义和可选云端接收仍待验收，T14四断点恢复和旧长任务迁移现已完成确定性验收，T15扩展收藏与确认版本填表也已完成确定性验收，下一步推进T20。在 M1 可演示验收前，使用用户授权配置与合成资料补一条真实模型 smoke，单独记录效果与费用。内部功能闭环不等于内容质量验收。再按 T08/T09 建立事实依据与修改建议 → T10 审阅编辑 → T11 导出及投递快照。
+T01–T04、T06–T15 已完成各自注明边界的确定性验收；T05/T13 的真实调用已在用户授权 3 元共享预算内尝试并停止：smoke 与正式首案均失败且无 usage，正式其余 11 案未执行，未知预约保留，不能写成质量通过。内部功能闭环不等于真实内容质量验收。
 
-T12/T13/T14 按上下文、评测与故障恢复依赖推进。M4 完成 T15，并依次完成 T20、T16、T21，再进入包含实时链路的 T17–T19。M1 验收通过前，不启动批量抓取、复杂编辑器或额外 Agent 角色；原有产品范围与 21 个任务 ID 保持不变。
+T20 真实跨进程七场景与旧 SQLite PDF 代表回归现已完成，完整首轮失败及修复单独留证。下一单元按 [T16 局部计划](2026-10-30-t16-text-interviews.md)实现持久文字面试，再接 T21 WebSocket，之后 T17/T18→T19。T19 仍须完成生产 `uv --no-cache` 安装下的完整 fresh 镜像构建。原有产品范围与 21 个任务 ID 保持不变，不因本轮 Redis 验收增加额外平台或 Agent 角色。
 
 每个阶段结束更新本文件复选框、实际耗时、已通过验收与尚存限制。阶段完成以可运行成果和测试证据为准，不以文件数量或技术名词数量为准。

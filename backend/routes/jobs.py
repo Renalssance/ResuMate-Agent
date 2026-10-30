@@ -3,6 +3,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from backend.middleware.rate_limit import require_run_capacity
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import User
@@ -48,7 +49,7 @@ def list_matches(job_id: int, limit: int = Query(20, ge=1, le=100), offset: int 
     return jobs.list_matches(db, current_user.id, job_id, limit=limit, offset=offset)
 
 
-@router.post('/{job_id}/parse', status_code=202)
+@router.post('/{job_id}/parse', status_code=202, dependencies=[Depends(require_run_capacity)])
 def parse_job(job_id: int, task_id: str = Query(''),
               current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     jobs.find_job(db, current_user.id, job_id)

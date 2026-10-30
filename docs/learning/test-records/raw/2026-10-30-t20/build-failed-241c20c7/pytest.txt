@@ -1,0 +1,243 @@
+T20 artifact directory: /tmp/task-20-artifacts-241c20c7e4984135b53338a248caa55f
+EEEEEEE
+==================================== ERRORS ====================================
+____ ERROR at setup of test_topology_shared_sql_and_worker_only_checkpoints ____
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+_ ERROR at setup of test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+___ ERROR at setup of test_ticket_single_consumer_and_expiration_across_apis ___
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+_ ERROR at setup of test_cache_reduces_aggregates_and_real_worker_invalidates __
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+_ ERROR at setup of test_notifications_wake_then_sql_fills_missing_and_duplicate_hints _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+_ ERROR at setup of test_redis_down_rejects_admission_but_committed_run_recovers _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+_ ERROR at setup of test_oom_noeviction_preserves_marker_and_services_fail_as_designed _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+>           value.compose('build', 'api', timeout=1200)
+
+backend/tests/test_redis_integration.py:123:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_redis_integration.Stack object at 0x10ca8be60>, timeout = 1200
+check = True, args = ('build', 'api')
+result = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n')
+
+    def compose(self, *args, timeout=60, check=True):
+        result = subprocess.run(self.command + list(args), env=self.env, text=True, capture_output=True, timeout=timeout)
+        # Arguments contain no credentials; never archive resolved Compose environment.
+        with (self.artifacts / 'commands.txt').open('a') as out:
+            out.write(json.dumps({'at': now(), 'args': args, 'exit_code': result.returncode}) + '\n')
+            out.write(result.stdout + result.stderr + '\n')
+        if check:
+>           assert result.returncode == 0, f'Compose {args[:2]} failed: {result.stderr[-2000:]}'
+E           AssertionError: Compose ('build', 'api') failed:  Image resumate-t20-241c20c7e4:test Building
+E             failed to solve: failed to extract layer sha256:45a6603b89cf81ee02a0c032963d78c5bbb09346c36e705f9eb60beff558e1ce: mkdir /var/lib/desktop-containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system
+E
+E
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/Applications/Docker.app/Contents/Resources/bin/docker', 'compose', '-p', 'resumate-t20-241c20...erlayfs/snapshots/280/fs/root/.cache/uv/archive-v0/CX6UeOjrKrgZkRyQ/anthropic/types/shared: read-only file system\n\n').returncode
+
+backend/tests/test_redis_integration.py:80: AssertionError
+=========================== short test summary info ============================
+ERROR backend/tests/test_redis_integration.py::test_topology_shared_sql_and_worker_only_checkpoints
+ERROR backend/tests/test_redis_integration.py::test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide
+ERROR backend/tests/test_redis_integration.py::test_ticket_single_consumer_and_expiration_across_apis
+ERROR backend/tests/test_redis_integration.py::test_cache_reduces_aggregates_and_real_worker_invalidates
+ERROR backend/tests/test_redis_integration.py::test_notifications_wake_then_sql_fills_missing_and_duplicate_hints
+ERROR backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+ERROR backend/tests/test_redis_integration.py::test_oom_noeviction_preserves_marker_and_services_fail_as_designed
+7 errors in 118.16s (0:01:58)

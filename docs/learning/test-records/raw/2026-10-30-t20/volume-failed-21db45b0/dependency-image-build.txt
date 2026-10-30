@@ -1,0 +1,60 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 187B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/resumate-t11-worker:latest
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/resumate-t11-worker:latest@sha256:9f9721ac9425b0e4aace30d382d43fddb187cf58c37d4df64615975ca5916b75
+#4 resolve docker.io/library/resumate-t11-worker:latest@sha256:9f9721ac9425b0e4aace30d382d43fddb187cf58c37d4df64615975ca5916b75 done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 893.27kB 0.0s done
+#5 DONE 0.0s
+
+#6 [2/4] WORKDIR /app
+#6 DONE 0.0s
+
+#7 [3/4] COPY pyproject.toml uv.lock README.md ./
+#7 DONE 0.0s
+
+#8 [4/4] RUN uv sync --locked --no-dev --no-install-project --no-cache
+#8 0.210 Resolved 195 packages in 1ms
+#8 2.032 Prepared 8 packages in 1.77s
+#8 2.095 Uninstalled 9 packages in 61ms
+#8 2.136 Installed 8 packages in 41ms
+#8 2.136  - backoff==1.11.1
+#8 2.136  - googleapis-common-protos==1.56.1
+#8 2.136  + googleapis-common-protos==1.76.0
+#8 2.136  - importlib-metadata==8.7.1
+#8 2.136  - opentelemetry-api==1.40.0
+#8 2.136  + opentelemetry-api==1.45.2
+#8 2.136  + opentelemetry-exporter-otlp-common==0.66b2
+#8 2.136  + opentelemetry-exporter-otlp-proto-common==1.45.2
+#8 2.136  - opentelemetry-exporter-otlp-proto-grpc==1.11.1
+#8 2.136  + opentelemetry-exporter-otlp-proto-grpc==1.45.2
+#8 2.136  - opentelemetry-proto==1.11.1
+#8 2.136  + opentelemetry-proto==1.45.2
+#8 2.137  - opentelemetry-sdk==1.40.0
+#8 2.137  + opentelemetry-sdk==1.45.2
+#8 2.137  - opentelemetry-semantic-conventions==0.61b0
+#8 2.137  + opentelemetry-semantic-conventions==0.66b2
+#8 2.137  - zipp==3.23.0
+#8 DONE 2.2s
+
+#9 exporting to image
+#9 exporting layers 0.1s done
+#9 exporting manifest sha256:8601b39749f47d962f5f805f368ddb0505cc358edbbc0a7fae45d246b81d5af6 done
+#9 exporting config sha256:d670b8823b5ee0284a9fa06819b777c0c7e23148f98a59e2592ca728987886c2 done
+#9 exporting attestation manifest sha256:94fca7b35cc3896352321b868ae5798bf12f8c45cc55a5d186b0129e32f4a736 done
+#9 exporting manifest list sha256:a2f59cd86260d3df4391438cbd581450dd2bc39124bd2fbd3662cd0bd9a4951f done
+#9 naming to docker.io/library/resumate-t20-deps:aligned done
+#9 unpacking to docker.io/library/resumate-t20-deps:aligned 0.0s done
+#9 DONE 0.1s

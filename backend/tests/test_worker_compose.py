@@ -64,7 +64,7 @@ def test_committed_draft_survives_broker_failure_and_worker_kill(tmp_path, monke
     volumes: ["{data}:/app/data", "{root / 'backend/tests'}:/app/backend/tests:ro"]
     command: [celery, -A, 'backend.tests.worker_fixture:app', worker, --loglevel=INFO, --concurrency=1]
 ''')
-    command = ['docker', 'compose', '-p', project, '-f', str(root / 'deploy/compose.yaml'), '-f', str(override)]
+    command = ['docker', 'compose', '-p', project, '-f', str(root / 'backend/tests/fixtures/compose.sqlite.yaml'), '-f', str(override)]
     engine = build_engine(f'sqlite:///{data / "resumate.db"}')
     Base.metadata.create_all(engine)
     with Session(engine) as db:

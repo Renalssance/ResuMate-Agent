@@ -6,11 +6,12 @@ from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import HTTPException
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from backend.db.database import SessionLocal
 from backend.db.models import LlmUsageEvent, UserLlmSettings
-from backend.schemas.settings import LlmSettingsResponse, LlmSettingsUpdate, LlmUsageDashboard
+from backend.schemas.settings import LlmSettingsResponse, LlmSettingsUpdate, LlmUsageDashboard, LlmUsageSummary
 
 DEFAULT_LLM_MAX_TOKENS = 8192
 DEFAULT_LLM_REQUEST_TIMEOUT_SECONDS = 300.0
@@ -139,6 +140,8 @@ def record_llm_usage(
             )
         )
         db.commit()
+        from backend.services.dashboard_cache import invalidate_usage_summary
+        invalidate_usage_summary(user_id)
     finally:
         if close_db:
             db.close()
@@ -157,49 +160,42 @@ def usage_from_response(response: Any) -> dict[str, int]:
     }
 
 
-def usage_dashboard(user_id: int, db: Session) -> LlmUsageDashboard:
-    rows = (
-        db.query(LlmUsageEvent)
-        .filter(LlmUsageEvent.user_id == user_id)
-        .order_by(LlmUsageEvent.called_at.desc())
-        .all()
+def load_usage_summary(db: Session, user_id: int) -> LlmUsageSummary:
+    owned = LlmUsageEvent.user_id == user_id
+    totals = db.query(
+        func.count(LlmUsageEvent.id),
+        func.coalesce(func.sum(case((LlmUsageEvent.success.is_(True), 1), else_=0)), 0),
+        func.coalesce(func.sum(LlmUsageEvent.total_tokens), 0),
+        func.coalesce(func.sum(LlmUsageEvent.prompt_tokens), 0),
+        func.coalesce(func.sum(LlmUsageEvent.completion_tokens), 0),
+        func.max(LlmUsageEvent.called_at),
+    ).filter(owned).one()
+    total, successful, tokens, prompt, completion, last = totals
+    day = func.date(LlmUsageEvent.called_at)
+    daily = db.query(day, func.count(LlmUsageEvent.id), func.sum(LlmUsageEvent.total_tokens)).filter(
+        owned).group_by(day).order_by(day).all()
+    task = func.coalesce(func.nullif(LlmUsageEvent.task, ''), 'unknown')
+    task_tokens = func.sum(LlmUsageEvent.total_tokens)
+    by_task = db.query(task, func.count(LlmUsageEvent.id), task_tokens).filter(
+        owned).group_by(task).order_by(task_tokens.desc(), task).all()
+    return LlmUsageSummary(
+        total_calls=total, successful_calls=successful, failed_calls=total-successful,
+        success_rate=round(successful / total * 100) if total else 0,
+        total_tokens=tokens, prompt_tokens=prompt, completion_tokens=completion,
+        last_called_at=last,
+        daily=[{'date': str(date), 'calls': calls, 'total_tokens': value} for date, calls, value in daily],
+        by_task=[{'task': name, 'calls': calls, 'total_tokens': value} for name, calls, value in by_task],
     )
-    total_calls = len(rows)
-    successful_calls = sum(1 for row in rows if row.success)
-    total_tokens = sum(row.total_tokens for row in rows)
-    prompt_tokens = sum(row.prompt_tokens for row in rows)
-    completion_tokens = sum(row.completion_tokens for row in rows)
-    daily: dict[str, dict[str, int]] = {}
-    by_task: dict[str, dict[str, int]] = {}
-    for row in rows:
-        day = row.called_at.date().isoformat()
-        daily.setdefault(day, {"calls": 0, "total_tokens": 0})
-        daily[day]["calls"] += 1
-        daily[day]["total_tokens"] += row.total_tokens
-        task = row.task or "unknown"
-        by_task.setdefault(task, {"calls": 0, "total_tokens": 0})
-        by_task[task]["calls"] += 1
-        by_task[task]["total_tokens"] += row.total_tokens
 
-    return LlmUsageDashboard(
-        total_calls=total_calls,
-        successful_calls=successful_calls,
-        failed_calls=total_calls - successful_calls,
-        success_rate=round(successful_calls / total_calls * 100) if total_calls else 0,
-        total_tokens=total_tokens,
-        prompt_tokens=prompt_tokens,
-        completion_tokens=completion_tokens,
-        last_called_at=rows[0].called_at if rows else None,
-        daily=[
-            {"date": day, "calls": values["calls"], "total_tokens": values["total_tokens"]}
-            for day, values in sorted(daily.items())
-        ],
-        by_task=[
-            {"task": task, "calls": values["calls"], "total_tokens": values["total_tokens"]}
-            for task, values in sorted(by_task.items(), key=lambda item: item[1]["total_tokens"], reverse=True)
-        ],
-        recent_calls=rows[:12],
-    )
+
+def load_recent_usage(db: Session, user_id: int, limit: int = 12):
+    return (db.query(LlmUsageEvent).filter(LlmUsageEvent.user_id == user_id)
+            .order_by(LlmUsageEvent.called_at.desc(), LlmUsageEvent.id.desc()).limit(limit).all())
+
+
+def usage_dashboard(user_id: int, db: Session) -> LlmUsageDashboard:
+    return LlmUsageDashboard(**load_usage_summary(db, user_id).model_dump(),
+                             recent_calls=load_recent_usage(db, user_id))
 
 
 def _usage_int(usage: Any, *names: str) -> int:

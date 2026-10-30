@@ -1,0 +1,68 @@
+Untagged: resumate-t20-241c20c7e4:test
+Deleted: sha256:dc8fd413f2913a8e092edc021d205cb1267fe71f589bd7972923c3d9cd6bf496
+Untagged: resumate-test-9c7d466e-scheduler:latest
+Deleted: sha256:2ef9752e709c0f613f2beedddefd5d86f21a18aac93bcdc13a181d17d1b8ca12
+Untagged: resumate-test-9c7d466e-api:latest
+Deleted: sha256:758684449f63b41e844590ffb8838035cfebe0cb6290b5a2f424466dc909a399
+Untagged: resumate-test-9c7d466e-worker:latest
+Deleted: sha256:cfe85585f16b6ad6912fe8ef94b9e44f56550348ceb5219f262268a341ceee16
+Untagged: resumate-test-0b7dbdaf-worker:latest
+Deleted: sha256:23b4dbf42bb8e51c585e0db9fda7c4cd5784d2cd8b568e9eb1147f14c8034f03
+Untagged: resumate-test-0b7dbdaf-scheduler:latest
+Deleted: sha256:540b70ba32a4031129133d945b825d566db6a9df87e0007bf8cd518ad4e3a1bf
+Untagged: resumate-test-e3e16e7f-scheduler:latest
+Deleted: sha256:af00ade2f06b0a00fd04a888abe65bd6ad207aa3ae350d07665e90a62bfba502
+Untagged: resumate-test-0b7dbdaf-api:latest
+Deleted: sha256:7ab83c56a19e030e5614098b7327e268f4990411bc7b1c093375c206c9577b42
+Untagged: resumate-test-e3e16e7f-worker:latest
+Deleted: sha256:8b443d8765fc641fce751b852005c328cc7d4d3abe006551b97bfdff9456bdb6
+Untagged: resumate-test-0106da3f-worker:latest
+Deleted: sha256:004ea2bce5c2f26a8fc6f2e0d6cab43d6e9bc60015a4c3ed8c98cc765aa286d2
+Untagged: resumate-test-0106da3f-scheduler:latest
+Deleted: sha256:2e77e9e0a943a8a761f26d728df1bf72acfb2b0cf3692757bd36ea8a577f26d6
+Remove only task-owned unused images: ['resumate-t20-241c20c7e4:test', 'resumate-test-9c7d466e-scheduler:latest', 'resumate-test-9c7d466e-api:latest', 'resumate-test-9c7d466e-worker:latest', 'resumate-test-0b7dbdaf-worker:latest', 'resumate-test-0b7dbdaf-scheduler:latest', 'resumate-test-e3e16e7f-scheduler:latest', 'resumate-test-0b7dbdaf-api:latest', 'resumate-test-e3e16e7f-worker:latest', 'resumate-test-0106da3f-worker:latest', 'resumate-test-0106da3f-scheduler:latest']
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+w0l7wrj373ndc00nw981ehfaj*              	true 		8.192kB   	8 hours ago
+Total:	8.192kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+zkrup3dnwmauth7m0qvpwt6kj*              	true 		8.192kB   	8 hours ago
+Total:	8.192kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+6capim0em8t5ajk8lbqtfuwyt               	true 		20.61kB   	11 hours ago
+Total:	20.61kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+fdxolljma0hfyjys3hm9w00vo               	true 		20.61kB   	10 hours ago
+Total:	20.61kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+rjjapawvy2hf9ltth710bygfk               	true 		24.72kB
+Total:	24.72kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+ufwb96ace9u4pih0gl4xyrl22               	true 		24.73kB   	8 hours ago
+Total:	24.73kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+wmisouh748gdbw3looglvyxzq               	true 		24.73kB   	8 hours ago
+Total:	24.73kB
+Total:	0B
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+9jyia6266hdy7sf8pctedyj9u               	true 		693.7kB   	Less than a second ago
+Total:	693.7kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+y4kiipz760sk4rtt8pqquyozw               	true 		717.8kB   	Less than a second ago
+Total:	717.8kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+88sb6ppfgmrtt06sy4fqa4nce               	true 		808.9kB   	Less than a second ago
+Total:	808.9kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+bxl33qbywsjh7o0pw1wynuiz5               	true 		828.9kB   	Less than a second ago
+Total:	828.9kB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+b5bxqxztd0d3rm4nmenkydgoy               	true 		937.8kB   	Less than a second ago
+Total:	937.8kB
+Total:	0B
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+vetrnj17aa59clrwltu0t0a5q*              	true 		1.704MB   	8 hours ago
+Total:	1.704MB
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+espdq8my7wwjh6e8j8npmo3pt               	true 		3.333GB   	Less than a second ago
+Total:	3.333GB
+Remove exact unused task cache records: ['w0l7wrj373ndc00nw981ehfaj', 'zkrup3dnwmauth7m0qvpwt6kj', '6capim0em8t5ajk8lbqtfuwyt', 'fdxolljma0hfyjys3hm9w00vo', 'rjjapawvy2hf9ltth710bygfk', 'ufwb96ace9u4pih0gl4xyrl22', 'wmisouh748gdbw3looglvyxzq', 'tjj4sskse3rpa9ozhm3oupgp3', '9jyia6266hdy7sf8pctedyj9u', 'y4kiipz760sk4rtt8pqquyozw', '88sb6ppfgmrtt06sy4fqa4nce', 'bxl33qbywsjh7o0pw1wynuiz5', 'b5bxqxztd0d3rm4nmenkydgoy', 'sfbu388bgkmzi2ycnlr65fieh', 'vetrnj17aa59clrwltu0t0a5q', 'espdq8my7wwjh6e8j8npmo3pt']

@@ -3,7 +3,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from backend.middleware.rate_limit import rate_limit
+from backend.middleware.rate_limit import require_auth_capacity
 from backend.db.database import get_db
 from backend.auth.security import authenticate_user, create_access_token, get_current_user, get_password_hash, resolve_role
 from backend.db.models import User
@@ -38,7 +38,7 @@ async def public_config():
 # ==================== 认证 ====================
 
 
-@router.post("/auth/register", response_model=AuthResponse, dependencies=[Depends(rate_limit("auth", 5, 60))])
+@router.post("/auth/register", response_model=AuthResponse, dependencies=[Depends(require_auth_capacity)])
 async def register(request: RegisterRequest, db: Session = Depends(get_db)):
     username = (request.username or "").strip()
     password = (request.password or "").strip()
@@ -58,7 +58,7 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
     return AuthResponse(access_token=token, username=username, role=role)
 
 
-@router.post("/auth/login", response_model=AuthResponse, dependencies=[Depends(rate_limit("auth", 5, 60))])
+@router.post("/auth/login", response_model=AuthResponse, dependencies=[Depends(require_auth_capacity)])
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_user(db, request.username, request.password)
     if not user:

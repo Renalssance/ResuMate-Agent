@@ -103,3 +103,17 @@ T12 最终后端 678 passed / 6 expected skipped / 121.97s；前端全组件 109
 真实截图复查已修复手机说明省略号；扩展 320/390px 的长来源、确认版本、错误与保存状态保持米棕视觉。另从真实 Chromium 工具栏打开原生侧栏完成采集、重复收藏、版本选择、取消姓名勾选及填入；正文与确认版本一致，姓名/验证码为空、未提交。截图与可访问性树已归档，验收浏览器和临时服务正常退出。
 
 [第十五课](15-extension-capture-and-version-fill.md)、[测试记录](test-records/2026-10-30-t15.md)保存过程与证据。继续 T20→T16→T21→T17/T18→T19。用户本轮已授权 T05 smoke 与 T13 首批 live 共用人民币 3 元总预算；先试运行，未执行不当作通过。
+
+## T20：Redis 跨进程协作（验收完成）
+
+基线 T15 `a1568bc`。连接生命周期、共享限流、汇总缓存、一次性票据和 SQL 事件提示已完成；共享 MySQL 8.4.13、双 API、Redis 7.4.12/redis-py 6.4.0、单 worker 的真实集成最终 7 passed / 86.52s。20 个并发 run 请求严格 10 成功/10 拒绝；单次票据消费、统计失效、1.758s 漏提示补查、停 Redis 后已受理 Run 恢复与隔离 OOM 均有实际证据。
+
+首轮完整后端 969 passed / 2 failed / 10 skipped；两个 eval 子进程的受控限流 fixture 缺失修复后定向 2 passed。独立审查发现鉴权 SQL 连接跨 Redis await，先双库红再相关 22 passed。真实浏览器 27 passed，三张桌面/手机截图已查看。旧 SQLite Linux PDF 代表回归 1 passed / 14.17s，两页中文和跨页布局已实际查看；没有重复既有四崩溃实验。
+
+Docker 文件系统/磁盘不足、旧依赖六项不符、fresh 共享卷 copy-up 冲突分别保留 `executed:false`。恢复环境、严格对齐 lock、主卷 nocopy 修复后，当前完整源码快照运行通过；不能据此宣称生产 Dockerfile fresh 构建成功。测试末尾仅追加 OOM profile 精确清理，实际清理成功，没有重复七个已绿场景。T19 保留生产 `uv --no-cache` 安装与完整新镜像构建验收。
+
+[第二十课](20-redis-cross-process.md)与[T20 记录](test-records/2026-10-30-t20.md)保存红绿、失败、原始证据及边界。无付费模型调用；下一步执行已冻结的 [T16 局部计划](../superpowers/plans/2026-10-30-t16-text-interviews.md)，之后 T21→T17/T18→T19。
+
+## 真实模型预算执行补记
+
+用户授权 smoke 与 T13 首批 live 共用人民币 3 元。试运行失败且旧日志未保留具体错误；随后正式 normal-api 返回 PermissionDeniedError / HTTP 403 / insufficient_quota。两次都没有 usage，保守保留 2.43941760 元未知预约；剩余 0.56058240 元不足下一次最高费用预约，因此停止。正式 12 案为已执行 1 案失败、其余 11 案未执行，不能称通过；预约金额不代表实际扣费。后续真实质量验收受供应商生成额度与剩余授权预算限制，确定性开发继续。

@@ -1,0 +1,17 @@
+{
+  "invocation_id": "21db45b0c76e472ab9d2e615f0d36520",
+  "started_at": "2026-10-30T01:34:06.269069+00:00",
+  "project": "resumate-t20-21db45b0c7",
+  "image": "resumate-t20-deps:aligned",
+  "executed": false,
+  "source": "/tmp/task-20-artifacts-21db45b0c76e472ab9d2e615f0d36520/source",
+  "model": "existing deterministic DraftModel; no external calls",
+  "results": [],
+  "dependency_image_reuse": {
+    "image": "resumate-t20-deps:aligned",
+    "full_backend_mount": "/app/backend",
+    "current_lock_installed_versions_match": true,
+    "new_dockerfile_build_succeeded": false
+  },
+  "completed_at": "2026-10-30T01:34:31.155288+00:00"
+}

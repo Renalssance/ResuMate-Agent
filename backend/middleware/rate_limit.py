@@ -1,100 +1,80 @@
+"""Shared admission limits; Redis failures never fall back to local counters."""
 import logging
-import os
-import time
-from threading import Lock
-from typing import Callable
+import math
 
-from fastapi import Depends, HTTPException, Request, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from fastapi import Depends, HTTPException, Request
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
+
+from backend.auth.security import get_current_user
+from backend.db.models import User
+from backend.infrastructure.redis_client import RedisUnavailable
 
 
 logger = logging.getLogger(__name__)
-
-RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").lower() != "false"
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-this-secret")
-ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
-
-
-class FixedWindowLimiter:
-    def __init__(self):
-        self._windows: dict[str, tuple[int, int]] = {}
-        self._lock = Lock()
-
-    def hit(self, key: str, *, limit: int, window_seconds: int, now: int) -> int:
-        window_start = now - (now % window_seconds)
-        with self._lock:
-            self._windows = {
-                item_key: value
-                for item_key, value in self._windows.items()
-                if value[0] + window_seconds > now
-            }
-            stored_start, count = self._windows.get(key, (window_start, 0))
-            if stored_start != window_start:
-                stored_start, count = window_start, 0
-            count += 1
-            self._windows[key] = (stored_start, count)
-            if count <= limit:
-                return 0
-            return max(1, stored_start + window_seconds - now)
+LIMITS = {'auth': 5, 'chat': 20, 'run': 10}
+WINDOW_SECONDS = 60
+INCREMENT_WINDOW = """
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
+local ttl = redis.call('PTTL', KEYS[1])
+return {count, ttl}
+"""
 
 
-limiter = FixedWindowLimiter()
+class RedisRateLimiter:
+    def __init__(self, commands: Redis, namespace: str):
+        self.commands = commands
+        self.namespace = namespace
+
+    async def allow_request(self, subject: int | str, scope: str) -> tuple[bool, int]:
+        limit = LIMITS[scope]
+        key = f'{self.namespace}:rl:{scope}:{subject}'
+        try:
+            count, ttl = await self.commands.eval(INCREMENT_WINDOW, 1, key, WINDOW_SECONDS)
+        except RedisError as exc:
+            raise RedisUnavailable('限流服务暂不可用') from exc
+        if count <= limit:
+            return True, 0
+        return False, max(1, math.ceil(ttl / 1000))
+
+
+def get_rate_limiter(request: Request) -> RedisRateLimiter:
+    try:
+        return request.app.state.rate_limiter
+    except AttributeError as exc:
+        raise RedisUnavailable('限流服务未初始化') from exc
 
 
 def get_client_ip(request: Request) -> str:
-    forwarded = request.headers.get("X-Forwarded-For")
+    forwarded = request.headers.get('X-Forwarded-For')
     if forwarded:
-        return forwarded.split(",")[0].strip()
-    real_ip = request.headers.get("X-Real-IP")
+        return forwarded.split(',')[0].strip()
+    real_ip = request.headers.get('X-Real-IP')
     if real_ip:
         return real_ip.strip()
     if request.client:
         return request.client.host
-    return "unknown"
+    return 'unknown'
 
 
-async def get_identity(request: Request, token: str | None = None) -> str:
-    if token:
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if username:
-                return f"user:{username}"
-        except JWTError:
-            pass
-    return f"ip:{get_client_ip(request)}"
+async def _enforce_limit(request: Request, subject: int | str, scope: str) -> None:
+    try:
+        allowed, retry_after = await get_rate_limiter(request).allow_request(subject, scope)
+    except RedisUnavailable as exc:
+        raise HTTPException(status_code=503, detail='限流服务暂不可用') from exc
+    if not allowed:
+        logger.warning('Rate limit hit: scope=%s subject=%s path=%s', scope, subject, request.url.path)
+        raise HTTPException(status_code=429, detail='请求过于频繁', headers={'Retry-After': str(retry_after)})
 
 
-def rate_limit(group: str, max_requests: int, window_seconds: int = 60) -> Callable:
-    async def _rate_limit_dependency(
-        request: Request,
-        token: str | None = Depends(oauth2_scheme),
-    ):
-        if not RATE_LIMIT_ENABLED:
-            return
+async def require_auth_capacity(request: Request) -> None:
+    await _enforce_limit(request, f'ip:{get_client_ip(request)}', 'auth')
 
-        identity = await get_identity(request, token)
-        key = f"{group}:{identity}"
-        retry_after = limiter.hit(
-            key,
-            limit=max_requests,
-            window_seconds=window_seconds,
-            now=int(time.time()),
-        )
-        if retry_after:
-            logger.warning(
-                "Rate limit hit: group=%s, identity=%s, path=%s",
-                group,
-                identity,
-                request.url.path,
-            )
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many requests, please try again later",
-                headers={"Retry-After": str(retry_after)},
-            )
 
-    return _rate_limit_dependency
+async def require_chat_capacity(request: Request, user: User = Depends(get_current_user)) -> None:
+    await _enforce_limit(request, user.id, 'chat')
+
+
+async def require_run_capacity(request: Request, user: User = Depends(get_current_user)) -> None:
+    await _enforce_limit(request, user.id, 'run')

@@ -1,0 +1,11 @@
+{
+  "invocation_id": "647e42b191b84d43b79fa5c2f5cfa330",
+  "started_at": "2026-10-30T01:31:38.911431+00:00",
+  "project": "resumate-t20-647e42b191",
+  "image": "resumate-t11-worker:latest",
+  "executed": false,
+  "source": "/tmp/task-20-artifacts-647e42b191b84d43b79fa5c2f5cfa330/source",
+  "model": "existing deterministic DraftModel; no external calls",
+  "results": [],
+  "completed_at": "2026-10-30T01:31:39.656065+00:00"
+}

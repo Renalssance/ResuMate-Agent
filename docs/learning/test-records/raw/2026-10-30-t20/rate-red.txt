@@ -1,0 +1,936 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFF                                      [100%]
+=================================== FAILURES ===================================
+____ test_scope_limit_and_remaining_ttl_use_one_eval[auth-5-ip:203.0.113.7] ____
+
+scope = 'auth', limit = 5, subject = 'ip:203.0.113.7'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(('scope', 'limit', 'subject'), [('auth', 5, 'ip:203.0.113.7'), ('chat', 20, 7), ('run', 10, 7)])
+    async def test_scope_limit_and_remaining_ttl_use_one_eval(scope, limit, subject):
+        commands = AsyncMock()
+        commands.eval.side_effect = [[limit, 28001], [limit + 1, 11301]]
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4469630800'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+__________ test_scope_limit_and_remaining_ttl_use_one_eval[chat-20-7] __________
+
+scope = 'chat', limit = 20, subject = 7
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(('scope', 'limit', 'subject'), [('auth', 5, 'ip:203.0.113.7'), ('chat', 20, 7), ('run', 10, 7)])
+    async def test_scope_limit_and_remaining_ttl_use_one_eval(scope, limit, subject):
+        commands = AsyncMock()
+        commands.eval.side_effect = [[limit, 28001], [limit + 1, 11301]]
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4546653328'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+__________ test_scope_limit_and_remaining_ttl_use_one_eval[run-10-7] ___________
+
+scope = 'run', limit = 10, subject = 7
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(('scope', 'limit', 'subject'), [('auth', 5, 'ip:203.0.113.7'), ('chat', 20, 7), ('run', 10, 7)])
+    async def test_scope_limit_and_remaining_ttl_use_one_eval(scope, limit, subject):
+        commands = AsyncMock()
+        commands.eval.side_effect = [[limit, 28001], [limit + 1, 11301]]
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:22:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547294272'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+________ test_rejected_response_has_at_least_one_second_retry_after[0] _________
+
+ttl = 0
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('ttl', [0, -1, 1, 1000])
+    async def test_rejected_response_has_at_least_one_second_retry_after(ttl):
+        commands = AsyncMock()
+        commands.eval.return_value = [11, ttl]
+>       assert await service(commands).allow_request(7, 'run') == (False, 1)
+                     ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547371008'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+________ test_rejected_response_has_at_least_one_second_retry_after[-1] ________
+
+ttl = -1
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('ttl', [0, -1, 1, 1000])
+    async def test_rejected_response_has_at_least_one_second_retry_after(ttl):
+        commands = AsyncMock()
+        commands.eval.return_value = [11, ttl]
+>       assert await service(commands).allow_request(7, 'run') == (False, 1)
+                     ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547374512'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+________ test_rejected_response_has_at_least_one_second_retry_after[1] _________
+
+ttl = 1
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('ttl', [0, -1, 1, 1000])
+    async def test_rejected_response_has_at_least_one_second_retry_after(ttl):
+        commands = AsyncMock()
+        commands.eval.return_value = [11, ttl]
+>       assert await service(commands).allow_request(7, 'run') == (False, 1)
+                     ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547362112'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+_______ test_rejected_response_has_at_least_one_second_retry_after[1000] _______
+
+ttl = 1000
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('ttl', [0, -1, 1, 1000])
+    async def test_rejected_response_has_at_least_one_second_retry_after(ttl):
+        commands = AsyncMock()
+        commands.eval.return_value = [11, ttl]
+>       assert await service(commands).allow_request(7, 'run') == (False, 1)
+                     ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:39:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4552864832'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+____ test_redis_failure_is_unavailable_without_retry_or_local_allow[error0] ____
+
+error = ConnectionError('down')
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('error', [ConnectionError('down'), TimeoutError('lost reply'), OutOfMemoryError('OOM')])
+    async def test_redis_failure_is_unavailable_without_retry_or_local_allow(error):
+        commands = AsyncMock()
+        commands.eval.side_effect = error
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4552864016'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+____ test_redis_failure_is_unavailable_without_retry_or_local_allow[error1] ____
+
+error = TimeoutError('lost reply')
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('error', [ConnectionError('down'), TimeoutError('lost reply'), OutOfMemoryError('OOM')])
+    async def test_redis_failure_is_unavailable_without_retry_or_local_allow(error):
+        commands = AsyncMock()
+        commands.eval.side_effect = error
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4552860080'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+____ test_redis_failure_is_unavailable_without_retry_or_local_allow[error2] ____
+
+error = OutOfMemoryError('OOM')
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('error', [ConnectionError('down'), TimeoutError('lost reply'), OutOfMemoryError('OOM')])
+    async def test_redis_failure_is_unavailable_without_retry_or_local_allow(error):
+        commands = AsyncMock()
+        commands.eval.side_effect = error
+>       limiter = service(commands)
+                  ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547362736'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+______ test_different_users_scopes_and_namespaces_use_distinct_redis_keys ______
+
+    @pytest.mark.asyncio
+    async def test_different_users_scopes_and_namespaces_use_distinct_redis_keys():
+        commands = AsyncMock()
+        commands.eval.return_value = [1, 60000]
+>       first, second = service(commands), service(commands, 'resumate:another-env')
+                        ^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit.py:59:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+commands = <AsyncMock id='4547347040'>, namespace = 'resumate:limiter-unit'
+
+    def service(commands, namespace='resumate:limiter-unit'):
+>       assert hasattr(rate_limit, 'RedisRateLimiter'), 'production limiter must use injected Redis commands'
+E       AssertionError: production limiter must use injected Redis commands
+E       assert False
+E        +  where False = hasattr(rate_limit, 'RedisRateLimiter')
+
+backend/tests/test_rate_limit.py:13: AssertionError
+_________ test_local_app_reuses_original_auth_override_without_bearer __________
+
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f0b5400>
+
+    def test_local_app_reuses_original_auth_override_without_bearer(controlled_rate_limiter):
+        app = FastAPI()
+        calls = []
+        def user():
+            calls.append(1)
+            return SimpleNamespace(id=7)
+        app.dependency_overrides[get_current_user] = user
+>       @app.post('/probe', dependencies=[Depends(require_capacity())])
+                                                  ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit_routes.py:55:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def require_capacity():
+>       assert hasattr(rate_limit, 'require_run_capacity'), 'Run admission dependency is required'
+E       AssertionError: Run admission dependency is required
+E       assert False
+E        +  where False = hasattr(rate_limit, 'require_run_capacity')
+
+backend/tests/test_rate_limit_routes.py:44: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs-request_kwargs0-429] _
+
+path = '/api/agent/runs'
+request_kwargs = {'json': {'jdId': 1, 'kind': 'tailoring', 'requestId': 'same-request', 'resumeId': 1}}
+status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f0b43e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f0b4440>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs-request_kwargs0-503] _
+
+path = '/api/agent/runs'
+request_kwargs = {'json': {'jdId': 1, 'kind': 'tailoring', 'requestId': 'same-request', 'resumeId': 1}}
+status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f0b00e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f6d9ca0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs/run-1/retry-request_kwargs1-429] _
+
+path = '/api/agent/runs/run-1/retry', request_kwargs = {}, status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f6080b0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f608830>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs/run-1/retry-request_kwargs1-503] _
+
+path = '/api/agent/runs/run-1/retry', request_kwargs = {}, status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f7c6090>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f7c5fa0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents-request_kwargs2-429] _
+
+path = '/api/documents'
+request_kwargs = {'data': {'document_type': 'resume'}, 'files': {'files': ('resume.txt', b'Synthetic resume')}}
+status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f8cec30>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f8cfd70>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents-request_kwargs2-503] _
+
+path = '/api/documents'
+request_kwargs = {'data': {'document_type': 'resume'}, 'files': {'files': ('resume.txt', b'Synthetic resume')}}
+status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x1125a4470>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1125a47a0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents/resume:1/parse-request_kwargs3-429] _
+
+path = '/api/documents/resume:1/parse', request_kwargs = {}, status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x1126d6a20>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1126d69c0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents/resume:1/parse-request_kwargs3-503] _
+
+path = '/api/documents/resume:1/parse', request_kwargs = {}, status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x1127e3470>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1127e33b0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/jobs/1/parse-request_kwargs4-429] _
+
+path = '/api/jobs/1/parse', request_kwargs = {}, status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x1129112e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x112913e90>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/jobs/1/parse-request_kwargs4-503] _
+
+path = '/api/jobs/1/parse', request_kwargs = {}, status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x112830560>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x112830650>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs-request_kwargs5-429] _
+
+path = '/api/runs'
+request_kwargs = {'json': {'jd_document_id': 'jd:1', 'resume_document_ids': ['resume:1']}}
+status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x112722990>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1127227b0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs-request_kwargs5-503] _
+
+path = '/api/runs'
+request_kwargs = {'json': {'jd_document_id': 'jd:1', 'resume_document_ids': ['resume:1']}}
+status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x11261a870>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11261ac00>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs/1/candidates/1/questions-request_kwargs6-429] _
+
+path = '/api/runs/1/candidates/1/questions', request_kwargs = {}, status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f91ea50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f91d070>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs/1/candidates/1/questions-request_kwargs6-503] _
+
+path = '/api/runs/1/candidates/1/questions', request_kwargs = {}, status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f861e50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f862090>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/followups/analyze-request_kwargs7-429] _
+
+path = '/api/followups/analyze'
+request_kwargs = {'json': {'answer': 'Synthetic answer', 'question': 'Describe the work'}}
+status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f72fdd0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f72f080>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/followups/analyze-request_kwargs7-503] _
+
+path = '/api/followups/analyze'
+request_kwargs = {'json': {'answer': 'Synthetic answer', 'question': 'Describe the work'}}
+status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f6335c0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f631f70>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/resume-versions/version-1/export-request_kwargs8-429] _
+
+path = '/api/resume-versions/version-1/export'
+request_kwargs = {'json': {'requestId': 'export-one'}}, status = 429
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f817560>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f8171d0>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 429
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_ test_nine_acceptance_routes_reject_before_files_or_sql[/api/resume-versions/version-1/export-request_kwargs8-503] _
+
+path = '/api/resume-versions/version-1/export'
+request_kwargs = {'json': {'requestId': 'export-one'}}, status = 503
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f0b7230>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f0b4e30>
+
+    @pytest.mark.parametrize('status', [429, 503])
+    @pytest.mark.parametrize(('path', 'request_kwargs'), ACCEPTANCES)
+    def test_nine_acceptance_routes_reject_before_files_or_sql(path, request_kwargs, status, controlled_rate_limiter, monkeypatch):
+        if status == 429:
+            controlled_rate_limiter.result = (False, 12)
+        else:
+            from backend.infrastructure.redis_client import RedisUnavailable
+            controlled_rate_limiter.error = RedisUnavailable('unavailable')
+        writes = []
+        async def upload(*args):
+            writes.append('file')
+            raise AssertionError('Admission must run before file storage')
+        monkeypatch.setattr(documents, 'store_upload', upload)
+        app, user_calls, db_calls = app_with_routes()
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.post(path, **request_kwargs)
+>       assert response.status_code == status, response.text
+E       AssertionError: Internal Server Error
+E       assert 500 == 503
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:80: AssertionError
+_______ test_auth_login_and_register_share_ip_even_with_optional_bearer ________
+
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x10f72f4a0>
+
+    def test_auth_login_and_register_share_ip_even_with_optional_bearer(controlled_rate_limiter):
+        controlled_rate_limiter.result = (False, 9)
+        app, _, db_calls = app_with_routes()
+        client = TestClient(app, raise_server_exceptions=False)
+        for path in ['/auth/login', '/auth/register']:
+            response = client.post(path, json={'username': 'alice', 'password': 'synthetic-password'},
+                headers={'X-Forwarded-For': '203.0.113.7, 127.0.0.1', 'Authorization': 'Bearer ignored-on-auth'})
+>           assert response.status_code == 429
+E           assert 500 == 429
+E            +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+backend/tests/test_rate_limit_routes.py:107: AssertionError
+__________________ test_chat_uses_sql_confirmed_numeric_user ___________________
+
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x11269f890>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1126bfd70>
+
+    def test_chat_uses_sql_confirmed_numeric_user(controlled_rate_limiter, monkeypatch):
+        async def model_trap(*args):
+            raise AssertionError('Rejected chat must not reach an Agent/model')
+            yield ''
+        monkeypatch.setattr(chat, 'chat_with_agent_stream', model_trap)
+        controlled_rate_limiter.result = (False, 4)
+        app, user_calls, _ = app_with_routes()
+        response = TestClient(app, raise_server_exceptions=False).post('/chat/stream', json={'message': 'hello'})
+>       assert response.status_code == 429
+E       assert 200 == 429
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_rate_limit_routes.py:121: AssertionError
+_ test_accepted_replays_each_count_and_snapshot_cancel_actions_remain_available _
+
+controlled_rate_limiter = <conftest.ControlledRateLimiter object at 0x112721190>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x112721400>
+
+    def test_accepted_replays_each_count_and_snapshot_cancel_actions_remain_available(controlled_rate_limiter, monkeypatch):
+        app, _, _ = app_with_routes()
+        queued = SimpleNamespace(id='existing-run', status='queued')
+        monkeypatch.setattr(agent_runs.agent_runs, 'create_run', lambda *args: queued)
+        monkeypatch.setattr(agent_runs, 'publish_run', lambda run_id: False)
+        monkeypatch.setattr(agent_runs.agent_runs, 'run_snapshot', lambda *args: {'runId': queued.id, 'status': 'queued'})
+        monkeypatch.setattr(agent_runs.agent_runs, 'cancel_run', lambda *args: SimpleNamespace(id=queued.id, status='cancelled'))
+        monkeypatch.setattr(agent_runs.agent_runs, 'answer_action', lambda *args: queued)
+        client = TestClient(app)
+        for _ in range(2):
+            response = client.post('/api/agent/runs', **ACCEPTANCES[0][1])
+            assert response.status_code == 202 and response.json()['runId'] == queued.id
+>       assert controlled_rate_limiter.calls == [(7, 'run')] * 2
+E       AssertionError: assert [] == [(7, 'run'), (7, 'run')]
+E
+E         Right contains 2 more items, first extra item: (7, 'run')
+E         Use -v to get more diff
+
+backend/tests/test_rate_limit_routes.py:138: AssertionError
+_ test_missing_app_state_never_allows_and_runtime_getter_reads_current_app_state _
+
+    @pytest.mark.real_redis
+    def test_missing_app_state_never_allows_and_runtime_getter_reads_current_app_state():
+        app = FastAPI()
+        app.dependency_overrides[get_current_user] = lambda: SimpleNamespace(id=7)
+>       @app.post('/probe', dependencies=[Depends(require_capacity())])
+                                                  ^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_rate_limit_routes.py:151:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def require_capacity():
+>       assert hasattr(rate_limit, 'require_run_capacity'), 'Run admission dependency is required'
+E       AssertionError: Run admission dependency is required
+E       assert False
+E        +  where False = hasattr(rate_limit, 'require_run_capacity')
+
+backend/tests/test_rate_limit_routes.py:44: AssertionError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_rate_limit.py::test_scope_limit_and_remaining_ttl_use_one_eval[auth-5-ip:203.0.113.7]
+FAILED backend/tests/test_rate_limit.py::test_scope_limit_and_remaining_ttl_use_one_eval[chat-20-7]
+FAILED backend/tests/test_rate_limit.py::test_scope_limit_and_remaining_ttl_use_one_eval[run-10-7]
+FAILED backend/tests/test_rate_limit.py::test_rejected_response_has_at_least_one_second_retry_after[0]
+FAILED backend/tests/test_rate_limit.py::test_rejected_response_has_at_least_one_second_retry_after[-1]
+FAILED backend/tests/test_rate_limit.py::test_rejected_response_has_at_least_one_second_retry_after[1]
+FAILED backend/tests/test_rate_limit.py::test_rejected_response_has_at_least_one_second_retry_after[1000]
+FAILED backend/tests/test_rate_limit.py::test_redis_failure_is_unavailable_without_retry_or_local_allow[error0]
+FAILED backend/tests/test_rate_limit.py::test_redis_failure_is_unavailable_without_retry_or_local_allow[error1]
+FAILED backend/tests/test_rate_limit.py::test_redis_failure_is_unavailable_without_retry_or_local_allow[error2]
+FAILED backend/tests/test_rate_limit.py::test_different_users_scopes_and_namespaces_use_distinct_redis_keys
+FAILED backend/tests/test_rate_limit_routes.py::test_local_app_reuses_original_auth_override_without_bearer
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs-request_kwargs0-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs-request_kwargs0-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs/run-1/retry-request_kwargs1-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/agent/runs/run-1/retry-request_kwargs1-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents-request_kwargs2-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents-request_kwargs2-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents/resume:1/parse-request_kwargs3-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/documents/resume:1/parse-request_kwargs3-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/jobs/1/parse-request_kwargs4-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/jobs/1/parse-request_kwargs4-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs-request_kwargs5-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs-request_kwargs5-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs/1/candidates/1/questions-request_kwargs6-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/runs/1/candidates/1/questions-request_kwargs6-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/followups/analyze-request_kwargs7-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/followups/analyze-request_kwargs7-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/resume-versions/version-1/export-request_kwargs8-429]
+FAILED backend/tests/test_rate_limit_routes.py::test_nine_acceptance_routes_reject_before_files_or_sql[/api/resume-versions/version-1/export-request_kwargs8-503]
+FAILED backend/tests/test_rate_limit_routes.py::test_auth_login_and_register_share_ip_even_with_optional_bearer
+FAILED backend/tests/test_rate_limit_routes.py::test_chat_uses_sql_confirmed_numeric_user
+FAILED backend/tests/test_rate_limit_routes.py::test_accepted_replays_each_count_and_snapshot_cancel_actions_remain_available
+FAILED backend/tests/test_rate_limit_routes.py::test_missing_app_state_never_allows_and_runtime_getter_reads_current_app_state
+34 failed, 1 passed, 5 warnings in 1.67s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

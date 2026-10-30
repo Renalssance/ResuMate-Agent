@@ -1,0 +1,43 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____ test_async_resources_keep_commands_and_subscriptions_on_separate_pools ____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ca0e570>
+
+    def test_async_resources_keep_commands_and_subscriptions_on_separate_pools(monkeypatch):
+>       from backend.infrastructure import redis_client
+E       ModuleNotFoundError: No module named 'backend.infrastructure'
+
+backend/tests/test_redis_lifecycle.py:8: ModuleNotFoundError
+_____ test_async_resources_close_both_owned_pools_even_if_one_close_fails ______
+
+    @pytest.mark.asyncio
+    async def test_async_resources_close_both_owned_pools_even_if_one_close_fails():
+>       from backend.infrastructure.redis_client import AsyncRedisResources
+E       ModuleNotFoundError: No module named 'backend.infrastructure'
+
+backend/tests/test_redis_lifecycle.py:27: ModuleNotFoundError
+___________ test_sync_resources_require_lifecycle_and_reuse_one_pool ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ca0f560>
+
+    def test_sync_resources_require_lifecycle_and_reuse_one_pool(monkeypatch):
+>       from backend.infrastructure import redis_client
+E       ModuleNotFoundError: No module named 'backend.infrastructure'
+
+backend/tests/test_redis_lifecycle.py:38: ModuleNotFoundError
+____________ test_sync_client_cannot_be_reused_by_a_forked_process _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ca89b20>
+
+    def test_sync_client_cannot_be_reused_by_a_forked_process(monkeypatch):
+>       from backend.infrastructure import redis_client
+E       ModuleNotFoundError: No module named 'backend.infrastructure'
+
+backend/tests/test_redis_lifecycle.py:62: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_redis_lifecycle.py::test_async_resources_keep_commands_and_subscriptions_on_separate_pools
+FAILED backend/tests/test_redis_lifecycle.py::test_async_resources_close_both_owned_pools_even_if_one_close_fails
+FAILED backend/tests/test_redis_lifecycle.py::test_sync_resources_require_lifecycle_and_reuse_one_pool
+FAILED backend/tests/test_redis_lifecycle.py::test_sync_client_cannot_be_reused_by_a_forked_process
+4 failed in 0.04s

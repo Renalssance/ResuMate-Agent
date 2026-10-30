@@ -8,6 +8,7 @@ import anyio
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
+from backend.middleware.rate_limit import require_run_capacity
 from backend.auth.security import get_current_user
 from backend.db.database import get_db
 from backend.db.models import JobDescription, Resume, User
@@ -36,7 +37,7 @@ def _find_document(db: Session, user_id: int, document_id: str):
     return kind, row
 
 
-@router.post("", response_model=DocumentParseResponse)
+@router.post("", response_model=DocumentParseResponse, dependencies=[Depends(require_run_capacity)])
 def upload_documents(
     document_type: DocumentType = Form(...), files: list[UploadFile] = File(...), task_id: str = Form(""),
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db), prefer: str = Header(""),
@@ -111,7 +112,7 @@ def update_document_structured_data(
     return _record(kind, row)
 
 
-@router.post("/{document_id}/parse", response_model=DocumentParseResult)
+@router.post("/{document_id}/parse", response_model=DocumentParseResult, dependencies=[Depends(require_run_capacity)])
 def reparse_document(document_id: str, task_id: str = Query(""),
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db), prefer: str = Header(""),
 ):
@@ -149,7 +150,7 @@ async def delete_document(document_id: str, current_user: User = Depends(get_cur
 followup_router = APIRouter(prefix="/api", tags=["followups"])
 
 
-@followup_router.post("/followups/analyze", response_model=FollowUpAnalysisResponse)
+@followup_router.post("/followups/analyze", response_model=FollowUpAnalysisResponse, dependencies=[Depends(require_run_capacity)])
 def analyze_followup(request: FollowUpAnalysisRequest,
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db),
     task_id: str = Query(""), prefer: str = Header(""),

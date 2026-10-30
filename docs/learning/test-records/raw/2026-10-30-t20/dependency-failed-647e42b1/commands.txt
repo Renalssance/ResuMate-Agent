@@ -1,0 +1,3 @@
+{"at": "2026-10-30T01:31:39.586142+00:00", "args": ["logs", "--no-color"], "exit_code": 0}
+
+{"at": "2026-10-30T01:31:39.655986+00:00", "args": ["down", "--volumes", "--remove-orphans"], "exit_code": 0}

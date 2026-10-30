@@ -1,5 +1,6 @@
 """Opt-in: actual Linux worker, pinned CJK font, authenticated two-page PDF."""
 import os
+import shutil
 from pathlib import Path
 import socket
 import subprocess
@@ -33,6 +34,13 @@ def test_linux_worker_exports_extractable_chinese_resume(tmp_path, monkeypatch):
     data.mkdir()
     evidence = tmp_path / 'pdf-evidence'
     evidence.mkdir()
+    # A dependency image may predate this checkout; always exercise the saved current source.
+    source = evidence / 'source' / 'backend'
+    shutil.copytree(root / 'backend', source,
+                    ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.pytest_cache'))
+    for name in ('pyproject.toml', 'uv.lock'):
+        shutil.copy2(root / name, evidence / 'source' / name)
+    image = os.getenv('RESUMATE_PDF_BASE_IMAGE', 'resumate-t11-worker')
     secret = uuid4().hex
     port = free_port()
     monkeypatch.setenv('JWT_SECRET_KEY', secret)
@@ -54,13 +62,15 @@ def test_linux_worker_exports_extractable_chinese_resume(tmp_path, monkeypatch):
     override = tmp_path / 'compose-pdf.yaml'
     override.write_text(f'''services:
   api:
-    image: resumate-t11-worker
-    volumes: ["{data}:/app/data"]
+    image: {image}
+    volumes: ["{data}:/app/data", "{source}:/app/backend:ro"]
   worker:
-    image: resumate-t11-worker
-    volumes: ["{data}:/app/data"]
+    image: {image}
+    volumes: ["{data}:/app/data", "{source}:/app/backend:ro"]
 ''')
-    command = ['docker', 'compose', '-p', project, '-f', str(root / 'deploy/compose.yaml'), '-f', str(override)]
+    print('PDF dependency image:', image)
+    print('PDF current source snapshot:', source)
+    command = ['docker', 'compose', '-p', project, '-f', str(root / 'backend/tests/fixtures/compose.sqlite.yaml'), '-f', str(override)]
     token = jwt.encode({'sub': 'pdf-fixture', 'role': 'user'}, secret, algorithm='HS256')
     with httpx.Client(base_url=f'http://127.0.0.1:{port}', headers={'Authorization': 'Bearer ' + token}) as client:
         try:

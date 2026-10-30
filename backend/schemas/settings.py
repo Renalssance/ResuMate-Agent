@@ -50,7 +50,7 @@ class LlmUsageCall(BaseModel):
     called_at: datetime
 
 
-class LlmUsageDashboard(BaseModel):
+class LlmUsageSummary(BaseModel):
     total_calls: int
     successful_calls: int
     failed_calls: int
@@ -61,4 +61,7 @@ class LlmUsageDashboard(BaseModel):
     last_called_at: datetime | None
     daily: list[LlmUsageDailyPoint]
     by_task: list[LlmUsageTaskPoint]
+
+
+class LlmUsageDashboard(LlmUsageSummary):
     recent_calls: list[LlmUsageCall]

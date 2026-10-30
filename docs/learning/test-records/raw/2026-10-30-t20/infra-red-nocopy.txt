@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/task20_check_compose.py", line 27, in <module>
+    assert shared.get('volume', {}).get('nocopy') is True, f'{name} must disable fresh-volume copy-up'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: api must disable fresh-volume copy-up

@@ -1,0 +1,11 @@
+{
+  "invocation_id": "241c20c7e4984135b53338a248caa55f",
+  "started_at": "2026-10-30T01:24:19.024618+00:00",
+  "project": "resumate-t20-241c20c7e4",
+  "image": "resumate-t20-241c20c7e4:test",
+  "executed": false,
+  "source": "/tmp/task-20-artifacts-241c20c7e4984135b53338a248caa55f/source",
+  "model": "existing deterministic DraftModel; no external calls",
+  "results": [],
+  "completed_at": "2026-10-30T01:26:16.630495+00:00"
+}

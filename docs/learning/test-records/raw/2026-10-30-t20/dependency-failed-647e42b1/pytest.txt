@@ -1,0 +1,187 @@
+T20 artifact directory: /tmp/task-20-artifacts-647e42b191b84d43b79fa5c2f5cfa330
+EEEEEEE
+==================================== ERRORS ====================================
+____ ERROR at setup of test_topology_shared_sql_and_worker_only_checkpoints ____
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+_ ERROR at setup of test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+___ ERROR at setup of test_ticket_single_consumer_and_expiration_across_apis ___
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+_ ERROR at setup of test_cache_reduces_aggregates_and_real_worker_invalidates __
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+_ ERROR at setup of test_notifications_wake_then_sql_fills_missing_and_duplicate_hints _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+_ ERROR at setup of test_redis_down_rejects_admission_but_committed_run_recovers _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+_ ERROR at setup of test_oom_noeviction_preserves_marker_and_services_fail_as_designed _
+
+    @pytest.fixture(scope='module')
+    def stack():
+        value = Stack()
+        print('T20 artifact directory:', value.artifacts, flush=True)
+        try:
+            # Current dependency lock and application source are built once for all five services.
+            if os.getenv('RESUMATE_REDIS_BASE_IMAGE'):
+                result = subprocess.run([DOCKER, 'run', '--rm', '--entrypoint', 'python', value.env['T20_IMAGE'], '-c',
+                    "import importlib.metadata,json;print(json.dumps({d.metadata['Name']:d.version for d in importlib.metadata.distributions()}))"],
+                    capture_output=True, text=True, timeout=60)
+                assert result.returncode == 0, result.stderr
+                runtime = json.loads(result.stdout)
+                normalized = lambda name: re.sub('[-_.]+', '-', name).lower()
+                installed = {normalized(name): version for name, version in runtime.items()}
+                locked = {normalized(row['name']): row['version'] for row in tomllib.loads((value.root / 'uv.lock').read_text())['package']}
+                mismatches = {name: version for name, version in installed.items() if name in locked and version != locked[name]}
+                direct = tomllib.loads((value.root / 'pyproject.toml').read_text())['project']['dependencies']
+                missing = [requirement for requirement in direct if normalized(re.match(r'[A-Za-z0-9_.-]+', requirement).group()) not in installed]
+>               assert not missing and not mismatches, {'missing': missing, 'mismatches': mismatches}
+E               AssertionError: {'mismatches': {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...}, 'missing': []}
+E               assert (not [] and not {'googleapis-common-protos': '1.56.1', 'opentelemetry-api': '1.40.0', 'opentelemetry-exporter-otlp-proto-grpc': '1.11.1', 'opentelemetry-proto': '1.11.1', ...})
+
+backend/tests/test_redis_integration.py:137: AssertionError
+=========================== short test summary info ============================
+ERROR backend/tests/test_redis_integration.py::test_topology_shared_sql_and_worker_only_checkpoints
+ERROR backend/tests/test_redis_integration.py::test_rate_limit_is_atomic_across_apis_and_ttl_does_not_slide
+ERROR backend/tests/test_redis_integration.py::test_ticket_single_consumer_and_expiration_across_apis
+ERROR backend/tests/test_redis_integration.py::test_cache_reduces_aggregates_and_real_worker_invalidates
+ERROR backend/tests/test_redis_integration.py::test_notifications_wake_then_sql_fills_missing_and_duplicate_hints
+ERROR backend/tests/test_redis_integration.py::test_redis_down_rejects_admission_but_committed_run_recovers
+ERROR backend/tests/test_redis_integration.py::test_oom_noeviction_preserves_marker_and_services_fail_as_designed
+7 errors in 1.03s

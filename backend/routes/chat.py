@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
 from backend.agent.agent import chat_with_agent_stream
-from backend.middleware.rate_limit import rate_limit
+from backend.middleware.rate_limit import require_chat_capacity
 from backend.auth.security import get_current_user
 from backend.schemas import ChatRequest
 from backend.db.models import User
@@ -12,7 +12,7 @@ from backend.db.models import User
 router = APIRouter()
 
 
-@router.post("/chat/stream", dependencies=[Depends(rate_limit("chat", 20, 60))])
+@router.post("/chat/stream", dependencies=[Depends(require_chat_capacity)])
 async def chat_stream_endpoint(request: ChatRequest, current_user: User = Depends(get_current_user)):
     """跟 Agent 对话 (流式)"""
 

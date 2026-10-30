@@ -1,0 +1,68 @@
+ Network resumate-pdf-7bb32a10_default Creating
+ Volume resumate-pdf-7bb32a10_redis-data Creating
+ Volume resumate-pdf-7bb32a10_redis-data Creating
+ Network resumate-pdf-7bb32a10_default Creating
+ Volume resumate-pdf-7bb32a10_redis-data Created
+ Volume resumate-pdf-7bb32a10_redis-data Created
+ Network resumate-pdf-7bb32a10_default Created
+ Network resumate-pdf-7bb32a10_default Created
+ Container resumate-pdf-7bb32a10-api-1 Creating
+ Container resumate-pdf-7bb32a10-redis-1 Creating
+ Container resumate-pdf-7bb32a10-api-1 Created
+ Container resumate-pdf-7bb32a10-redis-1 Created
+ Container resumate-pdf-7bb32a10-worker-1 Creating
+ Container resumate-pdf-7bb32a10-worker-1 Created
+ Container resumate-pdf-7bb32a10-api-1 Starting
+ Container resumate-pdf-7bb32a10-redis-1 Starting
+ Container resumate-pdf-7bb32a10-api-1 Started
+ Container resumate-pdf-7bb32a10-redis-1 Started
+ Container resumate-pdf-7bb32a10-redis-1 Waiting
+ Container resumate-pdf-7bb32a10-api-1 Waiting
+ Container resumate-pdf-7bb32a10-api-1 Healthy
+ Container resumate-pdf-7bb32a10-redis-1 Healthy
+ Container resumate-pdf-7bb32a10-worker-1 Starting
+ Container resumate-pdf-7bb32a10-worker-1 Started
+ Container resumate-pdf-7bb32a10-worker-1 Waiting
+ Container resumate-pdf-7bb32a10-api-1 Waiting
+ Container resumate-pdf-7bb32a10-redis-1 Waiting
+ Container resumate-pdf-7bb32a10-redis-1 Healthy
+ Container resumate-pdf-7bb32a10-worker-1 Healthy
+ Container resumate-pdf-7bb32a10-api-1 Healthy
+ Container resumate-pdf-7bb32a10-worker-1 Stopping
+ Container resumate-pdf-7bb32a10-worker-1 Stopped
+ Container resumate-pdf-7bb32a10-worker-1 Removing
+ Container resumate-pdf-7bb32a10-worker-1 Removed
+ Container resumate-pdf-7bb32a10-api-1 Stopping
+ Container resumate-pdf-7bb32a10-redis-1 Stopping
+ Container resumate-pdf-7bb32a10-redis-1 Stopped
+ Container resumate-pdf-7bb32a10-redis-1 Removing
+ Container resumate-pdf-7bb32a10-redis-1 Removed
+ Container resumate-pdf-7bb32a10-api-1 Stopped
+ Container resumate-pdf-7bb32a10-api-1 Removing
+ Container resumate-pdf-7bb32a10-api-1 Removed
+ Network resumate-pdf-7bb32a10_default Removing
+ Volume resumate-pdf-7bb32a10_redis-data Removing
+ Volume resumate-pdf-7bb32a10_redis-data Removed
+ Network resumate-pdf-7bb32a10_default Removed
+PDF dependency image: resumate-t20-deps:aligned
+PDF current source snapshot: /private/tmp/task-20-legacy-pdf-20261030-741bc9/test_linux_worker_exports_extr0/pdf-evidence/source/backend
+Linux font: NotoSansCJK-Regular.ttc: "Noto Sans CJK SC" "Regular"
+PDF pages=2, characters=1218; evidence=/private/tmp/task-20-legacy-pdf-20261030-741bc9/test_linux_worker_exports_extr0/pdf-evidence
+PASS: actual Linux Celery worker -> pinned Chinese font -> authenticated two-page PDF
+PDF evidence: /private/tmp/task-20-legacy-pdf-20261030-741bc9/test_linux_worker_exports_extr0/pdf-evidence
+.
+=============================== warnings summary ===============================
+backend/tests/test_resume_export_compose.py::test_linux_worker_exports_extractable_chinese_resume
+backend/tests/test_resume_export_compose.py::test_linux_worker_exports_extractable_chinese_resume
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_resume_export_compose.py::test_linux_worker_exports_extractable_chinese_resume
+backend/tests/test_resume_export_compose.py::test_linux_worker_exports_extractable_chinese_resume
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_resume_export_compose.py::test_linux_worker_exports_extractable_chinese_resume
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 5 warnings in 14.17s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

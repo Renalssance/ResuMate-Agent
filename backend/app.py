@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +12,9 @@ import time
 from backend.logging_config import setup_logging
 from backend.routes import api as api_module
 from backend.db.database import init_db
+from backend.infrastructure import redis_client
+from backend.middleware.rate_limit import RedisRateLimiter
+from backend.services import realtime_bus
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -33,19 +38,37 @@ class SPAStaticFiles(StaticFiles):
             raise
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Startup: initializing database")
+    init_db()
+    resources = redis_client.create_async_redis_resources()
+    try:
+        redis_client.init_sync_redis()
+        app.state.redis = resources
+        app.state.rate_limiter = RedisRateLimiter(resources.commands, resources.namespace)
+        hints = realtime_bus.InterviewHints(resources.commands, resources.notifications, resources.namespace)
+        app.state.interview_hints = hints
+        try:
+            await hints.start()
+            logger.info("Startup: database and Redis resources initialized")
+            yield
+        finally:
+            await hints.aclose()
+    finally:
+        try:
+            await resources.aclose()
+        finally:
+            redis_client.close_sync_redis()
+
+
 def create_app() -> FastAPI:
     logger.info("Creating FastAPI app")
-    app = FastAPI(title="Resume Interview Engine API")
+    app = FastAPI(title="Resume Interview Engine API", lifespan=lifespan)
 
     @app.get("/healthz", include_in_schema=False)
     async def health():
         return {"status": "ok"}
-
-    @app.on_event("startup")
-    async def _startup_init_db():
-        logger.info("Startup: initializing database")
-        init_db()
-        logger.info("Startup: database initialized")
 
     app.add_middleware(
         CORSMiddleware,
