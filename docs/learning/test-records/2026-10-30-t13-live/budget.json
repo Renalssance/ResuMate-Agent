@@ -1,0 +1,18 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18a5b-590a-7583-a376-9853851495ba": {
+      "case_id": "smoke-normal-api",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "01a18a61-e021-7993-8b42-3a54f107a2a2": {
+      "case_id": "normal-api",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    }
+  },
+  "stop_reason": "budget_exhausted"
+}

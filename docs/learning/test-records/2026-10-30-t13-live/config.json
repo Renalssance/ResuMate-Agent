@@ -1,0 +1,23 @@
+{
+  "currency": "CNY",
+  "max_total_cost": "3",
+  "max_case_cost": "1.5",
+  "input_price_per_million": "1.2",
+  "output_price_per_million": "4.8",
+  "provider_max_input_tokens": 1000000,
+  "context_window_tokens": 64000,
+  "max_output_tokens": 4096,
+  "output_token_tolerance": 10,
+  "max_model_calls": 120,
+  "max_case_model_calls": 30,
+  "request_timeout_seconds": 90,
+  "output_limit_parameter": "max_completion_tokens",
+  "output_limit_covers_all_billed_tokens": true,
+  "usage": "reported",
+  "model": "qwen3.7-flash-2026-07-15",
+  "pricing_checked_at": "2026-10-30",
+  "pricing_source": "https://help.aliyun.com/zh/model-studio/model-pricing",
+  "capability_source": "https://help.aliyun.com/zh/model-studio/qwen3-7-flash",
+  "fixed_request_cost": "0",
+  "enable_thinking": false
+}

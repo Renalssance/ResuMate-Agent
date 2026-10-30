@@ -1,0 +1,52 @@
+{
+  "mode": "offline HTTP interception, synthetic credentials, no provider calls",
+  "http_boundary_reached": true,
+  "errors": [
+    {
+      "type": "APIConnectionError",
+      "http_status": null,
+      "frames": [
+        {
+          "file": "chat_models.py",
+          "line": 1727,
+          "function": "generate"
+        },
+        {
+          "file": "chat_models.py",
+          "line": 2024,
+          "function": "_generate_with_cache"
+        },
+        {
+          "file": "base.py",
+          "line": 1437,
+          "function": "_stream"
+        },
+        {
+          "file": "base.py",
+          "line": 1410,
+          "function": "_stream"
+        },
+        {
+          "file": "_utils.py",
+          "line": 286,
+          "function": "wrapper"
+        },
+        {
+          "file": "completions.py",
+          "line": 1211,
+          "function": "create"
+        },
+        {
+          "file": "_base_client.py",
+          "line": 1297,
+          "function": "post"
+        },
+        {
+          "file": "_base_client.py",
+          "line": 1037,
+          "function": "request"
+        }
+      ]
+    }
+  ]
+}

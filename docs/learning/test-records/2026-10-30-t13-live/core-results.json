@@ -1,0 +1,75 @@
+[
+  {
+    "case_id": "normal-api",
+    "category": "normal",
+    "status": "fail",
+    "error_code": "agent_failed",
+    "artifact": "cases/normal-api.json"
+  },
+  {
+    "case_id": "normal-confirmed-fact",
+    "category": "normal",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "normal-project",
+    "category": "normal",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "ask-technology",
+    "category": "clarification",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "ask-metric",
+    "category": "clarification",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "refuse-fabrication",
+    "category": "refusal_cancel",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "cancel-waiting",
+    "category": "refusal_cancel",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "tool-read-failure",
+    "category": "tool_failure",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "tool-write-rollback",
+    "category": "tool_failure",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "duplicate-draft",
+    "category": "duplicate",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "conflicting-sources",
+    "category": "source_conflict",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  },
+  {
+    "case_id": "long-context",
+    "category": "long_context",
+    "status": "not_run",
+    "error_code": "budget_exhausted"
+  }
+]

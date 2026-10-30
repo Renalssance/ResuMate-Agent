@@ -1,0 +1,515 @@
+{
+  "case_id": "normal-api",
+  "category": "normal",
+  "mode": "live",
+  "status": "fail",
+  "input": {
+    "category": "normal",
+    "resume": {
+      "raw_text": "测试申请人甲。有两年 Python API 开发经验。使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。为订单接口编写 pytest 测试。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "有两年 Python API 开发经验。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      }
+    },
+    "job": {
+      "title": "Python 后端工程师（合成岗位）",
+      "raw_text": "使用 Python/FastAPI 开发订单接口，维护 PostgreSQL 查询并编写测试。不需要补写未经确认的指标。"
+    },
+    "facts": [],
+    "memories": [],
+    "proposal": {
+      "section": "/self_summary",
+      "after": "有两年 Python API 开发经验，使用 FastAPI 编写订单接口并为 PostgreSQL 查询补充索引。",
+      "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+      "source_sections": [
+        "/work_experience/0/description"
+      ]
+    },
+    "expected": {
+      "statuses": [
+        "succeeded"
+      ],
+      "draft_count": 1
+    },
+    "id": "normal-api"
+  },
+  "output": {
+    "run_id": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+    "status": "failed",
+    "error_code": "agent_failed",
+    "coverage": {
+      "waiting_observed": false,
+      "waiting_draft_count": null,
+      "checkpoint_reopened": false,
+      "summary_calls": 0,
+      "file_reads": [],
+      "cancel_claim_blocked": false,
+      "model_calls_after_cancel": 0,
+      "fault_injected": false,
+      "duplicate_result_refs": [],
+      "required_context_preserved": true
+    },
+    "required_context_checks": [
+      {
+        "sdk_call_id": "01a18a61-e021-7993-8b42-3a54f107a2a2",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "public_model_output": [],
+    "model": "qwen3.7-flash-2026-07-15"
+  },
+  "db_snapshot": {
+    "run": {
+      "id": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+      "user_id": 1,
+      "session_id": "b3f66217-fd3f-4d04-b4e3-65b34fee6326",
+      "request_id": "687e7678-2663-42ba-bfb9-e7a517b6af1c",
+      "kind": "tailoring",
+      "status": "failed",
+      "input_json": {
+        "jdId": 1,
+        "resumeId": 1,
+        "contextSnapshot": {
+          "resume": {
+            "id": 1,
+            "text": "测试申请人甲。有两年 Python API 开发经验。使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。为订单接口编写 pytest 测试。",
+            "structured": {
+              "name": "测试申请人甲",
+              "self_summary": "有两年 Python API 开发经验。",
+              "source_refs": [
+                "page:1"
+              ],
+              "work_experience": [
+                {
+                  "company": "合成业务项目",
+                  "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+                  "source_refs": [
+                    "page:1:work:0"
+                  ]
+                }
+              ],
+              "projects": [
+                {
+                  "name": "订单接口测试",
+                  "description": "为订单接口编写 pytest 测试。",
+                  "source_refs": [
+                    "page:1:project:0"
+                  ]
+                }
+              ]
+            },
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "job": {
+            "id": 1,
+            "title": "Python 后端工程师（合成岗位）",
+            "text": "使用 Python/FastAPI 开发订单接口，维护 PostgreSQL 查询并编写测试。不需要补写未经确认的指标。",
+            "structured": {},
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "facts": [],
+          "match": null
+        }
+      },
+      "input_versions": {
+        "resume": "2026-10-01T00:00:00",
+        "jd": "2026-10-01T00:00:00",
+        "memories": [],
+        "facts": []
+      },
+      "result_json": null,
+      "attempt": 1,
+      "execution_epoch": 1,
+      "heartbeat_at": "2026-10-30T01:17:12.842558",
+      "cancel_requested_at": null,
+      "error_code": "agent_failed",
+      "output_refs": [],
+      "created_at": "2026-10-30T01:17:12.484423",
+      "updated_at": "2026-10-30T01:17:12.845787"
+    },
+    "session": {
+      "id": "b3f66217-fd3f-4d04-b4e3-65b34fee6326",
+      "user_id": 1,
+      "purpose": "tailoring",
+      "context_invalidated_at": null,
+      "checkpoint_deleted_at": null,
+      "active_run_id": null,
+      "created_at": "2026-10-30T01:17:12.317616"
+    },
+    "resume": {
+      "id": 1,
+      "user_id": 1,
+      "filename": "synthetic-resume.txt",
+      "file_path": "",
+      "content_hash": "",
+      "document_size": 0,
+      "parse_status": "pending",
+      "raw_text": "测试申请人甲。有两年 Python API 开发经验。使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。为订单接口编写 pytest 测试。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "有两年 Python API 开发经验。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-10-30T01:17:12.318765",
+      "updated_at": "2026-10-01T00:00:00"
+    },
+    "baseline": {
+      "resume": {
+        "id": 1,
+        "user_id": 1,
+        "raw_text": "测试申请人甲。有两年 Python API 开发经验。使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。为订单接口编写 pytest 测试。",
+        "structured_data": {
+          "name": "测试申请人甲",
+          "self_summary": "有两年 Python API 开发经验。",
+          "source_refs": [
+            "page:1"
+          ],
+          "work_experience": [
+            {
+              "company": "合成业务项目",
+              "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+              "source_refs": [
+                "page:1:work:0"
+              ]
+            }
+          ],
+          "projects": [
+            {
+              "name": "订单接口测试",
+              "description": "为订单接口编写 pytest 测试。",
+              "source_refs": [
+                "page:1:project:0"
+              ]
+            }
+          ]
+        }
+      },
+      "facts": [],
+      "memories": []
+    },
+    "versions": [],
+    "operations": [],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T01:17:12.485313"
+      },
+      {
+        "id": 2,
+        "run_id": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T01:17:12.490022"
+      },
+      {
+        "id": 3,
+        "run_id": "1dd9830e-dcac-426d-a4f2-d53bb4d13e82",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "agent_failed"
+        },
+        "created_at": "2026-10-30T01:17:12.846506"
+      }
+    ],
+    "actions": [],
+    "facts": [],
+    "memories": []
+  },
+  "verdict": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "run_identity",
+        "passed": true,
+        "reason": "SQL Run and session belong to the evaluated user",
+        "evidence_refs": [
+          "run",
+          "session"
+        ]
+      },
+      {
+        "name": "run_status",
+        "passed": false,
+        "reason": "status=failed; expected=['succeeded']",
+        "evidence_refs": [
+          "run.status"
+        ]
+      },
+      {
+        "name": "run_attempt",
+        "passed": true,
+        "reason": "attempt=1; epoch=1",
+        "evidence_refs": [
+          "run"
+        ]
+      },
+      {
+        "name": "session_released",
+        "passed": true,
+        "reason": "Terminal Run releases its session",
+        "evidence_refs": [
+          "session.active_run_id"
+        ]
+      },
+      {
+        "name": "draft_count",
+        "passed": false,
+        "reason": "draft_count=0; expected=1",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "operation_count",
+        "passed": false,
+        "reason": "operation_count=0; expected=1",
+        "evidence_refs": [
+          "operations"
+        ]
+      },
+      {
+        "name": "artifact_event_count",
+        "passed": false,
+        "reason": "artifact_event_count=0; expected=1",
+        "evidence_refs": [
+          "events"
+        ]
+      },
+      {
+        "name": "artifact_consistency",
+        "passed": true,
+        "reason": "Run, saved operation and artifact event reference exactly the persisted versions",
+        "evidence_refs": [
+          "run.output_refs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "original_resume_unchanged",
+        "passed": true,
+        "reason": "Original resume business fields match the pre-run baseline",
+        "evidence_refs": [
+          "resume",
+          "baseline.resume"
+        ]
+      },
+      {
+        "name": "facts_unchanged",
+        "passed": true,
+        "reason": "No fact was inserted, confirmed, edited or deleted by the agent",
+        "evidence_refs": [
+          "facts",
+          "baseline.facts"
+        ]
+      },
+      {
+        "name": "memories_unchanged",
+        "passed": true,
+        "reason": "No preference was silently inserted or changed",
+        "evidence_refs": [
+          "memories",
+          "baseline.memories"
+        ]
+      },
+      {
+        "name": "version_identity",
+        "passed": true,
+        "reason": "Draft keeps the owned resume, job, frozen versions and unchanged review base",
+        "evidence_refs": [
+          "versions",
+          "run.input_versions"
+        ]
+      },
+      {
+        "name": "pending_review",
+        "passed": true,
+        "reason": "All suggested changes remain pending in an unconfirmed draft",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "nonempty_suggestions",
+        "passed": true,
+        "reason": "Expected drafts contain reviewable field suggestions",
+        "evidence_refs": [
+          "versions.structured_content.changes"
+        ]
+      },
+      {
+        "name": "suggestion_shape",
+        "passed": true,
+        "reason": "Editable fields occur once and missing information has no invented replacement",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "before_matches",
+        "passed": true,
+        "reason": "Every before value equals its actual frozen resume field",
+        "evidence_refs": [
+          "versions",
+          "run.input_json.contextSnapshot.resume"
+        ]
+      },
+      {
+        "name": "source_identity",
+        "passed": true,
+        "reason": "Source IDs, owner, frozen version, source marks and answer ownership agree; this does not establish textual truth",
+        "evidence_refs": [
+          "versions.fact_refs",
+          "facts",
+          "actions"
+        ]
+      }
+    ],
+    "limitations": [
+      "Legal source identity does not prove that natural-language claims are true.",
+      "Stub outputs do not measure real-model quality or latency."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 2,
+    "observed_cost": "0",
+    "reserved_cost": "2.43941760",
+    "committed_cost": "2.43941760",
+    "unknown_usage_calls": 2,
+    "max_total_cost": "3",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

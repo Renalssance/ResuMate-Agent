@@ -1,0 +1,13 @@
+[
+  {
+    "type": "PermissionDeniedError",
+    "http_status": 403,
+    "provider_code": "insufficient_quota",
+    "parameter": null,
+    "message_parameter_mentions": [
+      "model"
+    ],
+    "quota_or_billing_message": true,
+    "unsupported_message": false
+  }
+]

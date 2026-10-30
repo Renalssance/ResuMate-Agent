@@ -1,0 +1,42 @@
+{
+  "smoke": {
+    "executed": 1,
+    "pass": 0,
+    "fail": 1,
+    "reason": "agent_failed; original logger did not preserve error type/status"
+  },
+  "core": {
+    "selected": 12,
+    "executed": 1,
+    "pass": 0,
+    "fail": 1,
+    "not_run": 11
+  },
+  "generated_model_outputs": 0,
+  "reported_input_tokens": null,
+  "reported_output_tokens": null,
+  "usage_reporting": "Both generation attempts returned no usage; zero known observed cost is not zero billed cost",
+  "budget": {
+    "currency": "CNY",
+    "model_calls": 2,
+    "observed_cost": "0",
+    "reserved_cost": "2.43941760",
+    "committed_cost": "2.43941760",
+    "unknown_usage_calls": 2,
+    "max_total_cost": "3",
+    "stop_reason": "budget_exhausted",
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  },
+  "remaining_authorized_cost": "0.56058240",
+  "next_request_reserve": "1.21970880",
+  "next_request_preflight": "BudgetExceeded before provider I/O; ledger remains two calls",
+  "provider_failure": {
+    "case_id": "normal-api",
+    "error_type": "PermissionDeniedError",
+    "http_status": 403,
+    "code": "insufficient_quota"
+  },
+  "semantic_review": "not_reviewable: neither attempt produced public model output or a draft",
+  "report_exit_code": 2,
+  "additional_network_checks": "One anonymous and one authenticated GET /models; no generation; credentials and response bodies not retained"
+}

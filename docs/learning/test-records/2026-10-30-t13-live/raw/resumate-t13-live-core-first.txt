@@ -1,0 +1,2 @@
+START normal-api
+END {"result": {"case_id": "normal-api", "category": "normal", "status": "fail", "error_code": "agent_failed", "artifact": "cases/normal-api.json"}, "shared_budget": {"model_calls": 2, "observed_upper_cost": "0", "reserved_unknown_cost": "2.43941760", "committed_cost": "2.43941760", "currency": "CNY", "max_total_cost": "3", "unknown_usage_calls": 2, "stop_reason": null}}

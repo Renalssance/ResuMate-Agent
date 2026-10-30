@@ -1,0 +1,9 @@
+[
+  {
+    "case_id": "smoke-normal-api",
+    "category": "normal",
+    "status": "fail",
+    "error_code": "agent_failed",
+    "artifact": "cases/smoke-normal-api.json"
+  }
+]

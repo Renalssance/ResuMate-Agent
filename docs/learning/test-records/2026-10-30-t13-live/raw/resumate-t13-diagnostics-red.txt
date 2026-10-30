@@ -1,0 +1,76 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_error_records_preserve_type_and_status_without_provider_body[http-BadRequestError-400] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-200/test_error_records_preserve_ty0')
+failure = 'http', expected_type = <class 'openai.BadRequestError'>
+http_status = 400
+
+    @pytest.mark.parametrize('failure,expected_type,http_status', [
+        ('http', BadRequestError, 400),
+        ('connection', APIConnectionError, None),
+    ])
+    def test_error_records_preserve_type_and_status_without_provider_body(tmp_path, failure, expected_type, http_status):
+        def respond(request):
+            if failure == 'connection':
+                raise httpx.ConnectError('private transport diagnostic', request=request)
+            return httpx.Response(400, json={'error': {
+                'message': 'private provider diagnostic', 'type': 'invalid_request_error', 'code': 'private-provider-code'}},
+                request=request)
+
+        path = tmp_path / 'calls.jsonl'
+        recorder = CallRecorder(path, case_id='error-diagnostic', model='synthetic')
+        with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+            model = ChatOpenAI(model='synthetic', api_key='private-api-key', base_url='https://synthetic.invalid/v1',
+                               http_client=client, max_retries=0, callbacks=[recorder])
+            with pytest.raises(expected_type):
+                model.invoke('synthetic input')
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        assert len(records) == 2
+        failure_record = records[-1]
+        assert failure_record['event'] == 'failed'
+        assert failure_record['error_code'] == 'model_call_failed'
+>       assert failure_record['error_type'] == expected_type.__name__
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_type'
+
+backend/tests/test_eval_error_diagnostics.py:36: KeyError
+_ test_error_records_preserve_type_and_status_without_provider_body[connection-APIConnectionError-None] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-200/test_error_records_preserve_ty1')
+failure = 'connection', expected_type = <class 'openai.APIConnectionError'>
+http_status = None
+
+    @pytest.mark.parametrize('failure,expected_type,http_status', [
+        ('http', BadRequestError, 400),
+        ('connection', APIConnectionError, None),
+    ])
+    def test_error_records_preserve_type_and_status_without_provider_body(tmp_path, failure, expected_type, http_status):
+        def respond(request):
+            if failure == 'connection':
+                raise httpx.ConnectError('private transport diagnostic', request=request)
+            return httpx.Response(400, json={'error': {
+                'message': 'private provider diagnostic', 'type': 'invalid_request_error', 'code': 'private-provider-code'}},
+                request=request)
+
+        path = tmp_path / 'calls.jsonl'
+        recorder = CallRecorder(path, case_id='error-diagnostic', model='synthetic')
+        with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+            model = ChatOpenAI(model='synthetic', api_key='private-api-key', base_url='https://synthetic.invalid/v1',
+                               http_client=client, max_retries=0, callbacks=[recorder])
+            with pytest.raises(expected_type):
+                model.invoke('synthetic input')
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        assert len(records) == 2
+        failure_record = records[-1]
+        assert failure_record['event'] == 'failed'
+        assert failure_record['error_code'] == 'model_call_failed'
+>       assert failure_record['error_type'] == expected_type.__name__
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error_type'
+
+backend/tests/test_eval_error_diagnostics.py:36: KeyError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_error_diagnostics.py::test_error_records_preserve_type_and_status_without_provider_body[http-BadRequestError-400]
+FAILED backend/tests/test_eval_error_diagnostics.py::test_error_records_preserve_type_and_status_without_provider_body[connection-APIConnectionError-None]
+2 failed in 0.63s

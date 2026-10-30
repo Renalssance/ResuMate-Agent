@@ -1,0 +1,2 @@
+START smoke-normal-api
+END {"result": {"case_id": "smoke-normal-api", "category": "normal", "status": "fail", "error_code": "agent_failed", "artifact": "cases/smoke-normal-api.json"}, "shared_budget": {"model_calls": 1, "observed_upper_cost": "0", "reserved_unknown_cost": "1.21970880", "committed_cost": "1.21970880", "currency": "CNY", "max_total_cost": "3", "unknown_usage_calls": 1, "stop_reason": null}}

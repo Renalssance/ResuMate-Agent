@@ -138,7 +138,7 @@ class CallRecorder(BaseCallbackHandler):
         self.calls[call_id] = {**entry, '_clock': time.monotonic()}
         self._append(entry)
 
-    def _finish(self, call_id, *, usage=None, error_code=None, output=None):
+    def _finish(self, call_id, *, usage=None, error_code=None, output=None, error_type=None, http_status=None):
         if call_id not in self.calls:
             return
         entry = self.calls[call_id]
@@ -147,6 +147,8 @@ class CallRecorder(BaseCallbackHandler):
         entry.update(event='failed' if error_code else 'completed', ended_at=utc_now(),
                      elapsed_ms=round((time.monotonic() - entry['_clock']) * 1000),
                      usage=usage, error_code=error_code)
+        if error_code:
+            entry.update(error_type=error_type, http_status=http_status)
         if entry['kind'] == 'main' and output is not None:
             entry['public_output'] = output
             self.outputs.append(output)
@@ -161,7 +163,9 @@ class CallRecorder(BaseCallbackHandler):
         # Deliberately omit arbitrary exception messages and provider response bodies.
         code = getattr(error, 'code', None)
         safe_codes = {'budget_exhausted', 'budget_config_mismatch', 'context_budget_exceeded'}
-        self._finish(str(run_id), error_code=code if code in safe_codes else 'model_call_failed')
+        status = getattr(error, 'status_code', None)
+        self._finish(str(run_id), error_code=code if code in safe_codes else 'model_call_failed',
+                     error_type=type(error).__name__, http_status=status if type(status) is int else None)
 
     def on_tool_start(self, serialized, input_str, *, run_id, inputs=None, **kwargs):
         name = (serialized or {}).get('name')
