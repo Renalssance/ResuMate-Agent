@@ -1,0 +1,165 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_production_chat_releases_owned_transport[normal-completion] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d2a6660>
+disconnect = False
+
+    @pytest.mark.parametrize('disconnect',[False,True],ids=['normal-completion','browser-disconnect'])
+    def test_production_chat_releases_owned_transport(monkeypatch,disconnect):
+        settings=SimpleNamespace(model='synthetic',api_key='synthetic-key',base_url='https://synthetic.example/v1',request_timeout_seconds=7)
+        class DB:
+            def query(self,*args): return self
+            def filter(self,*args): return self
+            def first(self): return SimpleNamespace(id=1)
+            def close(self): pass
+        sync=SyncTransport(); asynchronous=AsyncTransport(disconnect); refs=[]
+        def make_sync(**kwargs):
+            client=DefaultHttpxClient(transport=sync,**kwargs); refs.append(weakref.ref(client)); return client
+        def make_async(**kwargs):
+            client=DefaultAsyncHttpxClient(transport=asynchronous,**kwargs); refs.append(weakref.ref(client)); return client
+        monkeypatch.setattr(agent,'SessionLocal',DB)
+        monkeypatch.setattr(agent,'resolve_effective_llm_settings',lambda *_:settings)
+        monkeypatch.setattr(agent,'create_interview_tools',lambda *_:[])
+        monkeypatch.setattr(agent,'DefaultHttpxClient',make_sync)
+        monkeypatch.setattr(agent,'DefaultAsyncHttpxClient',make_async)
+        monkeypatch.setattr(agent,'storage',SimpleNamespace(load=lambda *_:[],save=lambda *_:None))
+        monkeypatch.setattr(agent,'record_llm_usage',lambda **_:None)
+        async def exercise():
+            stream=agent.chat_with_agent_stream('synthetic question','synthetic-user','synthetic-session')
+            chunks=[]
+            async for chunk in stream:
+                chunks.append(chunk)
+                if disconnect and 'synthetic answer' in chunk:
+                    await stream.aclose()
+                    break
+            del stream
+            gc.collect()
+            await asyncio.sleep(0)
+            assert asynchronous.calls==1
+            assert asynchronous.stream.closed, 'SDK response body must finish/cancel before pool cleanup'
+            if not disconnect:
+                assert any('[DONE]' in chunk for chunk in chunks)
+            assert not any(ref() is not None for ref in refs), 'Do not retain client objects in the test'
+            assert (sync.closes,asynchronous.closes)==(1,1), 'Production-owned transports were never closed'
+>       asyncio.run(exercise())
+
+/tmp/test_t18_client_lifecycle.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def exercise():
+        stream=agent.chat_with_agent_stream('synthetic question','synthetic-user','synthetic-session')
+        chunks=[]
+        async for chunk in stream:
+            chunks.append(chunk)
+            if disconnect and 'synthetic answer' in chunk:
+                await stream.aclose()
+                break
+        del stream
+        gc.collect()
+        await asyncio.sleep(0)
+        assert asynchronous.calls==1
+        assert asynchronous.stream.closed, 'SDK response body must finish/cancel before pool cleanup'
+        if not disconnect:
+            assert any('[DONE]' in chunk for chunk in chunks)
+        assert not any(ref() is not None for ref in refs), 'Do not retain client objects in the test'
+>       assert (sync.closes,asynchronous.closes)==(1,1), 'Production-owned transports were never closed'
+E       AssertionError: Production-owned transports were never closed
+E       assert (0, 0) == (1, 1)
+E         
+E         At index 0 diff: 0 != 1
+E         Use -v to get more diff
+
+/tmp/test_t18_client_lifecycle.py:83: AssertionError
+______ test_production_chat_releases_owned_transport[browser-disconnect] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d2a62d0>
+disconnect = True
+
+    @pytest.mark.parametrize('disconnect',[False,True],ids=['normal-completion','browser-disconnect'])
+    def test_production_chat_releases_owned_transport(monkeypatch,disconnect):
+        settings=SimpleNamespace(model='synthetic',api_key='synthetic-key',base_url='https://synthetic.example/v1',request_timeout_seconds=7)
+        class DB:
+            def query(self,*args): return self
+            def filter(self,*args): return self
+            def first(self): return SimpleNamespace(id=1)
+            def close(self): pass
+        sync=SyncTransport(); asynchronous=AsyncTransport(disconnect); refs=[]
+        def make_sync(**kwargs):
+            client=DefaultHttpxClient(transport=sync,**kwargs); refs.append(weakref.ref(client)); return client
+        def make_async(**kwargs):
+            client=DefaultAsyncHttpxClient(transport=asynchronous,**kwargs); refs.append(weakref.ref(client)); return client
+        monkeypatch.setattr(agent,'SessionLocal',DB)
+        monkeypatch.setattr(agent,'resolve_effective_llm_settings',lambda *_:settings)
+        monkeypatch.setattr(agent,'create_interview_tools',lambda *_:[])
+        monkeypatch.setattr(agent,'DefaultHttpxClient',make_sync)
+        monkeypatch.setattr(agent,'DefaultAsyncHttpxClient',make_async)
+        monkeypatch.setattr(agent,'storage',SimpleNamespace(load=lambda *_:[],save=lambda *_:None))
+        monkeypatch.setattr(agent,'record_llm_usage',lambda **_:None)
+        async def exercise():
+            stream=agent.chat_with_agent_stream('synthetic question','synthetic-user','synthetic-session')
+            chunks=[]
+            async for chunk in stream:
+                chunks.append(chunk)
+                if disconnect and 'synthetic answer' in chunk:
+                    await stream.aclose()
+                    break
+            del stream
+            gc.collect()
+            await asyncio.sleep(0)
+            assert asynchronous.calls==1
+            assert asynchronous.stream.closed, 'SDK response body must finish/cancel before pool cleanup'
+            if not disconnect:
+                assert any('[DONE]' in chunk for chunk in chunks)
+            assert not any(ref() is not None for ref in refs), 'Do not retain client objects in the test'
+            assert (sync.closes,asynchronous.closes)==(1,1), 'Production-owned transports were never closed'
+>       asyncio.run(exercise())
+
+/tmp/test_t18_client_lifecycle.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def exercise():
+        stream=agent.chat_with_agent_stream('synthetic question','synthetic-user','synthetic-session')
+        chunks=[]
+        async for chunk in stream:
+            chunks.append(chunk)
+            if disconnect and 'synthetic answer' in chunk:
+                await stream.aclose()
+                break
+        del stream
+        gc.collect()
+        await asyncio.sleep(0)
+        assert asynchronous.calls==1
+        assert asynchronous.stream.closed, 'SDK response body must finish/cancel before pool cleanup'
+        if not disconnect:
+            assert any('[DONE]' in chunk for chunk in chunks)
+>       assert not any(ref() is not None for ref in refs), 'Do not retain client objects in the test'
+E       AssertionError: Do not retain client objects in the test
+E       assert not True
+E        +  where True = any(<generator object test_production_chat_releases_owned_transport.<locals>.exercise.<locals>.<genexpr> at 0x10d3bde50>)
+
+/tmp/test_t18_client_lifecycle.py:82: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../../tmp/test_t18_client_lifecycle.py::test_production_chat_releases_owned_transport[normal-completion]
+FAILED ../../../../../../tmp/test_t18_client_lifecycle.py::test_production_chat_releases_owned_transport[browser-disconnect]
+2 failed in 0.85s

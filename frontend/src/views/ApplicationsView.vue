@@ -389,7 +389,7 @@
               </dl>
             </div>
             <div class="application-record-actions">
-              <a v-if="application.jobUrl" class="action-button" :href="application.jobUrl" target="_blank" rel="noreferrer">
+              <a v-if="/^https?:\/\//i.test(application.jobUrl)" class="action-button" :href="application.jobUrl" target="_blank" rel="noreferrer">
                 <ExternalLink class="app-icon" aria-hidden="true" />
                 <span>打开</span>
               </a>

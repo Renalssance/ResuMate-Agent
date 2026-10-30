@@ -1,0 +1,16 @@
+......                                                                   [100%]
+=============================== warnings summary ===============================
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 5 warnings in 1.73s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

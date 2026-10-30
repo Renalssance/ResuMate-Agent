@@ -1,0 +1,24 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "9352444f-be68-4f2b-b726-714135850169": {
+      "case_id": "cancel-recovery",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "a0cf6207-d93c-4ce2-b54a-3cbb2997c181": {
+      "case_id": "cancel-recovery",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

@@ -1,0 +1,12 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-5751-7f63-ba03-66d095dc95de": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    }
+  },
+  "stop_reason": null
+}

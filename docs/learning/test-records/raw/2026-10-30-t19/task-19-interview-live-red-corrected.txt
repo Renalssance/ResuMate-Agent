@@ -1,0 +1,159 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_recorder_uses_only_current_required_and_actual_tool_returns _______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_recorder_uses_only_curren0')
+
+    def test_recorder_uses_only_current_required_and_actual_tool_returns(tmp_path):
+>       from evals.interview_records import InterviewCallRecorder
+E       ModuleNotFoundError: No module named 'evals.interview_records'
+
+backend/tests/test_interview_live.py:16: ModuleNotFoundError
+_________ test_actual_chatopenai_interview_graph_and_budget[followup] __________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_actual_chatopenai_intervi0')
+scenario = 'followup'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+            assert result['status'] == 'pass', result['verdict']
+            assert {item['status'] for item in result['semantic']['items']} == {'unreviewed'}
+>           assert result['cost']['model_calls'] == len(requests) > 0
+                   ^^^^^^^^^^^^^^
+E           KeyError: 'cost'
+
+backend/tests/test_interview_live.py:79: KeyError
+___________ test_actual_chatopenai_interview_graph_and_budget[pages] ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_actual_chatopenai_intervi1')
+scenario = 'pages'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+            assert result['status'] == 'pass', result['verdict']
+            assert {item['status'] for item in result['semantic']['items']} == {'unreviewed'}
+>           assert result['cost']['model_calls'] == len(requests) > 0
+                   ^^^^^^^^^^^^^^
+E           KeyError: 'cost'
+
+backend/tests/test_interview_live.py:79: KeyError
+__________ test_actual_chatopenai_interview_graph_and_budget[cancel] ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_actual_chatopenai_intervi2')
+scenario = 'cancel'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+            assert result['status'] == 'pass', result['verdict']
+            assert {item['status'] for item in result['semantic']['items']} == {'unreviewed'}
+>           assert result['cost']['model_calls'] == len(requests) > 0
+                   ^^^^^^^^^^^^^^
+E           KeyError: 'cost'
+
+backend/tests/test_interview_live.py:79: KeyError
+_________ test_actual_chatopenai_interview_graph_and_budget[forbidden] _________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_actual_chatopenai_intervi3')
+scenario = 'forbidden'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+>           assert result['status'] == 'fail'
+E           AssertionError: assert 'pass' == 'fail'
+E             
+E             - fail
+E             + pass
+
+backend/tests/test_interview_live.py:68: AssertionError
+__________ test_actual_chatopenai_interview_graph_and_budget[budget] ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-261/test_actual_chatopenai_intervi4')
+scenario = 'budget'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+>           assert result['status'] == 'incomplete'
+E           AssertionError: assert 'pass' == 'incomplete'
+E             
+E             - incomplete
+E             + pass
+
+backend/tests/test_interview_live.py:61: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_live.py::test_recorder_uses_only_current_required_and_actual_tool_returns
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[followup]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[pages]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[cancel]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[forbidden]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[budget]
+6 failed in 6.70s

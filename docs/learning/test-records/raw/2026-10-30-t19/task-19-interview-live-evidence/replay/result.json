@@ -1,0 +1,1523 @@
+{
+  "case_id": "interview-command-replay",
+  "category": "interview",
+  "mode": "live",
+  "status": "pass",
+  "error_code": null,
+  "input": {
+    "id": "interview-command-replay",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ]
+    }
+  },
+  "output": {
+    "executed": true,
+    "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "evidence_source": "sdk_model_inputs",
+    "error_code": null,
+    "model_calls": [
+      {
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "sdk_call_id": "01a18acd-485c-7ed2-89ff-6444056cc089",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+          "sessionId": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:14:31.490367Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/f6319ef8-9dc4-46ff-ac38-4dbd18707481/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/f6319ef8-9dc4-46ff-ac38-4dbd18707481/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1,
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "http-call-1",
+              "name": "get_interview_context",
+              "args": {}
+            }
+          ],
+          "invalid_tool_calls": []
+        }
+      },
+      {
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "sdk_call_id": "01a18acd-4875-7f91-bbaf-00a31c5b0cdf",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+          "sessionId": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:14:31.490367Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/f6319ef8-9dc4-46ff-ac38-4dbd18707481/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/f6319ef8-9dc4-46ff-ac38-4dbd18707481/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "tool_inputs": [
+          {
+            "tool_call_id": "http-call-1",
+            "name": "get_interview_context",
+            "args": {},
+            "content": "{\"interviewId\": \"09cc6351-05a9-4fc0-b964-af3fd3643606\", \"expectedTurn\": 0, \"source\": {\"resumeVersionId\": \"ffa6953b-faf5-4347-bf60-956a75f4ae34\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T03:14:31.490367Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T03:14:31.570653+00:00\"}}, \"turns\": [], \"memories\": []}"
+          }
+        ],
+        "required_block_count": 1,
+        "context": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 0,
+          "source": {
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T03:14:31.490367Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+            }
+          },
+          "turns": [],
+          "memories": []
+        },
+        "context_input_call_ids": [
+          "01a18acd-4875-7f91-bbaf-00a31c5b0cdf"
+        ],
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "http-call-2",
+              "name": "InterviewStep",
+              "args": {
+                "feedback": null,
+                "question": {
+                  "text": "Explain this cited experience.",
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "invalid_tool_calls": []
+        },
+        "step": {
+          "feedback": null,
+          "question": {
+            "text": "Explain this cited experience.",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "sdk_call_id": "01a18acd-4896-7d03-9b02-4e3598f159f9",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "sessionId": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:14:31.490367Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "Explain this cited experience.",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/0950aa4d-1726-45d9-a67f-3f455da16f7f/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/0950aa4d-1726-45d9-a67f-3f455da16f7f/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1,
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "http-call-3",
+              "name": "get_interview_context",
+              "args": {}
+            }
+          ],
+          "invalid_tool_calls": []
+        }
+      },
+      {
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "sdk_call_id": "01a18acd-489f-74e0-afff-cecada7e2bfb",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "sessionId": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:14:31.490367Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "Explain this cited experience.",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/0950aa4d-1726-45d9-a67f-3f455da16f7f/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/0950aa4d-1726-45d9-a67f-3f455da16f7f/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "tool_inputs": [
+          {
+            "tool_call_id": "http-call-3",
+            "name": "get_interview_context",
+            "args": {},
+            "content": "{\"interviewId\": \"09cc6351-05a9-4fc0-b964-af3fd3643606\", \"expectedTurn\": 1, \"source\": {\"resumeVersionId\": \"ffa6953b-faf5-4347-bf60-956a75f4ae34\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T03:14:31.490367Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T03:14:31.570653+00:00\"}}, \"turns\": [{\"id\": 1, \"turnIndex\": 1, \"question\": \"Explain this cited experience.\", \"questionContext\": {\"mode\": \"opening\", \"refs\": [{\"kind\": \"resume\", \"section\": \"/self_summary\", \"quote\": \"Built an API\", \"resumeVersionId\": \"ffa6953b-faf5-4347-bf60-956a75f4ae34\", \"revision\": 3}]}, \"answer\": \"I validated fields inside one SQL transaction.\", \"feedback\": null}], \"memories\": []}"
+          }
+        ],
+        "required_block_count": 1,
+        "context": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 1,
+          "source": {
+            "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T03:14:31.490367Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+            }
+          },
+          "turns": [
+            {
+              "id": 1,
+              "turnIndex": 1,
+              "question": "Explain this cited experience.",
+              "questionContext": {
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API",
+                    "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+                    "revision": 3
+                  }
+                ]
+              },
+              "answer": "I validated fields inside one SQL transaction.",
+              "feedback": null
+            }
+          ],
+          "memories": []
+        },
+        "context_input_call_ids": [
+          "01a18acd-489f-74e0-afff-cecada7e2bfb"
+        ],
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "http-call-4",
+              "name": "InterviewStep",
+              "args": {
+                "feedback": {
+                  "summary": "Explain your actual validation steps.",
+                  "strengths": [
+                    {
+                      "text": "Specific method.",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction."
+                        }
+                      ]
+                    }
+                  ],
+                  "improvements": [
+                    {
+                      "text": "Explain failure handling.",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction."
+                        }
+                      ]
+                    }
+                  ],
+                  "practiceFocus": "Practice explaining validation without inventing experience."
+                },
+                "question": {
+                  "text": "Explain this cited experience.",
+                  "mode": "follow_up",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction."
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "invalid_tool_calls": []
+        },
+        "step": {
+          "feedback": {
+            "summary": "Explain your actual validation steps.",
+            "strengths": [
+              {
+                "text": "Specific method.",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "Explain failure handling.",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "Practice explaining validation without inventing experience."
+          },
+          "question": {
+            "text": "Explain this cited experience.",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction."
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "http-call-1",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "http-call-2",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": null,
+              "question": {
+                "text": "Explain this cited experience.",
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "http-call-3",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "http-call-4",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": {
+                "summary": "Explain your actual validation steps.",
+                "strengths": [
+                  {
+                    "text": "Specific method.",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "Explain failure handling.",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "Practice explaining validation without inventing experience."
+              },
+              "question": {
+                "text": "Explain this cited experience.",
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      }
+    ],
+    "summary_calls": [],
+    "observations": {
+      "first_ack": {
+        "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "clientMessageId": "same-answer",
+        "status": "accepted",
+        "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "acceptedSeq": 2
+      },
+      "replayed_ack": {
+        "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "clientMessageId": "same-answer",
+        "status": "accepted",
+        "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "acceptedSeq": 2
+      },
+      "payload_conflict": "command_payload_conflict",
+      "second_message_rejected": {
+        "code": "answer_already_submitted",
+        "status": 409
+      },
+      "refreshed_snapshot": {
+        "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "userId": 1,
+        "applicationId": 1,
+        "status": "active",
+        "currentTurn": 2,
+        "lastSeq": 4,
+        "sessionInvalidated": false,
+        "sourceSnapshot": {
+          "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:31.490367Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          }
+        },
+        "turns": [
+          {
+            "id": 1,
+            "turnIndex": 1,
+            "question": "Explain this cited experience.",
+            "questionContext": {
+              "mode": "opening",
+              "refs": [
+                {
+                  "kind": "resume",
+                  "section": "/self_summary",
+                  "quote": "Built an API",
+                  "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+                  "revision": 3
+                }
+              ]
+            },
+            "answer": "I validated fields inside one SQL transaction.",
+            "feedback": {
+              "summary": "Explain your actual validation steps.",
+              "strengths": [
+                {
+                  "text": "Specific method.",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "improvements": [
+                {
+                  "text": "Explain failure handling.",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "practiceFocus": "Practice explaining validation without inventing experience."
+            }
+          },
+          {
+            "id": 2,
+            "turnIndex": 2,
+            "question": "Explain this cited experience.",
+            "questionContext": {
+              "mode": "follow_up",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            },
+            "answer": null,
+            "feedback": null
+          }
+        ],
+        "generation": {
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "status": "succeeded",
+          "errorCode": null,
+          "cancelRequested": false
+        }
+      },
+      "after_finish_ack": {
+        "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "clientMessageId": "same-answer",
+        "status": "accepted",
+        "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "acceptedSeq": 2
+      }
+    },
+    "trajectory": [
+      {
+        "action": "created",
+        "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "runId": "f6319ef8-9dc4-46ff-ac38-4dbd18707481"
+      },
+      {
+        "action": "claimed",
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "epoch": 1,
+        "status": "succeeded",
+        "error_code": null
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "same-answer",
+          "type": "answer.submit",
+          "expectedTurn": 1,
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "same-answer",
+          "status": "accepted",
+          "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "acceptedSeq": 2
+        }
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "same-answer",
+          "type": "answer.submit",
+          "expectedTurn": 1,
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "same-answer",
+          "status": "accepted",
+          "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "acceptedSeq": 2
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "epoch": 1,
+        "status": "succeeded",
+        "error_code": null
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "finish",
+          "type": "session.finish",
+          "expectedTurn": 2,
+          "payload": {}
+        },
+        "ack": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "finish",
+          "status": "accepted",
+          "resultRef": null,
+          "acceptedSeq": 5
+        }
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "same-answer",
+          "type": "answer.submit",
+          "expectedTurn": 1,
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "same-answer",
+          "status": "accepted",
+          "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "acceptedSeq": 2
+        }
+      }
+    ],
+    "baseline_facts": [],
+    "checkpoint_files": [
+      "checkpoints.sqlite"
+    ]
+  },
+  "db_snapshot": {
+    "interviews": [
+      {
+        "id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "user_id": 1,
+        "agent_session_id": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+        "source_snapshot": {
+          "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:31.490367Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:14:31.570653+00:00"
+          }
+        },
+        "application_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+        "status": "finished",
+        "created_at": "2026-10-30T03:14:31.571258"
+      }
+    ],
+    "turns": [
+      {
+        "id": 1,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "turn_index": 1,
+        "question": "Explain this cited experience.",
+        "question_context": {
+          "mode": "opening",
+          "refs": [
+            {
+              "kind": "resume",
+              "section": "/self_summary",
+              "quote": "Built an API",
+              "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+              "revision": 3
+            }
+          ]
+        },
+        "answer": "I validated fields inside one SQL transaction.",
+        "feedback": {
+          "summary": "Explain your actual validation steps.",
+          "strengths": [
+            {
+              "text": "Specific method.",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "improvements": [
+            {
+              "text": "Explain failure handling.",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "practiceFocus": "Practice explaining validation without inventing experience."
+        }
+      },
+      {
+        "id": 2,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "turn_index": 2,
+        "question": "Explain this cited experience.",
+        "question_context": {
+          "mode": "follow_up",
+          "refs": [
+            {
+              "kind": "answer",
+              "turnIndex": 1,
+              "quote": "I validated fields inside one SQL transaction.",
+              "turnId": 1
+            }
+          ]
+        },
+        "answer": null,
+        "feedback": null
+      }
+    ],
+    "commands": [
+      {
+        "id": 1,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "user_id": 1,
+        "client_message_id": "same-answer",
+        "type": "answer.submit",
+        "request_json": {
+          "clientMessageId": "same-answer",
+          "expectedTurn": 1,
+          "type": "answer.submit",
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "same-answer",
+          "status": "accepted",
+          "resultRef": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "acceptedSeq": 2
+        },
+        "result_ref": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "status": "accepted"
+      },
+      {
+        "id": 2,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "user_id": 1,
+        "client_message_id": "finish",
+        "type": "session.finish",
+        "request_json": {
+          "clientMessageId": "finish",
+          "expectedTurn": 2,
+          "type": "session.finish",
+          "payload": {}
+        },
+        "ack_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "clientMessageId": "finish",
+          "status": "accepted",
+          "resultRef": null,
+          "acceptedSeq": 5
+        },
+        "result_ref": null,
+        "status": "accepted"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "seq": 1,
+        "type": "question.completed",
+        "payload": {
+          "runId": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T03:14:31.674966"
+      },
+      {
+        "id": 2,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "seq": 2,
+        "type": "answer.accepted",
+        "payload": {
+          "turnIndex": 1,
+          "turnId": 1,
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f"
+        },
+        "created_at": "2026-10-30T03:14:31.682214"
+      },
+      {
+        "id": 3,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "seq": 3,
+        "type": "feedback.ready",
+        "payload": {
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T03:14:31.716429"
+      },
+      {
+        "id": 4,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "seq": 4,
+        "type": "question.completed",
+        "payload": {
+          "runId": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+          "turnIndex": 2,
+          "turnId": 2
+        },
+        "created_at": "2026-10-30T03:14:31.716702"
+      },
+      {
+        "id": 5,
+        "interview_id": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+        "seq": 5,
+        "type": "session.finished",
+        "payload": {},
+        "created_at": "2026-10-30T03:14:31.721379"
+      }
+    ],
+    "runs": [
+      {
+        "id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "user_id": 1,
+        "session_id": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+        "request_id": "ace3c9f5-2824-4196-ab43-8b9001445485",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 1,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 1,
+          "feedback": {
+            "summary": "Explain your actual validation steps.",
+            "strengths": [
+              {
+                "text": "Specific method.",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "Explain failure handling.",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "Practice explaining validation without inventing experience."
+          },
+          "question": {
+            "text": "Explain this cited experience.",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction.",
+                "turnId": 1
+              }
+            ],
+            "turnIndex": 2
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:14:31.717218",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "09cc6351-05a9-4fc0-b964-af3fd3643606"
+          }
+        ],
+        "created_at": "2026-10-30T03:14:31.681603",
+        "updated_at": "2026-10-30T03:14:31.717591"
+      },
+      {
+        "id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "user_id": 1,
+        "session_id": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+        "request_id": "interview-eval-start",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 0,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "09cc6351-05a9-4fc0-b964-af3fd3643606",
+          "expectedTurn": 0,
+          "feedback": null,
+          "question": {
+            "text": "Explain this cited experience.",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API",
+                "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+                "revision": 3
+              }
+            ],
+            "turnIndex": 1
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:14:31.675808",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "09cc6351-05a9-4fc0-b964-af3fd3643606"
+          }
+        ],
+        "created_at": "2026-10-30T03:14:31.572931",
+        "updated_at": "2026-10-30T03:14:31.676771"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "86ade4a2-2718-451e-8cf6-4d448bf3ea2c",
+        "user_id": 1,
+        "purpose": "interview_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:14:31.570960"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "09cc6351-05a9-4fc0-b964-af3fd3643606"
+      },
+      {
+        "id": 2,
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "09cc6351-05a9-4fc0-b964-af3fd3643606"
+      }
+    ],
+    "run_events": [
+      {
+        "id": 1,
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.573868"
+      },
+      {
+        "id": 2,
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.575975"
+      },
+      {
+        "id": 3,
+        "run_id": "f6319ef8-9dc4-46ff-ac38-4dbd18707481",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.677266"
+      },
+      {
+        "id": 4,
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.681974"
+      },
+      {
+        "id": 5,
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.684755"
+      },
+      {
+        "id": 6,
+        "run_id": "0950aa4d-1726-45d9-a67f-3f455da16f7f",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:31.717874"
+      }
+    ],
+    "facts": [],
+    "memories": [],
+    "applications": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+        "submitted_snapshot": {
+          "resumeVersionId": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+          "revision": 3,
+          "jdId": 1,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:31.490367Z"
+        },
+        "company": "Synthetic",
+        "position": "API Engineer",
+        "applied_date": "2026-10-30",
+        "status": "applied",
+        "job_url": "",
+        "source": "",
+        "notes": "",
+        "created_at": "2026-10-30T03:14:31.488556",
+        "updated_at": "2026-10-30T03:14:31.490367"
+      }
+    ],
+    "versions": [
+      {
+        "id": "ffa6953b-faf5-4347-bf60-956a75f4ae34",
+        "user_id": 1,
+        "run_id": null,
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 3,
+        "structured_content": {
+          "resume": {
+            "self_summary": "Built an API",
+            "work_experience": [
+              {
+                "description": "Designed SQL transactions"
+              }
+            ]
+          },
+          "changes": []
+        },
+        "fact_refs": [],
+        "status": "confirmed",
+        "created_at": "2026-10-30T03:14:31.488143"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:14:31.487637",
+        "updated_at": "2026-10-30T03:14:31.487638"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "Synthetic",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build APIs and explain SQL transactions.",
+        "structured_data": {},
+        "created_at": "2026-10-30T03:14:31.487153",
+        "updated_at": "2026-10-30T03:14:31.487154"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "actual_execution",
+        "passed": true,
+        "reason": "The case reached real generation calls and persisted their Run identities",
+        "evidence_refs": [
+          "output.model_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "sdk_input_identity",
+        "passed": true,
+        "reason": "Every main/summary input contains one current required block bound to its Run and execution epoch",
+        "evidence_refs": [
+          "output.model_calls",
+          "output.summary_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "owned_frozen_session",
+        "passed": true,
+        "reason": "An owned interview keeps the accepted frozen source",
+        "evidence_refs": [
+          "interviews",
+          "runs"
+        ]
+      },
+      {
+        "name": "bounded_unique_rounds",
+        "passed": true,
+        "reason": "Persisted rounds are contiguous, unique, and bounded by eight",
+        "evidence_refs": [
+          "turns"
+        ]
+      },
+      {
+        "name": "frozen_reference_integrity",
+        "passed": true,
+        "reason": "Question and feedback quotes resolve to the exact snapshot or accepted answer",
+        "evidence_refs": [
+          "turns",
+          "interviews.source_snapshot"
+        ]
+      },
+      {
+        "name": "durable_question_feedback_events",
+        "passed": true,
+        "reason": "Each committed question/feedback has exactly one ordered SQL event",
+        "evidence_refs": [
+          "turns",
+          "events"
+        ]
+      },
+      {
+        "name": "run_result_operation_atomicity",
+        "passed": true,
+        "reason": "Successful steps own one immutable result and operation; stopped steps own neither",
+        "evidence_refs": [
+          "runs",
+          "operations"
+        ]
+      },
+      {
+        "name": "practice_does_not_create_facts",
+        "passed": true,
+        "reason": "Practice answers do not become ProfileFact records",
+        "evidence_refs": [
+          "facts",
+          "output.baseline_facts"
+        ]
+      },
+      {
+        "name": "lost_ack_has_one_answer_and_one_generation",
+        "passed": true,
+        "reason": "Replay after lost ack and after finish returns the original ack without accepting another answer",
+        "evidence_refs": [
+          "commands",
+          "turns",
+          "runs",
+          "output.observations"
+        ]
+      }
+    ],
+    "limitations": [
+      "Quoted text existing is not proof of semantic quality; live output requires human review.",
+      "This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.",
+      "Live mode uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 4,
+    "observed_cost": "0.00144000",
+    "reserved_cost": "0",
+    "committed_cost": "0.00144000",
+    "unknown_usage_calls": 0,
+    "max_total_cost": "3",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

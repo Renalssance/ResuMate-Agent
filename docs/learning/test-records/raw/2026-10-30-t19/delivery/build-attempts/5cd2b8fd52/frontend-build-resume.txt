@@ -1,0 +1,150 @@
+ Image resumate-t19-frontend:5cd2b8fd52 Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.01kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from frontend.Dockerfile
+#2 transferring dockerfile: 552B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for public.ecr.aws/docker/library/node:24-bookworm-slim
+#3 DONE 1.9s
+
+#4 [internal] load metadata for public.ecr.aws/docker/library/nginx:1.28-alpine
+#4 DONE 2.1s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 385B done
+#5 DONE 0.0s
+
+#6 [build 1/6] FROM public.ecr.aws/docker/library/node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c
+#6 resolve public.ecr.aws/docker/library/node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c done
+#6 DONE 0.0s
+
+#7 [stage-1 1/3] FROM public.ecr.aws/docker/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+#7 resolve public.ecr.aws/docker/library/nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236 done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 10.80kB 0.0s done
+#8 DONE 0.0s
+
+#9 [stage-1 2/3] COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+#9 CACHED
+
+#10 [build 2/6] WORKDIR /build/frontend
+#10 CACHED
+
+#11 [build 3/6] COPY frontend/package.json frontend/package-lock.json ./
+#11 CACHED
+
+#12 [build 4/6] RUN npm ci
+#12 11.21
+#12 11.21 added 172 packages, and audited 173 packages in 11s
+#12 11.21
+#12 11.21 36 packages are looking for funding
+#12 11.21   run `npm fund` for details
+#12 11.22
+#12 11.22 9 high severity vulnerabilities
+#12 11.22
+#12 11.22 To address all issues, run:
+#12 11.22   npm audit fix
+#12 11.22
+#12 11.22 Run `npm audit` for details.
+#12 11.22 npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+#12 11.22 npm warn install-scripts   esbuild@0.25.12 (postinstall: node install.js)
+#12 11.22 npm warn install-scripts   vue-demi@0.14.10 (postinstall: node -e "try{require('./scripts/postinstall.js')}catch(e){}")
+#12 11.22 npm warn install-scripts
+#12 11.22 npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+#12 11.22 npm notice
+#12 11.22 npm notice New major version of npm available! 11.19.1 -> 12.2.1
+#12 11.22 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+#12 11.22 npm notice To update run: npm install -g npm@12.2.1
+#12 11.22 npm notice
+#12 DONE 11.5s
+
+#13 [build 5/6] COPY frontend/ ./
+#13 DONE 0.1s
+
+#14 [build 6/6] RUN npm run build
+#14 0.151
+#14 0.151 > resumate-agent-frontend@0.1.0 build
+#14 0.151 > vue-tsc --noEmit && vite build
+#14 0.151
+#14 3.783 vite v6.4.3 building for production...
+#14 3.847 transforming...
+#14 5.652 ✓ 2287 modules transformed.
+#14 5.883 rendering chunks...
+#14 6.382 computing gzip size...
+#14 6.427 dist/index.html                                                             0.40 kB │ gzip:   0.27 kB
+#14 6.427 dist/assets/DocumentsView-B4IH0KH3.css                                      0.14 kB │ gzip:   0.14 kB
+#14 6.427 dist/assets/HomeView-0nznuTd2.css                                           0.25 kB │ gzip:   0.17 kB
+#14 6.427 dist/assets/SettingsView-Dl-iBxvn.css                                       0.50 kB │ gzip:   0.24 kB
+#14 6.427 dist/assets/FactReference-kBEB5Y-4.css                                      0.51 kB │ gzip:   0.28 kB
+#14 6.427 dist/assets/ResumePreview-DgQVEF5P.css                                      1.57 kB │ gzip:   0.53 kB
+#14 6.427 dist/assets/ApplicationsView-BgZDkaNk.css                                   2.99 kB │ gzip:   0.79 kB
+#14 6.427 dist/assets/JobsView-k6ehS87p.css                                           3.61 kB │ gzip:   0.97 kB
+#14 6.427 dist/assets/InterviewView-CkPs7Q8I.css                                      3.94 kB │ gzip:   1.02 kB
+#14 6.427 dist/assets/ProfileFieldsView-BGqdRujZ.css                                  4.35 kB │ gzip:   1.07 kB
+#14 6.427 dist/assets/ResumeEditorView-Bj0Gaa1n.css                                   8.33 kB │ gzip:   1.75 kB
+#14 6.427 dist/assets/AgentTaskView-B7wlKAe6.css                                      8.49 kB │ gzip:   1.81 kB
+#14 6.427 dist/assets/index-CYzSPSXg.css                                             93.32 kB │ gzip:  16.96 kB
+#14 6.427 dist/assets/_plugin-vue_export-helper-DlAUqK2U.js                           0.09 kB │ gzip:   0.10 kB
+#14 6.427 dist/assets/EmptyState.vue_vue_type_script_setup_true_lang-CBFV_T7h.js      0.28 kB │ gzip:   0.22 kB
+#14 6.427 dist/assets/check-BFAUJ-aE.js                                               0.31 kB │ gzip:   0.26 kB
+#14 6.427 dist/assets/plus-DDHiRBjz.js                                                0.34 kB │ gzip:   0.27 kB
+#14 6.427 dist/assets/arrow-left-0WuE2KwS.js                                          0.36 kB │ gzip:   0.28 kB
+#14 6.427 dist/assets/arrow-right-BULDJtnY.js                                         0.36 kB │ gzip:   0.28 kB
+#14 6.427 dist/assets/BrandLogo.vue_vue_type_script_setup_true_lang-jyu0HTH7.js       0.44 kB │ gzip:   0.33 kB
+#14 6.427 dist/assets/eye-xKOO1udO.js                                                 0.44 kB │ gzip:   0.32 kB
+#14 6.427 dist/assets/refresh-cw-W110f3d1.js                                          0.51 kB │ gzip:   0.34 kB
+#14 6.427 dist/assets/trash-DZdHo5ML.js                                               0.54 kB │ gzip:   0.35 kB
+#14 6.427 dist/assets/format-CHC1nC68.js                                              0.56 kB │ gzip:   0.35 kB
+#14 6.427 dist/assets/file-text-BJyelakN.js                                           0.58 kB │ gzip:   0.37 kB
+#14 6.427 dist/assets/task-ukV_4773.js                                                0.65 kB │ gzip:   0.37 kB
+#14 6.427 dist/assets/interviews-x458rKug.js                                          0.78 kB │ gzip:   0.56 kB
+#14 6.427 dist/assets/save-DtbUN-UF.js                                                0.94 kB │ gzip:   0.46 kB
+#14 6.427 dist/assets/structuredDisplay-4DAYZtEs.js                                   1.36 kB │ gzip:   0.85 kB
+#14 6.427 dist/assets/activeTasks-Dpa5wfPb.js                                         1.66 kB │ gzip:   0.75 kB
+#14 6.427 dist/assets/agentRuns-g41tu7W9.js                                           1.73 kB │ gzip:   1.00 kB
+#14 6.427 dist/assets/FactReference-BPNkDXxV.js                                       1.79 kB │ gzip:   1.12 kB
+#14 6.427 dist/assets/resumeReview-BLitWTM5.js                                        2.32 kB │ gzip:   1.14 kB
+#14 6.427 dist/assets/match-D7bvYRZt.js                                               3.03 kB │ gzip:   1.50 kB
+#14 6.427 dist/assets/ExtensionView-BFKFjxyN.js                                       3.58 kB │ gzip:   1.76 kB
+#14 6.427 dist/assets/ResumePreview-C6EQSAXF.js                                       4.18 kB │ gzip:   2.09 kB
+#14 6.427 dist/assets/TaskProgress.vue_vue_type_script_setup_true_lang-aI4-YxpU.js    4.54 kB │ gzip:   1.94 kB
+#14 6.427 dist/assets/AuthView-h8ClRYh8.js                                            4.89 kB │ gzip:   2.51 kB
+#14 6.427 dist/assets/MatchingView-DV1lGeE5.js                                        9.57 kB │ gzip:   3.94 kB
+#14 6.427 dist/assets/HomeView-BkLj2uu3.js                                           10.89 kB │ gzip:   5.13 kB
+#14 6.427 dist/assets/QuestionsView-BUrLGLGU.js                                      12.62 kB │ gzip:   4.84 kB
+#14 6.427 dist/assets/InterviewView-DLhzXnI7.js                                      13.65 kB │ gzip:   5.20 kB
+#14 6.427 dist/assets/SettingsView-BvY-gPH7.js                                       14.69 kB │ gzip:   5.25 kB
+#14 6.427 dist/assets/JobsView-DCo-urPI.js                                           15.73 kB │ gzip:   5.85 kB
+#14 6.427 dist/assets/ResumeEditorView-C6l-2enE.js                                   16.35 kB │ gzip:   6.40 kB
+#14 6.427 dist/assets/DocumentsView-BeSHQUiU.js                                      21.94 kB │ gzip:   8.14 kB
+#14 6.427 dist/assets/AgentTaskView-D-wivA-P.js                                      32.72 kB │ gzip:  12.24 kB
+#14 6.427 dist/assets/ApplicationsView-O4ARXpsV.js                                   48.27 kB │ gzip:  14.34 kB
+#14 6.427 dist/assets/ProfileFieldsView-DDwEz9hY.js                                  49.01 kB │ gzip:  12.71 kB
+#14 6.427 dist/assets/applicationExport-Bp4eLBW6.js                                  72.51 kB │ gzip:  20.48 kB
+#14 6.427 dist/assets/index-BLd1jQZE.js                                             243.49 kB │ gzip:  86.81 kB
+#14 6.427 dist/assets/search-xpqiJ612.js                                            303.52 kB │ gzip: 139.50 kB
+#14 6.427 ✓ built in 2.63s
+#14 DONE 6.5s
+
+#15 [stage-1 3/3] COPY --from=build /build/frontend/dist/ /usr/share/nginx/html/
+#15 DONE 0.0s
+
+#16 exporting to image
+#16 exporting layers 0.1s done
+#16 exporting manifest sha256:c9af13530cf9608d95256f57a83364026fe95d147a43704599feb5a68577e71b done
+#16 exporting config sha256:4bee0e9689caef9f069a6c44d48e34cefedffe5e6712d0e0af2f1934d917e9f5 done
+#16 exporting attestation manifest sha256:9f4a9c5cd1cb1d6f24498c4aeece8ea4374b0d1fd4ec58b236c0cd63202797a5 done
+#16 exporting manifest list sha256:9a800b9b4bb2be0199570a36fd01d71ba8a54537b489a391e5d79454475bbbf0 done
+#16 naming to docker.io/library/resumate-t19-frontend:5cd2b8fd52 done
+#16 unpacking to docker.io/library/resumate-t19-frontend:5cd2b8fd52
+#16 unpacking to docker.io/library/resumate-t19-frontend:5cd2b8fd52 0.4s done
+#16 DONE 0.5s
+
+#17 resolving provenance for metadata file
+#17 DONE 0.0s
+ Image resumate-t19-frontend:5cd2b8fd52 Built

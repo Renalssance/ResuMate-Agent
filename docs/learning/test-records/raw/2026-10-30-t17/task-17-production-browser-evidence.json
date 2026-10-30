@@ -1,0 +1,105 @@
+{
+  "invocations": [
+    {
+      "path": "/tmp/task-17-production-browser-yxK240",
+      "result": "1 failed / 1 passed; failure retained"
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz",
+      "result": "1 passed; affected first case only"
+    }
+  ],
+  "current_cases": {
+    "production_lazy_input_csp_upload_pdf": {
+      "status": "pass",
+      "invocation": "/tmp/task-17-production-browser-recheck-z2XIaz",
+      "input_p95_ms": 12.7,
+      "input_max_ms": 13.2,
+      "event_created_to_ui_ms_single_sample": 436,
+      "pdf_bytes": 81495,
+      "csp_violations": 0,
+      "page_errors": 0
+    },
+    "offline_max_backoff": {
+      "status": "pass",
+      "invocation": "/tmp/task-17-production-browser-yxK240",
+      "offline_ms": 35125,
+      "online_to_latest_dom_ms": 33,
+      "post_online_stream_count": 1,
+      "csp_violations": 0,
+      "page_errors": 0
+    }
+  },
+  "screenshots": [
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-onl-62db2--result-within-five-seconds-production-chromium/offline-max-backoff-390.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-onl-62db2--result-within-five-seconds-production-chromium/online-latest-result-1440.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/answer-validation-error-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-1440.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-390.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-1440.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-390.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/answer-validation-error-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-1440.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/completed-long-material-390.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-1440.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-320.png",
+      "viewed": true
+    },
+    {
+      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/waiting-long-answer-390.png",
+      "viewed": true
+    }
+  ],
+  "report": "/tmp/task-17-production-browser-report.md",
+  "limitations": [
+    "Mac/SQLite representative UI, not constrained MySQL load proof",
+    "20 input samples; one normal terminal UI visibility sample",
+    "Linux gateway branch syntax checked only"
+  ]
+}

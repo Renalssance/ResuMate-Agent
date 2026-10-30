@@ -1,0 +1,24 @@
+
+> test:e2e
+> playwright test tests/e2e/jobs.spec.ts tests/e2e/recovery.spec.ts --output=/tmp/task-19-browser-followup-results
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /tmp/task-19-browser-followup-state
+
+Running 6 tests using 1 worker
+
+(node:548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  1 [chromium] › tests/e2e/jobs.spec.ts:25:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 (7.3s)
+
+  ✓  2 [chromium] › tests/e2e/jobs.spec.ts:66:1 › 用户确认经历后编辑保留历史，删除后可追溯 (1.0s)
+
+  ✓  3 [chromium] › tests/e2e/jobs.spec.ts:103:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 (3.0s)
+
+  ✓  4 [chromium] › tests/e2e/recovery.spec.ts:36:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 (8.0s)
+
+  ✓  5 [chromium] › tests/e2e/recovery.spec.ts:124:1 › 保存岗位解析在刷新及网络断开后恢复进度 (2.9s)
+
+  ✓  6 [chromium] › tests/e2e/recovery.spec.ts:147:1 › 解析失败和取消保留原件，回答分析显示保存的结果 (2.7s)
+
+  6 passed (32.2s)

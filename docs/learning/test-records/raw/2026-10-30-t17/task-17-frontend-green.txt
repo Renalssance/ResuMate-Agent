@@ -1,0 +1,14 @@
+
+> resumate-agent-frontend@0.1.0 test:unit
+> vitest run src/stores/agentRun.spec.ts src/services/agentStream.spec.ts src/router/index.spec.ts
+
+
+ RUN  v4.1.12 /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/frontend
+
+Not implemented: Window's scrollTo() method
+
+ Test Files  3 passed (3)
+      Tests  42 passed (42)
+   Start at  10:31:53
+   Duration  1.19s (transform 420ms, setup 0ms, import 686ms, tests 296ms, environment 2.00s)
+

@@ -1,0 +1,33 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "9194b9f2-08a3-44df-9427-c98ca47e4627": {
+      "case_id": "parse-reparse-saved-job",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "4a4f08e6-93c4-4e2f-83e8-45c505cf74bb": {
+      "case_id": "parse-reparse-saved-job",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "138159d1-fb1c-4b1c-b609-a8220b2ce192": {
+      "case_id": "parse-reparse-saved-job",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

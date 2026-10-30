@@ -1,0 +1,476 @@
+{
+  "case_id": "interview-followup",
+  "category": "interview",
+  "mode": "live",
+  "status": "fail",
+  "error_code": "agent_failed",
+  "input": {
+    "id": "interview-followup",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ]
+    }
+  },
+  "output": {
+    "executed": true,
+    "interview_id": "dd46a3f9-27f0-43eb-b9e2-31ea31804245",
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "evidence_source": "sdk_model_inputs",
+    "error_code": "agent_failed",
+    "model_calls": [
+      {
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "sdk_call_id": "01a18acd-5751-7f63-ba03-66d095dc95de",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "17391094-ebba-4c80-a446-ec29275d092c",
+          "sessionId": "8e474ff8-80da-4840-8621-dda65511cc35",
+          "interviewId": "dd46a3f9-27f0-43eb-b9e2-31ea31804245",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:14:35.325193Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:14:35.403626+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/17391094-ebba-4c80-a446-ec29275d092c/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/17391094-ebba-4c80-a446-ec29275d092c/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1
+      }
+    ],
+    "public_model_output": [],
+    "summary_calls": [],
+    "observations": {},
+    "trajectory": [
+      {
+        "action": "created",
+        "interviewId": "dd46a3f9-27f0-43eb-b9e2-31ea31804245",
+        "runId": "17391094-ebba-4c80-a446-ec29275d092c"
+      },
+      {
+        "action": "claimed",
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "epoch": 1,
+        "status": "failed",
+        "error_code": "agent_failed"
+      }
+    ],
+    "baseline_facts": [],
+    "checkpoint_files": [
+      "checkpoints.sqlite"
+    ]
+  },
+  "db_snapshot": {
+    "interviews": [
+      {
+        "id": "dd46a3f9-27f0-43eb-b9e2-31ea31804245",
+        "user_id": 1,
+        "agent_session_id": "8e474ff8-80da-4840-8621-dda65511cc35",
+        "source_snapshot": {
+          "resumeVersionId": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:35.325193Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:14:35.403626+00:00"
+          }
+        },
+        "application_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+        "status": "active",
+        "created_at": "2026-10-30T03:14:35.404230"
+      }
+    ],
+    "turns": [],
+    "commands": [],
+    "events": [],
+    "runs": [
+      {
+        "id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "user_id": 1,
+        "session_id": "8e474ff8-80da-4840-8621-dda65511cc35",
+        "request_id": "interview-eval-start",
+        "kind": "interview_generation",
+        "status": "failed",
+        "input_json": {
+          "interviewId": "dd46a3f9-27f0-43eb-b9e2-31ea31804245",
+          "expectedTurn": 0,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:14:35.488885",
+        "cancel_requested_at": null,
+        "error_code": "agent_failed",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:14:35.405709",
+        "updated_at": "2026-10-30T03:14:35.490005"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "8e474ff8-80da-4840-8621-dda65511cc35",
+        "user_id": 1,
+        "purpose": "interview_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:14:35.403940"
+      }
+    ],
+    "operations": [],
+    "run_events": [
+      {
+        "id": 1,
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:35.406600"
+      },
+      {
+        "id": 2,
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:35.408634"
+      },
+      {
+        "id": 3,
+        "run_id": "17391094-ebba-4c80-a446-ec29275d092c",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "agent_failed"
+        },
+        "created_at": "2026-10-30T03:14:35.490338"
+      }
+    ],
+    "facts": [],
+    "memories": [],
+    "applications": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+        "submitted_snapshot": {
+          "resumeVersionId": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+          "revision": 3,
+          "jdId": 1,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:35.325193Z"
+        },
+        "company": "Synthetic",
+        "position": "API Engineer",
+        "applied_date": "2026-10-30",
+        "status": "applied",
+        "job_url": "",
+        "source": "",
+        "notes": "",
+        "created_at": "2026-10-30T03:14:35.323430",
+        "updated_at": "2026-10-30T03:14:35.325193"
+      }
+    ],
+    "versions": [
+      {
+        "id": "2cceb68e-f68e-43c2-9334-8762d0bf1a54",
+        "user_id": 1,
+        "run_id": null,
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 3,
+        "structured_content": {
+          "resume": {
+            "self_summary": "Built an API",
+            "work_experience": [
+              {
+                "description": "Designed SQL transactions"
+              }
+            ]
+          },
+          "changes": []
+        },
+        "fact_refs": [],
+        "status": "confirmed",
+        "created_at": "2026-10-30T03:14:35.323045"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:14:35.322659",
+        "updated_at": "2026-10-30T03:14:35.322660"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "Synthetic",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build APIs and explain SQL transactions.",
+        "structured_data": {},
+        "created_at": "2026-10-30T03:14:35.322279",
+        "updated_at": "2026-10-30T03:14:35.322280"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "actual_execution",
+        "passed": true,
+        "reason": "The case reached real generation calls and persisted their Run identities",
+        "evidence_refs": [
+          "output.model_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "sdk_input_identity",
+        "passed": true,
+        "reason": "Every main/summary input contains one current required block bound to its Run and execution epoch",
+        "evidence_refs": [
+          "output.model_calls",
+          "output.summary_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "owned_frozen_session",
+        "passed": true,
+        "reason": "An owned interview keeps the accepted frozen source",
+        "evidence_refs": [
+          "interviews",
+          "runs"
+        ]
+      },
+      {
+        "name": "bounded_unique_rounds",
+        "passed": false,
+        "reason": "Persisted rounds are contiguous, unique, and bounded by eight",
+        "evidence_refs": [
+          "turns"
+        ]
+      },
+      {
+        "name": "frozen_reference_integrity",
+        "passed": false,
+        "reason": "Question and feedback quotes resolve to the exact snapshot or accepted answer",
+        "evidence_refs": [
+          "turns",
+          "interviews.source_snapshot"
+        ]
+      },
+      {
+        "name": "durable_question_feedback_events",
+        "passed": true,
+        "reason": "Each committed question/feedback has exactly one ordered SQL event",
+        "evidence_refs": [
+          "turns",
+          "events"
+        ]
+      },
+      {
+        "name": "run_result_operation_atomicity",
+        "passed": false,
+        "reason": "Successful steps own one immutable result and operation; stopped steps own neither",
+        "evidence_refs": [
+          "runs",
+          "operations"
+        ]
+      },
+      {
+        "name": "practice_does_not_create_facts",
+        "passed": true,
+        "reason": "Practice answers do not become ProfileFact records",
+        "evidence_refs": [
+          "facts",
+          "output.baseline_facts"
+        ]
+      },
+      {
+        "name": "two_answer_based_followups",
+        "passed": false,
+        "reason": "Two accepted answers reach actual model input and each leads to a persisted follow-up",
+        "evidence_refs": [
+          "turns",
+          "output.model_calls"
+        ]
+      }
+    ],
+    "limitations": [
+      "Quoted text existing is not proof of semantic quality; live output requires human review.",
+      "This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.",
+      "Live mode uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 1,
+    "observed_cost": "0",
+    "reserved_cost": "1.21970880",
+    "committed_cost": "1.21970880",
+    "unknown_usage_calls": 1,
+    "max_total_cost": "3",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/tmp/task-17-browser-fixture-check.py", line 12, in <module>
+    model = harness.AgentHarness()
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agents/harness.py", line 54, in __init__
+    self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/e2e_legacy_fixture.py", line 105, in fixture_client
+    return OpenAI(**kwargs, http_client=httpx.Client(transport=httpx.MockTransport(model_response)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: openai.OpenAI() got multiple values for keyword argument 'http_client'

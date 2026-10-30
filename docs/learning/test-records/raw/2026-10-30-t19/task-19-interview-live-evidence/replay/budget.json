@@ -1,0 +1,42 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-485c-7ed2-89ff-6444056cc089": {
+      "case_id": "interview-command-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4875-7f91-bbaf-00a31c5b0cdf": {
+      "case_id": "interview-command-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4896-7d03-9b02-4e3598f159f9": {
+      "case_id": "interview-command-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-489f-74e0-afff-cecada7e2bfb": {
+      "case_id": "interview-command-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": null
+}

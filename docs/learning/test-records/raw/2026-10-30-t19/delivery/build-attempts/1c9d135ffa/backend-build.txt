@@ -1,0 +1,518 @@
+ Image resumate-t19-backend:1c9d135ffa Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.06kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from worker.Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 1.05kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm
+#3 DONE 2.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 385B done
+#4 DONE 0.0s
+
+#5 [1/8] FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337
+#5 resolve public.ecr.aws/docker/library/python:3.12-slim-bookworm@sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337 done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 1.46MB 0.0s done
+#6 DONE 0.0s
+
+#7 [2/8] WORKDIR /app
+#7 CACHED
+
+#8 [3/8] RUN pip install --no-cache-dir uv==0.12.5
+#8 CACHED
+
+#9 [4/8] COPY pyproject.toml uv.lock README.md ./
+#9 DONE 0.0s
+
+#10 [5/8] RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources     && apt-get update     && apt-get install -y --no-install-recommends libgomp1 libgl1 libglib2.0-0     && rm -rf /var/lib/apt/lists/*
+#10 0.481 Get:1 https://deb.debian.org/debian bookworm InRelease [151 kB]
+#10 0.651 Get:2 https://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#10 0.705 Get:3 https://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#10 0.763 Get:4 https://deb.debian.org/debian bookworm/main arm64 Packages [8689 kB]
+#10 1.119 Get:5 https://deb.debian.org/debian bookworm-updates/main arm64 Packages [6936 B]
+#10 1.166 Get:6 https://deb.debian.org/debian-security bookworm-security/main arm64 Packages [356 kB]
+#10 1.653 Fetched 9294 kB in 2s (6100 kB/s)
+#10 1.653 Reading package lists...
+#10 1.863 Reading package lists...
+#10 2.064 Building dependency tree...
+#10 2.118 Reading state information...
+#10 2.183 The following additional packages will be installed:
+#10 2.183   libbsd0 libdrm-amdgpu1 libdrm-common libdrm-nouveau2 libdrm-radeon1 libdrm2
+#10 2.183   libedit2 libelf1 libexpat1 libgl1-mesa-dri libglapi-mesa libglvnd0
+#10 2.183   libglx-mesa0 libglx0 libicu72 libllvm15 libsensors-config libsensors5
+#10 2.183   libx11-6 libx11-data libx11-xcb1 libxau6 libxcb-dri2-0 libxcb-dri3-0
+#10 2.183   libxcb-glx0 libxcb-present0 libxcb-randr0 libxcb-shm0 libxcb-sync1
+#10 2.183   libxcb-xfixes0 libxcb1 libxdmcp6 libxext6 libxfixes3 libxml2 libxshmfence1
+#10 2.183   libxxf86vm1 libz3-4
+#10 2.183 Suggested packages:
+#10 2.183   low-memory-monitor lm-sensors
+#10 2.183 Recommended packages:
+#10 2.183   libglib2.0-data shared-mime-info xdg-user-dirs
+#10 2.261 The following NEW packages will be installed:
+#10 2.261   libbsd0 libdrm-amdgpu1 libdrm-common libdrm-nouveau2 libdrm-radeon1 libdrm2
+#10 2.261   libedit2 libelf1 libexpat1 libgl1 libgl1-mesa-dri libglapi-mesa libglib2.0-0
+#10 2.261   libglvnd0 libglx-mesa0 libglx0 libgomp1 libicu72 libllvm15 libsensors-config
+#10 2.261   libsensors5 libx11-6 libx11-data libx11-xcb1 libxau6 libxcb-dri2-0
+#10 2.261   libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-randr0 libxcb-shm0
+#10 2.261   libxcb-sync1 libxcb-xfixes0 libxcb1 libxdmcp6 libxext6 libxfixes3 libxml2
+#10 2.261   libxshmfence1 libxxf86vm1 libz3-4
+#10 2.520 0 upgraded, 41 newly installed, 0 to remove and 1 not upgraded.
+#10 2.520 Need to get 47.8 MB of archives.
+#10 2.520 After this operation, 214 MB of additional disk space will be used.
+#10 2.520 Get:1 https://deb.debian.org/debian bookworm/main arm64 libbsd0 arm64 0.11.7-2 [115 kB]
+#10 2.656 Get:2 https://deb.debian.org/debian bookworm/main arm64 libdrm-common all 2.4.114-1 [7112 B]
+#10 2.656 Get:3 https://deb.debian.org/debian bookworm/main arm64 libdrm2 arm64 2.4.114-1+b1 [36.7 kB]
+#10 2.663 Get:4 https://deb.debian.org/debian bookworm/main arm64 libdrm-amdgpu1 arm64 2.4.114-1+b1 [20.4 kB]
+#10 2.670 Get:5 https://deb.debian.org/debian bookworm/main arm64 libdrm-nouveau2 arm64 2.4.114-1+b1 [18.4 kB]
+#10 2.672 Get:6 https://deb.debian.org/debian bookworm/main arm64 libdrm-radeon1 arm64 2.4.114-1+b1 [20.9 kB]
+#10 2.678 Get:7 https://deb.debian.org/debian bookworm/main arm64 libedit2 arm64 3.1-20221030-2 [88.1 kB]
+#10 2.704 Get:8 https://deb.debian.org/debian bookworm/main arm64 libelf1 arm64 0.188-2.1 [173 kB]
+#10 2.732 Get:9 https://deb.debian.org/debian-security bookworm-security/main arm64 libexpat1 arm64 2.5.0-1+deb12u5 [91.7 kB]
+#10 2.740 Get:10 https://deb.debian.org/debian bookworm/main arm64 libglvnd0 arm64 1.6.0-1 [41.4 kB]
+#10 2.744 Get:11 https://deb.debian.org/debian bookworm/main arm64 libxau6 arm64 1:1.0.9-1 [19.7 kB]
+#10 2.746 Get:12 https://deb.debian.org/debian bookworm/main arm64 libxdmcp6 arm64 1:1.1.2-3 [25.4 kB]
+#10 2.748 Get:13 https://deb.debian.org/debian bookworm/main arm64 libxcb1 arm64 1.15-1 [143 kB]
+#10 2.763 Get:14 https://deb.debian.org/debian bookworm/main arm64 libx11-data all 2:1.8.4-2+deb12u2 [292 kB]
+#10 2.780 Get:15 https://deb.debian.org/debian bookworm/main arm64 libx11-6 arm64 2:1.8.4-2+deb12u2 [735 kB]
+#10 2.821 Get:16 https://deb.debian.org/debian bookworm/main arm64 libglapi-mesa arm64 22.3.6-1+deb12u2 [45.1 kB]
+#10 2.822 Get:17 https://deb.debian.org/debian bookworm/main arm64 libx11-xcb1 arm64 2:1.8.4-2+deb12u2 [192 kB]
+#10 2.827 Get:18 https://deb.debian.org/debian bookworm/main arm64 libxcb-dri2-0 arm64 1.15-1 [107 kB]
+#10 2.830 Get:19 https://deb.debian.org/debian bookworm/main arm64 libxcb-dri3-0 arm64 1.15-1 [107 kB]
+#10 2.833 Get:20 https://deb.debian.org/debian bookworm/main arm64 libxcb-glx0 arm64 1.15-1 [123 kB]
+#10 2.837 Get:21 https://deb.debian.org/debian bookworm/main arm64 libxcb-present0 arm64 1.15-1 [106 kB]
+#10 2.839 Get:22 https://deb.debian.org/debian bookworm/main arm64 libxcb-randr0 arm64 1.15-1 [117 kB]
+#10 2.841 Get:23 https://deb.debian.org/debian bookworm/main arm64 libxcb-shm0 arm64 1.15-1 [106 kB]
+#10 2.844 Get:24 https://deb.debian.org/debian bookworm/main arm64 libxcb-sync1 arm64 1.15-1 [109 kB]
+#10 2.865 Get:25 https://deb.debian.org/debian bookworm/main arm64 libxcb-xfixes0 arm64 1.15-1 [110 kB]
+#10 2.869 Get:26 https://deb.debian.org/debian bookworm/main arm64 libxext6 arm64 2:1.3.4-1+b1 [51.7 kB]
+#10 2.871 Get:27 https://deb.debian.org/debian bookworm/main arm64 libxfixes3 arm64 1:6.0.0-2 [22.9 kB]
+#10 2.880 Get:28 https://deb.debian.org/debian bookworm/main arm64 libxshmfence1 arm64 1.3-1 [8712 B]
+#10 2.880 Get:29 https://deb.debian.org/debian bookworm/main arm64 libxxf86vm1 arm64 1:1.1.4-1+b2 [20.1 kB]
+#10 2.885 Get:30 https://deb.debian.org/debian bookworm/main arm64 libicu72 arm64 72.1-3+deb12u1 [9202 kB]
+#10 3.125 Get:31 https://deb.debian.org/debian bookworm/main arm64 libxml2 arm64 2.9.14+dfsg-1.3~deb12u6 [620 kB]
+#10 3.137 Get:32 https://deb.debian.org/debian bookworm/main arm64 libz3-4 arm64 4.8.12-3.1 [6282 kB]
+#10 3.294 Get:33 https://deb.debian.org/debian bookworm/main arm64 libllvm15 arm64 1:15.0.6-4+b1 [20.7 MB]
+#10 3.822 Get:34 https://deb.debian.org/debian bookworm/main arm64 libsensors-config all 1:3.6.0-7.1 [14.3 kB]
+#10 3.823 Get:35 https://deb.debian.org/debian bookworm/main arm64 libsensors5 arm64 1:3.6.0-7.1 [33.3 kB]
+#10 3.823 Get:36 https://deb.debian.org/debian bookworm/main arm64 libgl1-mesa-dri arm64 22.3.6-1+deb12u2 [6281 kB]
+#10 3.997 Get:37 https://deb.debian.org/debian bookworm/main arm64 libglx-mesa0 arm64 22.3.6-1+deb12u2 [146 kB]
+#10 4.002 Get:38 https://deb.debian.org/debian bookworm/main arm64 libglx0 arm64 1.6.0-1 [30.8 kB]
+#10 4.003 Get:39 https://deb.debian.org/debian bookworm/main arm64 libgl1 arm64 1.6.0-1 [90.2 kB]
+#10 4.005 Get:40 https://deb.debian.org/debian bookworm/main arm64 libglib2.0-0 arm64 2.74.6-2+deb12u9 [1316 kB]
+#10 34.37 Get:41 https://deb.debian.org/debian bookworm/main arm64 libgomp1 arm64 12.2.0-14+deb12u1 [104 kB]
+#10 34.57 debconf: delaying package configuration, since apt-utils is not installed
+#10 34.58 Fetched 47.8 MB in 32s (1485 kB/s)
+#10 34.60 Selecting previously unselected package libbsd0:arm64.
+#10 34.60 (Reading database ...
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6695 files and directories currently installed.)
+#10 34.61 Preparing to unpack .../00-libbsd0_0.11.7-2_arm64.deb ...
+#10 34.62 Unpacking libbsd0:arm64 (0.11.7-2) ...
+#10 34.63 Selecting previously unselected package libdrm-common.
+#10 34.63 Preparing to unpack .../01-libdrm-common_2.4.114-1_all.deb ...
+#10 34.63 Unpacking libdrm-common (2.4.114-1) ...
+#10 34.64 Selecting previously unselected package libdrm2:arm64.
+#10 34.64 Preparing to unpack .../02-libdrm2_2.4.114-1+b1_arm64.deb ...
+#10 34.64 Unpacking libdrm2:arm64 (2.4.114-1+b1) ...
+#10 34.65 Selecting previously unselected package libdrm-amdgpu1:arm64.
+#10 34.65 Preparing to unpack .../03-libdrm-amdgpu1_2.4.114-1+b1_arm64.deb ...
+#10 34.65 Unpacking libdrm-amdgpu1:arm64 (2.4.114-1+b1) ...
+#10 34.66 Selecting previously unselected package libdrm-nouveau2:arm64.
+#10 34.66 Preparing to unpack .../04-libdrm-nouveau2_2.4.114-1+b1_arm64.deb ...
+#10 34.66 Unpacking libdrm-nouveau2:arm64 (2.4.114-1+b1) ...
+#10 34.67 Selecting previously unselected package libdrm-radeon1:arm64.
+#10 34.67 Preparing to unpack .../05-libdrm-radeon1_2.4.114-1+b1_arm64.deb ...
+#10 34.67 Unpacking libdrm-radeon1:arm64 (2.4.114-1+b1) ...
+#10 34.68 Selecting previously unselected package libedit2:arm64.
+#10 34.68 Preparing to unpack .../06-libedit2_3.1-20221030-2_arm64.deb ...
+#10 34.68 Unpacking libedit2:arm64 (3.1-20221030-2) ...
+#10 34.69 Selecting previously unselected package libelf1:arm64.
+#10 34.69 Preparing to unpack .../07-libelf1_0.188-2.1_arm64.deb ...
+#10 34.70 Unpacking libelf1:arm64 (0.188-2.1) ...
+#10 34.71 Selecting previously unselected package libexpat1:arm64.
+#10 34.71 Preparing to unpack .../08-libexpat1_2.5.0-1+deb12u5_arm64.deb ...
+#10 34.71 Unpacking libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#10 34.73 Selecting previously unselected package libglvnd0:arm64.
+#10 34.73 Preparing to unpack .../09-libglvnd0_1.6.0-1_arm64.deb ...
+#10 34.73 Unpacking libglvnd0:arm64 (1.6.0-1) ...
+#10 34.74 Selecting previously unselected package libxau6:arm64.
+#10 34.74 Preparing to unpack .../10-libxau6_1%3a1.0.9-1_arm64.deb ...
+#10 34.74 Unpacking libxau6:arm64 (1:1.0.9-1) ...
+#10 34.75 Selecting previously unselected package libxdmcp6:arm64.
+#10 34.75 Preparing to unpack .../11-libxdmcp6_1%3a1.1.2-3_arm64.deb ...
+#10 34.75 Unpacking libxdmcp6:arm64 (1:1.1.2-3) ...
+#10 34.76 Selecting previously unselected package libxcb1:arm64.
+#10 34.76 Preparing to unpack .../12-libxcb1_1.15-1_arm64.deb ...
+#10 34.76 Unpacking libxcb1:arm64 (1.15-1) ...
+#10 34.77 Selecting previously unselected package libx11-data.
+#10 34.77 Preparing to unpack .../13-libx11-data_2%3a1.8.4-2+deb12u2_all.deb ...
+#10 34.77 Unpacking libx11-data (2:1.8.4-2+deb12u2) ...
+#10 34.80 Selecting previously unselected package libx11-6:arm64.
+#10 34.80 Preparing to unpack .../14-libx11-6_2%3a1.8.4-2+deb12u2_arm64.deb ...
+#10 34.80 Unpacking libx11-6:arm64 (2:1.8.4-2+deb12u2) ...
+#10 34.83 Selecting previously unselected package libglapi-mesa:arm64.
+#10 34.83 Preparing to unpack .../15-libglapi-mesa_22.3.6-1+deb12u2_arm64.deb ...
+#10 34.83 Unpacking libglapi-mesa:arm64 (22.3.6-1+deb12u2) ...
+#10 34.84 Selecting previously unselected package libx11-xcb1:arm64.
+#10 34.84 Preparing to unpack .../16-libx11-xcb1_2%3a1.8.4-2+deb12u2_arm64.deb ...
+#10 34.84 Unpacking libx11-xcb1:arm64 (2:1.8.4-2+deb12u2) ...
+#10 34.85 Selecting previously unselected package libxcb-dri2-0:arm64.
+#10 34.85 Preparing to unpack .../17-libxcb-dri2-0_1.15-1_arm64.deb ...
+#10 34.85 Unpacking libxcb-dri2-0:arm64 (1.15-1) ...
+#10 34.87 Selecting previously unselected package libxcb-dri3-0:arm64.
+#10 34.87 Preparing to unpack .../18-libxcb-dri3-0_1.15-1_arm64.deb ...
+#10 34.87 Unpacking libxcb-dri3-0:arm64 (1.15-1) ...
+#10 34.88 Selecting previously unselected package libxcb-glx0:arm64.
+#10 34.88 Preparing to unpack .../19-libxcb-glx0_1.15-1_arm64.deb ...
+#10 34.88 Unpacking libxcb-glx0:arm64 (1.15-1) ...
+#10 34.89 Selecting previously unselected package libxcb-present0:arm64.
+#10 34.89 Preparing to unpack .../20-libxcb-present0_1.15-1_arm64.deb ...
+#10 34.90 Unpacking libxcb-present0:arm64 (1.15-1) ...
+#10 34.91 Selecting previously unselected package libxcb-randr0:arm64.
+#10 34.91 Preparing to unpack .../21-libxcb-randr0_1.15-1_arm64.deb ...
+#10 34.91 Unpacking libxcb-randr0:arm64 (1.15-1) ...
+#10 34.92 Selecting previously unselected package libxcb-shm0:arm64.
+#10 34.92 Preparing to unpack .../22-libxcb-shm0_1.15-1_arm64.deb ...
+#10 34.92 Unpacking libxcb-shm0:arm64 (1.15-1) ...
+#10 34.94 Selecting previously unselected package libxcb-sync1:arm64.
+#10 34.94 Preparing to unpack .../23-libxcb-sync1_1.15-1_arm64.deb ...
+#10 34.94 Unpacking libxcb-sync1:arm64 (1.15-1) ...
+#10 34.95 Selecting previously unselected package libxcb-xfixes0:arm64.
+#10 34.95 Preparing to unpack .../24-libxcb-xfixes0_1.15-1_arm64.deb ...
+#10 34.95 Unpacking libxcb-xfixes0:arm64 (1.15-1) ...
+#10 34.96 Selecting previously unselected package libxext6:arm64.
+#10 34.97 Preparing to unpack .../25-libxext6_2%3a1.3.4-1+b1_arm64.deb ...
+#10 34.97 Unpacking libxext6:arm64 (2:1.3.4-1+b1) ...
+#10 34.98 Selecting previously unselected package libxfixes3:arm64.
+#10 34.98 Preparing to unpack .../26-libxfixes3_1%3a6.0.0-2_arm64.deb ...
+#10 34.98 Unpacking libxfixes3:arm64 (1:6.0.0-2) ...
+#10 34.99 Selecting previously unselected package libxshmfence1:arm64.
+#10 34.99 Preparing to unpack .../27-libxshmfence1_1.3-1_arm64.deb ...
+#10 34.99 Unpacking libxshmfence1:arm64 (1.3-1) ...
+#10 35.00 Selecting previously unselected package libxxf86vm1:arm64.
+#10 35.00 Preparing to unpack .../28-libxxf86vm1_1%3a1.1.4-1+b2_arm64.deb ...
+#10 35.00 Unpacking libxxf86vm1:arm64 (1:1.1.4-1+b2) ...
+#10 35.01 Selecting previously unselected package libicu72:arm64.
+#10 35.01 Preparing to unpack .../29-libicu72_72.1-3+deb12u1_arm64.deb ...
+#10 35.01 Unpacking libicu72:arm64 (72.1-3+deb12u1) ...
+#10 35.31 Selecting previously unselected package libxml2:arm64.
+#10 35.31 Preparing to unpack .../30-libxml2_2.9.14+dfsg-1.3~deb12u6_arm64.deb ...
+#10 35.31 Unpacking libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#10 35.34 Selecting previously unselected package libz3-4:arm64.
+#10 35.34 Preparing to unpack .../31-libz3-4_4.8.12-3.1_arm64.deb ...
+#10 35.35 Unpacking libz3-4:arm64 (4.8.12-3.1) ...
+#10 35.59 Selecting previously unselected package libllvm15:arm64.
+#10 35.59 Preparing to unpack .../32-libllvm15_1%3a15.0.6-4+b1_arm64.deb ...
+#10 35.60 Unpacking libllvm15:arm64 (1:15.0.6-4+b1) ...
+#10 36.02 Selecting previously unselected package libsensors-config.
+#10 36.02 Preparing to unpack .../33-libsensors-config_1%3a3.6.0-7.1_all.deb ...
+#10 36.02 Unpacking libsensors-config (1:3.6.0-7.1) ...
+#10 36.04 Selecting previously unselected package libsensors5:arm64.
+#10 36.04 Preparing to unpack .../34-libsensors5_1%3a3.6.0-7.1_arm64.deb ...
+#10 36.04 Unpacking libsensors5:arm64 (1:3.6.0-7.1) ...
+#10 36.05 Selecting previously unselected package libgl1-mesa-dri:arm64.
+#10 36.05 Preparing to unpack .../35-libgl1-mesa-dri_22.3.6-1+deb12u2_arm64.deb ...
+#10 36.06 Unpacking libgl1-mesa-dri:arm64 (22.3.6-1+deb12u2) ...
+#10 36.32 Selecting previously unselected package libglx-mesa0:arm64.
+#10 36.32 Preparing to unpack .../36-libglx-mesa0_22.3.6-1+deb12u2_arm64.deb ...
+#10 36.32 Unpacking libglx-mesa0:arm64 (22.3.6-1+deb12u2) ...
+#10 36.33 Selecting previously unselected package libglx0:arm64.
+#10 36.33 Preparing to unpack .../37-libglx0_1.6.0-1_arm64.deb ...
+#10 36.34 Unpacking libglx0:arm64 (1.6.0-1) ...
+#10 36.35 Selecting previously unselected package libgl1:arm64.
+#10 36.35 Preparing to unpack .../38-libgl1_1.6.0-1_arm64.deb ...
+#10 36.35 Unpacking libgl1:arm64 (1.6.0-1) ...
+#10 36.36 Selecting previously unselected package libglib2.0-0:arm64.
+#10 36.36 Preparing to unpack .../39-libglib2.0-0_2.74.6-2+deb12u9_arm64.deb ...
+#10 36.36 Unpacking libglib2.0-0:arm64 (2.74.6-2+deb12u9) ...
+#10 36.42 Selecting previously unselected package libgomp1:arm64.
+#10 36.42 Preparing to unpack .../40-libgomp1_12.2.0-14+deb12u1_arm64.deb ...
+#10 36.42 Unpacking libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#10 36.44 Setting up libexpat1:arm64 (2.5.0-1+deb12u5) ...
+#10 36.44 Setting up libxau6:arm64 (1:1.0.9-1) ...
+#10 36.44 Setting up libicu72:arm64 (72.1-3+deb12u1) ...
+#10 36.44 Setting up libglib2.0-0:arm64 (2.74.6-2+deb12u9) ...
+#10 36.45 No schema files found: doing nothing.
+#10 36.45 Setting up libglvnd0:arm64 (1.6.0-1) ...
+#10 36.46 Setting up libsensors-config (1:3.6.0-7.1) ...
+#10 36.46 Setting up libgomp1:arm64 (12.2.0-14+deb12u1) ...
+#10 36.46 Setting up libz3-4:arm64 (4.8.12-3.1) ...
+#10 36.46 Setting up libx11-data (2:1.8.4-2+deb12u2) ...
+#10 36.46 Setting up libsensors5:arm64 (1:3.6.0-7.1) ...
+#10 36.47 Setting up libglapi-mesa:arm64 (22.3.6-1+deb12u2) ...
+#10 36.47 Setting up libxshmfence1:arm64 (1.3-1) ...
+#10 36.47 Setting up libbsd0:arm64 (0.11.7-2) ...
+#10 36.47 Setting up libdrm-common (2.4.114-1) ...
+#10 36.48 Setting up libelf1:arm64 (0.188-2.1) ...
+#10 36.48 Setting up libxml2:arm64 (2.9.14+dfsg-1.3~deb12u6) ...
+#10 36.48 Setting up libxdmcp6:arm64 (1:1.1.2-3) ...
+#10 36.48 Setting up libxcb1:arm64 (1.15-1) ...
+#10 36.49 Setting up libxcb-xfixes0:arm64 (1.15-1) ...
+#10 36.49 Setting up libxcb-glx0:arm64 (1.15-1) ...
+#10 36.49 Setting up libedit2:arm64 (3.1-20221030-2) ...
+#10 36.49 Setting up libxcb-shm0:arm64 (1.15-1) ...
+#10 36.49 Setting up libxcb-present0:arm64 (1.15-1) ...
+#10 36.50 Setting up libxcb-sync1:arm64 (1.15-1) ...
+#10 36.50 Setting up libxcb-dri2-0:arm64 (1.15-1) ...
+#10 36.50 Setting up libdrm2:arm64 (2.4.114-1+b1) ...
+#10 36.50 Setting up libxcb-randr0:arm64 (1.15-1) ...
+#10 36.51 Setting up libllvm15:arm64 (1:15.0.6-4+b1) ...
+#10 36.51 Setting up libx11-6:arm64 (2:1.8.4-2+deb12u2) ...
+#10 36.51 Setting up libdrm-amdgpu1:arm64 (2.4.114-1+b1) ...
+#10 36.51 Setting up libxcb-dri3-0:arm64 (1.15-1) ...
+#10 36.52 Setting up libx11-xcb1:arm64 (2:1.8.4-2+deb12u2) ...
+#10 36.52 Setting up libdrm-nouveau2:arm64 (2.4.114-1+b1) ...
+#10 36.52 Setting up libdrm-radeon1:arm64 (2.4.114-1+b1) ...
+#10 36.52 Setting up libgl1-mesa-dri:arm64 (22.3.6-1+deb12u2) ...
+#10 36.53 Setting up libxext6:arm64 (2:1.3.4-1+b1) ...
+#10 36.53 Setting up libxxf86vm1:arm64 (1:1.1.4-1+b2) ...
+#10 36.53 Setting up libxfixes3:arm64 (1:6.0.0-2) ...
+#10 36.53 Setting up libglx-mesa0:arm64 (22.3.6-1+deb12u2) ...
+#10 36.54 Setting up libglx0:arm64 (1.6.0-1) ...
+#10 36.54 Setting up libgl1:arm64 (1.6.0-1) ...
+#10 36.54 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#10 DONE 36.7s
+
+#11 [6/8] RUN uv sync --no-cache --locked --no-dev --no-install-project --extra ocr     && python -c "from rapidocr_onnxruntime import RapidOCR"     && python -m playwright install --with-deps chromium     && apt-get install -y --no-install-recommends fonts-noto-cjk=1:20220127+repack1-1     && rm -rf /var/lib/apt/lists/*
+#11 0.223 Using CPython 3.12.16 interpreter at: /usr/local/bin/python3
+#11 0.223 Creating virtual environment at: .venv
+#11 0.228 Resolved 195 packages in 0.92ms
+#11 0.474 Downloading google-genai (1.2MiB)
+#11 0.474 Downloading pygments (1.2MiB)
+#11 0.561 Downloading tokenizers (3.1MiB)
+#11 0.562 Downloading rapidocr-onnxruntime (14.2MiB)
+#11 0.562 Downloading anthropic (2.1MiB)
+#11 0.562 Downloading sympy (6.0MiB)
+#11 0.563 Downloading kubernetes (1.9MiB)
+#11 0.564 Downloading tiktoken (1.1MiB)
+#11 0.591 Downloading lxml (4.8MiB)
+#11 0.592 Downloading uvloop (4.1MiB)
+#11 0.593 Downloading pypdfium2 (3.4MiB)
+#11 0.593 Downloading chromadb (21.6MiB)
+#11 0.595 Downloading zstandard (4.8MiB)
+#11 0.595 Downloading onnxruntime (14.5MiB)
+#11 0.614 Downloading grpcio (6.2MiB)
+#11 0.615 Downloading opencv-python (44.5MiB)
+#11 0.615 Downloading numpy (14.9MiB)
+#11 0.616 Downloading pymupdf (23.2MiB)
+#11 0.616 Downloading hf-xet (3.8MiB)
+#11 0.617 Downloading playwright (45.9MiB)
+#11 0.617 Downloading shapely (2.8MiB)
+#11 0.629 Downloading pillow (6.1MiB)
+#11 0.642 Downloading openai (1.1MiB)
+#11 0.651 Downloading pydantic-core (1.8MiB)
+#11 0.659 Downloading cryptography (4.5MiB)
+#11 1.780 Downloading sqlalchemy (3.2MiB)
+#11 1.947  Downloaded openai
+#11 1.955  Downloaded tiktoken
+#11 1.965  Downloaded google-genai
+#11 1.974  Downloaded pygments
+#11 2.489  Downloaded kubernetes
+#11 2.493  Downloaded pydantic-core
+#11 2.568  Downloaded anthropic
+#11 3.005  Downloaded shapely
+#11 3.154  Downloaded tokenizers
+#11 3.284  Downloaded pypdfium2
+#11 3.457  Downloaded hf-xet
+#11 3.610  Downloaded uvloop
+#11 3.642  Downloaded sqlalchemy
+#11 3.778  Downloaded cryptography
+#11 3.854  Downloaded zstandard
+#11 3.861  Downloaded lxml
+#11 4.293  Downloaded sympy
+#11 4.300  Downloaded pillow
+#11 4.306  Downloaded grpcio
+#11 5.979  Downloaded rapidocr-onnxruntime
+#11 6.010  Downloaded onnxruntime
+#11 6.070  Downloaded numpy
+#11 6.893  Downloaded chromadb
+#11 7.022  Downloaded pymupdf
+#11 8.255  Downloaded opencv-python
+#11 8.285  Downloaded playwright
+#11 8.286 Prepared 153 packages in 8.05s
+#11 9.579 Installed 153 packages in 1.29s
+#11 9.579  + aiosqlite==0.22.1
+#11 9.579  + amqp==5.4.1
+#11 9.579  + annotated-doc==0.0.4
+#11 9.579  + annotated-types==0.7.0
+#11 9.579  + anthropic==2.3.0
+#11 9.579  + anyio==4.12.1
+#11 9.579  + attrs==26.1.0
+#11 9.579  + bcrypt==5.0.0
+#11 9.579  + billiard==4.3.1
+#11 9.579  + bracex==3.2
+#11 9.579  + build==1.4.0
+#11 9.579  + celery==5.6.3
+#11 9.579  + certifi==2026.2.25
+#11 9.579  + cffi==2.0.0
+#11 9.579  + charset-normalizer==3.4.6
+#11 9.579  + chromadb==1.5.9
+#11 9.579  + click==8.3.1
+#11 9.579  + click-didyoumean==0.3.1
+#11 9.579  + click-plugins==1.1.1.2
+#11 9.579  + click-repl==0.4.1
+#11 9.579  + cryptography==50.0.2
+#11 9.579  + deepagents==0.7.32
+#11 9.579  + distro==1.9.0
+#11 9.579  + docstring-parser==0.18.0
+#11 9.579  + durationpy==0.10
+#11 9.579  + ecdsa==0.19.1
+#11 9.579  + fastapi==0.135.1
+#11 9.579  + filelock==3.25.2
+#11 9.579  + filetype==1.2.0
+#11 9.579  + flatbuffers==25.12.19
+#11 9.579  + fsspec==2026.2.0
+#11 9.579  + google-auth==2.62.0
+#11 9.579  + google-genai==2.34.0
+#11 9.579  + googleapis-common-protos==1.76.0
+#11 9.579  + greenlet==3.3.2
+#11 9.579  + grpcio==1.78.0
+#11 9.579  + h11==0.16.0
+#11 9.579  + hf-xet==1.4.2
+#11 9.579  + httpcore==1.0.9
+#11 9.579  + httpcore2==2.3.0
+#11 9.579  + httptools==0.7.1
+#11 9.579  + httpx==0.28.1
+#11 9.579  + httpx2==2.3.0
+#11 9.579  + huggingface-hub==1.7.2
+#11 9.579  + idna==3.11
+#11 9.579  + importlib-resources==6.5.2
+#11 9.579  + jinja2==3.1.6
+#11 9.579  + jiter==0.13.0
+#11 9.579  + jsonpatch==1.33
+#11 9.579  + jsonpointer==3.1.0
+#11 9.579  + jsonschema==4.26.0
+#11 9.579  + jsonschema-specifications==2025.9.1
+#11 9.579  + kombu==5.6.2
+#11 9.579  + kubernetes==35.0.0
+#11 9.579  + langchain==1.4.7
+#11 9.579  + langchain-anthropic==1.7.7
+#11 9.579  + langchain-core==1.7.1
+#11 9.579  + langchain-google-genai==4.4.2
+#11 9.579  + langchain-openai==1.1.11
+#11 9.579  + langchain-protocol==0.0.20
+#11 9.579  + langgraph==1.2.18
+#11 9.579  + langgraph-checkpoint==4.3.1
+#11 9.579  + langgraph-checkpoint-sqlite==3.1.2
+#11 9.579  + langgraph-prebuilt==1.1.1
+#11 9.579  + langgraph-sdk==0.4.10
+#11 9.579  + langsmith==0.14.15
+#11 9.579  + lxml==6.0.2
+#11 9.579  + markdown-it-py==4.0.0
+#11 9.579  + markupsafe==3.0.3
+#11 9.579  + mdurl==0.1.2
+#11 9.579  + mmh3==5.2.1
+#11 9.579  + mpmath==1.3.0
+#11 9.579  + numpy==2.4.3
+#11 9.579  + oauthlib==3.3.1
+#11 9.579  + onnxruntime==1.24.4
+#11 9.579  + openai==2.29.0
+#11 9.579  + opencv-python==4.13.0.92
+#11 9.579  + opentelemetry-api==1.45.2
+#11 9.579  + opentelemetry-exporter-otlp-common==0.66b2
+#11 9.580  + opentelemetry-exporter-otlp-proto-common==1.45.2
+#11 9.580  + opentelemetry-exporter-otlp-proto-grpc==1.45.2
+#11 9.580  + opentelemetry-proto==1.45.2
+#11 9.580  + opentelemetry-sdk==1.45.2
+#11 9.580  + opentelemetry-semantic-conventions==0.66b2
+#11 9.580  + orjson==3.11.7
+#11 9.580  + ormsgpack==1.12.2
+#11 9.580  + overrides==7.7.0
+#11 9.580  + packaging==26.0
+#11 9.580  + pillow==12.1.1
+#11 9.580  + playwright==1.64.1
+#11 9.580  + prompt-toolkit==3.0.53
+#11 9.580  + protobuf==7.34.1
+#11 9.580  + pyasn1==0.6.3
+#11 9.580  + pyasn1-modules==0.4.2
+#11 9.580  + pybase64==1.4.3
+#11 9.580  + pyclipper==1.4.0
+#11 9.580  + pycparser==3.0
+#11 9.580  + pydantic==2.12.5
+#11 9.580  + pydantic-core==2.41.5
+#11 9.580  + pydantic-settings==2.13.1
+#11 9.580  + pyee==14.0.0
+#11 9.580  + pygments==2.19.2
+#11 9.580  + pymupdf==1.27.2.3
+#11 9.580  + pymysql==1.2.3
+#11 9.580  + pypdfium2==5.6.0
+#11 9.580  + pypika==0.51.1
+#11 9.580  + pyproject-hooks==1.2.0
+#11 9.580  + python-dateutil==2.9.0.post0
+#11 9.580  + python-docx==1.2.0
+#11 9.580  + python-dotenv==1.2.2
+#11 9.580  + python-jose==3.5.0
+#11 9.580  + python-multipart==0.0.22
+#11 9.580  + pyyaml==6.0.3
+#11 9.580  + rapidocr-onnxruntime==1.4.4
+#11 9.580  + redis==6.4.0
+#11 9.580  + referencing==0.37.0
+#11 9.580  + regex==2026.2.28
+#11 9.580  + requests==2.32.5
+#11 9.580  + requests-oauthlib==2.0.0
+#11 9.580  + requests-toolbelt==1.0.0
+#11 9.580  + rich==14.2.0
+#11 9.580  + rpds-py==0.30.0
+#11 9.580  + rsa==4.9.1
+#11 9.580  + shapely==2.1.2
+#11 9.580  + shellingham==1.5.4
+#11 9.580  + six==1.17.0
+#11 9.580  + sniffio==1.3.1
+#11 9.580  + sqlalchemy==2.0.48
+#11 9.580  + sqlite-vec==0.1.9
+#11 9.580  + starlette==0.52.1
+#11 9.580  + sympy==1.14.0
+#11 9.580  + tenacity==9.1.4
+#11 9.580  + tiktoken==0.12.0
+#11 9.580  + tokenizers==0.22.2
+#11 9.580  + tqdm==4.67.3
+#11 9.580  + truststore==0.10.5
+#11 9.580  + typer==0.24.1
+#11 9.580  + typing-extensions==4.15.0
+#11 9.580  + typing-inspection==0.4.2
+#11 9.580  + tzdata==2026.6
+#11 9.580  + tzlocal==5.4.5
+#11 9.580  + urllib3==2.6.3
+#11 9.580  + uuid-utils==0.14.1
+#11 9.581  + uvicorn==0.42.0
+#11 9.581  + uvloop==0.22.1
+#11 9.581  + vine==5.1.0
+#11 9.581  + watchfiles==1.1.1
+#11 9.581  + wcmatch==11.2
+#11 9.581  + wcwidth==0.9.4
+#11 9.581  + websocket-client==1.9.0
+#11 9.581  + websockets==16.0
+#11 9.581  + xxhash==3.6.0
+#11 9.581  + zstandard==0.25.0
+#11 11.39 onnxruntime cpuid_info warning: Unknown CPU vendor. cpuinfo_vendor value: 0
+#11 11.78 Installing dependencies...
+#11 11.89 Ign:1 https://deb.debian.org/debian bookworm InRelease
+#11 11.98 Ign:2 https://deb.debian.org/debian bookworm-updates InRelease
+#11 12.24 Get:3 https://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]

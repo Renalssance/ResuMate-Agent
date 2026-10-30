@@ -4,6 +4,8 @@ x-test: &test
   volumes:
     - ${T20_SOURCE:?Set captured source}/backend:/app/backend:ro
 services:
+  web:
+    profiles: [delivery]
   schema:
     <<: *test
   api:

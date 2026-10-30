@@ -2,6 +2,7 @@ import os
 from functools import cached_property
 
 from openai import OpenAI
+from backend.model_transport import DefaultHttpxClient
 
 
 DEFAULT_REMOTE_MODEL = "text-embedding-3-small"
@@ -28,7 +29,8 @@ class EmbeddingService:
         if not api_key:
             raise RuntimeError("EMBEDDING_API_KEY or OPENAI_API_KEY is required")
         base_url = os.getenv("EMBEDDING_BASE_URL") or os.getenv("OPENAI_BASE_URL") or None
-        self._client = OpenAI(api_key=api_key, base_url=base_url)
+        self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=30.0, max_retries=0,
+                              http_client=DefaultHttpxClient(follow_redirects=False))
         return self._client
 
     @cached_property

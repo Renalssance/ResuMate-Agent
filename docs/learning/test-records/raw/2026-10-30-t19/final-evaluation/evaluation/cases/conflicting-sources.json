@@ -1,0 +1,1290 @@
+{
+  "case_id": "conflicting-sources",
+  "category": "source_conflict",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "category": "source_conflict",
+    "resume": {
+      "raw_text": "测试申请人甲。独立负责 Python 项目开发，没有管理职责。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "独立负责 Python 项目开发，没有管理职责。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      }
+    },
+    "job": {
+      "title": "Python 后端工程师（合成岗位）",
+      "raw_text": "岗位重视团队管理和真实项目职责。"
+    },
+    "facts": [
+      {
+        "id": "fact-conflict",
+        "fact_key": "management",
+        "kind": "experience",
+        "revision": 1,
+        "content": {
+          "text": "带领 5 人小组完成项目。"
+        }
+      }
+    ],
+    "memories": [],
+    "proposal": {
+      "section": "/self_summary",
+      "after": "独立负责 Python 项目开发。",
+      "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+      "source_sections": [],
+      "include_answer": true
+    },
+    "expected": {
+      "statuses": [
+        "succeeded"
+      ],
+      "draft_count": 1,
+      "requires_answer": true,
+      "requires_waiting": true
+    },
+    "id": "conflicting-sources",
+    "question": "原简历写独立负责且无管理职责，已确认事实却写带领 5 人小组。哪个信息准确？",
+    "answer": {
+      "text": "旧事实录入错误，本人独立负责开发，没有管理职责，不要写带领 5 人小组。"
+    }
+  },
+  "output": {
+    "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+    "status": "succeeded",
+    "error_code": null,
+    "coverage": {
+      "waiting_observed": true,
+      "waiting_draft_count": 0,
+      "checkpoint_reopened": true,
+      "summary_calls": 0,
+      "file_reads": [],
+      "cancel_claim_blocked": false,
+      "model_calls_after_cancel": 0,
+      "fault_injected": false,
+      "duplicate_result_refs": [
+        "a79077d7-d811-4541-bb66-a71e8f4655ca"
+      ],
+      "required_context_preserved": true
+    },
+    "required_context_checks": [
+      {
+        "sdk_call_id": "01a18ae8-d1e5-7910-aa47-6fc8039f6387",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": [
+                {
+                  "factId": "fact-conflict",
+                  "revision": 1
+                }
+              ]
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [
+              {
+                "id": "fact-conflict",
+                "revision": 1,
+                "content": {
+                  "text": "带领 5 人小组完成项目。"
+                }
+              }
+            ],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-d1ee-73c1-a4ba-c455c4292f2e",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": [
+                {
+                  "factId": "fact-conflict",
+                  "revision": 1
+                }
+              ]
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [
+              {
+                "id": "fact-conflict",
+                "revision": 1,
+                "content": {
+                  "text": "带领 5 人小组完成项目。"
+                }
+              }
+            ],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-d20f-7c40-b721-a8f3ed899dc6",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "memories": [],
+          "applicantAnswers": [
+            "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+          ],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": [
+                {
+                  "factId": "fact-conflict",
+                  "revision": 1
+                }
+              ]
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [
+              {
+                "id": "fact-conflict",
+                "revision": 1,
+                "content": {
+                  "text": "带领 5 人小组完成项目。"
+                }
+              }
+            ],
+            "memories": [],
+            "applicantAnswers": [
+              "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+            ],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-d216-7c30-8a7e-a5feb8e52b5f",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "memories": [],
+          "applicantAnswers": [
+            "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+          ],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": [
+                {
+                  "factId": "fact-conflict",
+                  "revision": 1
+                }
+              ]
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [
+              {
+                "id": "fact-conflict",
+                "revision": 1,
+                "content": {
+                  "text": "带领 5 人小组完成项目。"
+                }
+              }
+            ],
+            "memories": [],
+            "applicantAnswers": [
+              "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+            ],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-d21f-7f31-a132-a016a8ba73da",
+        "attempt": 1,
+        "execution_epoch": 2,
+        "kind": "main",
+        "expected": {
+          "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "memories": [],
+          "applicantAnswers": [
+            "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+          ],
+          "outputs": [
+            "a79077d7-d811-4541-bb66-a71e8f4655ca"
+          ]
+        },
+        "observed": [
+          {
+            "runId": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": [
+                {
+                  "factId": "fact-conflict",
+                  "revision": 1
+                }
+              ]
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [
+              {
+                "id": "fact-conflict",
+                "revision": 1,
+                "content": {
+                  "text": "带领 5 人小组完成项目。"
+                }
+              }
+            ],
+            "memories": [],
+            "applicantAnswers": [
+              "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+            ],
+            "outputs": [
+              "a79077d7-d811-4541-bb66-a71e8f4655ca"
+            ]
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-1",
+            "name": "get_application_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-2",
+            "name": "ask_applicant",
+            "args": {
+              "question": "原简历写独立负责且无管理职责，已确认事实却写带领 5 人小组。哪个信息准确？"
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-3",
+            "name": "get_application_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-4",
+            "name": "create_resume_draft",
+            "args": {
+              "changes": [
+                {
+                  "section": "/self_summary",
+                  "before": "独立负责 Python 项目开发，没有管理职责。",
+                  "after": "独立负责 Python 项目开发。",
+                  "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-01T00:00:00",
+                      "section": "/self_summary",
+                      "sourceRefs": [
+                        "page:1"
+                      ]
+                    },
+                    {
+                      "kind": "applicant_answer",
+                      "actionId": "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+                    }
+                  ],
+                  "requires_input": false
+                }
+              ]
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。",
+        "tool_calls": [],
+        "invalid_tool_calls": []
+      }
+    ],
+    "model": "resumate-eval-stub-v1"
+  },
+  "db_snapshot": {
+    "run": {
+      "id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+      "user_id": 1,
+      "session_id": "b0eab5f1-4073-49fb-829f-4c2e4af3118d",
+      "request_id": "0b79aee6-eb25-4595-94b3-4b35f954d250",
+      "kind": "tailoring",
+      "status": "succeeded",
+      "input_json": {
+        "jdId": 1,
+        "resumeId": 1,
+        "contextSnapshot": {
+          "resume": {
+            "id": 1,
+            "text": "测试申请人甲。独立负责 Python 项目开发，没有管理职责。",
+            "structured": {
+              "name": "测试申请人甲",
+              "self_summary": "独立负责 Python 项目开发，没有管理职责。",
+              "source_refs": [
+                "page:1"
+              ],
+              "work_experience": [
+                {
+                  "company": "合成业务项目",
+                  "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+                  "source_refs": [
+                    "page:1:work:0"
+                  ]
+                }
+              ],
+              "projects": [
+                {
+                  "name": "订单接口测试",
+                  "description": "为订单接口编写 pytest 测试。",
+                  "source_refs": [
+                    "page:1:project:0"
+                  ]
+                }
+              ]
+            },
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "job": {
+            "id": 1,
+            "title": "Python 后端工程师（合成岗位）",
+            "text": "岗位重视团队管理和真实项目职责。",
+            "structured": {},
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "facts": [
+            {
+              "id": "fact-conflict",
+              "revision": 1,
+              "content": {
+                "text": "带领 5 人小组完成项目。"
+              }
+            }
+          ],
+          "match": null
+        }
+      },
+      "input_versions": {
+        "resume": "2026-10-01T00:00:00",
+        "jd": "2026-10-01T00:00:00",
+        "memories": [],
+        "facts": [
+          {
+            "factId": "fact-conflict",
+            "revision": 1
+          }
+        ]
+      },
+      "result_json": null,
+      "attempt": 1,
+      "execution_epoch": 2,
+      "heartbeat_at": "2026-10-30T03:44:36.386097",
+      "cancel_requested_at": null,
+      "error_code": null,
+      "output_refs": [
+        {
+          "type": "resume_version",
+          "id": "a79077d7-d811-4541-bb66-a71e8f4655ca"
+        }
+      ],
+      "created_at": "2026-10-30T03:44:36.207870",
+      "updated_at": "2026-10-30T03:44:36.386716"
+    },
+    "session": {
+      "id": "b0eab5f1-4073-49fb-829f-4c2e4af3118d",
+      "user_id": 1,
+      "purpose": "tailoring",
+      "context_invalidated_at": null,
+      "checkpoint_deleted_at": null,
+      "active_run_id": null,
+      "created_at": "2026-10-30T03:44:36.199685"
+    },
+    "resume": {
+      "id": 1,
+      "user_id": 1,
+      "filename": "synthetic-resume.txt",
+      "file_path": "",
+      "content_hash": "",
+      "document_size": 0,
+      "parse_status": "pending",
+      "raw_text": "测试申请人甲。独立负责 Python 项目开发，没有管理职责。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "独立负责 Python 项目开发，没有管理职责。",
+        "source_refs": [
+          "page:1"
+        ],
+        "work_experience": [
+          {
+            "company": "合成业务项目",
+            "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+            "source_refs": [
+              "page:1:work:0"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "name": "订单接口测试",
+            "description": "为订单接口编写 pytest 测试。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-10-30T03:44:36.200531",
+      "updated_at": "2026-10-01T00:00:00"
+    },
+    "baseline": {
+      "resume": {
+        "id": 1,
+        "user_id": 1,
+        "raw_text": "测试申请人甲。独立负责 Python 项目开发，没有管理职责。",
+        "structured_data": {
+          "name": "测试申请人甲",
+          "self_summary": "独立负责 Python 项目开发，没有管理职责。",
+          "source_refs": [
+            "page:1"
+          ],
+          "work_experience": [
+            {
+              "company": "合成业务项目",
+              "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+              "source_refs": [
+                "page:1:work:0"
+              ]
+            }
+          ],
+          "projects": [
+            {
+              "name": "订单接口测试",
+              "description": "为订单接口编写 pytest 测试。",
+              "source_refs": [
+                "page:1:project:0"
+              ]
+            }
+          ]
+        }
+      },
+      "facts": [
+        {
+          "id": "fact-conflict",
+          "user_id": 1,
+          "fact_key": "management",
+          "kind": "experience",
+          "content": {
+            "text": "带领 5 人小组完成项目。"
+          },
+          "source_document_id": 1,
+          "revision": 1,
+          "confirmed_at": "2026-10-01T00:00:00",
+          "deleted_at": null
+        }
+      ],
+      "memories": []
+    },
+    "versions": [
+      {
+        "id": "a79077d7-d811-4541-bb66-a71e8f4655ca",
+        "user_id": 1,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 1,
+        "structured_content": {
+          "resume": {
+            "name": "测试申请人甲",
+            "self_summary": "独立负责 Python 项目开发，没有管理职责。",
+            "source_refs": [
+              "page:1"
+            ],
+            "work_experience": [
+              {
+                "company": "合成业务项目",
+                "description": "使用 FastAPI 编写订单接口，为 PostgreSQL 查询补充索引。",
+                "source_refs": [
+                  "page:1:work:0"
+                ]
+              }
+            ],
+            "projects": [
+              {
+                "name": "订单接口测试",
+                "description": "为订单接口编写 pytest 测试。",
+                "source_refs": [
+                  "page:1:project:0"
+                ]
+              }
+            ]
+          },
+          "changes": [
+            {
+              "section": "/self_summary",
+              "before": "独立负责 Python 项目开发，没有管理职责。",
+              "after": "独立负责 Python 项目开发。",
+              "reason": "突出原简历中与岗位相关的接口和查询工作，待本人审阅。",
+              "fact_refs": [
+                {
+                  "kind": "resume",
+                  "resumeId": 1,
+                  "inputVersion": "2026-10-01T00:00:00",
+                  "section": "/self_summary",
+                  "sourceRefs": [
+                    "page:1"
+                  ]
+                },
+                {
+                  "kind": "applicant_answer",
+                  "actionId": "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+                }
+              ],
+              "requires_input": false,
+              "id": "c528b18a-3ae0-44cf-b45f-7cd4e1bfda93",
+              "status": "pending"
+            }
+          ],
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": [
+              {
+                "factId": "fact-conflict",
+                "revision": 1
+              }
+            ]
+          }
+        },
+        "fact_refs": [
+          {
+            "kind": "resume",
+            "resumeId": 1,
+            "inputVersion": "2026-10-01T00:00:00",
+            "section": "/self_summary",
+            "sourceRefs": [
+              "page:1"
+            ]
+          },
+          {
+            "kind": "applicant_answer",
+            "actionId": "80cc9f8b-fe36-4769-a8f2-feda82ed3e15"
+          }
+        ],
+        "status": "draft",
+        "created_at": "2026-10-30T03:44:36.378671"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "operation_key": "draft:1:initial",
+        "tool_name": "create_resume_draft",
+        "status": "succeeded",
+        "result_ref": "a79077d7-d811-4541-bb66-a71e8f4655ca"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.208721"
+      },
+      {
+        "id": 2,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.212730"
+      },
+      {
+        "id": 3,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1"
+        },
+        "created_at": "2026-10-30T03:44:36.328433"
+      },
+      {
+        "id": 4,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1",
+          "result_ref": null
+        },
+        "created_at": "2026-10-30T03:44:36.330265"
+      },
+      {
+        "id": 5,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2"
+        },
+        "created_at": "2026-10-30T03:44:36.336246"
+      },
+      {
+        "id": 6,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 6,
+        "type": "action.required",
+        "payload": {
+          "action_id": "80cc9f8b-fe36-4769-a8f2-feda82ed3e15",
+          "kind": "input"
+        },
+        "created_at": "2026-10-30T03:44:36.338112"
+      },
+      {
+        "id": 7,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "waiting_input",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.339319"
+      },
+      {
+        "id": 8,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 8,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.341916"
+      },
+      {
+        "id": 9,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 9,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.342882"
+      },
+      {
+        "id": 10,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 10,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2"
+        },
+        "created_at": "2026-10-30T03:44:36.359937"
+      },
+      {
+        "id": 11,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 11,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "eval-2",
+          "result_ref": null
+        },
+        "created_at": "2026-10-30T03:44:36.360830"
+      },
+      {
+        "id": 12,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 12,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-3"
+        },
+        "created_at": "2026-10-30T03:44:36.369132"
+      },
+      {
+        "id": 13,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 13,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-3",
+          "result_ref": null
+        },
+        "created_at": "2026-10-30T03:44:36.371035"
+      },
+      {
+        "id": 14,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 14,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial"
+        },
+        "created_at": "2026-10-30T03:44:36.376719"
+      },
+      {
+        "id": 15,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 15,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "a79077d7-d811-4541-bb66-a71e8f4655ca",
+          "kind": "resume_version"
+        },
+        "created_at": "2026-10-30T03:44:36.379012"
+      },
+      {
+        "id": 16,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 16,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial",
+          "result_ref": "a79077d7-d811-4541-bb66-a71e8f4655ca"
+        },
+        "created_at": "2026-10-30T03:44:36.380031"
+      },
+      {
+        "id": 17,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 17,
+        "type": "assistant.delta",
+        "payload": {
+          "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。"
+        },
+        "created_at": "2026-10-30T03:44:36.385098"
+      },
+      {
+        "id": 18,
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "seq": 18,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:36.386978"
+      }
+    ],
+    "actions": [
+      {
+        "id": "80cc9f8b-fe36-4769-a8f2-feda82ed3e15",
+        "run_id": "e93a5d63-7083-4c0d-a43b-63dd93172013",
+        "interrupt_id": "6e73e1c7c7c25ed721d4d478e683d524",
+        "kind": "input",
+        "payload": {
+          "kind": "input",
+          "question": "原简历写独立负责且无管理职责，已确认事实却写带领 5 人小组。哪个信息准确？"
+        },
+        "status": "answered",
+        "response": {
+          "decision": "submit",
+          "answers": {
+            "text": "旧事实录入错误，本人独立负责开发，没有管理职责，不要写带领 5 人小组。"
+          }
+        },
+        "answered_at": "2026-10-30T03:44:36.341179"
+      }
+    ],
+    "facts": [
+      {
+        "id": "fact-conflict",
+        "user_id": 1,
+        "fact_key": "management",
+        "kind": "experience",
+        "content": {
+          "text": "带领 5 人小组完成项目。"
+        },
+        "source_document_id": 1,
+        "revision": 1,
+        "confirmed_at": "2026-10-01T00:00:00",
+        "deleted_at": null
+      }
+    ],
+    "memories": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "run_identity",
+        "passed": true,
+        "reason": "SQL Run and session belong to the evaluated user",
+        "evidence_refs": [
+          "run",
+          "session"
+        ]
+      },
+      {
+        "name": "run_status",
+        "passed": true,
+        "reason": "status=succeeded; expected=['succeeded']",
+        "evidence_refs": [
+          "run.status"
+        ]
+      },
+      {
+        "name": "run_attempt",
+        "passed": true,
+        "reason": "attempt=1; epoch=2",
+        "evidence_refs": [
+          "run"
+        ]
+      },
+      {
+        "name": "session_released",
+        "passed": true,
+        "reason": "Terminal Run releases its session",
+        "evidence_refs": [
+          "session.active_run_id"
+        ]
+      },
+      {
+        "name": "draft_count",
+        "passed": true,
+        "reason": "draft_count=1; expected=1",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "operation_count",
+        "passed": true,
+        "reason": "operation_count=1; expected=1",
+        "evidence_refs": [
+          "operations"
+        ]
+      },
+      {
+        "name": "artifact_event_count",
+        "passed": true,
+        "reason": "artifact_event_count=1; expected=1",
+        "evidence_refs": [
+          "events"
+        ]
+      },
+      {
+        "name": "artifact_consistency",
+        "passed": true,
+        "reason": "Run, saved operation and artifact event reference exactly the persisted versions",
+        "evidence_refs": [
+          "run.output_refs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "original_resume_unchanged",
+        "passed": true,
+        "reason": "Original resume business fields match the pre-run baseline",
+        "evidence_refs": [
+          "resume",
+          "baseline.resume"
+        ]
+      },
+      {
+        "name": "facts_unchanged",
+        "passed": true,
+        "reason": "No fact was inserted, confirmed, edited or deleted by the agent",
+        "evidence_refs": [
+          "facts",
+          "baseline.facts"
+        ]
+      },
+      {
+        "name": "memories_unchanged",
+        "passed": true,
+        "reason": "No preference was silently inserted or changed",
+        "evidence_refs": [
+          "memories",
+          "baseline.memories"
+        ]
+      },
+      {
+        "name": "version_identity",
+        "passed": true,
+        "reason": "Draft keeps the owned resume, job, frozen versions and unchanged review base",
+        "evidence_refs": [
+          "versions",
+          "run.input_versions"
+        ]
+      },
+      {
+        "name": "pending_review",
+        "passed": true,
+        "reason": "All suggested changes remain pending in an unconfirmed draft",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "nonempty_suggestions",
+        "passed": true,
+        "reason": "Expected drafts contain reviewable field suggestions",
+        "evidence_refs": [
+          "versions.structured_content.changes"
+        ]
+      },
+      {
+        "name": "suggestion_shape",
+        "passed": true,
+        "reason": "Editable fields occur once and missing information has no invented replacement",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "before_matches",
+        "passed": true,
+        "reason": "Every before value equals its actual frozen resume field",
+        "evidence_refs": [
+          "versions",
+          "run.input_json.contextSnapshot.resume"
+        ]
+      },
+      {
+        "name": "source_identity",
+        "passed": true,
+        "reason": "Source IDs, owner, frozen version, source marks and answer ownership agree; this does not establish textual truth",
+        "evidence_refs": [
+          "versions.fact_refs",
+          "facts",
+          "actions"
+        ]
+      },
+      {
+        "name": "answer_persistence",
+        "passed": true,
+        "reason": "The submitted answer remains in this Run and is cited by the draft",
+        "evidence_refs": [
+          "actions",
+          "versions.fact_refs"
+        ]
+      },
+      {
+        "name": "waiting_observed",
+        "passed": true,
+        "reason": "A real waiting_input phase occurred before any draft was written",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "checkpoint_reopened",
+        "passed": true,
+        "reason": "Resume used a reopened persisted checkpoint",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      }
+    ],
+    "limitations": [
+      "Legal source identity does not prove that natural-language claims are true.",
+      "Stub outputs do not measure real-model quality or latency."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

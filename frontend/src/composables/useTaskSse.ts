@@ -28,11 +28,8 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
     message.value = '正在读取任务进度'
     subscribeTaskProgress(id, {
       onMessage: handleMessage,
-      onReconnect: () => { message.value = '网络连接已断开，正在重新连接。任务会继续运行。' },
-      onError: (error) => {
-        status.value = 'failed'
-        errorReason.value = error.message
-      },
+      onReconnect: () => { if (status.value === 'running') message.value = '网络连接已断开，正在重新连接。任务会继续运行。' },
+      onError: (error) => failManual(error.message),
     })
   }
 
@@ -58,19 +55,22 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
   }
 
   function failManual(reason: string) {
+    if (status.value === 'success' || status.value === 'failed') return
     status.value = 'failed'
+    currentStage.value = 'failed'
     progress.value = Math.max(progress.value, 80)
     errorReason.value = reason
     message.value = reason
-    const activeIndex = steps.value.findIndex((step) => step.status === 'running')
-    steps.value = steps.value.map((step, index) =>
-      index === (activeIndex >= 0 ? activeIndex : 0)
+    steps.value = steps.value.map((step) =>
+      step.status === 'running'
         ? { ...step, status: 'failed', progress: 100, message: reason }
         : step,
     )
   }
 
   function handleMessage(event: SseProgressEvent) {
+    // The result waiter can finish before this independent progress stream catches up.
+    if ((status.value === 'failed' || status.value === 'success') && (event.status === 'running' || event.status === 'pending')) return
     status.value = event.status
     progress.value = event.progress
     currentStage.value = event.stage
@@ -82,6 +82,12 @@ export function useTaskSse(stepTemplates: StepTemplate[]) {
       globalAgentStatus.record(agent, event.taskId)
     }
 
+    if (event.status === 'failed' && (event.stage === 'failed' || event.stage === 'cancelled')) {
+      steps.value = steps.value.map((step) => step.status === 'running'
+        ? { ...step, status: 'failed', progress: event.progress, message: event.message }
+        : step)
+      return
+    }
     const activeIndex = steps.value.findIndex((step) => step.key === event.stage)
     steps.value = steps.value.map((step, index) => {
       if (event.stage === 'completed') {

@@ -1,0 +1,108 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_real_harness_fallback_and_reflection_reserve_every_http_create ______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_real_harness_fallback_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1098bf800>
+
+    def test_real_harness_fallback_and_reflection_reserve_every_http_create(tmp_path, monkeypatch):
+        requests = []
+        def transport(request):
+            requests.append(json.loads(request.content))
+            if len(requests) == 1:
+                return httpx.Response(400, json={'error': {'message': 'response_format unsupported', 'type': 'invalid_request_error'}})
+            return completion({'value': 'not-an-int'} if len(requests) == 2 else {'value': 7})
+>       model, budget = setup_model(tmp_path, monkeypatch, transport)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_real_harness_fallback_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1098bf800>
+transport = <function test_real_harness_fallback_and_reflection_reserve_every_http_create.<locals>.transport at 0x1098ce200>
+budget_updates = {}
+
+    def setup_model(tmp_path, monkeypatch, transport, **budget_updates):
+>       from evals.task_live_model import LiveTaskModel
+E       ModuleNotFoundError: No module named 'evals.task_live_model'
+
+backend/tests/test_task_live_model.py:28: ModuleNotFoundError
+___ test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry ___
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_403_without_usage_keeps_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109d362d0>
+
+    def test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry(tmp_path, monkeypatch):
+        requests = []
+        def transport(request):
+            requests.append(request)
+            return httpx.Response(403, json={'error': {'message': 'private provider body', 'code': 'insufficient_quota'}})
+>       model, budget = setup_model(tmp_path, monkeypatch, transport, max_total_cost='1.3')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_403_without_usage_keeps_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109d362d0>
+transport = <function test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry.<locals>.transport at 0x109d64e00>
+budget_updates = {'max_total_cost': '1.3'}
+
+    def setup_model(tmp_path, monkeypatch, transport, **budget_updates):
+>       from evals.task_live_model import LiveTaskModel
+E       ModuleNotFoundError: No module named 'evals.task_live_model'
+
+backend/tests/test_task_live_model.py:28: ModuleNotFoundError
+___________________ test_guard_prevents_send_and_reservation ___________________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_guard_prevents_send_and_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109d37b90>
+
+    def test_guard_prevents_send_and_reservation(tmp_path, monkeypatch):
+        from backend.services.agent_runs import RunError
+        sent = []
+>       model, budget = setup_model(tmp_path, monkeypatch, lambda request: sent.append(request) or completion({'value': 7}))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_guard_prevents_send_and_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109d37b90>
+transport = <function test_guard_prevents_send_and_reservation.<locals>.<lambda> at 0x109d651c0>
+budget_updates = {}
+
+    def setup_model(tmp_path, monkeypatch, transport, **budget_updates):
+>       from evals.task_live_model import LiveTaskModel
+E       ModuleNotFoundError: No module named 'evals.task_live_model'
+
+backend/tests/test_task_live_model.py:28: ModuleNotFoundError
+_________ test_budget_settles_received_output_before_late_cancel_hook __________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_budget_settles_received_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109cefda0>
+
+    def test_budget_settles_received_output_before_late_cancel_hook(tmp_path, monkeypatch):
+>       model, budget = setup_model(tmp_path, monkeypatch, lambda request: completion({'value': 7}))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-252/test_budget_settles_received_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x109cefda0>
+transport = <function test_budget_settles_received_output_before_late_cancel_hook.<locals>.<lambda> at 0x109d64b80>
+budget_updates = {}
+
+    def setup_model(tmp_path, monkeypatch, transport, **budget_updates):
+>       from evals.task_live_model import LiveTaskModel
+E       ModuleNotFoundError: No module named 'evals.task_live_model'
+
+backend/tests/test_task_live_model.py:28: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_model.py::test_real_harness_fallback_and_reflection_reserve_every_http_create
+FAILED backend/tests/test_task_live_model.py::test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry
+FAILED backend/tests/test_task_live_model.py::test_guard_prevents_send_and_reservation
+FAILED backend/tests/test_task_live_model.py::test_budget_settles_received_output_before_late_cancel_hook
+4 failed in 0.48s

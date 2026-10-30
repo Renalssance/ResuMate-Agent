@@ -1,0 +1,57 @@
+[WebServer] Production browser services: http://127.0.0.1:4373; evidence: /tmp/task-17-production-browser-yxK240
+
+Running 2 tests using 1 worker
+
+(node:85470) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✘  1 [production-chromium] › tests/e2e/production-performance.spec.ts:65:1 › production lazy routes, local input frames, long layouts, upload and PDF under CSP (33.6s)
+(node:85580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  2 [production-chromium] › tests/e2e/production-performance.spec.ts:137:1 › online wakes maximum backoff and displays the worker result within five seconds (53.3s)
+
+
+  1) [production-chromium] › tests/e2e/production-performance.spec.ts:65:1 › production lazy routes, local input frames, long layouts, upload and PDF under CSP 
+
+    Error: Run 0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727 reaches succeeded through the real worker
+
+    Run 0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727 reaches succeeded through the real worker
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "succeeded"
+    Received: "failed"
+
+    Call Log:
+    - Timeout 25000ms exceeded while waiting on the predicate
+
+       at support/fixtures.ts:72
+
+      70 |     message: `Run ${runId} reaches ${status} through the real worker`,
+      71 |     timeout: 25_000,
+    > 72 |   }).toBe(status)
+         |      ^
+      73 |   return snapshot(api, runId)
+      74 | }
+      75 |
+        at waitForRun (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/support/fixtures.ts:72:6)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/production-performance.spec.ts:130:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../../../../tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../../tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../../tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../../../tmp/task-17-production-browser-yxK240/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [production-chromium] › tests/e2e/production-performance.spec.ts:65:1 › production lazy routes, local input frames, long layouts, upload and PDF under CSP 
+  1 passed (1.6m)

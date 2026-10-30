@@ -1,0 +1,25 @@
+ 
+ -------------- celery@BonodeMacBook-Air.local v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- macOS-26.5.2-arm64-arm-64bit 2026-10-30 10:44:56
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         resumate:0x11425dfd0
+- ** ---------- .> transport:   redis://127.0.0.1:56623/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+(node:85508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
+Python runtime state: finalizing (tstate=0x0000000102fc77b0)
+
+Current thread 0x00000001f81ddd80 (most recent call first):
+  <no Python frame>
+
+worker: Warm shutdown (MainProcess)

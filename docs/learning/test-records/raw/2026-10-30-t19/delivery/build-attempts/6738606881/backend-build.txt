@@ -1,0 +1,27 @@
+ Image resumate-t19-backend:6738606881 Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.06kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from worker.Dockerfile
+#2 transferring dockerfile: 1.17kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm
+#3 ERROR: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in $PATH, out: ``
+------
+ > [internal] load metadata for public.ecr.aws/docker/library/python:3.12-slim-bookworm:
+------
+worker.Dockerfile:1
+
+--------------------
+
+   1 | >>> FROM public.ecr.aws/docker/library/python:3.12-slim-bookworm
+
+   2 |     WORKDIR /app
+
+   3 |     ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never PATH="/app/.venv/bin:$PATH"
+
+--------------------
+
+failed to solve: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in $PATH, out: ``

@@ -23,6 +23,7 @@ STATE.mkdir(parents=True, exist_ok=True)
 PYTHON = str(ROOT / '.venv/bin/python')
 FRONTEND_PORT = int(os.environ.get('RESUMATE_E2E_FRONTEND_PORT', '4173'))
 API_PORT = int(os.environ.get('RESUMATE_E2E_API_PORT', '4174'))
+API_HOST = os.environ.get('RESUMATE_E2E_API_HOST', '127.0.0.1')
 API = f'http://127.0.0.1:{API_PORT}'
 USER = 'browser-fixture'
 PASSWORD = 'synthetic-browser-password'
@@ -68,7 +69,7 @@ def main():
     # Refuse to attach to another API accidentally; Vite also uses --strictPort.
     with socket.socket() as probe:
         probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        probe.bind(('127.0.0.1', API_PORT))
+        probe.bind((API_HOST, API_PORT))
     with socket.socket() as probe:
         probe.bind(('127.0.0.1', 0))
         redis_port = probe.getsockname()[1]
@@ -119,7 +120,7 @@ def main():
         except redis.ConnectionError:
             return False
     wait_for(redis_ready, 'disposable Redis')
-    start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', '127.0.0.1', '--port', str(API_PORT)], env, 'api')
+    start([PYTHON, '-m', 'uvicorn', 'backend.tests.e2e_api_fixture:app', '--host', API_HOST, '--port', str(API_PORT)], env, 'api')
     # Solo avoids macOS fork restrictions while exercising the actual Celery delivery/task.
     worker = start([PYTHON, '-m', 'celery', '-A', 'backend.tests.e2e_worker_fixture:app', 'worker',
            '--pool=solo', '--concurrency=1', '--loglevel=WARNING', '--without-gossip', '--without-mingle'], env, 'worker')

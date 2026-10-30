@@ -1,0 +1,365 @@
+{
+  "source": "/tmp/task-19-build-5cd2b8fd52/source",
+  "backend_image": "resumate-t19-backend:5cd2b8fd52",
+  "frontend_image": "resumate-t19-frontend:5cd2b8fd52",
+  "executed": true,
+  "projects": [
+    "resumate-t19-source-3ac10193",
+    "resumate-t19-restore-888ed8a3"
+  ],
+  "readiness_down": {
+    "redis": 503,
+    "mysql": 503
+  },
+  "status": "pass",
+  "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+  "before": {
+    "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+    "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37",
+    "status": "waiting_input",
+    "versions": 0,
+    "operations": 0,
+    "actions": [
+      {
+        "id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627",
+        "status": "pending",
+        "response": null
+      }
+    ],
+    "events": [
+      {
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "result_ref": null,
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "call-1"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "action.required",
+        "payload": {
+          "kind": "input",
+          "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "waiting_input",
+          "error_code": null
+        }
+      }
+    ],
+    "checkpoint": {
+      "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+      "next": [
+        "tools"
+      ],
+      "interrupts": [
+        "8141cc4c65eff3cd8bec82468c21178b"
+      ],
+      "message_count": 4
+    }
+  },
+  "restored": {
+    "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+    "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37",
+    "status": "waiting_input",
+    "versions": 0,
+    "operations": 0,
+    "actions": [
+      {
+        "id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627",
+        "status": "pending",
+        "response": null
+      }
+    ],
+    "events": [
+      {
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "result_ref": null,
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "call-1"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "action.required",
+        "payload": {
+          "kind": "input",
+          "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "waiting_input",
+          "error_code": null
+        }
+      }
+    ],
+    "checkpoint": {
+      "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+      "next": [
+        "tools"
+      ],
+      "interrupts": [
+        "8141cc4c65eff3cd8bec82468c21178b"
+      ],
+      "message_count": 4
+    }
+  },
+  "final": {
+    "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+    "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37",
+    "status": "succeeded",
+    "versions": 1,
+    "operations": 1,
+    "actions": [
+      {
+        "id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627",
+        "status": "answered",
+        "response": {
+          "answers": {
+            "role": "负责 API 和数据库设计"
+          },
+          "decision": "submit"
+        }
+      }
+    ],
+    "events": [
+      {
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "result_ref": null,
+          "operation_key": "call-0"
+        }
+      },
+      {
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "call-1"
+        }
+      },
+      {
+        "seq": 6,
+        "type": "action.required",
+        "payload": {
+          "kind": "input",
+          "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"
+        }
+      },
+      {
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "waiting_input",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 8,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 9,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        }
+      },
+      {
+        "seq": 10,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "operation_key": "call-1"
+        }
+      },
+      {
+        "seq": 11,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "ask_applicant",
+          "result_ref": null,
+          "operation_key": "call-1"
+        }
+      },
+      {
+        "seq": 12,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "call-2"
+        }
+      },
+      {
+        "seq": 13,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "result_ref": null,
+          "operation_key": "call-2"
+        }
+      },
+      {
+        "seq": 14,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial"
+        }
+      },
+      {
+        "seq": 15,
+        "type": "artifact.created",
+        "payload": {
+          "kind": "resume_version",
+          "artifact_id": "b845936d-e7cb-4b7d-8381-89edec011c46"
+        }
+      },
+      {
+        "seq": 16,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "result_ref": "b845936d-e7cb-4b7d-8381-89edec011c46",
+          "operation_key": "draft:1:initial"
+        }
+      },
+      {
+        "seq": 17,
+        "type": "assistant.delta",
+        "payload": {
+          "text": "请审阅草稿"
+        }
+      },
+      {
+        "seq": 18,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        }
+      }
+    ],
+    "checkpoint": {
+      "run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a",
+      "next": [],
+      "interrupts": [],
+      "message_count": 10
+    }
+  },
+  "files": {
+    "original": "Synthetic original resume: API development",
+    "chroma": [
+      "API development"
+    ],
+    "pdf_count": 1
+  },
+  "pdf_run_id": "b045bf75-e2f2-4bb8-8683-f043a1aecb56",
+  "completed": true
+}

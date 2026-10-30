@@ -1,0 +1,149 @@
+{
+  "validation": "MockTransport only; no supplier requests; synthetic usage, not an invoice",
+  "results": [
+    {
+      "case_id": "followup-result-replay",
+      "status": "incomplete",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 1,
+        "observed_cost": "0",
+        "reserved_cost": "1.21970880",
+        "committed_cost": "1.21970880",
+        "unknown_usage_calls": 1,
+        "max_total_cost": "1.3",
+        "stop_reason": "budget_exhausted",
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_budget_failure_0"
+    },
+    {
+      "case_id": "parse-upload-stable-identity",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 1,
+        "observed_cost": "0.00021600",
+        "reserved_cost": "0",
+        "committed_cost": "0.00021600",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r0"
+    },
+    {
+      "case_id": "parse-reparse-saved-job",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 3,
+        "observed_cost": "0.00064800",
+        "reserved_cost": "0",
+        "committed_cost": "0.00064800",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r1"
+    },
+    {
+      "case_id": "match-partial-candidate-replay",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 3,
+        "observed_cost": "0.00064800",
+        "reserved_cost": "0",
+        "committed_cost": "0.00064800",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r2"
+    },
+    {
+      "case_id": "question-result-replay",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 7,
+        "observed_cost": "0.00151200",
+        "reserved_cost": "0",
+        "committed_cost": "0.00151200",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r3"
+    },
+    {
+      "case_id": "followup-result-replay",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 1,
+        "observed_cost": "0.00021600",
+        "reserved_cost": "0",
+        "committed_cost": "0.00021600",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r4"
+    },
+    {
+      "case_id": "cancel-recovery",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 2,
+        "observed_cost": "0.00043200",
+        "reserved_cost": "0",
+        "committed_cost": "0.00043200",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r5"
+    },
+    {
+      "case_id": "source-deleted-or-reassigned",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 2,
+        "observed_cost": "0.00043200",
+        "reserved_cost": "0",
+        "committed_cost": "0.00043200",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r6"
+    },
+    {
+      "case_id": "business-write-rollback",
+      "status": "pass",
+      "cost": {
+        "currency": "CNY",
+        "model_calls": 7,
+        "observed_cost": "0.00151200",
+        "reserved_cost": "0",
+        "committed_cost": "0.00151200",
+        "unknown_usage_calls": 0,
+        "max_total_cost": "10",
+        "stop_reason": null,
+        "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+      },
+      "path": "/tmp/task-19-task-live-evidence/test_live_task_scenario_uses_r7"
+    }
+  ]
+}

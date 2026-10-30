@@ -1,0 +1,1026 @@
+{"project": "resumate-t19-source-3ac10193", "args": ["up", "-d", "--no-build", "--wait"], "code": 0}
+ Network resumate-t19-source-3ac10193_default Creating
+ Volume resumate-t19-source-3ac10193_mysql-data Creating
+ Volume resumate-t19-source-3ac10193_mysql-data Creating
+ Volume resumate-t19-source-3ac10193_agent-state Creating
+ Volume resumate-t19-source-3ac10193_agent-state Creating
+ Network resumate-t19-source-3ac10193_default Creating
+ Volume resumate-t19-source-3ac10193_redis-data Creating
+ Volume resumate-t19-source-3ac10193_redis-data Creating
+ Volume resumate-t19-source-3ac10193_backend-data Creating
+ Volume resumate-t19-source-3ac10193_backend-data Creating
+ Volume resumate-t19-source-3ac10193_backend-data Created
+ Volume resumate-t19-source-3ac10193_backend-data Created
+ Volume resumate-t19-source-3ac10193_mysql-data Created
+ Volume resumate-t19-source-3ac10193_mysql-data Created
+ Volume resumate-t19-source-3ac10193_redis-data Created
+ Volume resumate-t19-source-3ac10193_redis-data Created
+ Volume resumate-t19-source-3ac10193_agent-state Created
+ Volume resumate-t19-source-3ac10193_agent-state Created
+ Network resumate-t19-source-3ac10193_default Created
+ Network resumate-t19-source-3ac10193_default Created
+ Container resumate-t19-source-3ac10193-mysql-1 Creating
+ Container resumate-t19-source-3ac10193-redis-1 Creating
+ Container resumate-t19-source-3ac10193-mysql-1 Created
+ Container resumate-t19-source-3ac10193-schema-1 Creating
+ Container resumate-t19-source-3ac10193-redis-1 Created
+ Container resumate-t19-source-3ac10193-scheduler-1 Creating
+ Container resumate-t19-source-3ac10193-scheduler-1 Created
+ Container resumate-t19-source-3ac10193-schema-1 Created
+ Container resumate-t19-source-3ac10193-api-1 Creating
+ Container resumate-t19-source-3ac10193-api2-1 Creating
+ Container resumate-t19-source-3ac10193-worker-1 Creating
+ Container resumate-t19-source-3ac10193-worker-1 Created
+ Container resumate-t19-source-3ac10193-api-1 Created
+ Container resumate-t19-source-3ac10193-api2-1 Created
+ Container resumate-t19-source-3ac10193-web-1 Creating
+ Container resumate-t19-source-3ac10193-web-1 Created
+ Container resumate-t19-source-3ac10193-redis-1 Starting
+ Container resumate-t19-source-3ac10193-mysql-1 Starting
+ Container resumate-t19-source-3ac10193-redis-1 Started
+ Container resumate-t19-source-3ac10193-redis-1 Waiting
+ Container resumate-t19-source-3ac10193-mysql-1 Started
+ Container resumate-t19-source-3ac10193-mysql-1 Waiting
+ Container resumate-t19-source-3ac10193-redis-1 Healthy
+ Container resumate-t19-source-3ac10193-scheduler-1 Starting
+ Container resumate-t19-source-3ac10193-mysql-1 Healthy
+ Container resumate-t19-source-3ac10193-schema-1 Starting
+ Container resumate-t19-source-3ac10193-scheduler-1 Started
+ Container resumate-t19-source-3ac10193-schema-1 Started
+ Container resumate-t19-source-3ac10193-schema-1 Waiting
+ Container resumate-t19-source-3ac10193-redis-1 Waiting
+ Container resumate-t19-source-3ac10193-schema-1 Waiting
+ Container resumate-t19-source-3ac10193-schema-1 Waiting
+ Container resumate-t19-source-3ac10193-redis-1 Healthy
+ Container resumate-t19-source-3ac10193-schema-1 Exited
+ Container resumate-t19-source-3ac10193-schema-1 Exited
+ Container resumate-t19-source-3ac10193-api2-1 Starting
+ Container resumate-t19-source-3ac10193-schema-1 Exited
+ Container resumate-t19-source-3ac10193-api-1 Starting
+ Container resumate-t19-source-3ac10193-worker-1 Starting
+ Container resumate-t19-source-3ac10193-api2-1 Started
+ Container resumate-t19-source-3ac10193-api-1 Started
+ Container resumate-t19-source-3ac10193-api-1 Waiting
+ Container resumate-t19-source-3ac10193-api2-1 Waiting
+ Container resumate-t19-source-3ac10193-worker-1 Started
+ Container resumate-t19-source-3ac10193-api2-1 Healthy
+ Container resumate-t19-source-3ac10193-api-1 Healthy
+ Container resumate-t19-source-3ac10193-web-1 Starting
+ Container resumate-t19-source-3ac10193-web-1 Started
+ Container resumate-t19-source-3ac10193-api2-1 Waiting
+ Container resumate-t19-source-3ac10193-mysql-1 Waiting
+ Container resumate-t19-source-3ac10193-scheduler-1 Waiting
+ Container resumate-t19-source-3ac10193-web-1 Waiting
+ Container resumate-t19-source-3ac10193-api-1 Waiting
+ Container resumate-t19-source-3ac10193-schema-1 Waiting
+ Container resumate-t19-source-3ac10193-redis-1 Waiting
+ Container resumate-t19-source-3ac10193-worker-1 Waiting
+ Container resumate-t19-source-3ac10193-scheduler-1 Healthy
+ Container resumate-t19-source-3ac10193-mysql-1 Healthy
+ Container resumate-t19-source-3ac10193-redis-1 Healthy
+ Container resumate-t19-source-3ac10193-api2-1 Healthy
+ Container resumate-t19-source-3ac10193-worker-1 Healthy
+ Container resumate-t19-source-3ac10193-api-1 Healthy
+ Container resumate-t19-source-3ac10193-schema-1 Exited
+ Container resumate-t19-source-3ac10193-web-1 Healthy
+
+{"project": "resumate-t19-source-3ac10193", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "seed"], "code": 0}
+{"seeded": true}
+
+{"project": "resumate-t19-source-3ac10193", "args": ["stop", "redis"], "code": 0}
+ Container resumate-t19-source-3ac10193-redis-1 Stopping
+ Container resumate-t19-source-3ac10193-redis-1 Stopped
+
+{"project": "resumate-t19-source-3ac10193", "args": ["up", "-d", "--no-build", "--wait", "redis"], "code": 0}
+ Container resumate-t19-source-3ac10193-redis-1 Starting
+ Container resumate-t19-source-3ac10193-redis-1 Started
+ Container resumate-t19-source-3ac10193-redis-1 Waiting
+ Container resumate-t19-source-3ac10193-redis-1 Healthy
+
+{"project": "resumate-t19-source-3ac10193", "args": ["stop", "mysql"], "code": 0}
+ Container resumate-t19-source-3ac10193-mysql-1 Stopping
+ Container resumate-t19-source-3ac10193-mysql-1 Stopped
+
+{"project": "resumate-t19-source-3ac10193", "args": ["up", "-d", "--no-build", "--wait", "mysql"], "code": 0}
+ Container resumate-t19-source-3ac10193-mysql-1 Starting
+ Container resumate-t19-source-3ac10193-mysql-1 Started
+ Container resumate-t19-source-3ac10193-mysql-1 Waiting
+ Container resumate-t19-source-3ac10193-mysql-1 Healthy
+
+{"project": "resumate-t19-source-3ac10193", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "inspect", "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a"], "code": 0}
+{"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37", "status": "waiting_input", "versions": 0, "operations": 0, "actions": [{"id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627", "status": "pending", "response": null}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "result_ref": null, "operation_key": "call-0"}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"kind": "input", "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}], "checkpoint": {"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "next": ["tools"], "interrupts": ["8141cc4c65eff3cd8bec82468c21178b"], "message_count": 4}}
+
+{"project": "resumate-t19-source-3ac10193", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "files"], "code": 0}
+{"original": "Synthetic original resume: API development", "chroma": ["API development"], "pdf_count": 1}
+
+{"project": "resumate-t19-restore-888ed8a3", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "inspect", "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a"], "code": 0}
+{"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37", "status": "waiting_input", "versions": 0, "operations": 0, "actions": [{"id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627", "status": "pending", "response": null}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "result_ref": null, "operation_key": "call-0"}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"kind": "input", "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}], "checkpoint": {"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "next": ["tools"], "interrupts": ["8141cc4c65eff3cd8bec82468c21178b"], "message_count": 4}}
+
+{"project": "resumate-t19-restore-888ed8a3", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "files"], "code": 0}
+{"original": "Synthetic original resume: API development", "chroma": ["API development"], "pdf_count": 1}
+
+{"project": "resumate-t19-restore-888ed8a3", "args": ["exec", "-T", "worker", "python", "-m", "backend.tests.fixtures.delivery", "inspect", "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a"], "code": 0}
+{"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "session_id": "5f27d6ee-198a-4569-85cf-787712c2bf37", "status": "succeeded", "versions": 1, "operations": 1, "actions": [{"id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627", "status": "answered", "response": {"answers": {"role": "负责 API 和数据库设计"}, "decision": "submit"}}], "events": [{"seq": 1, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 2, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 3, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-0"}}, {"seq": 4, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "result_ref": null, "operation_key": "call-0"}}, {"seq": 5, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 6, "type": "action.required", "payload": {"kind": "input", "action_id": "50516fa5-dfa9-4f2e-85c8-ca8d35fa9627"}}, {"seq": 7, "type": "run.status", "payload": {"status": "waiting_input", "error_code": null}}, {"seq": 8, "type": "run.status", "payload": {"status": "queued", "error_code": null}}, {"seq": 9, "type": "run.status", "payload": {"status": "running", "error_code": null}}, {"seq": 10, "type": "tool.started", "payload": {"tool_name": "ask_applicant", "operation_key": "call-1"}}, {"seq": 11, "type": "tool.completed", "payload": {"tool_name": "ask_applicant", "result_ref": null, "operation_key": "call-1"}}, {"seq": 12, "type": "tool.started", "payload": {"tool_name": "get_application_context", "operation_key": "call-2"}}, {"seq": 13, "type": "tool.completed", "payload": {"tool_name": "get_application_context", "result_ref": null, "operation_key": "call-2"}}, {"seq": 14, "type": "tool.started", "payload": {"tool_name": "create_resume_draft", "operation_key": "draft:1:initial"}}, {"seq": 15, "type": "artifact.created", "payload": {"kind": "resume_version", "artifact_id": "b845936d-e7cb-4b7d-8381-89edec011c46"}}, {"seq": 16, "type": "tool.completed", "payload": {"tool_name": "create_resume_draft", "result_ref": "b845936d-e7cb-4b7d-8381-89edec011c46", "operation_key": "draft:1:initial"}}, {"seq": 17, "type": "assistant.delta", "payload": {"text": "请审阅草稿"}}, {"seq": 18, "type": "run.status", "payload": {"status": "succeeded", "error_code": null}}], "checkpoint": {"run_id": "c0ff09db-ac6c-4bf2-80f3-ad8862845f2a", "next": [], "interrupts": [], "message_count": 10}}
+
+{"project": "resumate-t19-source-3ac10193", "args": ["logs", "--no-color"], "code": 0}
+web-1  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+web-1  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+web-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+web-1  | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+web-1  | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+web-1  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+web-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+web-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+web-1  | /docker-entrypoint.sh: Configuration complete; ready for start up
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: using the "epoll" event method
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: nginx/1.28.3
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0)
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: OS: Linux 7.0.14-linuxkit
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker processes
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 29
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 30
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 31
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 32
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 33
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 34
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 35
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 36
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 37
+web-1  | 2026/10/30 03:34:09 [notice] 1#1: start worker process 38
+web-1  | 127.0.0.1 - - [30/Oct/2026:03:34:14 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:18 +0000] "GET /readyz HTTP/1.1" 503 22 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:18 +0000] "GET /healthz HTTP/1.1" 200 15 "-" "python-httpx/0.28.1" "-"
+web-1  | 127.0.0.1 - - [30/Oct/2026:03:34:24 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:24 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:32 +0000] "GET /readyz HTTP/1.1" 503 22 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:32 +0000] "GET /healthz HTTP/1.1" 200 15 "-" "python-httpx/0.28.1" "-"
+web-1  | 127.0.0.1 - - [30/Oct/2026:03:34:34 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:38 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:38 +0000] "POST /api/resume-versions/delivery-confirmed/export HTTP/1.1" 202 66 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:38 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 361 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:38 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 361 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:39 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 361 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:39 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 361 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:39 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 480 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:39 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download HTTP/1.1" 200 390003 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:40 +0000] "POST /api/agent/runs HTTP/1.1" 202 66 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:40 +0000] "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 404 "-" "python-httpx/0.28.1" "-"
+web-1  | 172.18.0.1 - - [30/Oct/2026:03:34:40 +0000] "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 555 "-" "python-httpx/0.28.1" "-"
+web-1  | 127.0.0.1 - - [30/Oct/2026:03:34:44 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 32#32: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 29#29: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 30#30: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 34#34: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 31#31: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 31#31: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 30#30: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 34#34: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 33#33: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 32#32: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 31#31: exit
+web-1  | 2026/10/30 03:34:47 [notice] 29#29: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 34#34: exit
+web-1  | 2026/10/30 03:34:47 [notice] 30#30: exit
+web-1  | 2026/10/30 03:34:47 [notice] 32#32: exit
+web-1  | 2026/10/30 03:34:47 [notice] 33#33: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 29#29: exit
+web-1  | 2026/10/30 03:34:47 [notice] 33#33: exit
+web-1  | 2026/10/30 03:34:47 [notice] 35#35: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 35#35: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 35#35: exit
+web-1  | 2026/10/30 03:34:47 [notice] 37#37: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 37#37: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 36#36: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 36#36: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 37#37: exit
+web-1  | 2026/10/30 03:34:47 [notice] 36#36: exit
+web-1  | 2026/10/30 03:34:47 [notice] 38#38: gracefully shutting down
+web-1  | 2026/10/30 03:34:47 [notice] 38#38: exiting
+web-1  | 2026/10/30 03:34:47 [notice] 38#38: exit
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 33
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 33 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 29 (SIGIO) received
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 31
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 31 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 29 (SIGIO) received
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 32
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 30 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 32 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 29 (SIGIO) received
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 30
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 34
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 29 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 34 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 29 (SIGIO) received
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 37
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 37 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 38 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 29 (SIGIO) received
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 35
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 35 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: signal 17 (SIGCHLD) received from 36
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: worker process 36 exited with code 0
+web-1  | 2026/10/30 03:34:47 [notice] 1#1: exit
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-30 03:34:03
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-30 03:34:03,392: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-30 03:34:22,430: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+scheduler-1  | [2026-10-30 03:34:33,399: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+redis-1      | 1:C 30 Oct 2026 03:33:56.354 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1      | 1:C 30 Oct 2026 03:33:56.354 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 30 Oct 2026 03:33:56.354 * Configuration loaded
+redis-1      | 1:M 30 Oct 2026 03:33:56.355 * monotonic clock: POSIX clock_gettime
+redis-1      | 1:M 30 Oct 2026 03:33:56.355 * Running mode=standalone, port=6379.
+redis-1      | 1:M 30 Oct 2026 03:33:56.355 * Server initialized
+redis-1      | 1:M 30 Oct 2026 03:33:56.357 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+redis-1      | 1:M 30 Oct 2026 03:33:56.358 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+redis-1      | 1:M 30 Oct 2026 03:33:56.358 * Ready to accept connections tcp
+redis-1      | 1:signal-handler (1793331257) Received SIGTERM scheduling shutdown...
+redis-1      | 1:M 30 Oct 2026 03:34:17.586 * User requested shutdown...
+redis-1      | 1:M 30 Oct 2026 03:34:17.586 * Calling fsync() on the AOF file.
+redis-1      | 1:M 30 Oct 2026 03:34:17.586 * Saving the final RDB snapshot before exiting.
+redis-1      | 1:M 30 Oct 2026 03:34:17.589 * DB saved on disk
+redis-1      | 1:M 30 Oct 2026 03:34:17.589 # Redis is now ready to exit, bye bye...
+redis-1      | 1:C 30 Oct 2026 03:34:18.925 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+redis-1      | 1:C 30 Oct 2026 03:34:18.925 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+redis-1      | 1:C 30 Oct 2026 03:34:18.925 * Configuration loaded
+redis-1      | 1:M 30 Oct 2026 03:34:18.926 * monotonic clock: POSIX clock_gettime
+redis-1      | 1:M 30 Oct 2026 03:34:18.927 * Running mode=standalone, port=6379.
+redis-1      | 1:M 30 Oct 2026 03:34:18.927 * Server initialized
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * Reading RDB base file on AOF loading...
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * Loading RDB produced by version 7.4.12
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * RDB age 22 seconds
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * RDB memory usage when created 0.94 Mb
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * RDB is base AOF
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * Done loading RDB, keys loaded: 0, keys expired: 0.
+redis-1      | 1:M 30 Oct 2026 03:34:18.928 * DB loaded from base file appendonly.aof.1.base.rdb: 0.000 seconds
+redis-1      | 1:M 30 Oct 2026 03:34:18.929 * DB loaded from incr file appendonly.aof.1.incr.aof: 0.000 seconds
+redis-1      | 1:M 30 Oct 2026 03:34:18.929 * DB loaded from append only file: 0.001 seconds
+api-1        | 2026-10-30 03:34:06,719 | INFO | backend.app | Creating FastAPI app
+api-1        | INFO:     Started server process [1]
+redis-1      | 1:M 30 Oct 2026 03:34:18.929 * Opening AOF incr file appendonly.aof.1.incr.aof on server start
+api-1        | INFO:     Waiting for application startup.
+api-1        | 2026-10-30 03:34:06,742 | INFO | backend.app | Startup: initializing database
+api-1        | 2026-10-30 03:34:06,768 | INFO | backend.app | Startup: database and Redis resources initialized
+api-1        | INFO:     Application startup complete.
+api-1        | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1        | 2026-10-30 03:34:08,794 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:08,797 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+redis-1      | 1:M 30 Oct 2026 03:34:18.929 * Ready to accept connections tcp
+api-1        | INFO:     127.0.0.1:33448 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:14,006 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:14,020 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=14
+api-1        | INFO:     127.0.0.1:37130 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:14,192 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:14,193 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1        | INFO:     172.18.0.8:57044 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:17,594 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t19-source-3ac10193:interview-hints error=ConnectionError
+api-1        | 2026-10-30 03:34:17,678 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:18,686 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=1007
+api-1        | INFO:     172.18.0.8:57052 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 03:34:19,163 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:19,597 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t19-source-3ac10193:interview-hints error=TimeoutError
+api-1        | 2026-10-30 03:34:20,167 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=1003
+api-1        | INFO:     127.0.0.1:37140 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 03:34:21,601 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t19-source-3ac10193:interview-hints error=TimeoutError
+api-1        | 2026-10-30 03:34:24,220 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:24,223 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api-1        | INFO:     172.18.0.8:52698 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:24,439 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:24,440 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1        | INFO:     172.18.0.8:52706 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:25,372 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:25,373 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=1
+api-1        | INFO:     127.0.0.1:43696 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+api-1        | 2026-10-30 03:34:30,568 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:32,662 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=2094
+api-1        | 2026-10-30 03:34:32,691 | INFO | backend.app | Request start | method=GET path=/healthz client=172.18.0.8
+api-1        | 2026-10-30 03:34:32,692 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=0
+api-1        | INFO:     172.18.0.8:45846 - "GET /healthz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:34,256 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:34,300 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=44
+api-1        | INFO:     172.18.0.8:45852 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:37,772 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:37,774 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api-1        | INFO:     127.0.0.1:39208 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:38,473 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:38,476 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+api-1        | INFO:     172.18.0.8:45862 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:38,632 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 client=172.18.0.8
+api-1        | 2026-10-30 03:34:38,680 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 status=200 duration_ms=47
+api-1        | INFO:     172.18.0.8:45862 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:39,196 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 client=172.18.0.8
+api-1        | 2026-10-30 03:34:39,199 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.8:45862 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:39,716 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 client=172.18.0.8
+api-1        | 2026-10-30 03:34:39,720 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 status=200 duration_ms=3
+api-1        | INFO:     172.18.0.8:45862 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:40,138 | INFO | backend.app | Request start | method=POST path=/api/agent/runs client=172.18.0.8
+api-1        | 2026-10-30 03:34:40,251 | INFO | backend.app | Request end | method=POST path=/api/agent/runs status=202 duration_ms=113
+api-1        | INFO:     172.18.0.8:45862 - "POST /api/agent/runs HTTP/1.1" 202 Accepted
+api-1        | 2026-10-30 03:34:40,518 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a client=172.18.0.8
+api-1        | 2026-10-30 03:34:40,522 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a status=200 duration_ms=4
+api-1        | INFO:     172.18.0.8:45862 - "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:42,928 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1        | 2026-10-30 03:34:42,930 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api-1        | INFO:     127.0.0.1:53992 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | 2026-10-30 03:34:44,323 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api-1        | 2026-10-30 03:34:44,324 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1        | INFO:     172.18.0.8:50794 - "GET /readyz HTTP/1.1" 200 OK
+api-1        | INFO:     Shutting down
+api-1        | INFO:     Waiting for application shutdown.
+api-1        | INFO:     Application shutdown complete.
+api-1        | INFO:     Finished server process [1]
+mysql-1      | 2026-10-30 03:33:56+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | 2026-10-30 03:33:56+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+mysql-1      | 2026-10-30 03:33:56+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | 2026-10-30 03:33:56+00:00 [Note] [Entrypoint]: Initializing database files
+mysql-1      | 2026-10-30T03:33:56.646582Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+mysql-1      | 2026-10-30T03:33:56.647167Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.13) initializing of server in progress as process 80
+mysql-1      | 2026-10-30T03:33:56.647168Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T03:33:56.650058Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T03:33:56.795600Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T03:33:57.164236Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+mysql-1      | 2026-10-30T03:33:58.559380Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
+mysql-1      | 2026-10-30 03:33:58+00:00 [Note] [Entrypoint]: Database files initialized
+mysql-1      | 2026-10-30 03:33:58+00:00 [Note] [Entrypoint]: Starting temporary server
+mysql-1      | 2026-10-30T03:33:58.593396Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1      | 2026-10-30T03:33:58.778614Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 122
+mysql-1      | 2026-10-30T03:33:58.778616Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T03:33:58.784965Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T03:33:58.887114Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T03:33:59.001577Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1      | 2026-10-30T03:33:59.001593Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1      | 2026-10-30T03:33:59.002452Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1      | 2026-10-30T03:33:59.007981Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
+mysql-1      | 2026-10-30T03:33:59.008011Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
+mysql-1      | 2026-10-30 03:33:59+00:00 [Note] [Entrypoint]: Temporary server started.
+mysql-1      | '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+mysql-1      | 2026-10-30 03:33:59+00:00 [Note] [Entrypoint]: Creating database resumate
+mysql-1      | 2026-10-30 03:33:59+00:00 [Note] [Entrypoint]: Creating user resumate
+mysql-1      | 2026-10-30 03:33:59+00:00 [Note] [Entrypoint]: Giving user resumate access to schema resumate
+mysql-1      |
+mysql-1      | 2026-10-30 03:33:59+00:00 [Note] [Entrypoint]: Stopping temporary server
+mysql-1      | 2026-10-30T03:33:59.583469Z 13 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.4.13).
+mysql-1      | 2026-10-30T03:34:00.513230Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.13)  MySQL Community Server - GPL.
+mysql-1      | 2026-10-30T03:34:00.513248Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+mysql-1      | 2026-10-30 03:34:00+00:00 [Note] [Entrypoint]: Temporary server stopped
+mysql-1      |
+mysql-1      | 2026-10-30 03:34:00+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.
+mysql-1      |
+mysql-1      | 2026-10-30T03:34:00.602067Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1      | 2026-10-30T03:34:00.751295Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 1
+mysql-1      | 2026-10-30T03:34:00.751297Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T03:34:00.754854Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T03:34:00.813099Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T03:34:00.912012Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1      | 2026-10-30T03:34:00.912028Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1      | 2026-10-30T03:34:00.912852Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1      | 2026-10-30T03:34:00.918546Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+mysql-1      | 2026-10-30T03:34:00.918582Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+mysql-1      | 2026-10-30T03:34:24.536063Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 8.4.13).
+mysql-1      | 2026-10-30T03:34:26.542898Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 17  user: 'resumate'.
+mysql-1      | 2026-10-30T03:34:26.543651Z 0 [Warning] [MY-010909] [Server] /usr/sbin/mysqld: Forcing close of thread 11  user: 'resumate'.
+mysql-1      | 2026-10-30T03:34:27.492676Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.13)  MySQL Community Server - GPL.
+mysql-1      | 2026-10-30T03:34:27.492699Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+mysql-1      | 2026-10-30 03:34:32+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | 2026-10-30 03:34:33+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+mysql-1      | 2026-10-30 03:34:33+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1      | '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+mysql-1      | 2026-10-30T03:34:33.179985Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1      | 2026-10-30T03:34:33.426755Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 1
+mysql-1      | 2026-10-30T03:34:33.426756Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1      | 2026-10-30T03:34:33.433306Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1      | 2026-10-30T03:34:33.540154Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1      | 2026-10-30T03:34:33.658480Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1      | 2026-10-30T03:34:33.658505Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1      | 2026-10-30T03:34:33.659501Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1      | 2026-10-30T03:34:33.667282Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+mysql-1      | 2026-10-30T03:34:33.667342Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+api2-1       | 2026-10-30 03:34:06,653 | INFO | backend.app | Creating FastAPI app
+api2-1       | INFO:     Started server process [1]
+api2-1       | INFO:     Waiting for application startup.
+api2-1       | 2026-10-30 03:34:06,677 | INFO | backend.app | Startup: initializing database
+api2-1       | 2026-10-30 03:34:06,709 | INFO | backend.app | Startup: database and Redis resources initialized
+api2-1       | INFO:     Application startup complete.
+worker-1     | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1     | absolutely not recommended!
+worker-1     |
+worker-1     | Please specify a different user using the --uid option.
+worker-1     |
+worker-1     | User information: uid=0 euid=0 gid=0 egid=0
+worker-1     |
+worker-1     |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1     |
+worker-1     |  -------------- celery@5ab123ad63ac v5.6.3 (recovery)
+worker-1     | --- ***** -----
+worker-1     | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-30 03:34:06
+worker-1     | - *** --- * ---
+worker-1     | - ** ---------- [config]
+worker-1     | - ** ---------- .> app:         resumate:0xffff87717860
+worker-1     | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1     | - ** ---------- .> results:     disabled://
+worker-1     | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1     | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1     | --- ***** -----
+worker-1     |  -------------- [queues]
+worker-1     |                 .> celery           exchange=celery(direct) key=celery
+worker-1     |
+worker-1     |
+worker-1     | [tasks]
+worker-1     |   . resumate.execute_run
+worker-1     |   . resumate.recover_runs
+worker-1     |
+worker-1     | [2026-10-30 03:34:06,689: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-30 03:34:06,691: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-30 03:34:07,701: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-30 03:34:07,721: INFO/MainProcess] celery@5ab123ad63ac ready.
+worker-1     | [2026-10-30 03:34:17,595: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/retry.py", line 105, in call_with_retry
+worker-1     |     return do()
+worker-1     |            ^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 915, in <lambda>
+worker-1     |     lambda: command(*args, **kwargs),
+worker-1     |             ^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 936, in try_read
+worker-1     |     return conn.read_response(disconnect_on_error=False, push_request=True)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 650, in read_response
+worker-1     |     response = self._parser.read_response(disable_decoding=disable_decoding)
+worker-1     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+worker-1     |     result = self._read_response(disable_decoding=disable_decoding)
+worker-1     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/_parsers/resp2.py", line 25, in _read_response
+worker-1     |     raw = self._buffer.readline()
+worker-1     |           ^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/_parsers/socket.py", line 115, in readline
+worker-1     |     self._read_from_socket()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/_parsers/socket.py", line 68, in _read_from_socket
+worker-1     |     raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+worker-1     | redis.exceptions.ConnectionError: Connection closed by server.
+worker-1     |
+worker-1     | During handling of the above exception, another exception occurred:
+worker-1     |
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 389, in connect_check_health
+worker-1     |     sock = self.retry.call_with_retry(
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/retry.py", line 105, in call_with_retry
+worker-1     |     return do()
+worker-1     |            ^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 390, in <lambda>
+worker-1     |     lambda: self._connect(), lambda error: self.disconnect(error)
+worker-1     |             ^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 803, in _connect
+worker-1     |     raise err
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 787, in _connect
+worker-1     |     sock.connect(socket_address)
+worker-1     | ConnectionRefusedError: [Errno 111] Connection refused
+worker-1     |
+worker-1     | During handling of the above exception, another exception occurred:
+worker-1     |
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/worker/consumer/consumer.py", line 346, in start
+worker-1     |     blueprint.start(self)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/bootsteps.py", line 116, in start
+worker-1     |     step.start(parent)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/worker/consumer/consumer.py", line 788, in start
+worker-1     |     c.loop(*c.loop_args())
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/worker/loops.py", line 97, in asynloop
+worker-1     |     next(loop)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/kombu/asynchronous/hub.py", line 377, in create_loop
+worker-1     |     cb(*cbargs)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 1394, in on_readable
+worker-1     |     self.cycle.on_readable(fileno)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 579, in on_readable
+worker-1     |     chan.handlers[type]()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 931, in _receive
+worker-1     |     ret.append(self._receive_one(c))
+worker-1     |                ^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 941, in _receive_one
+worker-1     |     response = c.parse_response()
+worker-1     |                ^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 938, in parse_response
+worker-1     |     response = self._execute(conn, try_read)
+worker-1     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 914, in _execute
+worker-1     |     return conn.retry.call_with_retry(
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/retry.py", line 108, in call_with_retry
+worker-1     |     fail(error)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 916, in <lambda>
+worker-1     |     lambda _: self._reconnect(conn),
+worker-1     |               ^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/client.py", line 904, in _reconnect
+worker-1     |     conn.connect()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 380, in connect
+worker-1     |     self.connect_check_health(check_health=True)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/redis/connection.py", line 397, in connect_check_health
+worker-1     |     raise ConnectionError(self._error_message(e))
+worker-1     | redis.exceptions.ConnectionError: Error 111 connecting to redis:6379. Connection refused.
+worker-1     | [2026-10-30 03:34:17,601: WARNING/MainProcess] /app/.venv/lib/python3.12/site-packages/celery/worker/consumer/consumer.py:397: CPendingDeprecationWarning:
+worker-1     | In Celery 5.1 we introduced an optional breaking change which
+worker-1     | on connection loss cancels all currently executed tasks with late acknowledgement enabled.
+worker-1     | These tasks cannot be acknowledged as the connection is gone, and the tasks are automatically redelivered
+worker-1     | back to the queue. You can enable this behavior using the worker_cancel_long_running_tasks_on_connection_loss
+worker-1     | setting. In Celery 5.1 it is set to False by default. The setting will be set to True by default in Celery 6.0.
+worker-1     |
+worker-1     |   warnings.warn(CANCEL_TASKS_BY_DEFAULT, CPendingDeprecationWarning)
+worker-1     |
+worker-1     | [2026-10-30 03:34:17,608: ERROR/MainProcess] consumer: Cannot connect to redis://redis:6379/0: Error 111 connecting to redis:6379. Connection refused..
+api2-1       | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api2-1       | 2026-10-30 03:34:08,759 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:08,762 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+api2-1       | INFO:     127.0.0.1:33436 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:13,984 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:14,000 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=15
+api2-1       | INFO:     127.0.0.1:37122 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:17,595 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t19-source-3ac10193:interview-hints error=ConnectionError
+api2-1       | 2026-10-30 03:34:18,696 | INFO | backend.app | Request start | method=GET path=/healthz client=172.18.0.8
+api2-1       | 2026-10-30 03:34:18,699 | INFO | backend.app | Request end | method=GET path=/healthz status=200 duration_ms=3
+api2-1       | INFO:     172.18.0.8:56834 - "GET /healthz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:19,158 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:19,160 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api2-1       | INFO:     127.0.0.1:37132 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:19,600 | WARNING | backend.services.realtime_bus | interview_hint_disconnected channel=resumate:resumate-t19-source-3ac10193:interview-hints error=TimeoutError
+api2-1       | 2026-10-30 03:34:24,350 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:24,351 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api2-1       | INFO:     127.0.0.1:43682 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:27,617 | INFO | backend.app | Request start | method=GET path=/readyz client=172.18.0.8
+api2-1       | 2026-10-30 03:34:29,563 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:32,661 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=3098
+api2-1       | 2026-10-30 03:34:32,684 | INFO | backend.app | Request end | method=GET path=/readyz status=503 duration_ms=5066
+api2-1       | INFO:     172.18.0.8:33092 - "GET /readyz HTTP/1.1" 503 Service Unavailable
+api2-1       | 2026-10-30 03:34:36,759 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:36,785 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=25
+api2-1       | INFO:     127.0.0.1:39198 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:38,480 | INFO | backend.app | Request start | method=POST path=/api/resume-versions/delivery-confirmed/export client=172.18.0.8
+api2-1       | 2026-10-30 03:34:38,628 | INFO | backend.app | Request end | method=POST path=/api/resume-versions/delivery-confirmed/export status=202 duration_ms=148
+api2-1       | INFO:     172.18.0.8:49596 - "POST /api/resume-versions/delivery-confirmed/export HTTP/1.1" 202 Accepted
+api2-1       | 2026-10-30 03:34:38,934 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 client=172.18.0.8
+api2-1       | 2026-10-30 03:34:38,939 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 status=200 duration_ms=5
+api2-1       | INFO:     172.18.0.8:49596 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:39,458 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 client=172.18.0.8
+api2-1       | 2026-10-30 03:34:39,460 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.8:49596 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56 HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:39,721 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download client=172.18.0.8
+api2-1       | 2026-10-30 03:34:39,724 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download status=200 duration_ms=2
+api2-1       | INFO:     172.18.0.8:49596 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:40,254 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a client=172.18.0.8
+api2-1       | 2026-10-30 03:34:40,260 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a status=200 duration_ms=5
+api2-1       | INFO:     172.18.0.8:49596 - "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:41,981 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:41,984 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api2-1       | INFO:     127.0.0.1:39210 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | 2026-10-30 03:34:47,175 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1       | 2026-10-30 03:34:47,181 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=5
+api2-1       | INFO:     127.0.0.1:54004 - "GET /readyz HTTP/1.1" 200 OK
+api2-1       | INFO:     Shutting down
+api2-1       | INFO:     Waiting for application shutdown.
+api2-1       | INFO:     Application shutdown complete.
+api2-1       | INFO:     Finished server process [1]
+worker-1     | Trying again in 2.00 seconds... (1/100)
+worker-1     |
+worker-1     | [2026-10-30 03:34:19,620: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1     | [2026-10-30 03:34:19,625: INFO/MainProcess] mingle: searching for neighbors
+worker-1     | [2026-10-30 03:34:20,634: INFO/MainProcess] mingle: all alone
+worker-1     | [2026-10-30 03:34:22,450: INFO/MainProcess] Task resumate.recover_runs[d9bd819c-7387-42d9-83a3-0b4721f17231] received
+worker-1     | [2026-10-30 03:34:22,556: INFO/ForkPoolWorker-1] Task resumate.recover_runs[d9bd819c-7387-42d9-83a3-0b4721f17231] succeeded in 0.10275133299978734s: 0
+worker-1     | [2026-10-30 03:34:33,414: INFO/MainProcess] Task resumate.recover_runs[0ee96720-3756-4dbb-820f-5e55cc5f1312] received
+worker-1     | [2026-10-30 03:34:33,473: ERROR/ForkPoolWorker-1] Task resumate.recover_runs[0ee96720-3756-4dbb-820f-5e55cc5f1312] raised unexpected: OperationalError('(pymysql.err.OperationalError) (2003, "Can\'t connect to MySQL server on \'mysql\' ([Errno 111] Connection refused)")')
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1319, in _checkout
+worker-1     |     raise exc.InvalidatePoolError()
+worker-1     | sqlalchemy.exc.InvalidatePoolError: ()
+worker-1     |
+worker-1     | During handling of the above exception, another exception occurred:
+worker-1     |
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/pymysql/connections.py", line 681, in connect
+worker-1     |     sock = socket.create_connection(
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/usr/local/lib/python3.12/socket.py", line 865, in create_connection
+worker-1     |     raise exceptions[0]
+worker-1     |   File "/usr/local/lib/python3.12/socket.py", line 850, in create_connection
+worker-1     |     sock.connect(sa)
+worker-1     | ConnectionRefusedError: [Errno 111] Connection refused
+worker-1     |
+worker-1     | During handling of the above exception, another exception occurred:
+worker-1     |
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 143, in __init__
+worker-1     |     self._dbapi_connection = engine.raw_connection()
+worker-1     |                              ^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3317, in raw_connection
+worker-1     |     return self.pool.connect()
+worker-1     |            ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+worker-1     |     return _ConnectionFairy._checkout(self)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1353, in _checkout
+worker-1     |     with util.safe_reraise():
+worker-1     |          ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+worker-1     |     raise exc_value.with_traceback(exc_tb)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1350, in _checkout
+worker-1     |     fairy._connection_record.get_connection()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 837, in get_connection
+worker-1     |     self.__connect()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+worker-1     |     with util.safe_reraise():
+worker-1     |          ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+worker-1     |     raise exc_value.with_traceback(exc_tb)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+worker-1     |     self.dbapi_connection = connection = pool._invoke_creator(self)
+worker-1     |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+worker-1     |     return dialect.connect(*cargs_tup, **cparams)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+worker-1     |     return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/pymysql/connections.py", line 373, in __init__
+worker-1     |     self.connect()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/pymysql/connections.py", line 744, in connect
+worker-1     |     raise exc
+worker-1     | pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'mysql' ([Errno 111] Connection refused)")
+worker-1     |
+worker-1     | The above exception was the direct cause of the following exception:
+worker-1     |
+worker-1     | Traceback (most recent call last):
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/app/trace.py", line 585, in trace_task
+worker-1     |     R = retval = fun(*args, **kwargs)
+worker-1     |                  ^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/celery/app/trace.py", line 858, in __protected_call__
+worker-1     |     return self.run(*args, **kwargs)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/backend/worker_tasks.py", line 139, in recover_runs
+worker-1     |     agent_runs.recover_stale_runs(db)
+worker-1     |   File "/app/backend/services/agent_runs.py", line 523, in recover_stale_runs
+worker-1     |     ids = list(db.scalars(select(AgentRun.id).where(
+worker-1     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2459, in scalars
+worker-1     |     return self._execute_internal(
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2239, in _execute_internal
+worker-1     |     conn = self._connection_for_bind(bind)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2108, in _connection_for_bind
+worker-1     |     return trans._connection_for_bind(engine, execution_options)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "<string>", line 2, in _connection_for_bind
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+worker-1     |     ret_value = fn(self, *arg, **kw)
+worker-1     |                 ^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1187, in _connection_for_bind
+worker-1     |     conn = bind.connect()
+worker-1     |            ^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3293, in connect
+worker-1     |     return self._connection_cls(self)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+worker-1     |     Connection._handle_dbapi_exception_noconnection(
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2448, in _handle_dbapi_exception_noconnection
+worker-1     |     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 143, in __init__
+worker-1     |     self._dbapi_connection = engine.raw_connection()
+worker-1     |                              ^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3317, in raw_connection
+worker-1     |     return self.pool.connect()
+worker-1     |            ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 448, in connect
+worker-1     |     return _ConnectionFairy._checkout(self)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1353, in _checkout
+worker-1     |     with util.safe_reraise():
+worker-1     |          ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+worker-1     |     raise exc_value.with_traceback(exc_tb)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1350, in _checkout
+worker-1     |     fairy._connection_record.get_connection()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 837, in get_connection
+worker-1     |     self.__connect()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+worker-1     |     with util.safe_reraise():
+worker-1     |          ^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+worker-1     |     raise exc_value.with_traceback(exc_tb)
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+worker-1     |     self.dbapi_connection = connection = pool._invoke_creator(self)
+worker-1     |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 667, in connect
+worker-1     |     return dialect.connect(*cargs_tup, **cparams)
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 630, in connect
+worker-1     |     return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+worker-1     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/pymysql/connections.py", line 373, in __init__
+worker-1     |     self.connect()
+worker-1     |   File "/app/.venv/lib/python3.12/site-packages/pymysql/connections.py", line 744, in connect
+worker-1     |     raise exc
+worker-1     | sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on 'mysql' ([Errno 111] Connection refused)")
+worker-1     | (Background on this error at: https://sqlalche.me/e/20/e3q8)
+worker-1     | [2026-10-30 03:34:38,628: INFO/MainProcess] Task resumate.execute_run[e46453ef-6100-4636-b7ce-22846d691734] received
+worker-1     | [2026-10-30 03:34:39,566: INFO/ForkPoolWorker-1] Task resumate.execute_run[e46453ef-6100-4636-b7ce-22846d691734] succeeded in 0.9366338340000766s: None
+worker-1     | [2026-10-30 03:34:40,253: INFO/MainProcess] Task resumate.execute_run[e7826658-8400-4f65-9128-8b4290dd8828] received
+worker-1     | [2026-10-30 03:34:40,448: INFO/ForkPoolWorker-1] Task resumate.execute_run[e7826658-8400-4f65-9128-8b4290dd8828] succeeded in 0.193722876000038s: None
+worker-1     |
+worker-1     | worker: Warm shutdown (MainProcess)
+
+{"project": "resumate-t19-source-3ac10193", "args": ["down", "--volumes", "--remove-orphans"], "code": 0}
+ Container resumate-t19-source-3ac10193-web-1 Stopping
+ Container resumate-t19-source-3ac10193-worker-1 Stopping
+ Container resumate-t19-source-3ac10193-scheduler-1 Stopping
+ Container resumate-t19-source-3ac10193-scheduler-1 Stopped
+ Container resumate-t19-source-3ac10193-scheduler-1 Removing
+ Container resumate-t19-source-3ac10193-worker-1 Stopped
+ Container resumate-t19-source-3ac10193-worker-1 Removing
+ Container resumate-t19-source-3ac10193-web-1 Stopped
+ Container resumate-t19-source-3ac10193-web-1 Removing
+ Container resumate-t19-source-3ac10193-web-1 Removed
+ Container resumate-t19-source-3ac10193-api2-1 Stopping
+ Container resumate-t19-source-3ac10193-api-1 Stopping
+ Container resumate-t19-source-3ac10193-api-1 Stopped
+ Container resumate-t19-source-3ac10193-api-1 Removing
+ Container resumate-t19-source-3ac10193-worker-1 Removed
+ Container resumate-t19-source-3ac10193-api2-1 Stopped
+ Container resumate-t19-source-3ac10193-api2-1 Removing
+ Container resumate-t19-source-3ac10193-scheduler-1 Removed
+ Container resumate-t19-source-3ac10193-redis-1 Stopping
+ Container resumate-t19-source-3ac10193-api2-1 Removed
+ Container resumate-t19-source-3ac10193-api-1 Removed
+ Container resumate-t19-source-3ac10193-schema-1 Stopping
+ Container resumate-t19-source-3ac10193-schema-1 Stopped
+ Container resumate-t19-source-3ac10193-schema-1 Removing
+ Container resumate-t19-source-3ac10193-schema-1 Removed
+ Container resumate-t19-source-3ac10193-mysql-1 Stopping
+ Container resumate-t19-source-3ac10193-redis-1 Stopped
+ Container resumate-t19-source-3ac10193-redis-1 Removing
+ Container resumate-t19-source-3ac10193-redis-1 Removed
+ Container resumate-t19-source-3ac10193-mysql-1 Stopped
+ Container resumate-t19-source-3ac10193-mysql-1 Removing
+ Container resumate-t19-source-3ac10193-mysql-1 Removed
+ Network resumate-t19-source-3ac10193_default Removing
+ Volume resumate-t19-source-3ac10193_mysql-data Removing
+ Volume resumate-t19-source-3ac10193_redis-data Removing
+ Volume resumate-t19-source-3ac10193_agent-state Removing
+ Volume resumate-t19-source-3ac10193_backend-data Removing
+ Volume resumate-t19-source-3ac10193_mysql-data Removed
+ Volume resumate-t19-source-3ac10193_agent-state Removed
+ Volume resumate-t19-source-3ac10193_backend-data Removed
+ Volume resumate-t19-source-3ac10193_redis-data Removed
+ Network resumate-t19-source-3ac10193_default Removed
+
+{"project": "resumate-t19-restore-888ed8a3", "args": ["logs", "--no-color"], "code": 0}
+web-1    | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+web-1    | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+web-1    | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+web-1    | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+web-1    | 10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+api-1    | 2026-10-30 03:35:04,021 | INFO | backend.app | Creating FastAPI app
+redis-1  | 1:C 30 Oct 2026 03:34:51.944 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+api2-1   | 2026-10-30 03:35:03,972 | INFO | backend.app | Creating FastAPI app
+redis-1  | 1:C 30 Oct 2026 03:34:51.944 * Redis version=7.4.12, bits=64, commit=00000000, modified=0, pid=1, just started
+api2-1   | INFO:     Started server process [1]
+api2-1   | INFO:     Waiting for application startup.
+redis-1  | 1:C 30 Oct 2026 03:34:51.944 * Configuration loaded
+redis-1  | 1:M 30 Oct 2026 03:34:51.944 * monotonic clock: POSIX clock_gettime
+redis-1  | 1:M 30 Oct 2026 03:34:51.945 * Running mode=standalone, port=6379.
+api2-1   | 2026-10-30 03:35:03,996 | INFO | backend.app | Startup: initializing database
+redis-1  | 1:M 30 Oct 2026 03:34:51.945 * Server initialized
+api2-1   | 2026-10-30 03:35:04,029 | INFO | backend.app | Startup: database and Redis resources initialized
+redis-1  | 1:M 30 Oct 2026 03:34:51.948 * Creating AOF base file appendonly.aof.1.base.rdb on server start
+redis-1  | 1:M 30 Oct 2026 03:34:51.951 * Creating AOF incr file appendonly.aof.1.incr.aof on server start
+api2-1   | INFO:     Application startup complete.
+api-1    | INFO:     Started server process [1]
+api-1    | INFO:     Waiting for application startup.
+redis-1  | 1:M 30 Oct 2026 03:34:51.951 * Ready to accept connections tcp
+api2-1   | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api2-1   | 2026-10-30 03:35:05,684 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1   | 2026-10-30 03:35:05,687 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+api2-1   | INFO:     127.0.0.1:41274 - "GET /readyz HTTP/1.1" 200 OK
+api2-1   | 2026-10-30 03:35:10,875 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1   | 2026-10-30 03:35:10,878 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+api2-1   | INFO:     127.0.0.1:41294 - "GET /readyz HTTP/1.1" 200 OK
+api2-1   | 2026-10-30 03:35:16,051 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1   | 2026-10-30 03:35:16,055 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=4
+api2-1   | INFO:     127.0.0.1:38562 - "GET /readyz HTTP/1.1" 200 OK
+api2-1   | 2026-10-30 03:35:17,430 | INFO | backend.app | Request start | method=POST path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a/actions/50516fa5-dfa9-4f2e-85c8-ca8d35fa9627 client=172.19.0.8
+api2-1   | 2026-10-30 03:35:17,543 | INFO | backend.app | Request end | method=POST path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a/actions/50516fa5-dfa9-4f2e-85c8-ca8d35fa9627 status=202 duration_ms=113
+api2-1   | INFO:     172.19.0.8:46952 - "POST /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a/actions/50516fa5-dfa9-4f2e-85c8-ca8d35fa9627 HTTP/1.1" 202 Accepted
+api2-1   | 2026-10-30 03:35:17,803 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a client=172.19.0.8
+api2-1   | 2026-10-30 03:35:17,810 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a status=200 duration_ms=6
+api2-1   | INFO:     172.19.0.8:46952 - "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 OK
+api2-1   | 2026-10-30 03:35:21,220 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api2-1   | 2026-10-30 03:35:21,222 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api2-1   | INFO:     127.0.0.1:38578 - "GET /readyz HTTP/1.1" 200 OK
+web-1    | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+web-1    | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+web-1    | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+web-1    | /docker-entrypoint.sh: Configuration complete; ready for start up
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: using the "epoll" event method
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: nginx/1.28.3
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0)
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: OS: Linux 7.0.14-linuxkit
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker processes
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 29
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 30
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 31
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 32
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 33
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 34
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 35
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 36
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 37
+web-1    | 2026/10/30 03:35:06 [notice] 1#1: start worker process 38
+web-1    | 127.0.0.1 - - [30/Oct/2026:03:35:11 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+web-1    | 172.19.0.1 - - [30/Oct/2026:03:35:11 +0000] "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 555 "-" "python-httpx/0.28.1" "-"
+web-1    | 172.19.0.1 - - [30/Oct/2026:03:35:17 +0000] "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download HTTP/1.1" 200 390003 "-" "python-httpx/0.28.1" "-"
+web-1    | 172.19.0.1 - - [30/Oct/2026:03:35:17 +0000] "POST /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a/actions/50516fa5-dfa9-4f2e-85c8-ca8d35fa9627 HTTP/1.1" 202 66 "-" "python-httpx/0.28.1" "-"
+web-1    | 172.19.0.1 - - [30/Oct/2026:03:35:17 +0000] "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 404 "-" "python-httpx/0.28.1" "-"
+web-1    | 172.19.0.1 - - [30/Oct/2026:03:35:17 +0000] "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 477 "-" "python-httpx/0.28.1" "-"
+web-1    | 127.0.0.1 - - [30/Oct/2026:03:35:21 +0000] "GET /readyz HTTP/1.1" 200 18 "-" "Wget" "-"
+api-1    | 2026-10-30 03:35:04,046 | INFO | backend.app | Startup: initializing database
+api-1    | 2026-10-30 03:35:04,072 | INFO | backend.app | Startup: database and Redis resources initialized
+api-1    | INFO:     Application startup complete.
+api-1    | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1    | 2026-10-30 03:35:05,725 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1    | 2026-10-30 03:35:05,727 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=2
+api-1    | INFO:     127.0.0.1:41286 - "GET /readyz HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:10,900 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1    | 2026-10-30 03:35:10,903 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+api-1    | INFO:     127.0.0.1:41302 - "GET /readyz HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:11,095 | INFO | backend.app | Request start | method=GET path=/readyz client=172.19.0.8
+api-1    | 2026-10-30 03:35:11,097 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1    | INFO:     172.19.0.8:48066 - "GET /readyz HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:11,190 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a client=172.19.0.8
+api-1    | 2026-10-30 03:35:11,223 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a status=200 duration_ms=32
+api-1    | INFO:     172.19.0.8:48076 - "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:16,078 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1    | 2026-10-30 03:35:16,079 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1    | INFO:     127.0.0.1:38566 - "GET /readyz HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:17,415 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download client=172.19.0.8
+api-1    | 2026-10-30 03:35:17,421 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download status=200 duration_ms=6
+api-1    | INFO:     172.19.0.8:45088 - "GET /api/agent/runs/b045bf75-e2f2-4bb8-8683-f043a1aecb56/download HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:17,545 | INFO | backend.app | Request start | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a client=172.19.0.8
+api-1    | 2026-10-30 03:35:17,550 | INFO | backend.app | Request end | method=GET path=/api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a status=200 duration_ms=4
+api-1    | INFO:     172.19.0.8:45088 - "GET /api/agent/runs/c0ff09db-ac6c-4bf2-80f3-ad8862845f2a HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:21,125 | INFO | backend.app | Request start | method=GET path=/readyz client=172.19.0.8
+api-1    | 2026-10-30 03:35:21,129 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=4
+api-1    | INFO:     172.19.0.8:45090 - "GET /readyz HTTP/1.1" 200 OK
+api-1    | 2026-10-30 03:35:21,241 | INFO | backend.app | Request start | method=GET path=/readyz client=127.0.0.1
+api-1    | 2026-10-30 03:35:21,242 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+api-1    | INFO:     127.0.0.1:38586 - "GET /readyz HTTP/1.1" 200 OK
+mysql-1  | 2026-10-30 03:34:52+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1  | 2026-10-30 03:34:52+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+mysql-1  | 2026-10-30 03:34:52+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.13-1.el9 started.
+mysql-1  | 2026-10-30 03:34:52+00:00 [Note] [Entrypoint]: Initializing database files
+mysql-1  | 2026-10-30T03:34:52.210970Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+mysql-1  | 2026-10-30T03:34:52.211559Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.4.13) initializing of server in progress as process 80
+mysql-1  | 2026-10-30T03:34:52.211560Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1  | 2026-10-30T03:34:52.214390Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1  | 2026-10-30T03:34:52.330761Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1  | 2026-10-30T03:34:52.699055Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+mysql-1  | 2026-10-30T03:34:54.087213Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
+mysql-1  | 2026-10-30 03:34:54+00:00 [Note] [Entrypoint]: Database files initialized
+mysql-1  | 2026-10-30 03:34:54+00:00 [Note] [Entrypoint]: Starting temporary server
+mysql-1  | 2026-10-30T03:34:54.115762Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1  | 2026-10-30T03:34:54.288889Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 122
+mysql-1  | 2026-10-30T03:34:54.288891Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1  | 2026-10-30T03:34:54.294674Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1  | 2026-10-30T03:34:54.409554Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1  | 2026-10-30T03:34:54.594329Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1  | 2026-10-30T03:34:54.594347Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1  | 2026-10-30T03:34:54.595283Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1  | 2026-10-30T03:34:54.601343Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
+mysql-1  | 2026-10-30T03:34:54.601389Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
+mysql-1  | 2026-10-30 03:34:54+00:00 [Note] [Entrypoint]: Temporary server started.
+mysql-1  | '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+mysql-1  | 2026-10-30 03:34:55+00:00 [Note] [Entrypoint]: Creating database resumate
+mysql-1  | 2026-10-30 03:34:55+00:00 [Note] [Entrypoint]: Creating user resumate
+mysql-1  | 2026-10-30 03:34:55+00:00 [Note] [Entrypoint]: Giving user resumate access to schema resumate
+mysql-1  |
+mysql-1  | 2026-10-30 03:34:55+00:00 [Note] [Entrypoint]: Stopping temporary server
+mysql-1  | 2026-10-30T03:34:55.163222Z 13 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.4.13).
+mysql-1  | 2026-10-30T03:34:56.100663Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.13)  MySQL Community Server - GPL.
+mysql-1  | 2026-10-30T03:34:56.100685Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+mysql-1  | 2026-10-30 03:34:56+00:00 [Note] [Entrypoint]: Temporary server stopped
+mysql-1  |
+mysql-1  | 2026-10-30 03:34:56+00:00 [Note] [Entrypoint]: MySQL init process done. Ready for start up.
+mysql-1  |
+mysql-1  | 2026-10-30T03:34:56.176185Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+mysql-1  | 2026-10-30T03:34:56.328953Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.4.13) starting as process 1
+mysql-1  | 2026-10-30T03:34:56.328955Z 0 [System] [MY-015150] [Server] Server version with update: '8.4.13.0'
+mysql-1  | 2026-10-30T03:34:56.331665Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+mysql-1  | 2026-10-30T03:34:56.396427Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+mysql-1  | 2026-10-30T03:34:56.496218Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+mysql-1  | 2026-10-30T03:34:56.496234Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+mysql-1  | 2026-10-30T03:34:56.497084Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+mysql-1  | 2026-10-30T03:34:56.502927Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+mysql-1  | 2026-10-30T03:34:56.502951Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.13'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+worker-1  | /app/.venv/lib/python3.12/site-packages/celery/platforms.py:841: SecurityWarning: You're running the worker with superuser privileges: this is
+worker-1  | absolutely not recommended!
+worker-1  |
+worker-1  | Please specify a different user using the --uid option.
+worker-1  |
+worker-1  | User information: uid=0 euid=0 gid=0 egid=0
+worker-1  |
+worker-1  |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+worker-1  |
+worker-1  |  -------------- celery@6d7385f04944 v5.6.3 (recovery)
+worker-1  | --- ***** -----
+worker-1  | -- ******* ---- Linux-7.0.14-linuxkit-aarch64-with-glibc2.36 2026-10-30 03:35:03
+worker-1  | - *** --- * ---
+worker-1  | - ** ---------- [config]
+worker-1  | - ** ---------- .> app:         resumate:0xffff9c490e00
+worker-1  | - ** ---------- .> transport:   redis://redis:6379/0
+worker-1  | - ** ---------- .> results:     disabled://
+worker-1  | - *** --- * --- .> concurrency: 1 (prefork)
+worker-1  | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+worker-1  | --- ***** -----
+worker-1  |  -------------- [queues]
+worker-1  |                 .> celery           exchange=celery(direct) key=celery
+worker-1  |
+worker-1  |
+worker-1  | [tasks]
+worker-1  |   . resumate.execute_run
+worker-1  |   . resumate.recover_runs
+worker-1  |
+worker-1  | [2026-10-30 03:35:04,015: INFO/MainProcess] Connected to redis://redis:6379/0
+worker-1  | [2026-10-30 03:35:04,018: INFO/MainProcess] mingle: searching for neighbors
+worker-1  | [2026-10-30 03:35:05,034: INFO/MainProcess] mingle: all alone
+worker-1  | [2026-10-30 03:35:05,054: INFO/MainProcess] celery@6d7385f04944 ready.
+worker-1  | [2026-10-30 03:35:16,024: INFO/MainProcess] Task resumate.recover_runs[cb686f58-73ff-47bf-8d4f-d870bd9401d2] received
+worker-1  | [2026-10-30 03:35:16,110: INFO/ForkPoolWorker-1] Task resumate.recover_runs[cb686f58-73ff-47bf-8d4f-d870bd9401d2] succeeded in 0.08445908299995608s: 0
+worker-1  | [2026-10-30 03:35:17,543: INFO/MainProcess] Task resumate.execute_run[0d0614ee-1c78-43e2-b4c1-ad9f11f15ea4] received
+worker-1  | [2026-10-30 03:35:17,714: INFO/ForkPoolWorker-1] Task resumate.execute_run[0d0614ee-1c78-43e2-b4c1-ad9f11f15ea4] succeeded in 0.16982433299995137s: None
+scheduler-1  | celery beat v5.6.3 (recovery) is starting.
+scheduler-1  | __    -    ... __   -        _
+scheduler-1  | LocalTime -> 2026-10-30 03:35:00
+scheduler-1  | Configuration ->
+scheduler-1  |     . broker -> redis://redis:6379/0
+scheduler-1  |     . loader -> celery.loaders.app.AppLoader
+scheduler-1  |     . scheduler -> celery.beat.PersistentScheduler
+scheduler-1  |     . db -> /tmp/celerybeat-schedule
+scheduler-1  |     . logfile -> [stderr]@%INFO
+scheduler-1  |     . maxinterval -> 5.00 minutes (300s)
+scheduler-1  | [2026-10-30 03:35:00,992: INFO/MainProcess] beat: Starting...
+scheduler-1  | [2026-10-30 03:35:16,013: INFO/MainProcess] Scheduler: Sending due task recover-runs (resumate.recover_runs)
+
+{"project": "resumate-t19-restore-888ed8a3", "args": ["down", "--volumes", "--remove-orphans"], "code": 0}
+ Container resumate-t19-restore-888ed8a3-worker-1 Stopping
+ Container resumate-t19-restore-888ed8a3-scheduler-1 Stopping
+ Container resumate-t19-restore-888ed8a3-web-1 Stopping
+ Container resumate-t19-restore-888ed8a3-web-1 Stopped
+ Container resumate-t19-restore-888ed8a3-web-1 Removing
+ Container resumate-t19-restore-888ed8a3-web-1 Removed
+ Container resumate-t19-restore-888ed8a3-api2-1 Stopping
+ Container resumate-t19-restore-888ed8a3-api-1 Stopping
+ Container resumate-t19-restore-888ed8a3-scheduler-1 Stopped
+ Container resumate-t19-restore-888ed8a3-scheduler-1 Removing
+ Container resumate-t19-restore-888ed8a3-scheduler-1 Removed
+ Container resumate-t19-restore-888ed8a3-api-1 Stopped
+ Container resumate-t19-restore-888ed8a3-api-1 Removing
+ Container resumate-t19-restore-888ed8a3-api-1 Removed
+ Container resumate-t19-restore-888ed8a3-api2-1 Stopped
+ Container resumate-t19-restore-888ed8a3-api2-1 Removing
+ Container resumate-t19-restore-888ed8a3-api2-1 Removed
+ Container resumate-t19-restore-888ed8a3-worker-1 Stopped
+ Container resumate-t19-restore-888ed8a3-worker-1 Removing
+ Container resumate-t19-restore-888ed8a3-worker-1 Removed
+ Container resumate-t19-restore-888ed8a3-schema-1 Stopping
+ Container resumate-t19-restore-888ed8a3-redis-1 Stopping
+ Container resumate-t19-restore-888ed8a3-schema-1 Stopped
+ Container resumate-t19-restore-888ed8a3-schema-1 Removing
+ Container resumate-t19-restore-888ed8a3-schema-1 Removed
+ Container resumate-t19-restore-888ed8a3-mysql-1 Stopping
+ Container resumate-t19-restore-888ed8a3-redis-1 Stopped
+ Container resumate-t19-restore-888ed8a3-redis-1 Removing
+ Container resumate-t19-restore-888ed8a3-redis-1 Removed
+ Container resumate-t19-restore-888ed8a3-mysql-1 Stopped
+ Container resumate-t19-restore-888ed8a3-mysql-1 Removing
+ Container resumate-t19-restore-888ed8a3-mysql-1 Removed
+ Volume resumate-t19-restore-888ed8a3_mysql-data Removing
+ Network resumate-t19-restore-888ed8a3_default Removing
+ Volume resumate-t19-restore-888ed8a3_redis-data Removing
+ Volume resumate-t19-restore-888ed8a3_backend-data Removing
+ Volume resumate-t19-restore-888ed8a3_agent-state Removing
+ Volume resumate-t19-restore-888ed8a3_redis-data Removed
+ Volume resumate-t19-restore-888ed8a3_agent-state Removed
+ Volume resumate-t19-restore-888ed8a3_mysql-data Removed
+ Volume resumate-t19-restore-888ed8a3_backend-data Removed
+ Network resumate-t19-restore-888ed8a3_default Removed

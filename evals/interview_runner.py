@@ -1,4 +1,4 @@
-"""T16 scenarios use real acceptance, commands, SQL and Deep Agents; only the model is scripted."""
+"""Real interview trajectories with either a deterministic or budgeted live SDK model."""
 from copy import deepcopy
 from datetime import date, datetime
 from enum import Enum
@@ -22,9 +22,9 @@ def execute_interview_case(request):
     from backend.services.agent_runs import RunError
     from backend.services.applications import attach_submission
     from backend.agent_runtime import factory, interviews as runtime
-    from backend.tests.interview_model_fixture import ScriptedInterviewModel
     from evals.interview_verifiers import verify_interview
-    from evals.records import CallRecorder, write_json
+    from evals.records import write_json
+    from evals.interview_records import InterviewCallRecorder, InterviewBudgetRecorder
     from evals.verifiers import semantic_review
 
     case, invocation = request['case'], Path(request['invocation'])
@@ -66,8 +66,21 @@ def execute_interview_case(request):
             return {name: [{column.name: value(getattr(row, column.name)) for column in row.__table__.columns}
                 for row in db.scalars(select(model).order_by(model.id))] for name, model in tables.items()}
 
-    recorder = CallRecorder(invocation / 'calls.jsonl', case_id=case['id'], model='openai:scripted-interview')
-    model = ScriptedInterviewModel(model_name='openai:scripted-interview', callbacks=[recorder])
+    mode = request['mode']
+    if mode == 'live':
+        from evals.budget import BudgetConfig
+        from evals.run import make_live_model
+        budget = BudgetConfig.from_dict(request['config'])
+        recorder = InterviewBudgetRecorder(budget, invocation / 'budget.json', invocation / 'calls.jsonl', case_id=case['id'])
+        model = make_live_model(budget, recorder, case)
+    else:
+        from backend.tests.interview_model_fixture import ScriptedInterviewModel
+        recorder = InterviewCallRecorder(invocation / 'calls.jsonl', case_id=case['id'], model='openai:scripted-interview')
+        model = ScriptedInterviewModel(model_name='openai:scripted-interview', callbacks=[recorder])
+    class GenerationStopped(Exception):
+        def __init__(self, code):
+            self.code = code
+    generation_error = None
     observations, trajectory = {}, []
     baseline_facts = snapshot()['facts']
     with SessionLocal() as db:
@@ -90,7 +103,7 @@ def execute_interview_case(request):
     def answer(turn, *, message_id=None):
         return command('answer.submit', turn, {'text': inputs['answers'][turn - 1]}, message_id=message_id)
 
-    def execute(run_id):
+    def execute(run_id, *, cancelled_is_expected=False):
         with SessionLocal() as db:
             epoch = agent_runs.claim_run(db, run_id)
             if epoch is None:
@@ -99,7 +112,13 @@ def execute_interview_case(request):
             recorder.business_run_id, recorder.attempt, recorder.epoch = run_id, row.attempt, epoch
         trajectory.append({'action': 'claimed', 'run_id': run_id, 'epoch': epoch})
         runtime.run_interview_generation(run_id, epoch)
-        trajectory.append({'action': 'handler.returned', 'run_id': run_id, 'epoch': epoch})
+        with SessionLocal() as db:
+            row = db.get(AgentRun, run_id)
+            status, error = row.status.value, row.error_code
+        trajectory.append({'action': 'handler.returned', 'run_id': run_id, 'epoch': epoch,
+                           'status': status, 'error_code': error})
+        if status != 'succeeded' and not (cancelled_is_expected and status == 'cancelled'):
+            raise GenerationStopped(error or 'interview_generation_failed')
         return epoch
 
     def rejected(call):
@@ -110,117 +129,149 @@ def execute_interview_case(request):
         return {'code': None, 'status': 200}
 
     def stop_inflight(run_id, turn, kind):
-        entered, release = Event(), Event()
+        entered, release, ready = Event(), Event(), Event()
+        if mode == 'live':
+            entries = list(recorder.ledger['calls'].values())
+            remaining = min(budget.max_model_calls - len(entries), budget.max_case_model_calls
+                            - sum(item['case_id'] == case['id'] for item in entries))
+            # Each context/summary/structured-output call uses this same budget.
+            response_wait = max(1, remaining) * budget.request_timeout_seconds + 20
+            finish_wait = budget.request_timeout_seconds + 20
+        else:
+            response_wait, finish_wait = 15, 20
         failures = []
-        def block(required):
-            if required['runId'] == run_id and not entered.is_set():
+        stopped_step = {}
+        def block(record):
+            if record['run_id'] == run_id and not entered.is_set():
+                stopped_step.update(deepcopy(record['step']))
                 entered.set()
+                ready.set()
                 if not release.wait(15):
                     raise RuntimeError('Interview evaluation cancellation barrier timed out')
         def work():
             try:
-                execute(run_id)
+                execute(run_id, cancelled_is_expected=True)
             except Exception as error:
                 failures.append(error)
-        model.before_generate = block
+            finally:
+                ready.set()
+        recorder.after_response = block
         thread = Thread(target=work, name='interview-eval-generation')
         thread.start()
         try:
-            if not entered.wait(15):
-                raise RuntimeError('Interview evaluation did not enter real model call')
+            if not ready.wait(response_wait):
+                # Fence any outstanding response before bounded request/SQL cleanup.
+                command('generation.cancel', turn, {'runId': run_id})
+                raise GenerationStopped('interview_response_timeout')
+            if not entered.is_set():
+                if failures:
+                    raise failures[0]
+                raise GenerationStopped('interview_response_missing')
             before = snapshot()
-            at_stop = len(model.calls)
+            at_stop = len(recorder.calls)
+            settled_at_stop = sum(call.get('ended_at') is not None for call in recorder.calls.values())
             payload = {'runId': run_id} if kind == 'generation.cancel' else {}
             ack = command(kind, turn, payload)
         finally:
             release.set()
-            thread.join(20)
-            model.before_generate = None
-        if thread.is_alive():
-            raise RuntimeError('Interview evaluation handler did not finish after cancellation')
+            thread.join(finish_wait)
+            recorder.after_response = None
+            if thread.is_alive():
+                raise RuntimeError('Interview evaluation handler did not finish after cancellation')
         if failures:
             raise failures[0]
         return {'type': kind, 'run_id': run_id, 'before': before, 'after': snapshot(),
-                'ack': ack, 'model_calls_at_stop': at_stop, 'model_calls_after': len(model.calls)}
+                'ack': ack, 'model_calls_at_stop': at_stop, 'model_calls_after': len(recorder.calls),
+                'settled_calls_at_stop': settled_at_stop, 'public_step_at_stop': stopped_step,
+                'barrier': 'after_model_response_before_delivery', 'response_wait_seconds': response_wait}
 
-    with patch.object(factory, 'model_for_user', lambda _user_id: model):
-        if case['id'] == 'interview-frozen-submission':
-            observations['frozen_at_start'] = deepcopy(view()['sourceSnapshot'])
-            with SessionLocal() as db:
-                db.execute(update(Resume).where(Resume.id == 1).values(raw_text=inputs['replacement_resume'],
-                    structured_data={'self_summary': inputs['replacement_resume']}))
-                db.execute(update(JobDescription).where(JobDescription.id == 1).values(raw_text=inputs['replacement_job']))
-                db.commit()
-            observations['mutated_sources'] = snapshot()
-            observations['other_owner_read'] = rejected(lambda: view(2))
-            def wrong_owner_create():
-                with SessionLocal() as db:
-                    return interviews.create_interview(db, 2, InterviewCreate(requestId='other-owner', applicationId=1))
-            observations['other_owner_create'] = rejected(wrong_owner_create)
-        execute(created['runId'])
-        if case['id'] in ('interview-followup', 'interview-eight-turn-limit', 'interview-frozen-submission'):
-            for index in range(1, len(inputs['answers']) + 1):
-                execute(answer(index)['resultRef'])
-            observations['refreshed_snapshot'] = view()
+    try:
+        with patch.object(factory, 'model_for_user', lambda _user_id: model):
             if case['id'] == 'interview-frozen-submission':
+                observations['frozen_at_start'] = deepcopy(view()['sourceSnapshot'])
                 with SessionLocal() as db:
-                    db.delete(db.get(JobDescription, 1))
+                    db.execute(update(Resume).where(Resume.id == 1).values(raw_text=inputs['replacement_resume'],
+                        structured_data={'self_summary': inputs['replacement_resume']}))
+                    db.execute(update(JobDescription).where(JobDescription.id == 1).values(raw_text=inputs['replacement_job']))
                     db.commit()
-                def missing_source_create():
+                observations['mutated_sources'] = snapshot()
+                observations['other_owner_read'] = rejected(lambda: view(2))
+                def wrong_owner_create():
                     with SessionLocal() as db:
-                        return interviews.create_interview(db, 1, InterviewCreate(requestId='missing-source', applicationId=1))
-                observations['missing_source_create'] = rejected(missing_source_create)
-                observations['after_source_delete_snapshot'] = view()
-        elif case['id'] == 'interview-command-replay':
-            first = answer(1, message_id='same-answer')
-            observations['first_ack'] = deepcopy(first)
-            observations['replayed_ack'] = answer(1, message_id='same-answer')
-            observations['payload_conflict'] = rejected(lambda: command('answer.submit', 1,
-                {'text': 'A different answer must not overwrite the first.'}, message_id='same-answer'))['code']
-            observations['second_message_rejected'] = rejected(lambda: answer(1, message_id='other-answer'))
-            execute(first['resultRef'])
-            observations['refreshed_snapshot'] = view()
-            command('session.finish', 2, {}, message_id='finish')
-            observations['after_finish_ack'] = answer(1, message_id='same-answer')
-        elif case['id'] == 'interview-cancel-late-result':
-            first = answer(1)
-            stops = [stop_inflight(first['resultRef'], 1, 'generation.cancel')]
-            retry = command('generation.retry', 1, {'runId': first['resultRef']})
-            observations['retry_run_id'] = retry['resultRef']
-            execute(retry['resultRef'])
-            second = answer(2)
-            stops.append(stop_inflight(second['resultRef'], 2, 'session.finish'))
-            observations['stops'] = stops
-        elif case['id'] == 'interview-feedback-memory':
-            execute(answer(1)['resultRef'])
-            observations['before_confirmation'] = snapshot()
-            def confirm(*, user_id=1, confirmed=True):
+                        return interviews.create_interview(db, 2, InterviewCreate(requestId='other-owner', applicationId=1))
+                observations['other_owner_create'] = rejected(wrong_owner_create)
+            execute(created['runId'])
+            if case['id'] in ('interview-followup', 'interview-eight-turn-limit', 'interview-frozen-submission'):
+                for index in range(1, len(inputs['answers']) + 1):
+                    execute(answer(index)['resultRef'])
+                observations['refreshed_snapshot'] = view()
+                if case['id'] == 'interview-frozen-submission':
+                    with SessionLocal() as db:
+                        db.delete(db.get(JobDescription, 1))
+                        db.commit()
+                    def missing_source_create():
+                        with SessionLocal() as db:
+                            return interviews.create_interview(db, 1, InterviewCreate(requestId='missing-source', applicationId=1))
+                    observations['missing_source_create'] = rejected(missing_source_create)
+                    observations['after_source_delete_snapshot'] = view()
+            elif case['id'] == 'interview-command-replay':
+                first = answer(1, message_id='same-answer')
+                observations['first_ack'] = deepcopy(first)
+                observations['replayed_ack'] = answer(1, message_id='same-answer')
+                observations['payload_conflict'] = rejected(lambda: command('answer.submit', 1,
+                    {'text': 'A different answer must not overwrite the first.'}, message_id='same-answer'))['code']
+                observations['second_message_rejected'] = rejected(lambda: answer(1, message_id='other-answer'))
+                execute(first['resultRef'])
+                observations['refreshed_snapshot'] = view()
+                command('session.finish', 2, {}, message_id='finish')
+                observations['after_finish_ack'] = answer(1, message_id='same-answer')
+            elif case['id'] == 'interview-cancel-late-result':
+                first = answer(1)
+                stops = [stop_inflight(first['resultRef'], 1, 'generation.cancel')]
+                retry = command('generation.retry', 1, {'runId': first['resultRef']})
+                observations['retry_run_id'] = retry['resultRef']
+                execute(retry['resultRef'])
+                second = answer(2)
+                stops.append(stop_inflight(second['resultRef'], 2, 'session.finish'))
+                observations['stops'] = stops
+            elif case['id'] == 'interview-feedback-memory':
+                execute(answer(1)['resultRef'])
+                observations['before_confirmation'] = snapshot()
+                def confirm(*, user_id=1, confirmed=True):
+                    with SessionLocal() as db:
+                        return interviews.confirm_feedback_memory(db, user_id, iid, 1, confirmed=confirmed)
+                observations['unconfirmed_rejection'] = rejected(lambda: confirm(confirmed=False))
+                observations['other_owner_rejection'] = rejected(lambda: confirm(user_id=2))
+                observations['first_memory'] = confirm()
+                observations['replayed_memory'] = confirm()
+                observations['memory_usage_run'] = answer(2)['resultRef']
+                execute(observations['memory_usage_run'])
                 with SessionLocal() as db:
-                    return interviews.confirm_feedback_memory(db, user_id, iid, 1, confirmed=confirmed)
-            observations['unconfirmed_rejection'] = rejected(lambda: confirm(confirmed=False))
-            observations['other_owner_rejection'] = rejected(lambda: confirm(user_id=2))
-            observations['first_memory'] = confirm()
-            observations['replayed_memory'] = confirm()
-            observations['memory_usage_run'] = answer(2)['resultRef']
-            execute(observations['memory_usage_run'])
-            with SessionLocal() as db:
-                observations['deletion'] = memory.delete_memory(db, 1, observations['first_memory']['id'])
-            observations['after_delete_confirmation'] = rejected(confirm)
-            observations['after_delete_generation'] = rejected(lambda: command('answer.submit', 3,
-                {'text': 'This invalidated graph must not accept another answer.'}))
-            observations['refreshed_snapshot'] = view()
-        else:
-            raise ValueError('Unknown interview case')
+                    observations['deletion'] = memory.delete_memory(db, 1, observations['first_memory']['id'])
+                observations['after_delete_confirmation'] = rejected(confirm)
+                observations['after_delete_generation'] = rejected(lambda: command('answer.submit', 3,
+                    {'text': 'This invalidated graph must not accept another answer.'}))
+                observations['refreshed_snapshot'] = view()
+            else:
+                raise ValueError('Unknown interview case')
+    except GenerationStopped as error:
+        generation_error = error.code
 
     data = snapshot()
-    output = {'executed': bool(model.calls), 'interview_id': iid, 'model': model.model_name,
-        'model_calls': [{'run_id': call['required']['runId'], **deepcopy(call)} for call in model.calls],
-        'public_model_output': deepcopy(recorder.outputs), 'summary_calls': deepcopy(model.summaries),
+    output = {'executed': bool(recorder.calls), 'interview_id': iid, 'model': recorder.model,
+        'mode': mode, 'evidence_source': 'sdk_model_inputs', 'error_code': generation_error,
+        'model_calls': deepcopy(recorder.interview_calls),
+        'public_model_output': deepcopy(recorder.outputs), 'summary_calls': deepcopy(recorder.interview_summaries),
         'observations': observations, 'trajectory': trajectory, 'baseline_facts': baseline_facts,
         'checkpoint_files': [path.name for path in (Path(engine.url.database).parent / 'agent').glob('checkpoints.sqlite*')]}
     verdict = verify_interview(case, output, data)
+    evaluation_error = recorder.summary()['stop_reason'] if mode == 'live' else None
+    incomplete = bool(evaluation_error) or generation_error in {'budget_exhausted', 'budget_config_mismatch'}
     result = {'case_id': case['id'], 'category': case['category'], 'mode': request['mode'],
-        'status': 'pass' if verdict['passed'] else 'fail', 'input': case, 'output': output,
+        'status': 'incomplete' if incomplete else ('pass' if verdict['passed'] and not generation_error else 'fail'),
+        'error_code': evaluation_error or generation_error, 'input': case, 'output': output,
         'db_snapshot': data, 'verdict': verdict, 'semantic': semantic_review(request['mode'])}
+    if mode == 'live':
+        result['cost'] = recorder.summary()
     write_json(invocation / 'cases' / f'{case["id"]}.json', result)
     return result

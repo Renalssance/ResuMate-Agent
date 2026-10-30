@@ -1,0 +1,196 @@
+name: ResuMate verification
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_live:
+        description: 'Explicitly authorize one paid evaluation invocation with the supplied budget'
+        type: boolean
+        default: false
+      live_cases:
+        description: 'Comma-separated case IDs; begin with a single smoke case'
+        type: string
+        default: normal-api
+      budget_config:
+        description: 'Verified BudgetConfig JSON, including currency and total/case cost caps'
+        type: string
+        default: ''
+permissions:
+  contents: read
+
+env:
+  PYTHON_DOTENV_DISABLED: '1'
+  JWT_SECRET_KEY: synthetic-ci-signing-key
+  LANGCHAIN_TRACING_V2: 'false'
+
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=5s --health-timeout=3s --health-retries=20
+    env:
+      RESUMATE_TEST_MYSQL_URL: mysql+pymysql://root@127.0.0.1:3306
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with: {version: '0.12.5', python-version: '3.12'}
+      - run: uv sync --locked --extra ocr
+      - run: uv run python -m playwright install --with-deps chromium
+      - run: sudo apt-get install -y fonts-noto-cjk
+      - run: mkdir -p artifacts && uv run pytest backend/tests -q --junitxml=artifacts/backend.xml
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: {name: backend-results, path: artifacts/backend.xml}
+
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: {node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: npm --prefix frontend ci
+      - run: npm --prefix frontend test
+      - run: npm --prefix frontend run test:unit
+      - run: npm --prefix frontend run build
+      - uses: actions/upload-artifact@v7
+        with: {name: frontend-production, path: frontend/dist, if-no-files-found: error}
+
+  extension:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: {node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: npm --prefix frontend ci
+      - run: node --test extension/tests/*.test.mjs
+
+  stub-evaluation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with: {version: '0.12.5', python-version: '3.12'}
+      - run: uv sync --locked
+      - name: Run the 26 cases that do not require a process-crash experiment
+        shell: bash
+        run: |
+          cases=$(uv run python -c "from evals.fixtures import load_cases; print(','.join(c['id'] for c in load_cases() if c.get('runner') != 'compose'))")
+          uv run python -m evals.run --mode stub --cases "$cases" --output artifacts/evals/stub
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: {name: stub-evaluation, path: artifacts/evals/stub, if-no-files-found: error}
+
+  process-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      RESUMATE_COMPOSE_TEST: '1'
+      RESUMATE_RECOVERY_IMAGE: resumate-ci-backend:latest
+      RESUMATE_RECOVERY_CONTEXT: /tmp/resumate-ci-context.json
+      RESUMATE_RECOVERY_EVIDENCE: /tmp/resumate-ci-evidence.json
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with: {version: '0.12.5', python-version: '3.12'}
+      - run: uv sync --locked
+      - run: docker build -f deploy/worker.Dockerfile -t resumate-ci-backend:latest .
+      - name: Bind the four experiments to a new invocation
+        run: |
+          uv run python - <<'PY'
+          import json, os, uuid
+          from pathlib import Path
+          from evals.fixtures import load_cases
+          cases = [{'id': c['id'], 'input': c['input']} for c in load_cases() if c.get('runner') == 'compose']
+          Path(os.environ['RESUMATE_RECOVERY_CONTEXT']).write_text(json.dumps({'invocation_id': str(uuid.uuid4()), 'cases': cases}))
+          PY
+      - run: uv run pytest backend/tests/test_agent_recovery.py -q -s
+      - name: Judge the actual four crash experiments
+        if: always()
+        shell: bash
+        run: |
+          cases=$(uv run python -c "from evals.fixtures import load_cases; print(','.join(c['id'] for c in load_cases() if c.get('runner') == 'compose'))")
+          uv run python -m evals.run --mode stub --cases "$cases" --output artifacts/evals/recovery --recovery-context "$RESUMATE_RECOVERY_CONTEXT" --recovery-evidence "$RESUMATE_RECOVERY_EVIDENCE"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: process-recovery
+          path: |
+            artifacts/evals/recovery
+            /tmp/resumate-ci-context.json
+            /tmp/resumate-ci-evidence.json
+            /tmp/task-14-recovery-artifacts-*
+
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      RESUMATE_E2E_ROOT: /tmp/resumate-ci-browser
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with: {version: '0.12.5', python-version: '3.12'}
+      - uses: actions/setup-node@v7
+        with: {node-version: '24', cache: npm, cache-dependency-path: 'package-lock.json'}
+      - run: uv sync --locked
+      - run: npm ci && npm --prefix frontend ci
+      - run: npx playwright install --with-deps chromium
+      - run: sudo apt-get install -y fonts-noto-cjk
+      - run: npm run test:e2e
+      - run: npm --prefix frontend run build
+      - name: Production nginx, CSP, input latency and offline recovery
+        env:
+          RESUMATE_E2E_ROOT: /tmp/resumate-ci-production-browser
+        run: npx playwright test --config playwright.production.config.ts
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-results
+          path: |
+            test-results
+            playwright-report
+            /tmp/resumate-ci-browser/*.log
+            /tmp/resumate-ci-production-browser
+
+  live-evaluation:
+    # A rerun cannot silently receive a fresh allowance for the same dispatch.
+    if: github.event_name == 'workflow_dispatch' && inputs.run_live && github.run_attempt == 1
+    needs: [backend, frontend, extension, stub-evaluation, process-recovery, browser]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    concurrency: {group: resumate-live-evaluation, cancel-in-progress: false}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with: {version: '0.12.5', python-version: '3.12'}
+      - run: uv sync --locked
+      - name: Validate the explicitly supplied budget before any model request
+        env:
+          BUDGET_CONFIG_JSON: ${{ inputs.budget_config }}
+        run: |
+          uv run python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from evals.budget import BudgetConfig
+          config = BudgetConfig.from_dict(json.loads(os.environ['BUDGET_CONFIG_JSON']))
+          Path('/tmp/resumate-ci-budget.json').write_text(json.dumps(config.public()))
+          PY
+      - name: Run once within the shared invocation budget
+        env:
+          OPENAI_API_KEY: ${{ secrets.RESUMATE_MODEL_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.RESUMATE_MODEL_BASE_URL }}
+          LLM_MODEL: ${{ secrets.RESUMATE_MODEL_NAME }}
+          LIVE_CASES: ${{ inputs.live_cases }}
+        run: uv run python -m evals.run --mode live --cases "$LIVE_CASES" --config /tmp/resumate-ci-budget.json --output artifacts/evals/live
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: {name: live-evaluation, path: artifacts/evals/live, if-no-files-found: error}

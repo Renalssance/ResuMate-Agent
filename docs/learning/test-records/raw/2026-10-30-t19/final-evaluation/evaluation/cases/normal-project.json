@@ -1,0 +1,764 @@
+{
+  "case_id": "normal-project",
+  "category": "normal",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "category": "normal",
+    "resume": {
+      "raw_text": "测试申请人甲。使用 React 和 TypeScript 完成报名表单，负责字段校验与错误提示。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "使用 React 和 TypeScript 开发表单。",
+        "source_refs": [
+          "page:1"
+        ],
+        "projects": [
+          {
+            "name": "报名表单",
+            "description": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      }
+    },
+    "job": {
+      "title": "前端表单工程师（合成岗位）",
+      "raw_text": "使用 React、TypeScript 开发表单；关注字段校验和清晰的错误提示。"
+    },
+    "facts": [],
+    "memories": [],
+    "proposal": {
+      "section": "/projects/0/description",
+      "after": "使用 React 与 TypeScript 完成报名表单的字段校验和错误提示。",
+      "reason": "突出与岗位直接相关的表单职责，保留原有事实。"
+    },
+    "expected": {
+      "statuses": [
+        "succeeded"
+      ],
+      "draft_count": 1
+    },
+    "id": "normal-project"
+  },
+  "output": {
+    "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+    "status": "succeeded",
+    "error_code": null,
+    "coverage": {
+      "waiting_observed": false,
+      "waiting_draft_count": null,
+      "checkpoint_reopened": false,
+      "summary_calls": 0,
+      "file_reads": [],
+      "cancel_claim_blocked": false,
+      "model_calls_after_cancel": 0,
+      "fault_injected": false,
+      "duplicate_result_refs": [
+        "085d0e26-eeb0-42be-acad-140bcb666984"
+      ],
+      "required_context_preserved": true
+    },
+    "required_context_checks": [
+      {
+        "sdk_call_id": "01a18ae8-aeae-7570-9492-834bf69acadd",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-aeb7-7fa0-8a1d-d2e9485ad80d",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": []
+        },
+        "observed": [
+          {
+            "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": []
+          }
+        ],
+        "passed": true
+      },
+      {
+        "sdk_call_id": "01a18ae8-aec0-7d12-9f16-98e56f9637c1",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "kind": "main",
+        "expected": {
+          "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          },
+          "constraints": [
+            "不得编造职责、技术、规模或指标；缺信息先补问。",
+            "不得自动确认、覆盖原简历、发送邮件或投递。",
+            "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+            "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+          ],
+          "facts": [],
+          "memories": [],
+          "applicantAnswers": [],
+          "outputs": [
+            "085d0e26-eeb0-42be-acad-140bcb666984"
+          ]
+        },
+        "observed": [
+          {
+            "runId": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+            "inputVersions": {
+              "resume": "2026-10-01T00:00:00",
+              "jd": "2026-10-01T00:00:00",
+              "memories": [],
+              "facts": []
+            },
+            "constraints": [
+              "不得编造职责、技术、规模或指标；缺信息先补问。",
+              "不得自动确认、覆盖原简历、发送邮件或投递。",
+              "记忆仅指导偏好与练习，不是新的经历事实或简历引用来源。",
+              "JD、历史匹配和摘要不能替代原简历、已确认事实或本任务回答。"
+            ],
+            "facts": [],
+            "memories": [],
+            "applicantAnswers": [],
+            "outputs": [
+              "085d0e26-eeb0-42be-acad-140bcb666984"
+            ]
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-1",
+            "name": "get_application_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "eval-2",
+            "name": "create_resume_draft",
+            "args": {
+              "changes": [
+                {
+                  "section": "/projects/0/description",
+                  "before": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+                  "after": "使用 React 与 TypeScript 完成报名表单的字段校验和错误提示。",
+                  "reason": "突出与岗位直接相关的表单职责，保留原有事实。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-01T00:00:00",
+                      "section": "/projects/0/description",
+                      "sourceRefs": [
+                        "page:1:project:0"
+                      ]
+                    }
+                  ],
+                  "requires_input": false
+                }
+              ]
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。",
+        "tool_calls": [],
+        "invalid_tool_calls": []
+      }
+    ],
+    "model": "resumate-eval-stub-v1"
+  },
+  "db_snapshot": {
+    "run": {
+      "id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+      "user_id": 1,
+      "session_id": "b8baa12a-0c34-40a6-b4be-26700f2633a9",
+      "request_id": "ce835d4e-aa17-4dd1-863e-5272a68bffb0",
+      "kind": "tailoring",
+      "status": "succeeded",
+      "input_json": {
+        "jdId": 1,
+        "resumeId": 1,
+        "contextSnapshot": {
+          "resume": {
+            "id": 1,
+            "text": "测试申请人甲。使用 React 和 TypeScript 完成报名表单，负责字段校验与错误提示。",
+            "structured": {
+              "name": "测试申请人甲",
+              "self_summary": "使用 React 和 TypeScript 开发表单。",
+              "source_refs": [
+                "page:1"
+              ],
+              "projects": [
+                {
+                  "name": "报名表单",
+                  "description": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+                  "source_refs": [
+                    "page:1:project:0"
+                  ]
+                }
+              ]
+            },
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "job": {
+            "id": 1,
+            "title": "前端表单工程师（合成岗位）",
+            "text": "使用 React、TypeScript 开发表单；关注字段校验和清晰的错误提示。",
+            "structured": {},
+            "inputVersion": "2026-10-01T00:00:00"
+          },
+          "facts": [],
+          "match": null
+        }
+      },
+      "input_versions": {
+        "resume": "2026-10-01T00:00:00",
+        "jd": "2026-10-01T00:00:00",
+        "memories": [],
+        "facts": []
+      },
+      "result_json": null,
+      "attempt": 1,
+      "execution_epoch": 1,
+      "heartbeat_at": "2026-10-30T03:44:27.331561",
+      "cancel_requested_at": null,
+      "error_code": null,
+      "output_refs": [
+        {
+          "type": "resume_version",
+          "id": "085d0e26-eeb0-42be-acad-140bcb666984"
+        }
+      ],
+      "created_at": "2026-10-30T03:44:27.174741",
+      "updated_at": "2026-10-30T03:44:27.332415"
+    },
+    "session": {
+      "id": "b8baa12a-0c34-40a6-b4be-26700f2633a9",
+      "user_id": 1,
+      "purpose": "tailoring",
+      "context_invalidated_at": null,
+      "checkpoint_deleted_at": null,
+      "active_run_id": null,
+      "created_at": "2026-10-30T03:44:27.166830"
+    },
+    "resume": {
+      "id": 1,
+      "user_id": 1,
+      "filename": "synthetic-resume.txt",
+      "file_path": "",
+      "content_hash": "",
+      "document_size": 0,
+      "parse_status": "pending",
+      "raw_text": "测试申请人甲。使用 React 和 TypeScript 完成报名表单，负责字段校验与错误提示。",
+      "structured_data": {
+        "name": "测试申请人甲",
+        "self_summary": "使用 React 和 TypeScript 开发表单。",
+        "source_refs": [
+          "page:1"
+        ],
+        "projects": [
+          {
+            "name": "报名表单",
+            "description": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+            "source_refs": [
+              "page:1:project:0"
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-10-30T03:44:27.167675",
+      "updated_at": "2026-10-01T00:00:00"
+    },
+    "baseline": {
+      "resume": {
+        "id": 1,
+        "user_id": 1,
+        "raw_text": "测试申请人甲。使用 React 和 TypeScript 完成报名表单，负责字段校验与错误提示。",
+        "structured_data": {
+          "name": "测试申请人甲",
+          "self_summary": "使用 React 和 TypeScript 开发表单。",
+          "source_refs": [
+            "page:1"
+          ],
+          "projects": [
+            {
+              "name": "报名表单",
+              "description": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+              "source_refs": [
+                "page:1:project:0"
+              ]
+            }
+          ]
+        }
+      },
+      "facts": [],
+      "memories": []
+    },
+    "versions": [
+      {
+        "id": "085d0e26-eeb0-42be-acad-140bcb666984",
+        "user_id": 1,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 1,
+        "structured_content": {
+          "resume": {
+            "name": "测试申请人甲",
+            "self_summary": "使用 React 和 TypeScript 开发表单。",
+            "source_refs": [
+              "page:1"
+            ],
+            "projects": [
+              {
+                "name": "报名表单",
+                "description": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+                "source_refs": [
+                  "page:1:project:0"
+                ]
+              }
+            ]
+          },
+          "changes": [
+            {
+              "section": "/projects/0/description",
+              "before": "使用 React 和 TypeScript 实现字段校验与错误提示。",
+              "after": "使用 React 与 TypeScript 完成报名表单的字段校验和错误提示。",
+              "reason": "突出与岗位直接相关的表单职责，保留原有事实。",
+              "fact_refs": [
+                {
+                  "kind": "resume",
+                  "resumeId": 1,
+                  "inputVersion": "2026-10-01T00:00:00",
+                  "section": "/projects/0/description",
+                  "sourceRefs": [
+                    "page:1:project:0"
+                  ]
+                }
+              ],
+              "requires_input": false,
+              "id": "fc012c1b-4ab2-4e8d-9fdd-13c788634340",
+              "status": "pending"
+            }
+          ],
+          "inputVersions": {
+            "resume": "2026-10-01T00:00:00",
+            "jd": "2026-10-01T00:00:00",
+            "memories": [],
+            "facts": []
+          }
+        },
+        "fact_refs": [
+          {
+            "kind": "resume",
+            "resumeId": 1,
+            "inputVersion": "2026-10-01T00:00:00",
+            "section": "/projects/0/description",
+            "sourceRefs": [
+              "page:1:project:0"
+            ]
+          }
+        ],
+        "status": "draft",
+        "created_at": "2026-10-30T03:44:27.323458"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "operation_key": "draft:1:initial",
+        "tool_name": "create_resume_draft",
+        "status": "succeeded",
+        "result_ref": "085d0e26-eeb0-42be-acad-140bcb666984"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:27.175674"
+      },
+      {
+        "id": 2,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:27.180257"
+      },
+      {
+        "id": 3,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 3,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1"
+        },
+        "created_at": "2026-10-30T03:44:27.313396"
+      },
+      {
+        "id": 4,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 4,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "get_application_context",
+          "operation_key": "eval-1",
+          "result_ref": null
+        },
+        "created_at": "2026-10-30T03:44:27.315201"
+      },
+      {
+        "id": 5,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 5,
+        "type": "tool.started",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial"
+        },
+        "created_at": "2026-10-30T03:44:27.321380"
+      },
+      {
+        "id": 6,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 6,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "085d0e26-eeb0-42be-acad-140bcb666984",
+          "kind": "resume_version"
+        },
+        "created_at": "2026-10-30T03:44:27.323815"
+      },
+      {
+        "id": 7,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 7,
+        "type": "tool.completed",
+        "payload": {
+          "tool_name": "create_resume_draft",
+          "operation_key": "draft:1:initial",
+          "result_ref": "085d0e26-eeb0-42be-acad-140bcb666984"
+        },
+        "created_at": "2026-10-30T03:44:27.324850"
+      },
+      {
+        "id": 8,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 8,
+        "type": "assistant.delta",
+        "payload": {
+          "text": "已生成有来源的字段建议，请逐项审阅后决定是否采纳。"
+        },
+        "created_at": "2026-10-30T03:44:27.330348"
+      },
+      {
+        "id": 9,
+        "run_id": "8bc30970-bd99-4ada-9d80-e80c6fba645c",
+        "seq": 9,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:27.332695"
+      }
+    ],
+    "actions": [],
+    "facts": [],
+    "memories": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "run_identity",
+        "passed": true,
+        "reason": "SQL Run and session belong to the evaluated user",
+        "evidence_refs": [
+          "run",
+          "session"
+        ]
+      },
+      {
+        "name": "run_status",
+        "passed": true,
+        "reason": "status=succeeded; expected=['succeeded']",
+        "evidence_refs": [
+          "run.status"
+        ]
+      },
+      {
+        "name": "run_attempt",
+        "passed": true,
+        "reason": "attempt=1; epoch=1",
+        "evidence_refs": [
+          "run"
+        ]
+      },
+      {
+        "name": "session_released",
+        "passed": true,
+        "reason": "Terminal Run releases its session",
+        "evidence_refs": [
+          "session.active_run_id"
+        ]
+      },
+      {
+        "name": "draft_count",
+        "passed": true,
+        "reason": "draft_count=1; expected=1",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "operation_count",
+        "passed": true,
+        "reason": "operation_count=1; expected=1",
+        "evidence_refs": [
+          "operations"
+        ]
+      },
+      {
+        "name": "artifact_event_count",
+        "passed": true,
+        "reason": "artifact_event_count=1; expected=1",
+        "evidence_refs": [
+          "events"
+        ]
+      },
+      {
+        "name": "artifact_consistency",
+        "passed": true,
+        "reason": "Run, saved operation and artifact event reference exactly the persisted versions",
+        "evidence_refs": [
+          "run.output_refs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "original_resume_unchanged",
+        "passed": true,
+        "reason": "Original resume business fields match the pre-run baseline",
+        "evidence_refs": [
+          "resume",
+          "baseline.resume"
+        ]
+      },
+      {
+        "name": "facts_unchanged",
+        "passed": true,
+        "reason": "No fact was inserted, confirmed, edited or deleted by the agent",
+        "evidence_refs": [
+          "facts",
+          "baseline.facts"
+        ]
+      },
+      {
+        "name": "memories_unchanged",
+        "passed": true,
+        "reason": "No preference was silently inserted or changed",
+        "evidence_refs": [
+          "memories",
+          "baseline.memories"
+        ]
+      },
+      {
+        "name": "version_identity",
+        "passed": true,
+        "reason": "Draft keeps the owned resume, job, frozen versions and unchanged review base",
+        "evidence_refs": [
+          "versions",
+          "run.input_versions"
+        ]
+      },
+      {
+        "name": "pending_review",
+        "passed": true,
+        "reason": "All suggested changes remain pending in an unconfirmed draft",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "nonempty_suggestions",
+        "passed": true,
+        "reason": "Expected drafts contain reviewable field suggestions",
+        "evidence_refs": [
+          "versions.structured_content.changes"
+        ]
+      },
+      {
+        "name": "suggestion_shape",
+        "passed": true,
+        "reason": "Editable fields occur once and missing information has no invented replacement",
+        "evidence_refs": [
+          "versions"
+        ]
+      },
+      {
+        "name": "before_matches",
+        "passed": true,
+        "reason": "Every before value equals its actual frozen resume field",
+        "evidence_refs": [
+          "versions",
+          "run.input_json.contextSnapshot.resume"
+        ]
+      },
+      {
+        "name": "source_identity",
+        "passed": true,
+        "reason": "Source IDs, owner, frozen version, source marks and answer ownership agree; this does not establish textual truth",
+        "evidence_refs": [
+          "versions.fact_refs",
+          "facts",
+          "actions"
+        ]
+      }
+    ],
+    "limitations": [
+      "Legal source identity does not prove that natural-language claims are true.",
+      "Stub outputs do not measure real-model quality or latency."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

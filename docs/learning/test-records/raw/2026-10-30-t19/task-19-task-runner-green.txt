@@ -1,0 +1,132 @@
+FFFFFFFF.                                                                [100%]
+=================================== FAILURES ===================================
+_ test_live_task_scenario_uses_real_http_and_sql[parse-upload-stable-identity] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r0')
+case_id = 'parse-upload-stable-identity'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+___ test_live_task_scenario_uses_real_http_and_sql[parse-reparse-saved-job] ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r1')
+case_id = 'parse-reparse-saved-job'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+_ test_live_task_scenario_uses_real_http_and_sql[match-partial-candidate-replay] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r2')
+case_id = 'match-partial-candidate-replay'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+____ test_live_task_scenario_uses_real_http_and_sql[question-result-replay] ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r3')
+case_id = 'question-result-replay'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+____ test_live_task_scenario_uses_real_http_and_sql[followup-result-replay] ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r4')
+case_id = 'followup-result-replay'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+_______ test_live_task_scenario_uses_real_http_and_sql[cancel-recovery] ________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r5')
+case_id = 'cancel-recovery'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+_ test_live_task_scenario_uses_real_http_and_sql[source-deleted-or-reassigned] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r6')
+case_id = 'source-deleted-or-reassigned'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+___ test_live_task_scenario_uses_real_http_and_sql[business-write-rollback] ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-257/test_live_task_scenario_uses_r7')
+case_id = 'business-write-rollback'
+
+    @pytest.mark.parametrize('case_id', TASK_IDS)
+    def test_live_task_scenario_uses_real_http_and_sql(tmp_path, case_id):
+        result, wire = run_local(tmp_path, case_id)
+        assert result['status'] == 'pass', json.dumps(result['verdict'])
+        assert result['mode'] == 'live'
+>       assert result['semantic']['status'] == 'unreviewed'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'status'
+
+backend/tests/test_task_live_runner.py:52: KeyError
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[parse-upload-stable-identity]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[parse-reparse-saved-job]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[match-partial-candidate-replay]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[question-result-replay]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[followup-result-replay]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[cancel-recovery]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[source-deleted-or-reassigned]
+FAILED backend/tests/test_task_live_runner.py::test_live_task_scenario_uses_real_http_and_sql[business-write-rollback]
+8 failed, 1 passed in 10.27s

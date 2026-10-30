@@ -1,0 +1,677 @@
+[
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "running",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 2,
+      "errorCode": null,
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "running",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 2,
+      "errorCode": null,
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "running",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 2,
+      "errorCode": null,
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  },
+  {
+    "url": "http://127.0.0.1:4274/api/agent/runs/0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+    "status": 200,
+    "body": {
+      "runId": "0f2d7e9f-4a4f-4c8c-ad36-37adbeaf6727",
+      "sessionId": "813cdce1-5bcc-4eaa-87c0-8c492030904d",
+      "status": "failed",
+      "kind": "document_parse",
+      "input": {
+        "documentId": "resume:2",
+        "parseMode": "upload"
+      },
+      "inputVersions": {
+        "document": "2026-10-30T02:45:08.268145"
+      },
+      "attempt": 1,
+      "lastSeq": 6,
+      "errorCode": "document_parse_failed",
+      "sessionInvalidated": false,
+      "cancelRequested": false,
+      "outputRefs": [],
+      "result": null,
+      "actions": []
+    }
+  }
+]

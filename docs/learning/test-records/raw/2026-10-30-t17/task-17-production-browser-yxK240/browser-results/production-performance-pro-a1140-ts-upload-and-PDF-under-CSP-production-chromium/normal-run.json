@@ -1,0 +1,144 @@
+{
+  "runId": "678d29d5-877a-435a-92b4-de62d93d6699",
+  "event_count": 18,
+  "events": [
+    {
+      "seq": 1,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:00.389525",
+      "payload": "{\"status\": \"queued\", \"error_code\": null}"
+    },
+    {
+      "seq": 2,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:00.394374",
+      "payload": "{\"status\": \"running\", \"error_code\": null}"
+    },
+    {
+      "seq": 3,
+      "type": "tool.started",
+      "created_at": "2026-10-30 02:45:01.133540",
+      "payload": "{\"tool_name\": \"get_application_context\", \"operation_key\": \"call-0\"}"
+    },
+    {
+      "seq": 4,
+      "type": "tool.completed",
+      "created_at": "2026-10-30 02:45:01.135808",
+      "payload": "{\"tool_name\": \"get_application_context\", \"operation_key\": \"call-0\", \"result_ref\": null}"
+    },
+    {
+      "seq": 5,
+      "type": "tool.started",
+      "created_at": "2026-10-30 02:45:01.859275",
+      "payload": "{\"tool_name\": \"ask_applicant\", \"operation_key\": \"call-1\"}"
+    },
+    {
+      "seq": 6,
+      "type": "action.required",
+      "created_at": "2026-10-30 02:45:01.865444",
+      "payload": "{\"action_id\": \"77589f61-35a2-4f73-a830-0342d9fc16f0\", \"kind\": \"input\"}"
+    },
+    {
+      "seq": 7,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:01.868166",
+      "payload": "{\"status\": \"waiting_input\", \"error_code\": null}"
+    },
+    {
+      "seq": 8,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:03.529876",
+      "payload": "{\"status\": \"queued\", \"error_code\": null}"
+    },
+    {
+      "seq": 9,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:03.536286",
+      "payload": "{\"status\": \"running\", \"error_code\": null}"
+    },
+    {
+      "seq": 10,
+      "type": "tool.started",
+      "created_at": "2026-10-30 02:45:03.569227",
+      "payload": "{\"tool_name\": \"ask_applicant\", \"operation_key\": \"call-1\"}"
+    },
+    {
+      "seq": 11,
+      "type": "tool.completed",
+      "created_at": "2026-10-30 02:45:03.569955",
+      "payload": "{\"tool_name\": \"ask_applicant\", \"operation_key\": \"call-1\", \"result_ref\": null}"
+    },
+    {
+      "seq": 12,
+      "type": "tool.started",
+      "created_at": "2026-10-30 02:45:04.282373",
+      "payload": "{\"tool_name\": \"get_application_context\", \"operation_key\": \"call-2\"}"
+    },
+    {
+      "seq": 13,
+      "type": "tool.completed",
+      "created_at": "2026-10-30 02:45:04.286347",
+      "payload": "{\"tool_name\": \"get_application_context\", \"operation_key\": \"call-2\", \"result_ref\": null}"
+    },
+    {
+      "seq": 14,
+      "type": "tool.started",
+      "created_at": "2026-10-30 02:45:05.012208",
+      "payload": "{\"tool_name\": \"create_resume_draft\", \"operation_key\": \"draft:1:initial\"}"
+    },
+    {
+      "seq": 15,
+      "type": "artifact.created",
+      "created_at": "2026-10-30 02:45:05.024899",
+      "payload": "{\"artifact_id\": \"a1c75689-7ed0-4ea3-beaf-eef77cfb56a9\", \"kind\": \"resume_version\"}"
+    },
+    {
+      "seq": 16,
+      "type": "tool.completed",
+      "created_at": "2026-10-30 02:45:05.027389",
+      "payload": "{\"tool_name\": \"create_resume_draft\", \"operation_key\": \"draft:1:initial\", \"result_ref\": \"a1c75689-7ed0-4ea3-beaf-eef77cfb56a9\"}"
+    },
+    {
+      "seq": 17,
+      "type": "assistant.delta",
+      "created_at": "2026-10-30 02:45:05.745854",
+      "payload": "{\"text\": \"\\u8bf7\\u5ba1\\u9605\\u8349\\u7a3f\"}"
+    },
+    {
+      "seq": 18,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:45:05.753089",
+      "payload": "{\"status\": \"succeeded\", \"error_code\": null}"
+    }
+  ],
+  "completed": {
+    "inputSamples": [
+      1.0999999940395355,
+      10.700000017881393,
+      0.5,
+      0.3999999761581421,
+      0.5999999940395355,
+      13.599999994039536,
+      3,
+      0.5,
+      13.800000011920929,
+      2.7000000178813934,
+      0.5,
+      13.599999994039536,
+      2.100000023841858,
+      0.3999999761581421,
+      13.099999994039536,
+      1.5999999940395355,
+      0.7000000178813934,
+      11.5,
+      16,
+      4.799999982118607
+    ],
+    "recordInputs": false,
+    "onlineAt": null,
+    "completedAt": 3916,
+    "completedWallTime": 1793328306210
+  },
+  "event_created_to_ui_ms": 457,
+  "measurement": "one real SQL event created_at to browser DOM visibility sample; includes commit, not a P95 load claim"
+}

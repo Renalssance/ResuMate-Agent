@@ -1,0 +1,19 @@
+{
+  "source": "/tmp/task-19-build-5cd2b8fd52/source",
+  "backend_build_record": "build.json",
+  "frontend_build_record": "frontend-retry.json",
+  "images": {
+    "resumate-t19-backend:5cd2b8fd52": {
+      "Id": "sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455",
+      "Created": "2026-10-30T03:23:58.158095888Z",
+      "Architecture": "arm64",
+      "Size": 3034132853
+    },
+    "resumate-t19-frontend:5cd2b8fd52": {
+      "Id": "sha256:9a800b9b4bb2be0199570a36fd01d71ba8a54537b489a391e5d79454475bbbf0",
+      "Created": "2026-10-30T03:30:09.417604629Z",
+      "Architecture": "arm64",
+      "Size": 98777161
+    }
+  }
+}

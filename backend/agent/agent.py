@@ -8,6 +8,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
+from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
 from backend.agent.interview_tools import create_interview_tools
@@ -134,12 +135,16 @@ def create_agent_with_interview_tools(user_id: str):
     if int_user_id and (not settings.api_key or not settings.model or not settings.base_url):
         raise RuntimeError("请先在模型设置中配置 API Key、Base URL 和模型名称")
 
-    logger.info("Creating interview agent | user_id=%s model=%s base_url=%s", user_id, settings.model, settings.base_url)
+    logger.info("Creating interview agent | user_id=%s model=%s", user_id, settings.model)
     model = init_chat_model(
         model=settings.model,
         model_provider="openai",
         api_key=settings.api_key,
         base_url=settings.base_url or None,
+        timeout=settings.request_timeout_seconds,
+        max_retries=0,
+        http_client=DefaultHttpxClient(follow_redirects=False),
+        http_async_client=DefaultAsyncHttpxClient(follow_redirects=False),
         temperature=0.3,
         stream_usage=True,
     )
@@ -215,8 +220,9 @@ async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", 
                     await output_queue.put({"type": "content", "content": content})
         except Exception as exc:
             stream_error_type = type(exc).__name__
-            logger.exception("Agent stream failed")
-            await output_queue.put({"type": "error", "content": str(exc)})
+            logger.warning("Agent stream failed | error_type=%s", type(exc).__name__)
+            await output_queue.put({"type": "error", "code": "model_request_failed",
+                                    "content": f"模型请求失败（{type(exc).__name__}），请检查模型设置后重试。"})
         finally:
             await output_queue.put(None)
 

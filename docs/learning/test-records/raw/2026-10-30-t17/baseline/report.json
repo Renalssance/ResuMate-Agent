@@ -1,0 +1,213 @@
+{
+  "started_at": "2026-10-30T02:30:30.093799+00:00",
+  "executed": true,
+  "model_calls": 0,
+  "clock": "Linux CLOCK_MONOTONIC shared by Docker VM processes",
+  "phases": {
+    "api_only": {
+      "overall": {
+        "samples": 18097,
+        "p50_ms": 54.03725,
+        "p95_ms": 160.869625,
+        "max_ms": 448.037,
+        "errors": 0,
+        "statuses": {
+          "200": 18097
+        }
+      },
+      "endpoints": {
+        "job_detail": {
+          "samples": 3614,
+          "p50_ms": 24.721625,
+          "p95_ms": 87.780875,
+          "max_ms": 278.820083,
+          "errors": 0,
+          "statuses": {
+            "200": 3614
+          }
+        },
+        "jobs_deep": {
+          "samples": 3621,
+          "p50_ms": 99.642792,
+          "p95_ms": 197.39525,
+          "max_ms": 429.152084,
+          "errors": 0,
+          "statuses": {
+            "200": 3621
+          }
+        },
+        "jobs_first": {
+          "samples": 3621,
+          "p50_ms": 70.069916,
+          "p95_ms": 135.083459,
+          "max_ms": 448.037,
+          "errors": 0,
+          "statuses": {
+            "200": 3621
+          }
+        },
+        "jobs_search": {
+          "samples": 3623,
+          "p50_ms": 76.742625,
+          "p95_ms": 154.609959,
+          "max_ms": 361.82425,
+          "errors": 0,
+          "statuses": {
+            "200": 3623
+          }
+        },
+        "run_snapshot": {
+          "samples": 3618,
+          "p50_ms": 23.632541,
+          "p95_ms": 92.405834,
+          "max_ms": 232.224042,
+          "errors": 0,
+          "statuses": {
+            "200": 3618
+          }
+        }
+      },
+      "passed": true,
+      "concurrency": 20,
+      "warmup_seconds": 10,
+      "duration_seconds": 60,
+      "requests_per_second": 301.6166666666667
+    },
+    "api_with_30_sse": {
+      "overall": {
+        "samples": 13679,
+        "p50_ms": 84.458875,
+        "p95_ms": 206.242209,
+        "max_ms": 675.057542,
+        "errors": 0,
+        "statuses": {
+          "200": 13679
+        }
+      },
+      "endpoints": {
+        "job_detail": {
+          "samples": 2737,
+          "p50_ms": 15.679542,
+          "p95_ms": 67.353417,
+          "max_ms": 456.602875,
+          "errors": 0,
+          "statuses": {
+            "200": 2737
+          }
+        },
+        "jobs_deep": {
+          "samples": 2738,
+          "p50_ms": 161.826542,
+          "p95_ms": 255.130417,
+          "max_ms": 675.057542,
+          "errors": 0,
+          "statuses": {
+            "200": 2738
+          }
+        },
+        "jobs_first": {
+          "samples": 2735,
+          "p50_ms": 98.016666,
+          "p95_ms": 166.745541,
+          "max_ms": 568.367125,
+          "errors": 0,
+          "statuses": {
+            "200": 2735
+          }
+        },
+        "jobs_search": {
+          "samples": 2733,
+          "p50_ms": 124.720833,
+          "p95_ms": 205.276334,
+          "max_ms": 554.469751,
+          "errors": 0,
+          "statuses": {
+            "200": 2733
+          }
+        },
+        "run_snapshot": {
+          "samples": 2736,
+          "p50_ms": 14.388666,
+          "p95_ms": 58.199084,
+          "max_ms": 300.245375,
+          "errors": 0,
+          "statuses": {
+            "200": 2736
+          }
+        }
+      },
+      "passed": true,
+      "concurrency": 20,
+      "warmup_seconds": 10,
+      "duration_seconds": 60,
+      "requests_per_second": 227.98333333333332
+    }
+  },
+  "sse": {
+    "commits": 300,
+    "expected": 900,
+    "received": 900,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 271.805292,
+    "p95_ms": 498.170417,
+    "max_ms": 701.551917,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "reconnect": {
+    "commits": 10,
+    "expected": 6,
+    "received": 6,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 27.286625,
+    "p95_ms": 37.790334,
+    "max_ms": 37.790334,
+    "negative_clock_samples": 0,
+    "passed": true,
+    "visible_after_reconnect_ms": 15.131334
+  },
+  "slow_consumer_other_29": {
+    "commits": 50,
+    "expected": 145,
+    "received": 145,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 393.059501,
+    "p95_ms": 491.353334,
+    "max_ms": 507.762375,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "metrics_final": [
+    {
+      "at_ns": 2175561166660,
+      "api": 0,
+      "checked_out": 0,
+      "peak_checked_out": 15,
+      "sql": 43107,
+      "hostname": "6653ddc1abf5",
+      "pid": 1,
+      "max_rss_kib": 340088,
+      "pool": "Pool size: 5  Connections in pool: 5 Current Overflow: 0 Current Checked out connections: 0"
+    },
+    {
+      "at_ns": 2175566029827,
+      "api": 1,
+      "checked_out": 0,
+      "peak_checked_out": 15,
+      "sql": 42672,
+      "hostname": "e884dd3e3380",
+      "pid": 1,
+      "max_rss_kib": 339920,
+      "pool": "Pool size: 5  Connections in pool: 5 Current Overflow: 0 Current Checked out connections: 0"
+    }
+  ],
+  "stream_errors": [],
+  "completed_at": "2026-10-30T02:32:59.027334+00:00",
+  "passed": true
+}

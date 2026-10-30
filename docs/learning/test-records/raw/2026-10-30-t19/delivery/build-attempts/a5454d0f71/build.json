@@ -1,0 +1,12 @@
+{
+  "source": "/tmp/task-19-build-a5454d0f71/source",
+  "backend_image": "resumate-t19-backend:a5454d0f71",
+  "frontend_image": "resumate-t19-frontend:a5454d0f71",
+  "backend_built": false,
+  "frontend_built": false,
+  "configuration": "passed",
+  "dockerfiles": [
+    "deploy/worker.Dockerfile",
+    "deploy/frontend.Dockerfile"
+  ]
+}

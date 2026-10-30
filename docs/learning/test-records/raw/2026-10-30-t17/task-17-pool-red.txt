@@ -1,0 +1,24 @@
+sF                                                                       [100%]
+=================================== FAILURES ===================================
+____ test_mysql_rejects_eleventh_checkout_within_five_second_budget[mysql] _____
+
+career_engine = Engine(mysql+pymysql://root@/resumate_test_0a4df6d57f914a299c21f800dd21c40f?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_mysql_rejects_eleventh_checkout_within_five_second_budget(career_engine):
+        if career_engine.dialect.name != 'mysql':
+            pytest.skip('MySQL connection budget; SQLite behavior covered separately')
+        engine = build_engine(career_engine.url.render_as_string(hide_password=False))
+        try:
+            with ExitStack() as stack:
+                for _ in range(10):
+                    connection = stack.enter_context(engine.connect())
+                    assert connection.scalar(text('SELECT 1')) == 1
+                started = monotonic()
+>               with pytest.raises(TimeoutError):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               Failed: DID NOT RAISE <class 'sqlalchemy.exc.TimeoutError'>
+
+backend/tests/test_database_pool.py:22: Failed
+=========================== short test summary info ============================
+FAILED backend/tests/test_database_pool.py::test_mysql_rejects_eleventh_checkout_within_five_second_budget[mysql]
+1 failed, 1 skipped in 0.51s

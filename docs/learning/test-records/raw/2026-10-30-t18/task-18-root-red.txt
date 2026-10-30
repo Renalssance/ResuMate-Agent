@@ -1,0 +1,2888 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFF                                              [100%]
+=================================== FAILURES ===================================
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-graph] _
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3...'), openai_api_base='https://model.example/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024)
+asynchronous = False, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10cd70ce0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:74: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:30,538 | INFO | httpx | HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+2026-10-30 10:29:30,538 | INFO | httpx | HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-chat] _
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res...model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1', stream_usage=True)
+asynchronous = False, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115691790>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:74: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:30,619 | INFO | backend.agent.agent | Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+2026-10-30 10:29:30,640 | INFO | backend.agent.agent | Interview agent created | user_id=transport-user int_user_id=1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.agent:agent.py:137 Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+INFO     backend.agent.agent:agent.py:153 Interview agent created | user_id=transport-user int_user_id=1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:30,641 | INFO | httpx | HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+2026-10-30 10:29:30,641 | INFO | httpx | HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-tool] _
+
+self = <openai.OpenAI object at 0x115e4a840>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1005: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._SyncHttpxClientWrapper object at 0x11565cf50>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `Client.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:901: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res..., temperature=0.1, model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1')
+asynchronous = False, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115622a20>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+>               chat_model.invoke('synthetic input')
+
+backend/tests/test_model_transport_security.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:529: in invoke
+    self.generate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1920: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1727: in generate
+    self._generate_with_cache(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2065: in _generate_with_cache
+    result = self._generate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1492: in _generate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1487: in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:367: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_utils/_utils.py:286: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:1211: in create
+    return self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1297: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.OpenAI object at 0x115e4a840>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1037: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:30,651 | INFO | backend.agent.interview_tools | Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:24 Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:30,652 | INFO | openai._base_client | Retrying request to /chat/completions in 0.375958 seconds
+2026-10-30 10:29:31,037 | INFO | openai._base_client | Retrying request to /chat/completions in 0.933416 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.375958 seconds
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.933416 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-graph] _
+
+self = <openai.AsyncOpenAI object at 0x115f5ecc0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x11580e7e0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3...'), openai_api_base='https://model.example/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024)
+asynchronous = True, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115d37ef0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x115f5ecc0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-chat] _
+
+self = <openai.AsyncOpenAI object at 0x11b9f8c50>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x115f5cda0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res...model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1', stream_usage=True)
+asynchronous = True, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11565cb30>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x11b9f8c50>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:32,173 | INFO | backend.agent.agent | Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+2026-10-30 10:29:32,175 | INFO | backend.agent.agent | Interview agent created | user_id=transport-user int_user_id=1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.agent:agent.py:137 Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+INFO     backend.agent.agent:agent.py:153 Interview agent created | user_id=transport-user int_user_id=1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:32,176 | INFO | openai._base_client | Retrying request to /chat/completions in 0.476838 seconds
+2026-10-30 10:29:32,656 | INFO | openai._base_client | Retrying request to /chat/completions in 0.863355 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.476838 seconds
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.863355 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-tool] _
+
+self = <openai.AsyncOpenAI object at 0x11b9fa900>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x115f5cda0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res..., temperature=0.1, model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1')
+asynchronous = True, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115622900>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x11b9fa900>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:33,641 | INFO | backend.agent.interview_tools | Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:24 Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:33,642 | INFO | openai._base_client | Retrying request to /chat/completions in 0.428743 seconds
+2026-10-30 10:29:34,074 | INFO | openai._base_client | Retrying request to /chat/completions in 0.937921 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.428743 seconds
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.937921 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-graph] _
+
+self = <openai.OpenAI object at 0x115c2a660>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1005: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._SyncHttpxClientWrapper object at 0x115606ab0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `Client.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:901: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3...'), openai_api_base='https://model.example/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024)
+asynchronous = False, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b9f93a0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+>               chat_model.invoke('synthetic input')
+
+backend/tests/test_model_transport_security.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:529: in invoke
+    self.generate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1920: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1727: in generate
+    self._generate_with_cache(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2065: in _generate_with_cache
+    result = self._generate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1492: in _generate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1487: in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:367: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_utils/_utils.py:286: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:1211: in create
+    return self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1297: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.OpenAI object at 0x115c2a660>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1037: APIConnectionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-chat] _
+
+self = <openai.OpenAI object at 0x115da7da0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1005: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._SyncHttpxClientWrapper object at 0x11565cf50>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `Client.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:901: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res...model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1', stream_usage=True)
+asynchronous = False, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b007f20>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+>               chat_model.invoke('synthetic input')
+
+backend/tests/test_model_transport_security.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:529: in invoke
+    self.generate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1920: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1727: in generate
+    self._generate_with_cache(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2065: in _generate_with_cache
+    result = self._generate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1492: in _generate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1487: in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:367: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_utils/_utils.py:286: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:1211: in create
+    return self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1297: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.OpenAI object at 0x115da7da0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1037: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:35,299 | INFO | backend.agent.agent | Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+2026-10-30 10:29:35,301 | INFO | backend.agent.agent | Interview agent created | user_id=transport-user int_user_id=1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.agent:agent.py:137 Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+INFO     backend.agent.agent:agent.py:153 Interview agent created | user_id=transport-user int_user_id=1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:35,302 | INFO | openai._base_client | Retrying request to /chat/completions in 0.484702 seconds
+2026-10-30 10:29:35,791 | INFO | openai._base_client | Retrying request to /chat/completions in 0.793294 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.484702 seconds
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.793294 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-tool] _
+
+self = <openai.OpenAI object at 0x115e9fdd0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1005: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._SyncHttpxClientWrapper object at 0x11565cf50>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `Client.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:901: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res..., temperature=0.1, model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1')
+asynchronous = False, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115e9fce0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+>               chat_model.invoke('synthetic input')
+
+backend/tests/test_model_transport_security.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:529: in invoke
+    self.generate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1920: in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1727: in generate
+    self._generate_with_cache(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2065: in _generate_with_cache
+    result = self._generate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1492: in _generate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1487: in _generate
+    raw_response = self.client.with_raw_response.create(**payload)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:367: in wrapped
+    return cast(LegacyAPIResponse[R], func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/_utils/_utils.py:286: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:1211: in create
+    return self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1297: in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.OpenAI object at 0x115e9fdd0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_StreamT] | None = None,
+    ) -> ResponseT | _StreamT:
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1037: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:36,717 | INFO | backend.agent.interview_tools | Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:24 Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:36,718 | INFO | openai._base_client | Retrying request to /chat/completions in 0.387956 seconds
+2026-10-30 10:29:37,116 | INFO | openai._base_client | Retrying request to /chat/completions in 0.870855 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.387956 seconds
+INFO     openai._base_client:_base_client.py:1094 Retrying request to /chat/completions in 0.870855 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-graph] _
+
+self = <openai.AsyncOpenAI object at 0x10cdd1c70>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x11580e7e0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={'max_input_tokens': 3...'), openai_api_base='https://model.example/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024)
+asynchronous = True, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10cdd3a70>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x10cdd1c70>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...input', 'role': 'user'}], 'model': 'synthetic-model', 'max_completion_tokens': 1024, 'stream': False}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-chat] _
+
+self = <openai.AsyncOpenAI object at 0x115f5e390>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x115f5cda0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res...model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1', stream_usage=True)
+asynchronous = True, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b9f8e90>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x115f5e390>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.3}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:38,197 | INFO | backend.agent.agent | Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+2026-10-30 10:29:38,199 | INFO | backend.agent.agent | Interview agent created | user_id=transport-user int_user_id=1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.agent:agent.py:137 Creating interview agent | user_id=transport-user model=synthetic-model base_url=https://model.example/v1
+INFO     backend.agent.agent:agent.py:153 Interview agent created | user_id=transport-user int_user_id=1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:38,200 | INFO | openai._base_client | Retrying request to /chat/completions in 0.439347 seconds
+2026-10-30 10:29:38,643 | INFO | openai._base_client | Retrying request to /chat/completions in 0.987905 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.439347 seconds
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.987905 seconds
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-tool] _
+
+self = <openai.AsyncOpenAI object at 0x10cd719a0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+>               response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1604: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <langchain_openai.chat_models._client_utils._AsyncHttpxClientWrapper object at 0x115f5cda0>
+request = <Request('POST', 'https://model.example/v1/chat/completions')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+>           raise RuntimeError("Cannot send a request, as the client has been closed.")
+E           RuntimeError: Cannot send a request, as the client has been closed.
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1616: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+chat_model = ChatOpenAI(metadata={'lc_versions': {'langchain-core': '1.7.1', 'langchain': '1.4.7'}}, profile={}, client=<openai.res..., temperature=0.1, model_kwargs={}, openai_api_key=SecretStr('**********'), openai_api_base='https://model.example/v1')
+asynchronous = True, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b93fce0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+>               asyncio.run(chat_model.ainvoke('synthetic input'))
+
+backend/tests/test_model_transport_security.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:552: in ainvoke
+    llm_result = await self.agenerate_prompt(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1931: in agenerate_prompt
+    return await self.agenerate(
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:1889: in agenerate
+    raise exceptions[0]
+.venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py:2222: in _agenerate_with_cache
+    result = await self._agenerate(
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1758: in _agenerate
+    _handle_openai_api_error(e)
+.venv/lib/python3.12/site-packages/langchain_openai/chat_models/base.py:1751: in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+.venv/lib/python3.12/site-packages/openai/_legacy_response.py:384: in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openai/resources/chat/completions/completions.py:2714: in create
+    return await self._post(
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1884: in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <openai.AsyncOpenAI object at 0x10cd719a0>
+cast_to = <class 'openai.types.chat.chat_completion.ChatCompletion'>
+options = FinalRequestOptions(method='post', url='/chat/completions', params={}, headers={'X-Stainless-Raw-Response': 'true'}, m...'synthetic input', 'role': 'user'}], 'model': 'synthetic-model', 'stream': False, 'temperature': 0.1}, extra_json=None)
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        *,
+        stream: bool = False,
+        stream_cls: type[_AsyncStreamT] | None = None,
+    ) -> ResponseT | _AsyncStreamT:
+        if self._platform is None:
+            # `get_platform` can make blocking IO calls so we
+            # execute it earlier while we are in an async context
+            self._platform = await asyncify(get_platform)()
+    
+        cast_to = self._maybe_override_cast_to(cast_to, options)
+    
+        # create a copy of the options we were given so that if the
+        # options are mutated later & we then retry, the retries are
+        # given the original options
+        input_options = model_copy(options)
+        if input_options.idempotency_key is None and input_options.method.lower() != "get":
+            # ensure the idempotency key is reused between requests
+            input_options.idempotency_key = self._idempotency_key()
+    
+        response: httpx.Response | None = None
+        max_retries = input_options.get_max_retries(self.max_retries)
+    
+        retries_taken = 0
+        for retries_taken in range(max_retries + 1):
+            options = model_copy(input_options)
+            options = await self._prepare_options(options)
+    
+            remaining_retries = max_retries - retries_taken
+            request = self._build_request(options, retries_taken=retries_taken)
+            await self._prepare_request(request)
+    
+            kwargs: HttpxSendArgs = {}
+            if self.custom_auth is not None:
+                kwargs["auth"] = self.custom_auth
+    
+            if options.follow_redirects is not None:
+                kwargs["follow_redirects"] = options.follow_redirects
+    
+            log.debug("Sending HTTP Request: %s %s", request.method, request.url)
+    
+            response = None
+            try:
+                response = await self._client.send(
+                    request,
+                    stream=stream or self._should_stream_response_body(request=request),
+                    **kwargs,
+                )
+            except httpx.TimeoutException as err:
+                log.debug("Encountered httpx.TimeoutException", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising timeout error")
+                raise APITimeoutError(request=request) from err
+            except Exception as err:
+                log.debug("Encountered Exception", exc_info=True)
+    
+                if remaining_retries > 0:
+                    await self._sleep_for_retry(
+                        retries_taken=retries_taken,
+                        max_retries=max_retries,
+                        options=input_options,
+                        response=None,
+                    )
+                    continue
+    
+                log.debug("Raising connection error")
+>               raise APIConnectionError(request=request) from err
+E               openai.APIConnectionError: Connection error.
+
+.venv/lib/python3.12/site-packages/openai/_base_client.py:1636: APIConnectionError
+---------------------------- Captured stdout setup -----------------------------
+2026-10-30 10:29:39,756 | INFO | backend.agent.interview_tools | Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+------------------------------ Captured log setup ------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:24 Creating LLM client | model=synthetic-model base_url=https://model.example/v1 temperature=0.1
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:39,757 | INFO | openai._base_client | Retrying request to /chat/completions in 0.451607 seconds
+2026-10-30 10:29:40,212 | INFO | openai._base_client | Retrying request to /chat/completions in 0.953663 seconds
+------------------------------ Captured log call -------------------------------
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.451607 seconds
+INFO     openai._base_client:_base_client.py:1693 Retrying request to /chat/completions in 0.953663 seconds
+_ test_direct_sdk_stops_redirect_and_has_finite_timeout[307-https://model.example/sink-harness] _
+
+kind = 'harness', status = 307, location = 'https://model.example/sink'
+settings = namespace(api_key='synthetic-key', base_url='https://model.example/v1', model='synthetic-model', max_tokens=1024, context_window_tokens=32768, request_timeout_seconds=7.0)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b9fa8a0>
+
+    @pytest.mark.parametrize('kind', ['harness', 'embedding'])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_direct_sdk_stops_redirect_and_has_finite_timeout(kind, status, location, settings, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        client = harness.AgentHarness(1).client if kind == 'harness' else EmbeddingService()._remote_client()
+        try:
+            with pytest.raises(APIStatusError):
+                if kind == 'harness':
+                    client.chat.completions.create(model=settings.model, messages=[{'role': 'user', 'content': 'synthetic'}])
+                else:
+                    client.embeddings.create(model='synthetic-embedding', input=['synthetic'])
+>           assert len(calls) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:90: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,267 | INFO | httpx | HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+2026-10-30 10:29:41,267 | INFO | httpx | HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 307 Temporary Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+_ test_direct_sdk_stops_redirect_and_has_finite_timeout[307-https://model.example/sink-embedding] _
+
+kind = 'embedding', status = 307, location = 'https://model.example/sink'
+settings = namespace(api_key='synthetic-key', base_url='https://model.example/v1', model='synthetic-model', max_tokens=1024, context_window_tokens=32768, request_timeout_seconds=7.0)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b917650>
+
+    @pytest.mark.parametrize('kind', ['harness', 'embedding'])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_direct_sdk_stops_redirect_and_has_finite_timeout(kind, status, location, settings, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        client = harness.AgentHarness(1).client if kind == 'harness' else EmbeddingService()._remote_client()
+        try:
+            with pytest.raises(APIStatusError):
+                if kind == 'harness':
+                    client.chat.completions.create(model=settings.model, messages=[{'role': 'user', 'content': 'synthetic'}])
+                else:
+                    client.embeddings.create(model='synthetic-embedding', input=['synthetic'])
+>           assert len(calls) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([<Request('POST', 'https://model.example/v1/embeddings')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:90: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,277 | INFO | httpx | HTTP Request: POST https://model.example/v1/embeddings "HTTP/1.1 307 Temporary Redirect"
+2026-10-30 10:29:41,277 | INFO | httpx | HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/embeddings "HTTP/1.1 307 Temporary Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/sink "HTTP/1.1 401 Unauthorized"
+_ test_direct_sdk_stops_redirect_and_has_finite_timeout[308-https://other.example/sink-harness] _
+
+kind = 'harness', status = 308, location = 'https://other.example/sink'
+settings = namespace(api_key='synthetic-key', base_url='https://model.example/v1', model='synthetic-model', max_tokens=1024, context_window_tokens=32768, request_timeout_seconds=7.0)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b0314c0>
+
+    @pytest.mark.parametrize('kind', ['harness', 'embedding'])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_direct_sdk_stops_redirect_and_has_finite_timeout(kind, status, location, settings, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        client = harness.AgentHarness(1).client if kind == 'harness' else EmbeddingService()._remote_client()
+        try:
+            with pytest.raises(APIStatusError):
+                if kind == 'harness':
+                    client.chat.completions.create(model=settings.model, messages=[{'role': 'user', 'content': 'synthetic'}])
+                else:
+                    client.embeddings.create(model='synthetic-embedding', input=['synthetic'])
+>           assert len(calls) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://other.example/sink')>])
+
+backend/tests/test_model_transport_security.py:90: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,287 | INFO | httpx | HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 308 Permanent Redirect"
+2026-10-30 10:29:41,288 | INFO | httpx | HTTP Request: POST https://other.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/chat/completions "HTTP/1.1 308 Permanent Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://other.example/sink "HTTP/1.1 401 Unauthorized"
+_ test_direct_sdk_stops_redirect_and_has_finite_timeout[308-https://other.example/sink-embedding] _
+
+kind = 'embedding', status = 308, location = 'https://other.example/sink'
+settings = namespace(api_key='synthetic-key', base_url='https://model.example/v1', model='synthetic-model', max_tokens=1024, context_window_tokens=32768, request_timeout_seconds=7.0)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b031340>
+
+    @pytest.mark.parametrize('kind', ['harness', 'embedding'])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_direct_sdk_stops_redirect_and_has_finite_timeout(kind, status, location, settings, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        client = harness.AgentHarness(1).client if kind == 'harness' else EmbeddingService()._remote_client()
+        try:
+            with pytest.raises(APIStatusError):
+                if kind == 'harness':
+                    client.chat.completions.create(model=settings.model, messages=[{'role': 'user', 'content': 'synthetic'}])
+                else:
+                    client.embeddings.create(model='synthetic-embedding', input=['synthetic'])
+>           assert len(calls) == 1
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len([<Request('POST', 'https://model.example/v1/embeddings')>, <Request('POST', 'https://other.example/sink')>])
+
+backend/tests/test_model_transport_security.py:90: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,297 | INFO | httpx | HTTP Request: POST https://model.example/v1/embeddings "HTTP/1.1 308 Permanent Redirect"
+2026-10-30 10:29:41,298 | INFO | httpx | HTTP Request: POST https://other.example/sink "HTTP/1.1 401 Unauthorized"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1025 HTTP Request: POST https://model.example/v1/embeddings "HTTP/1.1 308 Permanent Redirect"
+INFO     httpx:_client.py:1025 HTTP Request: POST https://other.example/sink "HTTP/1.1 401 Unauthorized"
+_____ test_llm_logs_keep_diagnostics_without_prompt_response_or_error_body _____
+
+llm_logs = <_pytest.logging.LogCaptureFixture object at 0x11b0cc860>
+
+    def test_llm_logs_keep_diagnostics_without_prompt_response_or_error_body(llm_logs):
+        metadata = {'model': 'synthetic-model', 'attempt': 1, 'api_key': SECRET,
+                    'filename': MATERIAL, 'response_format': {'schema': MATERIAL}}
+        logging_config.log_llm_prompt('test', MATERIAL, metadata)
+        logging_config.log_llm_response('test', MATERIAL, metadata)
+        logging_config.log_llm_request('test', metadata)
+        try:
+            raise RuntimeError(SECRET)
+        except RuntimeError as exc:
+            logging_config.log_llm_error('test', exc, metadata)
+        logging_config.log_llm_validation_error('test', [{'loc': ['text'], 'input': MATERIAL, 'msg': SECRET}], metadata)
+>       assert SECRET not in llm_logs.text
+E       assert 'synthetic-p...ecret-012345' not in 'INFO     ba...-012345"}]\n'
+E         
+E         'synthetic-provider-secret-012345' is contained here:
+E           pi_key": "synthetic-provider-secret-012345", "filename": "synthetic-private-resume-material", "response_format": {"schema": "synthetic-private-resume-material"}}
+E         ?           ++++++++++++++++++++++++++++++++
+E           synthetic-private-resume-material
+E           INFO     backend.llm:logging_config.py:97 LLM response | task=test | metadata={"model": "synthetic-model", "attempt": 1, "api_key": "synthetic-provider-secret-012345", "filename": "synthetic-private-resume-material", "response_format": {"schema": "synthetic-private-resume-material"}}
+E           synthetic-private-resume-material...
+E         
+E         ...Full output truncated (7 lines hidden), use '-vv' to show
+
+backend/tests/test_llm_error_privacy.py:36: AssertionError
+_____ test_harness_progress_and_reflection_do_not_republish_provider_body ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b0ceea0>
+llm_logs = <_pytest.logging.LogCaptureFixture object at 0x11b0ce120>
+
+    def test_harness_progress_and_reflection_do_not_republish_provider_body(monkeypatch, llm_logs):
+        class Result(BaseModel):
+            text: str
+        events, calls = [], []
+        target = AgentHarness.__new__(AgentHarness)
+        target.model = 'synthetic-model'
+        target.progress_callback = lambda **event: events.append(event)
+        target._record_usage_error = lambda *args: None
+        monkeypatch.setattr(target, 'load_prompt', lambda _: 'synthetic')
+        def fail(task, messages, *args, **kwargs):
+            calls.append(messages)
+            raise RuntimeError(SECRET)
+        monkeypatch.setattr(target, '_create_chat_completion', fail)
+        with pytest.raises(RuntimeError):
+            target.run_schema(task='test', prompt_name='test', schema=Result, variables={})
+>       assert SECRET not in json.dumps(events)
+E       assert 'synthetic-p...ecret-012345' not in '[{"stage": ...8+00:00"}}}]'
+E         
+E         'synthetic-provider-secret-012345' is contained here:
+E         ?           ^^^^^^^^^^
+E           imeError: synthetic-provider-secret-012345", "data": {"agent": {"phase": "failed", "task": "test", "schema": "Result", "attempt": 3, "message": "LLM call failed: RuntimeError: synthetic-provider-secret-012345", "level": "error", "timestamp": "2026-10-30T02:29:41.303511+00:00"}}}, {"stage": "llm_analyze", "status": "running", "progress": 0, "message": "LLM analysis failed: RuntimeError: synthetic-provider-secret-012345", "data": {"agent": {"phase": "failed", "task": "test", "schema": "Result", "...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+backend/tests/test_llm_error_privacy.py:56: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,303 | WARNING | backend.agents.harness | Structured LLM call failed; retrying with reflection | task=test schema=Result error=synthetic-provider-secret-012345
+2026-10-30 10:29:41,303 | WARNING | backend.agents.harness | Structured LLM call failed; retrying with reflection | task=test schema=Result error=synthetic-provider-secret-012345
+------------------------------ Captured log call -------------------------------
+WARNING  backend.agents.harness:harness.py:182 Structured LLM call failed; retrying with reflection | task=test schema=Result error=synthetic-provider-secret-012345
+WARNING  backend.agents.harness:harness.py:182 Structured LLM call failed; retrying with reflection | task=test schema=Result error=synthetic-provider-secret-012345
+______________ test_chat_stream_error_is_safe_but_still_finishes _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b0cfc50>
+llm_logs = <_pytest.logging.LogCaptureFixture object at 0x11b0cfe00>
+
+    def test_chat_stream_error_is_safe_but_still_finishes(monkeypatch, llm_logs):
+        class FailedAgent:
+            async def astream(self, *args, **kwargs):
+                raise RuntimeError(SECRET)
+                yield
+        monkeypatch.setattr(agent, 'storage', SimpleNamespace(load=lambda *_: [], save=lambda *_: None))
+        monkeypatch.setattr(agent, 'create_agent_with_interview_tools', lambda *_: (FailedAgent(), None, 1,
+            SimpleNamespace(model='synthetic-model', base_url='https://model.example')))
+        monkeypatch.setattr(agent, 'record_llm_usage', lambda **_: None)
+        async def collect():
+            return ''.join([chunk async for chunk in agent.chat_with_agent_stream(MATERIAL, 'synthetic', 'session')])
+        output = asyncio.run(collect())
+>       assert SECRET not in output and SECRET not in llm_logs.text
+E       assert ('synthetic-p...ecret-012345' not in ': heartbeat...: [DONE]\n\n'
+E         
+E         'synthetic-provider-secret-012345' is contained here:
+E           ontent": "synthetic-provider-secret-012345"}
+E           
+E           data: [DONE]
+E           )
+
+backend/tests/test_llm_error_privacy.py:74: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,306 | INFO | backend.agent.agent | Chat stream start | user_id=synthetic session_id=session history_messages=0 user_text_chars=33
+2026-10-30 10:29:41,306 | ERROR | backend.agent.agent | Agent stream failed
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/agent.py", line 191, in _agent_worker
+    async for msg, _ in agent.astream(
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 65, in astream
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+2026-10-30 10:29:41,306 | INFO | backend.agent.agent | Chat stream completed | user_id=synthetic session_id=session response_chars=0
+------------------------------ Captured log call -------------------------------
+INFO     backend.agent.agent:agent.py:164 Chat stream start | user_id=synthetic session_id=session history_messages=0 user_text_chars=33
+ERROR    backend.agent.agent:agent.py:218 Agent stream failed
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/agent.py", line 191, in _agent_worker
+    async for msg, _ in agent.astream(
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 65, in astream
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+INFO     backend.agent.agent:agent.py:248 Chat stream completed | user_id=synthetic session_id=session response_chars=0
+_ test_legacy_tool_failure_does_not_return_provider_body[analyze_resume-args0] _
+
+name = 'analyze_resume'
+args = {'raw_text': 'synthetic resume content synthetic resume content synthetic resume content synthetic resume content synthetic resume content '}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b033830>
+llm_logs = <_pytest.logging.LogCaptureFixture object at 0x11b0338c0>
+
+    @pytest.mark.parametrize('name,args', [('analyze_resume', {'raw_text': 'synthetic resume content ' * 5}),
+                                          ('analyze_jd', {'jd_text': 'synthetic job description ' * 5})])
+    def test_legacy_tool_failure_does_not_return_provider_body(name, args, monkeypatch, llm_logs):
+        class FailedModel:
+            model_name = 'synthetic-model'
+            def invoke(self, prompt):
+                raise RuntimeError(SECRET)
+        monkeypatch.setattr(interview_tools, '_get_llm', lambda **_: FailedModel())
+        tool = next(tool for tool in interview_tools.create_interview_tools(1) if tool.name == name)
+        result = tool.invoke(args)
+>       assert SECRET not in result and SECRET not in llm_logs.text
+E       AssertionError: assert ('synthetic-p...ecret-012345' not in '错误：简历解析失败 -...ecret-012345'
+E         
+E         'synthetic-provider-secret-012345' is contained here:
+E           错误：简历解析失败 - synthetic-provider-secret-012345)
+
+backend/tests/test_llm_error_privacy.py:89: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,313 | INFO | backend.agent.interview_tools | LLM call start | task=tool.analyze_resume prompt_chars=717
+2026-10-30 10:29:41,313 | ERROR | backend.agent.interview_tools | LLM call failed | task=tool.analyze_resume elapsed_ms=0
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/interview_tools.py", line 45, in _invoke_llm
+    response = llm.invoke(prompt)
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 85, in invoke
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+2026-10-30 10:29:41,313 | ERROR | backend.agent.interview_tools | 简历解析失败: synthetic-provider-secret-012345
+------------------------------ Captured log call -------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:41 LLM call start | task=tool.analyze_resume prompt_chars=717
+ERROR    backend.agent.interview_tools:interview_tools.py:51 LLM call failed | task=tool.analyze_resume elapsed_ms=0
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/interview_tools.py", line 45, in _invoke_llm
+    response = llm.invoke(prompt)
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 85, in invoke
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+ERROR    backend.agent.interview_tools:interview_tools.py:322 简历解析失败: synthetic-provider-secret-012345
+___ test_legacy_tool_failure_does_not_return_provider_body[analyze_jd-args1] ___
+
+name = 'analyze_jd'
+args = {'jd_text': 'synthetic job description synthetic job description synthetic job description synthetic job description synthetic job description '}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b0339e0>
+llm_logs = <_pytest.logging.LogCaptureFixture object at 0x11b032c60>
+
+    @pytest.mark.parametrize('name,args', [('analyze_resume', {'raw_text': 'synthetic resume content ' * 5}),
+                                          ('analyze_jd', {'jd_text': 'synthetic job description ' * 5})])
+    def test_legacy_tool_failure_does_not_return_provider_body(name, args, monkeypatch, llm_logs):
+        class FailedModel:
+            model_name = 'synthetic-model'
+            def invoke(self, prompt):
+                raise RuntimeError(SECRET)
+        monkeypatch.setattr(interview_tools, '_get_llm', lambda **_: FailedModel())
+        tool = next(tool for tool in interview_tools.create_interview_tools(1) if tool.name == name)
+        result = tool.invoke(args)
+>       assert SECRET not in result and SECRET not in llm_logs.text
+E       AssertionError: assert ('synthetic-p...ecret-012345' not in '错误：JD 分析失败 ...ecret-012345'
+E         
+E         'synthetic-provider-secret-012345' is contained here:
+E           错误：JD 分析失败 - synthetic-provider-secret-012345)
+
+backend/tests/test_llm_error_privacy.py:89: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,318 | INFO | backend.agent.interview_tools | LLM call start | task=tool.analyze_jd prompt_chars=558
+2026-10-30 10:29:41,319 | ERROR | backend.agent.interview_tools | LLM call failed | task=tool.analyze_jd elapsed_ms=0
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/interview_tools.py", line 45, in _invoke_llm
+    response = llm.invoke(prompt)
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 85, in invoke
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+2026-10-30 10:29:41,319 | ERROR | backend.agent.interview_tools | JD 分析失败: synthetic-provider-secret-012345
+------------------------------ Captured log call -------------------------------
+INFO     backend.agent.interview_tools:interview_tools.py:41 LLM call start | task=tool.analyze_jd prompt_chars=558
+ERROR    backend.agent.interview_tools:interview_tools.py:51 LLM call failed | task=tool.analyze_jd elapsed_ms=0
+Traceback (most recent call last):
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/interview_tools.py", line 45, in _invoke_llm
+    response = llm.invoke(prompt)
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_llm_error_privacy.py", line 85, in invoke
+    raise RuntimeError(SECRET)
+RuntimeError: synthetic-provider-secret-012345
+ERROR    backend.agent.interview_tools:interview_tools.py:397 JD 分析失败: synthetic-provider-secret-012345
+________ test_explicit_cors_preflight[None-http://localhost:5173-True] _________
+
+setting = None, origin = 'http://localhost:5173', allowed = True
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b033c20>
+
+    @pytest.mark.parametrize('setting,origin,allowed', [
+        (None, 'http://localhost:5173', True), (None, 'http://127.0.0.1:5173', True),
+        (None, 'https://untrusted.example', False),
+        (' https://resumate.example , http://localhost:5173 ', 'https://resumate.example', True),
+        ('https://resumate.example', 'https://untrusted.example', False),
+    ])
+    def test_explicit_cors_preflight(setting, origin, allowed, monkeypatch):
+        monkeypatch.delenv('CORS_ORIGINS', raising=False)
+        if setting is not None:
+            monkeypatch.setenv('CORS_ORIGINS', setting)
+        client = TestClient(create_app())
+        response = client.options('/api/documents', headers={'origin': origin,
+            'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization,content-type'})
+        assert response.status_code == (200 if allowed else 400)
+        assert response.headers.get('access-control-allow-origin') == (origin if allowed else None)
+>       assert 'access-control-allow-credentials' not in response.headers
+E       AssertionError: assert 'access-control-allow-credentials' not in Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'})
+E        +  where Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'}) = <Response [200 OK]>.headers
+
+backend/tests/test_cors_origins.py:21: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,320 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:29:41,341 | INFO | backend.app | Request start | method=OPTIONS path=/api/documents client=testclient
+2026-10-30 10:29:41,341 | INFO | backend.app | Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+2026-10-30 10:29:41,341 | INFO | httpx | HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+INFO     backend.app:app.py:86 Request start | method=OPTIONS path=/api/documents client=testclient
+INFO     backend.app:app.py:99 Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+________ test_explicit_cors_preflight[None-http://127.0.0.1:5173-True] _________
+
+setting = None, origin = 'http://127.0.0.1:5173', allowed = True
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b3f4d40>
+
+    @pytest.mark.parametrize('setting,origin,allowed', [
+        (None, 'http://localhost:5173', True), (None, 'http://127.0.0.1:5173', True),
+        (None, 'https://untrusted.example', False),
+        (' https://resumate.example , http://localhost:5173 ', 'https://resumate.example', True),
+        ('https://resumate.example', 'https://untrusted.example', False),
+    ])
+    def test_explicit_cors_preflight(setting, origin, allowed, monkeypatch):
+        monkeypatch.delenv('CORS_ORIGINS', raising=False)
+        if setting is not None:
+            monkeypatch.setenv('CORS_ORIGINS', setting)
+        client = TestClient(create_app())
+        response = client.options('/api/documents', headers={'origin': origin,
+            'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization,content-type'})
+        assert response.status_code == (200 if allowed else 400)
+        assert response.headers.get('access-control-allow-origin') == (origin if allowed else None)
+>       assert 'access-control-allow-credentials' not in response.headers
+E       AssertionError: assert 'access-control-allow-credentials' not in Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'})
+E        +  where Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'}) = <Response [200 OK]>.headers
+
+backend/tests/test_cors_origins.py:21: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,343 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:29:41,362 | INFO | backend.app | Request start | method=OPTIONS path=/api/documents client=testclient
+2026-10-30 10:29:41,362 | INFO | backend.app | Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+2026-10-30 10:29:41,363 | INFO | httpx | HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+INFO     backend.app:app.py:86 Request start | method=OPTIONS path=/api/documents client=testclient
+INFO     backend.app:app.py:99 Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+______ test_explicit_cors_preflight[None-https://untrusted.example-False] ______
+
+setting = None, origin = 'https://untrusted.example', allowed = False
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11bf8ec30>
+
+    @pytest.mark.parametrize('setting,origin,allowed', [
+        (None, 'http://localhost:5173', True), (None, 'http://127.0.0.1:5173', True),
+        (None, 'https://untrusted.example', False),
+        (' https://resumate.example , http://localhost:5173 ', 'https://resumate.example', True),
+        ('https://resumate.example', 'https://untrusted.example', False),
+    ])
+    def test_explicit_cors_preflight(setting, origin, allowed, monkeypatch):
+        monkeypatch.delenv('CORS_ORIGINS', raising=False)
+        if setting is not None:
+            monkeypatch.setenv('CORS_ORIGINS', setting)
+        client = TestClient(create_app())
+        response = client.options('/api/documents', headers={'origin': origin,
+            'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization,content-type'})
+>       assert response.status_code == (200 if allowed else 400)
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_cors_origins.py:19: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,364 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:29:41,384 | INFO | backend.app | Request start | method=OPTIONS path=/api/documents client=testclient
+2026-10-30 10:29:41,384 | INFO | backend.app | Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+2026-10-30 10:29:41,385 | INFO | httpx | HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+INFO     backend.app:app.py:86 Request start | method=OPTIONS path=/api/documents client=testclient
+INFO     backend.app:app.py:99 Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+_ test_explicit_cors_preflight[ https://resumate.example , http://localhost:5173 -https://resumate.example-True] _
+
+setting = ' https://resumate.example , http://localhost:5173 '
+origin = 'https://resumate.example', allowed = True
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b3488f0>
+
+    @pytest.mark.parametrize('setting,origin,allowed', [
+        (None, 'http://localhost:5173', True), (None, 'http://127.0.0.1:5173', True),
+        (None, 'https://untrusted.example', False),
+        (' https://resumate.example , http://localhost:5173 ', 'https://resumate.example', True),
+        ('https://resumate.example', 'https://untrusted.example', False),
+    ])
+    def test_explicit_cors_preflight(setting, origin, allowed, monkeypatch):
+        monkeypatch.delenv('CORS_ORIGINS', raising=False)
+        if setting is not None:
+            monkeypatch.setenv('CORS_ORIGINS', setting)
+        client = TestClient(create_app())
+        response = client.options('/api/documents', headers={'origin': origin,
+            'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization,content-type'})
+        assert response.status_code == (200 if allowed else 400)
+        assert response.headers.get('access-control-allow-origin') == (origin if allowed else None)
+>       assert 'access-control-allow-credentials' not in response.headers
+E       AssertionError: assert 'access-control-allow-credentials' not in Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'})
+E        +  where Headers({'vary': 'Origin', 'access-control-allow-methods': 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT', 'access-con...trol-allow-headers': 'authorization,content-type', 'content-length': '2', 'content-type': 'text/plain; charset=utf-8'}) = <Response [200 OK]>.headers
+
+backend/tests/test_cors_origins.py:21: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,436 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:29:41,456 | INFO | backend.app | Request start | method=OPTIONS path=/api/documents client=testclient
+2026-10-30 10:29:41,457 | INFO | backend.app | Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+2026-10-30 10:29:41,457 | INFO | httpx | HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+INFO     backend.app:app.py:86 Request start | method=OPTIONS path=/api/documents client=testclient
+INFO     backend.app:app.py:99 Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+_ test_explicit_cors_preflight[https://resumate.example-https://untrusted.example-False] _
+
+setting = 'https://resumate.example', origin = 'https://untrusted.example'
+allowed = False
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11b378ec0>
+
+    @pytest.mark.parametrize('setting,origin,allowed', [
+        (None, 'http://localhost:5173', True), (None, 'http://127.0.0.1:5173', True),
+        (None, 'https://untrusted.example', False),
+        (' https://resumate.example , http://localhost:5173 ', 'https://resumate.example', True),
+        ('https://resumate.example', 'https://untrusted.example', False),
+    ])
+    def test_explicit_cors_preflight(setting, origin, allowed, monkeypatch):
+        monkeypatch.delenv('CORS_ORIGINS', raising=False)
+        if setting is not None:
+            monkeypatch.setenv('CORS_ORIGINS', setting)
+        client = TestClient(create_app())
+        response = client.options('/api/documents', headers={'origin': origin,
+            'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization,content-type'})
+>       assert response.status_code == (200 if allowed else 400)
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_cors_origins.py:19: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,458 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:29:41,478 | INFO | backend.app | Request start | method=OPTIONS path=/api/documents client=testclient
+2026-10-30 10:29:41,478 | INFO | backend.app | Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+2026-10-30 10:29:41,478 | INFO | httpx | HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+INFO     backend.app:app.py:86 Request start | method=OPTIONS path=/api/documents client=testclient
+INFO     backend.app:app.py:99 Request end | method=OPTIONS path=/api/documents status=200 duration_ms=0
+INFO     httpx:_client.py:1025 HTTP Request: OPTIONS http://testserver/api/documents "HTTP/1.1 200 OK"
+________ test_wildcard_is_rejected_with_actionable_configuration_error _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1156912e0>
+
+    def test_wildcard_is_rejected_with_actionable_configuration_error(monkeypatch):
+        monkeypatch.setenv('CORS_ORIGINS', '*')
+>       with pytest.raises(ValueError, match='CORS_ORIGINS'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+backend/tests/test_cors_origins.py:27: Failed
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:29:41,479 | INFO | backend.app | Creating FastAPI app
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:66 Creating FastAPI app
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-graph]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-chat]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-tool]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-graph]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-chat]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-tool]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-graph]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-chat]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-tool]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-graph]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-chat]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-tool]
+FAILED backend/tests/test_model_transport_security.py::test_direct_sdk_stops_redirect_and_has_finite_timeout[307-https://model.example/sink-harness]
+FAILED backend/tests/test_model_transport_security.py::test_direct_sdk_stops_redirect_and_has_finite_timeout[307-https://model.example/sink-embedding]
+FAILED backend/tests/test_model_transport_security.py::test_direct_sdk_stops_redirect_and_has_finite_timeout[308-https://other.example/sink-harness]
+FAILED backend/tests/test_model_transport_security.py::test_direct_sdk_stops_redirect_and_has_finite_timeout[308-https://other.example/sink-embedding]
+FAILED backend/tests/test_llm_error_privacy.py::test_llm_logs_keep_diagnostics_without_prompt_response_or_error_body
+FAILED backend/tests/test_llm_error_privacy.py::test_harness_progress_and_reflection_do_not_republish_provider_body
+FAILED backend/tests/test_llm_error_privacy.py::test_chat_stream_error_is_safe_but_still_finishes
+FAILED backend/tests/test_llm_error_privacy.py::test_legacy_tool_failure_does_not_return_provider_body[analyze_resume-args0]
+FAILED backend/tests/test_llm_error_privacy.py::test_legacy_tool_failure_does_not_return_provider_body[analyze_jd-args1]
+FAILED backend/tests/test_cors_origins.py::test_explicit_cors_preflight[None-http://localhost:5173-True]
+FAILED backend/tests/test_cors_origins.py::test_explicit_cors_preflight[None-http://127.0.0.1:5173-True]
+FAILED backend/tests/test_cors_origins.py::test_explicit_cors_preflight[None-https://untrusted.example-False]
+FAILED backend/tests/test_cors_origins.py::test_explicit_cors_preflight[ https://resumate.example , http://localhost:5173 -https://resumate.example-True]
+FAILED backend/tests/test_cors_origins.py::test_explicit_cors_preflight[https://resumate.example-https://untrusted.example-False]
+FAILED backend/tests/test_cors_origins.py::test_wildcard_is_rejected_with_actionable_configuration_error
+27 failed, 5 warnings in 12.09s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

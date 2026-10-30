@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>{{ resume.candidate_name }} · 简历</title>
+<style>
+@page { size: A4; margin: 16mm 17mm; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #302b28; font-family: "Noto Sans CJK SC", sans-serif; font-size: 10pt; line-height: 1.55; }
+h1 { margin: 0 0 4mm; color: #4c392f; font-size: 23pt; line-height: 1.25; }
+.contact { color: #70665f; font-size: 9pt; margin-bottom: 6mm; }
+.contact span + span::before { content: " · "; }
+h2 { margin: 5mm 0 2mm; border-bottom: 0.3mm solid #ded4cd; padding-bottom: 1mm; color: #654b40; font-size: 12pt; break-after: avoid; }
+h3 { font-size: 10.5pt; margin: 0; break-after: avoid; }
+p { margin: 1mm 0; white-space: pre-line; orphans: 3; widows: 3; }
+.entry { margin: 0 0 3mm; }
+.compact { break-inside: avoid; }
+.meta { color: #70665f; font-size: 9pt; break-after: avoid; }
+ul { margin: 1mm 0; padding-left: 5mm; }
+li { margin-bottom: 0.5mm; }
+p, li, h1, h3, .contact, .meta { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<header>
+<h1>{{ resume.candidate_name }}</h1>
+<div class="contact">{% for value in resume.get('contact', {}).values() if value %}<span>{{ value }}</span>{% endfor %}</div>
+</header>
+{% if resume.display_summary %}<section><h2>个人简介</h2><p>{{ resume.display_summary }}</p></section>{% endif %}
+{% if resume.education %}
+<section><h2>教育经历</h2>
+{% for item in resume.education %}
+<article class="entry compact">
+<h3>{{ item.school }}{% if item.college %} · {{ item.college }}{% endif %}</h3>
+<div class="meta">{{ item.major }}{% if item.degree %} · {{ item.degree }}{% endif %}{% if item.years %} · {{ item.years }}{% elif item.start_date or item.end_date %} · {{ item.start_date }} — {{ item.end_date }}{% endif %}</div>
+{% if item.gpa or item.rank %}<p>{% if item.gpa %}GPA：{{ item.gpa }}{% endif %}{% if item.rank %}　排名：{{ item.rank }}{% endif %}</p>{% endif %}
+{% if item.lab %}<p>实验室：{{ item.lab }}</p>{% endif %}
+{% if item.research_direction %}<p>研究方向：{{ item.research_direction }}</p>{% endif %}
+{% if item.advisor %}<p>导师：{{ item.advisor }}</p>{% endif %}
+{% if item.papers %}<p>论文：{% if item.papers is string %}{{ item.papers }}{% else %}{{ item.papers | join('；') }}{% endif %}</p>{% endif %}
+{% if item.courses %}<p>课程：{{ item.courses | join('、') }}</p>{% endif %}
+{% if item.achievements %}<p>{{ item.achievements | join('；') }}</p>{% endif %}
+</article>
+{% endfor %}</section>{% endif %}
+{% for key, heading in [('work_experience', '工作经历'), ('projects', '项目经历')] %}
+{% if resume.get(key) %}<section><h2>{{ heading }}</h2>
+{% for item in resume[key] %}
+<article class="entry">
+<h3>{% if key == 'work_experience' %}{{ item.company }}{% if item.title %} · {{ item.title }}{% endif %}{% else %}{{ item.name }}{% if item.role %} · {{ item.role }}{% endif %}{% endif %}</h3>
+{% if item.duration or item.start_date or item.end_date %}<div class="meta">{% if item.duration %}{{ item.duration }}{% else %}{{ item.start_date }} — {{ item.end_date }}{% endif %}</div>{% endif %}
+{% if item.description %}<p>{{ item.description }}</p>{% endif %}
+{% if item.display_bullets %}<ul>{% for bullet in item.display_bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+{% if item.technologies %}<p>技术：{{ item.technologies | join('、') }}</p>{% endif %}
+</article>
+{% endfor %}</section>{% endif %}
+{% endfor %}
+{% if resume.skills %}<section><h2>专业技能</h2><ul>{% for item in resume.skills %}<li>{{ item.name }}{% if item.category %} · {{ item.category }}{% endif %}{% if item.proficiency_claim %} · {{ item.proficiency_claim }}{% endif %}</li>{% endfor %}</ul></section>{% endif %}
+{% if resume.achievements %}<section><h2>奖项与荣誉</h2><ul>{% for item in resume.achievements %}<li>{{ item.name }}{% if item.level %} · {{ item.level }}{% endif %}{% if item.category %} · {{ item.category }}{% endif %}</li>{% endfor %}</ul></section>{% endif %}
+{% if resume.certifications %}<section><h2>证书</h2><p>{{ resume.certifications | join('；') }}</p></section>{% endif %}
+{% if resume.languages %}<section><h2>语言</h2><p>{{ resume.languages | join('；') }}</p></section>{% endif %}
+</body>
+</html>

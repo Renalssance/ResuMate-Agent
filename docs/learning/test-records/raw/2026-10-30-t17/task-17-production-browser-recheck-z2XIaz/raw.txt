@@ -1,0 +1,10 @@
+[WebServer] Production browser services: http://127.0.0.1:4373; evidence: /tmp/task-17-production-browser-recheck-z2XIaz
+
+Running 1 test using 1 worker
+
+(node:86920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  1 [production-chromium] › tests/e2e/production-performance.spec.ts:65:1 › production lazy routes, local input frames, long layouts, upload and PDF under CSP (10.3s)
+
+  1 passed (17.7s)

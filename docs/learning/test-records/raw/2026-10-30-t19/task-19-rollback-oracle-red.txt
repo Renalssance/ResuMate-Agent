@@ -1,0 +1,18 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_provider_failure_cannot_claim_sql_rollback_was_injected _________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-270/test_provider_failure_cannot_c0')
+
+    def test_provider_failure_cannot_claim_sql_rollback_was_injected(tmp_path):
+        result, wire = run_local(tmp_path, 'business-write-rollback', total='50', fail_after=1)
+>       assert result['status'] == 'fail'
+E       AssertionError: assert 'pass' == 'fail'
+E         
+E         - fail
+E         + pass
+
+backend/tests/test_task_live_runner.py:134: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_runner.py::test_provider_failure_cannot_claim_sql_rollback_was_injected
+1 failed in 1.72s

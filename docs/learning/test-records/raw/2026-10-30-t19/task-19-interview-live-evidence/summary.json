@@ -1,0 +1,101 @@
+[
+  {
+    "scenario": "followup",
+    "case_id": "interview-followup",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 6,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/followup"
+  },
+  {
+    "scenario": "pages",
+    "case_id": "interview-followup",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 15,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/pages"
+  },
+  {
+    "scenario": "cancel",
+    "case_id": "interview-cancel-late-result",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 8,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/cancel"
+  },
+  {
+    "scenario": "eight",
+    "case_id": "interview-eight-turn-limit",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 28,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/eight"
+  },
+  {
+    "scenario": "replay",
+    "case_id": "interview-command-replay",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 4,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/replay"
+  },
+  {
+    "scenario": "frozen",
+    "case_id": "interview-frozen-submission",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 6,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/frozen"
+  },
+  {
+    "scenario": "memory",
+    "case_id": "interview-feedback-memory",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 6,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/memory"
+  },
+  {
+    "scenario": "forbidden",
+    "case_id": "interview-followup",
+    "status": "fail",
+    "error_code": "agent_failed",
+    "model_calls": 1,
+    "unknown_usage_calls": 1,
+    "path": "/tmp/task-19-interview-live-evidence/forbidden"
+  },
+  {
+    "scenario": "budget",
+    "case_id": "interview-followup",
+    "status": "incomplete",
+    "error_code": "budget_exhausted",
+    "model_calls": 0,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/budget"
+  },
+  {
+    "scenario": "cancel-slow",
+    "case_id": "interview-cancel-late-result",
+    "status": "pass",
+    "error_code": null,
+    "model_calls": 8,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/cancel-slow"
+  },
+  {
+    "scenario": "cancel-budget",
+    "case_id": "interview-cancel-late-result",
+    "status": "incomplete",
+    "error_code": "budget_exhausted",
+    "model_calls": 3,
+    "unknown_usage_calls": 0,
+    "path": "/tmp/task-19-interview-live-evidence/cancel-budget"
+  }
+]

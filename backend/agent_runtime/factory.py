@@ -8,6 +8,7 @@ from backend.agent_runtime.context_middleware import BusinessContextMiddleware
 from deepagents.graph import DeepAgentState
 from deepagents.profiles import HarnessProfile, GeneralPurposeSubagentProfile, register_harness_profile
 from langchain_openai import ChatOpenAI
+from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 from backend.agent_runtime.tools import business_tools
 from backend.agent_runtime.telemetry import attach_model_telemetry
 from backend.services.llm_settings import resolve_effective_llm_settings
@@ -28,7 +29,9 @@ def model_for_user(user_id: int):
         raise RunError(422, 'context_budget_exceeded', '上下文容量不足以预留输出，请提高容量或降低输出上限')
     return ChatOpenAI(profile={'max_input_tokens': settings.context_window_tokens}, model=settings.model, api_key=settings.api_key, base_url=settings.base_url,
                       max_tokens=settings.max_tokens, timeout=settings.request_timeout_seconds,
-                      max_retries=0, stream_usage=True)
+                      max_retries=0, stream_usage=True,
+                      http_client=DefaultHttpxClient(follow_redirects=False),
+                      http_async_client=DefaultAsyncHttpxClient(follow_redirects=False))
 
 
 def build_agent(user_id: int, checkpointer, *, run_id: str, epoch: int, telemetry=None):

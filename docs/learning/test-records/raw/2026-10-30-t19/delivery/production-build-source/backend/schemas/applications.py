@@ -1,0 +1,138 @@
+from datetime import date, datetime
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
+
+
+ApplicationStatus = Literal[
+    "applied",
+    "assessment",
+    "written_test",
+    "interviewing",
+    "first_interview",
+    "second_interview",
+    "third_interview",
+    "hr_interview",
+    "offer",
+    "resume_rejected",
+    "assessment_rejected",
+    "written_test_rejected",
+    "interview_rejected",
+    "passed",
+    "withdrawn",
+]
+
+
+class ApplicationBase(BaseModel):
+    company: str = Field(min_length=1, max_length=255)
+    position: str = Field(min_length=1, max_length=255)
+    applied_date: date
+    resume_id: int | None = None
+    status: ApplicationStatus = "applied"
+    job_url: str = ""
+    source: str = ""
+    notes: str = ""
+
+
+class ApplicationCreate(ApplicationBase):
+    jd_id: int | None = None
+    resume_version_id: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_submission_pair(self):
+        if (self.jd_id is None) != (self.resume_version_id is None):
+            raise ValueError("jd_id and resume_version_id must be provided together")
+        return self
+
+
+class ApplicationSubmission(BaseModel):
+    jd_id: int
+    resume_version_id: str
+
+
+class ApplicationUpdate(BaseModel):
+    company: str | None = Field(default=None, min_length=1, max_length=255)
+    position: str | None = Field(default=None, min_length=1, max_length=255)
+    applied_date: date | None = None
+    resume_id: int | None = None
+    status: ApplicationStatus | None = None
+    job_url: str | None = None
+    source: str | None = None
+    notes: str | None = None
+
+
+class ApplicationStatusEventCreate(BaseModel):
+    status: ApplicationStatus
+    changed_at: datetime | None = None
+    note: str = ""
+
+
+class ApplicationStatusEventRecord(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    status: ApplicationStatus
+    changed_at: datetime
+    note: str
+    created_at: datetime
+
+    @field_serializer("changed_at", "created_at")
+    def _serialize_datetime(self, value: datetime):
+        if value.tzinfo is None:
+            return value.isoformat() + "Z"
+        return value.isoformat().replace("+00:00", "Z")
+
+
+class ApplicationScheduleCreate(BaseModel):
+    status: ApplicationStatus
+    title: str = Field(min_length=1, max_length=255)
+    starts_at: datetime
+    ends_at: datetime
+    note: str = ""
+
+    @model_validator(mode="after")
+    def _validate_time_range(self):
+        if self.ends_at <= self.starts_at:
+            raise ValueError("ends_at must be after starts_at")
+        return self
+
+
+class ApplicationScheduleRecord(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    application_id: int
+    status: ApplicationStatus
+    title: str
+    starts_at: datetime
+    ends_at: datetime
+    note: str
+    completed_event_id: int | None = None
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer("starts_at", "ends_at", "created_at", "updated_at")
+    def _serialize_datetime(self, value: datetime):
+        if value.tzinfo is None:
+            return value.isoformat() + "Z"
+        return value.isoformat().replace("+00:00", "Z")
+
+
+class ApplicationRecord(ApplicationBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    resume_filename: str = ""
+    jd_id: int | None = None
+    resume_version_id: str | None = None
+    submitted_snapshot: dict | None = None
+    status_events: list[ApplicationStatusEventRecord] = Field(default_factory=list)
+    schedules: list[ApplicationScheduleRecord] = Field(default_factory=list)
+    created_at: datetime
+    updated_at: datetime
+
+    @field_serializer("created_at", "updated_at")
+    def _serialize_datetime(self, value: datetime):
+        if value.tzinfo is None:
+            return value.isoformat() + "Z"
+        return value.isoformat().replace("+00:00", "Z")

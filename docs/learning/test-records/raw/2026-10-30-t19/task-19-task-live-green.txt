@@ -1,0 +1,1009 @@
+FF.F.......                                                              [100%]
+=================================== FAILURES ===================================
+_____ test_real_harness_fallback_and_reflection_reserve_every_http_create ______
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d4cc770>
+
+    def run_schema(
+        self,
+        *,
+        task: str,
+        prompt_name: str,
+        schema: type[SchemaT],
+        variables: dict[str, Any],
+        task_id: str | None = None,
+        progress_stage: str | None = None,
+        progress: int | None = None,
+    ) -> SchemaT:
+        prompt = self.render_prompt(self.load_prompt(prompt_name), variables)
+        schema_json = schema.model_json_schema()
+        metadata = {"task": task, "model": self.model, "schema": schema.__name__}
+        schema_text = json.dumps(schema_json, ensure_ascii=False)
+        example_text = json.dumps(self._schema_json_example(schema_json), ensure_ascii=False, indent=2)
+        system_prompt = (
+            "Return strict JSON only. No markdown, no commentary. "
+            "The response must match this JSON Schema exactly:\n"
+            f"{schema_text}\n\n"
+            "Example JSON output shape:\n"
+            f"{example_text}"
+        )
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
+        log_llm_prompt(task, f"{system_prompt}\n\n{prompt}", metadata)
+        started = time.perf_counter()
+        response_format = self._initial_response_format(task, schema.__name__, schema_json)
+        max_tokens = getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
+        self._publish_agent_progress(
+            task_id=task_id,
+            stage=progress_stage,
+            progress=progress,
+            task=task,
+            schema_name=schema.__name__,
+            phase="prompt_uploading",
+            attempt=1,
+            level="info",
+            message="Uploading prompt",
+        )
+        try:
+            for attempt in range(1, MAX_REFLECTIONS + 2):
+                attempt_metadata = metadata
+                self._publish_agent_progress(
+                    task_id=task_id,
+                    stage=progress_stage,
+                    progress=progress,
+                    task=task,
+                    schema_name=schema.__name__,
+                    phase="waiting_response",
+                    attempt=attempt,
+                    level="info",
+                    message=f"Waiting for LLM response, attempt {attempt}",
+                )
+                try:
+>                   response = self._create_chat_completion(
+                        task,
+                        messages,
+                        response_format,
+                        attempt,
+                        max_tokens=max_tokens,
+                    )
+
+backend/agents/harness.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d4cc770>
+task = 'followup.analyze_answer'
+messages = [{'content': 'Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n...nversation history:\n{{history}}\n\nCurrent question:\nHow?\n\nCandidate answer:\nSynthetic answer\n', 'role': 'user'}]
+response_format = {'json_schema': {'name': 'Result', 'schema': {'properties': {'value': {'title': 'Value', 'type': 'integer'}}, 'required': ['value'], 'title': 'Result', 'type': 'object'}, 'strict': True}, 'type': 'json_schema'}
+attempt = 1
+
+    def _create_chat_completion(self, task, messages, response_format, attempt, *, max_tokens=None):
+        # The same production ownership/epoch guard precedes every actual send.
+        if self.guard:
+            self.guard()
+        call_id = str(uuid4())
+        reserve = owner.recorder.reserve_call(call_id)
+        request = {'model': self.model, 'messages': deepcopy(messages), 'temperature': 0.1,
+            owner.config.output_limit_parameter: owner.config.max_output_tokens,
+            'enable_thinking': owner.config.enable_thinking}
+        if response_format is not None:
+            request['response_format'] = deepcopy(response_format)
+        record = {'task': task, 'candidate': self.candidate, 'call_id': call_id,
+                  'reflection_attempt': attempt, 'request': request}
+        owner.calls.append(record)
+>       owner.recorder.start_call(call_id, reserved_cost=reserve, **record)
+E       TypeError: CallRecorder.start_call() got multiple values for argument 'call_id'
+
+evals/task_live_model.py:57: TypeError
+
+During handling of the above exception, another exception occurred:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10d5b51c0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d648260>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10d401730>
+parameters = [(1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10d6585c0>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d648260>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-253/test_real_harness_fallback_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10bd3dd00>
+
+    def test_real_harness_fallback_and_reflection_reserve_every_http_create(tmp_path, monkeypatch):
+        requests = []
+        def transport(request):
+            requests.append(json.loads(request.content))
+            if len(requests) == 1:
+                return httpx.Response(400, json={'error': {'message': 'response_format unsupported', 'type': 'invalid_request_error'}})
+            return completion({'value': 'not-an-int'} if len(requests) == 2 else {'value': 7})
+        model, budget = setup_model(tmp_path, monkeypatch, transport)
+        try:
+>           assert execute(model).value == 7
+                   ^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/tests/test_task_live_model.py:39: in execute
+    return harness.run_schema(task='followup.analyze_answer', prompt_name='generate_followup',
+evals/task_live_model.py:41: in run_schema
+    return super().run_schema(task=task, variables=variables, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/agents/harness.py:169: in run_schema
+    self._record_usage_error(task, exc, elapsed_ms)
+backend/agents/harness.py:464: in _record_usage_error
+    record_llm_usage(
+backend/services/llm_settings.py:142: in record_llm_usage
+    db.commit()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2030: in commit
+    trans.commit(_to_root=True)
+<string>:2: in commit
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1311: in commit
+    self._prepare_impl()
+<string>:2: in _prepare_impl
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1286: in _prepare_impl
+    self.session.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:93: in save_obj
+    _emit_insert_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1233: in _emit_insert_statements
+    result = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10d6585c0>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d648260>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+E       [SQL: INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, 0, 0, 'TypeError', 0, '2026-10-30 03:03:46.577904')]
+E       (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.llm:logging_config.py:104 LLM error | task=followup.analyze_answer | metadata={"task": "followup.analyze_answer", "model": "qwen3.7-flash-2026-07-15", "schema": "Result"} | error_type=IntegrityError | status=None
+___ test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry ___
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d6ce7b0>
+
+    def run_schema(
+        self,
+        *,
+        task: str,
+        prompt_name: str,
+        schema: type[SchemaT],
+        variables: dict[str, Any],
+        task_id: str | None = None,
+        progress_stage: str | None = None,
+        progress: int | None = None,
+    ) -> SchemaT:
+        prompt = self.render_prompt(self.load_prompt(prompt_name), variables)
+        schema_json = schema.model_json_schema()
+        metadata = {"task": task, "model": self.model, "schema": schema.__name__}
+        schema_text = json.dumps(schema_json, ensure_ascii=False)
+        example_text = json.dumps(self._schema_json_example(schema_json), ensure_ascii=False, indent=2)
+        system_prompt = (
+            "Return strict JSON only. No markdown, no commentary. "
+            "The response must match this JSON Schema exactly:\n"
+            f"{schema_text}\n\n"
+            "Example JSON output shape:\n"
+            f"{example_text}"
+        )
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
+        log_llm_prompt(task, f"{system_prompt}\n\n{prompt}", metadata)
+        started = time.perf_counter()
+        response_format = self._initial_response_format(task, schema.__name__, schema_json)
+        max_tokens = getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
+        self._publish_agent_progress(
+            task_id=task_id,
+            stage=progress_stage,
+            progress=progress,
+            task=task,
+            schema_name=schema.__name__,
+            phase="prompt_uploading",
+            attempt=1,
+            level="info",
+            message="Uploading prompt",
+        )
+        try:
+            for attempt in range(1, MAX_REFLECTIONS + 2):
+                attempt_metadata = metadata
+                self._publish_agent_progress(
+                    task_id=task_id,
+                    stage=progress_stage,
+                    progress=progress,
+                    task=task,
+                    schema_name=schema.__name__,
+                    phase="waiting_response",
+                    attempt=attempt,
+                    level="info",
+                    message=f"Waiting for LLM response, attempt {attempt}",
+                )
+                try:
+>                   response = self._create_chat_completion(
+                        task,
+                        messages,
+                        response_format,
+                        attempt,
+                        max_tokens=max_tokens,
+                    )
+
+backend/agents/harness.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d6ce7b0>
+task = 'followup.analyze_answer'
+messages = [{'content': 'Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n...nversation history:\n{{history}}\n\nCurrent question:\nHow?\n\nCandidate answer:\nSynthetic answer\n', 'role': 'user'}]
+response_format = {'json_schema': {'name': 'Result', 'schema': {'properties': {'value': {'title': 'Value', 'type': 'integer'}}, 'required': ['value'], 'title': 'Result', 'type': 'object'}, 'strict': True}, 'type': 'json_schema'}
+attempt = 1
+
+    def _create_chat_completion(self, task, messages, response_format, attempt, *, max_tokens=None):
+        # The same production ownership/epoch guard precedes every actual send.
+        if self.guard:
+            self.guard()
+        call_id = str(uuid4())
+        reserve = owner.recorder.reserve_call(call_id)
+        request = {'model': self.model, 'messages': deepcopy(messages), 'temperature': 0.1,
+            owner.config.output_limit_parameter: owner.config.max_output_tokens,
+            'enable_thinking': owner.config.enable_thinking}
+        if response_format is not None:
+            request['response_format'] = deepcopy(response_format)
+        record = {'task': task, 'candidate': self.candidate, 'call_id': call_id,
+                  'reflection_attempt': attempt, 'request': request}
+        owner.calls.append(record)
+>       owner.recorder.start_call(call_id, reserved_cost=reserve, **record)
+E       TypeError: CallRecorder.start_call() got multiple values for argument 'call_id'
+
+evals/task_live_model.py:57: TypeError
+
+During handling of the above exception, another exception occurred:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10d6cd460>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d6cd730>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10d401730>
+parameters = [(1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10e539a40>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d6cd730>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-253/test_403_without_usage_keeps_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d6497c0>
+
+    def test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry(tmp_path, monkeypatch):
+        requests = []
+        def transport(request):
+            requests.append(request)
+            return httpx.Response(403, json={'error': {'message': 'private provider body', 'code': 'insufficient_quota'}})
+        model, budget = setup_model(tmp_path, monkeypatch, transport, max_total_cost='1.3')
+        try:
+            with pytest.raises(BudgetExceeded):
+>               execute(model)
+
+backend/tests/test_task_live_model.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/tests/test_task_live_model.py:39: in execute
+    return harness.run_schema(task='followup.analyze_answer', prompt_name='generate_followup',
+evals/task_live_model.py:41: in run_schema
+    return super().run_schema(task=task, variables=variables, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/agents/harness.py:169: in run_schema
+    self._record_usage_error(task, exc, elapsed_ms)
+backend/agents/harness.py:464: in _record_usage_error
+    record_llm_usage(
+backend/services/llm_settings.py:142: in record_llm_usage
+    db.commit()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2030: in commit
+    trans.commit(_to_root=True)
+<string>:2: in commit
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1311: in commit
+    self._prepare_impl()
+<string>:2: in _prepare_impl
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1286: in _prepare_impl
+    self.session.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:93: in save_obj
+    _emit_insert_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1233: in _emit_insert_statements
+    result = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10e539a40>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d6cd730>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+E       [SQL: INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, 0, 0, 'TypeError', 0, '2026-10-30 03:03:46.773599')]
+E       (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.llm:logging_config.py:104 LLM error | task=followup.analyze_answer | metadata={"task": "followup.analyze_answer", "model": "qwen3.7-flash-2026-07-15", "schema": "Result"} | error_type=IntegrityError | status=None
+_________ test_budget_settles_received_output_before_late_cancel_hook __________
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d9b6b40>
+
+    def run_schema(
+        self,
+        *,
+        task: str,
+        prompt_name: str,
+        schema: type[SchemaT],
+        variables: dict[str, Any],
+        task_id: str | None = None,
+        progress_stage: str | None = None,
+        progress: int | None = None,
+    ) -> SchemaT:
+        prompt = self.render_prompt(self.load_prompt(prompt_name), variables)
+        schema_json = schema.model_json_schema()
+        metadata = {"task": task, "model": self.model, "schema": schema.__name__}
+        schema_text = json.dumps(schema_json, ensure_ascii=False)
+        example_text = json.dumps(self._schema_json_example(schema_json), ensure_ascii=False, indent=2)
+        system_prompt = (
+            "Return strict JSON only. No markdown, no commentary. "
+            "The response must match this JSON Schema exactly:\n"
+            f"{schema_text}\n\n"
+            "Example JSON output shape:\n"
+            f"{example_text}"
+        )
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
+        log_llm_prompt(task, f"{system_prompt}\n\n{prompt}", metadata)
+        started = time.perf_counter()
+        response_format = self._initial_response_format(task, schema.__name__, schema_json)
+        max_tokens = getattr(self, "max_tokens", DEFAULT_LLM_MAX_TOKENS)
+        self._publish_agent_progress(
+            task_id=task_id,
+            stage=progress_stage,
+            progress=progress,
+            task=task,
+            schema_name=schema.__name__,
+            phase="prompt_uploading",
+            attempt=1,
+            level="info",
+            message="Uploading prompt",
+        )
+        try:
+            for attempt in range(1, MAX_REFLECTIONS + 2):
+                attempt_metadata = metadata
+                self._publish_agent_progress(
+                    task_id=task_id,
+                    stage=progress_stage,
+                    progress=progress,
+                    task=task,
+                    schema_name=schema.__name__,
+                    phase="waiting_response",
+                    attempt=attempt,
+                    level="info",
+                    message=f"Waiting for LLM response, attempt {attempt}",
+                )
+                try:
+>                   response = self._create_chat_completion(
+                        task,
+                        messages,
+                        response_format,
+                        attempt,
+                        max_tokens=max_tokens,
+                    )
+
+backend/agents/harness.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <evals.task_live_model.LiveTaskModel.harness.<locals>.Harness object at 0x10d9b6b40>
+task = 'followup.analyze_answer'
+messages = [{'content': 'Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n...nversation history:\n{{history}}\n\nCurrent question:\nHow?\n\nCandidate answer:\nSynthetic answer\n', 'role': 'user'}]
+response_format = {'json_schema': {'name': 'Result', 'schema': {'properties': {'value': {'title': 'Value', 'type': 'integer'}}, 'required': ['value'], 'title': 'Result', 'type': 'object'}, 'strict': True}, 'type': 'json_schema'}
+attempt = 1
+
+    def _create_chat_completion(self, task, messages, response_format, attempt, *, max_tokens=None):
+        # The same production ownership/epoch guard precedes every actual send.
+        if self.guard:
+            self.guard()
+        call_id = str(uuid4())
+        reserve = owner.recorder.reserve_call(call_id)
+        request = {'model': self.model, 'messages': deepcopy(messages), 'temperature': 0.1,
+            owner.config.output_limit_parameter: owner.config.max_output_tokens,
+            'enable_thinking': owner.config.enable_thinking}
+        if response_format is not None:
+            request['response_format'] = deepcopy(response_format)
+        record = {'task': task, 'candidate': self.candidate, 'call_id': call_id,
+                  'reflection_attempt': attempt, 'request': request}
+        owner.calls.append(record)
+>       owner.recorder.start_call(call_id, reserved_cost=reserve, **record)
+E       TypeError: CallRecorder.start_call() got multiple values for argument 'call_id'
+
+evals/task_live_model.py:57: TypeError
+
+During handling of the above exception, another exception occurred:
+
+self = <sqlalchemy.engine.base.Connection object at 0x10d9b4dd0>
+dialect = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d9b5040>
+statement = <sqlalchemy.dialects.sqlite.base.SQLiteCompiler object at 0x10d401730>
+parameters = [(1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10e06bbc0>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d9b5040>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-253/test_budget_settles_received_o0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d9b4d40>
+
+    def test_budget_settles_received_output_before_late_cancel_hook(tmp_path, monkeypatch):
+        model, budget = setup_model(tmp_path, monkeypatch, lambda request: completion({'value': 7}))
+        observed = []
+        model.hooks['followup.analyze_answer'] = lambda: observed.append(budget.summary())
+        try:
+>           assert execute(model).value == 7
+                   ^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_model.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/tests/test_task_live_model.py:39: in execute
+    return harness.run_schema(task='followup.analyze_answer', prompt_name='generate_followup',
+evals/task_live_model.py:41: in run_schema
+    return super().run_schema(task=task, variables=variables, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/agents/harness.py:169: in run_schema
+    self._record_usage_error(task, exc, elapsed_ms)
+backend/agents/harness.py:464: in _record_usage_error
+    record_llm_usage(
+backend/services/llm_settings.py:142: in record_llm_usage
+    db.commit()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:2030: in commit
+    trans.commit(_to_root=True)
+<string>:2: in commit
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1311: in commit
+    self._prepare_impl()
+<string>:2: in _prepare_impl
+    ???
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py:137: in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:1286: in _prepare_impl
+    self.session.flush()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4331: in flush
+    self._flush(objects)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4466: in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py:4427: in _flush
+    flush_context.execute()
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:466: in execute
+    rec.execute(self)
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py:642: in execute
+    util.preloaded.orm_persistence.save_obj(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:93: in save_obj
+    _emit_insert_statements(
+.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py:1233: in _emit_insert_statements
+    result = connection.execute(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1419: in execute
+    return meth(
+.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:527: in _execute_on_connection
+    return connection._execute_clauseelement(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1641: in _execute_clauseelement
+    ret = self._execute_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1846: in _execute_context
+    return self._exec_single_context(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1986: in _exec_single_context
+    self._handle_dbapi_exception(
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2363: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1967: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x10b683e00>
+cursor = <sqlite3.Cursor object at 0x10e06bbc0>
+statement = 'INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+parameters = (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, ...)
+context = <sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x10d9b5040>
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+>       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) FOREIGN KEY constraint failed
+E       [SQL: INSERT INTO llm_usage_events (user_id, task, model, base_url, prompt_tokens, completion_tokens, total_tokens, success, error_type, elapsed_ms, called_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
+E       [parameters: (1, 'followup.analyze_answer', 'qwen3.7-flash-2026-07-15', 'https://synthetic.invalid/v1/', 0, 0, 0, 0, 'TypeError', 0, '2026-10-30 03:03:46.902963')]
+E       (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py:952: IntegrityError
+------------------------------ Captured log call -------------------------------
+WARNING  backend.llm:logging_config.py:104 LLM error | task=followup.analyze_answer | metadata={"task": "followup.analyze_answer", "model": "qwen3.7-flash-2026-07-15", "schema": "Result"} | error_type=IntegrityError | status=None
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_model.py::test_real_harness_fallback_and_reflection_reserve_every_http_create
+FAILED backend/tests/test_task_live_model.py::test_403_without_usage_keeps_reserve_and_stops_before_unaffordable_retry
+FAILED backend/tests/test_task_live_model.py::test_budget_settles_received_output_before_late_cancel_hook
+3 failed, 8 passed in 3.27s

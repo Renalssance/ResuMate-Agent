@@ -1,0 +1,75 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop[cancel-slow] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-269/test_live_cancellation_waits_c0')
+scenario = 'cancel-slow'
+
+    @pytest.mark.parametrize('scenario', ['cancel-slow', 'cancel-budget'])
+    def test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop(tmp_path, scenario):
+        from time import monotonic
+        started = monotonic()
+>       result, requests, _ = run_live(tmp_path, scenario)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_interview_live.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-269/test_live_cancellation_waits_c0')
+scenario = 'cancel-slow'
+
+    def run_live(tmp_path, scenario):
+        from evals.run import isolated_environment
+        directory = tmp_path / scenario
+        directory.mkdir()
+        result = subprocess.run([sys.executable, '-m', 'backend.tests.interview_live_fixture', str(directory), scenario],
+            cwd=ROOT, env=isolated_environment(directory, {'OPENAI_API_KEY': 'synthetic-not-secret',
+                'OPENAI_BASE_URL': 'https://synthetic.invalid/v1'}), text=True, capture_output=True, timeout=100)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: Interview notification unavailable; SQL events remain available
+E         Deserializing unregistered type backend.agent_runtime.interview_context.InterviewStep from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('backend.agent_runtime.interview_context', 'InterviewStep')]
+E         Interview notification unavailable; SQL events remain available
+E         Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/interview_live_fixture.py", line 90, in <module>
+E             main(Path(sys.argv[1]), sys.argv[2])
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/interview_live_fixture.py", line 85, in main
+E             result = execute_interview_case({'case': case, 'mode': 'live', 'config': budget.public(), 'invocation': str(directory)})
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/evals/interview_runner.py", line 214, in execute_interview_case
+E             stops = [stop_inflight(first['resultRef'], 1, 'generation.cancel')]
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/evals/interview_runner.py", line 153, in stop_inflight
+E             raise RuntimeError('Interview evaluation did not reach a real structured model response')
+E         RuntimeError: Interview evaluation did not reach a real structured model response
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m...eal structured model response\')\nRuntimeError: Interview evaluation did not reach a real structured model response\n').returncode
+
+backend/tests/test_interview_live.py:50: AssertionError
+_ test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop[cancel-budget] _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-269/test_live_cancellation_waits_c1')
+scenario = 'cancel-budget'
+
+    @pytest.mark.parametrize('scenario', ['cancel-slow', 'cancel-budget'])
+    def test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop(tmp_path, scenario):
+        from time import monotonic
+        started = monotonic()
+        result, requests, _ = run_live(tmp_path, scenario)
+        elapsed = monotonic() - started
+        if scenario == 'cancel-slow':
+            assert elapsed >= 16
+            assert result['status'] == 'pass', result['verdict']
+            assert len(result['output']['observations']['stops']) == 2
+        else:
+>           assert elapsed < 10, 'A finished generation must wake the barrier without waiting for another response'
+E           AssertionError: A finished generation must wake the barrier without waiting for another response
+E           assert 16.51206983299926 < 10
+
+backend/tests/test_interview_live.py:118: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_live.py::test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop[cancel-slow]
+FAILED backend/tests/test_interview_live.py::test_live_cancellation_waits_configured_requests_and_wakes_on_budget_stop[cancel-budget]
+2 failed, 10 deselected in 34.48s

@@ -286,6 +286,10 @@ def _extract_pdf(
     visual_pages: set[int] = set()
     page_count = len(doc)
     try:
+        if page_count > PDF_OCR_HARD_MAX_PAGES:
+            raise UnsupportedDocumentError(
+                f'{filename} has {page_count} pages, exceeding the {PDF_OCR_HARD_MAX_PAGES} page limit'
+            )
         for index, page in enumerate(doc, start=1):
             native_pages[index] = (page.get_text("text") or "").strip()
             if page.get_images(full=True) or page.get_drawings():

@@ -1,0 +1,15 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "08d0305e-465d-4d21-bcbf-48bd0a9fd9b7": {
+      "case_id": "parse-upload-stable-identity",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

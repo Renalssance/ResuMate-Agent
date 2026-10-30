@@ -1,0 +1,15 @@
+{
+  "source": "/tmp/task-19-build-5cd2b8fd52/source",
+  "backend_image": "resumate-t19-backend:5cd2b8fd52",
+  "frontend_image": "resumate-t19-frontend:5cd2b8fd52",
+  "executed": true,
+  "projects": [
+    "resumate-t19-source-2fe45951",
+    "resumate-t19-restore-09d31817"
+  ],
+  "readiness_down": {
+    "redis": 503,
+    "mysql": 503
+  },
+  "completed": true
+}

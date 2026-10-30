@@ -2,6 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { createDocumentUploadQueue } from './useDocumentParseTasks'
 import type { DocumentRecord } from '../types/document'
 import { request } from '../services/request'
+import type { subscribeTaskProgress } from '../services/sse'
 afterEach(() => localStorage.clear())
 
 it.each(['upload', 'reparse'])('starts %s progress only after the server accepts the task', async (operation) => {
@@ -104,4 +105,61 @@ it.each(['page close', 'account change'])('stops unaccepted uploads after %s wit
   } finally {
     queue.closeAll(); request.defaults.adapter = adapter; vi.unstubAllGlobals()
   }
+})
+
+
+it.each(['failed', 'cancelled'])('ends only the running document step on durable %s projection', async stage => {
+  let callbacks!: Parameters<typeof subscribeTaskProgress>[1]
+  const queue = createDocumentUploadQueue({
+    subscribe: (_id, value) => { callbacks = value; return { close() {} } },
+    upload: async (_type, _file, _id, _progress, accepted) => { accepted!('accepted-task'); return { documents: [] } },
+  })
+  try {
+    await queue.enqueueFiles('resume', [new File(['resume'], 'resume.txt')])
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'extract', status: 'running', progress: 30, message: '提取文本' })
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'llm_analyze', status: 'running', progress: 100, message: '分析材料' })
+    callbacks.onMessage({ taskId: 'accepted-task', stage, status: 'failed', progress: 100, message: '任务已终止' })
+    const task = queue.tasks.get('accepted-task')!
+    expect(task.status).toBe('failed')
+    expect(task.steps.map(step => step.status)).toEqual(['success', 'success', 'failed', 'pending'])
+    expect(task.stage).toBe(stage)
+  } finally { queue.closeAll() }
+})
+
+it('does not revive parsing after the result waiter fails before progress replay catches up', async () => {
+  let callbacks!: Parameters<typeof subscribeTaskProgress>[1]
+  let reject!: (error: Error) => void
+  const queue = createDocumentUploadQueue({
+    subscribe: (_id, value) => { callbacks = value; return { close() {} } },
+    upload: async (_type, _file, _id, _progress, accepted) => {
+      accepted!('accepted-task')
+      await new Promise((_resolve, fail) => { reject = fail })
+      return { documents: [] }
+    },
+  })
+  try {
+    const result = queue.enqueueFiles('resume', [new File(['resume'], 'resume.txt')])
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'llm_analyze', status: 'running', progress: 90, message: '分析材料' })
+    reject(new Error('解析失败'))
+    expect(await result).toEqual([false])
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'llm_analyze', status: 'running', progress: 100, message: '分析材料' })
+    const task = queue.tasks.get('accepted-task')!
+    expect(task.status).toBe('failed')
+    expect(task.steps.map(step => step.status)).toEqual(['success', 'success', 'failed', 'pending'])
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'failed', status: 'failed', progress: 100, message: '解析失败' })
+    expect(task.steps.some(step => step.status === 'running')).toBe(false)
+  } finally { queue.closeAll() }
+})
+
+it('does not guess a document step when only a terminal projection is restored', async () => {
+  let callbacks!: Parameters<typeof subscribeTaskProgress>[1]
+  const queue = createDocumentUploadQueue({
+    subscribe: (_id, value) => { callbacks = value; return { close() {} } },
+    upload: async (_type, _file, _id, _progress, accepted) => { accepted!('accepted-task'); return { documents: [] } },
+  })
+  try {
+    await queue.enqueueFiles('resume', [new File(['resume'], 'resume.txt')])
+    callbacks.onMessage({ taskId: 'accepted-task', stage: 'failed', status: 'failed', progress: 100, message: '解析失败' })
+    expect(queue.tasks.get('accepted-task')!.steps.every(step => step.status === 'pending')).toBe(true)
+  } finally { queue.closeAll() }
 })

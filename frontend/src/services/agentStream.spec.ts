@@ -266,3 +266,49 @@ it('closes an offline-stalled transport and resumes the Run viewer from its dura
     expect(errors).toHaveBeenCalledTimes(1)
   } finally { subscription.close(); await subscription.done }
 })
+
+
+it('wakes a long reconnect backoff on online without a duplicate timer connection', async () => {
+  const fetcher = vi.fn().mockRejectedValue(new TypeError('offline'))
+  vi.stubGlobal('fetch', fetcher)
+  const subscription = subscribeRun({ runId, onEvent: () => {} })
+  try {
+    await vi.advanceTimersByTimeAsync(15000)
+    expect(fetcher).toHaveBeenCalledTimes(5) // next delay is 15 seconds
+    fetcher.mockResolvedValueOnce(Response.json(snapshot())).mockResolvedValueOnce(stream('', true))
+    window.dispatchEvent(new Event('online')); window.dispatchEvent(new Event('online'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetcher).toHaveBeenCalledTimes(7)
+    await vi.advanceTimersByTimeAsync(15000)
+    expect(fetcher).toHaveBeenCalledTimes(7)
+    subscription.close(); await subscription.done
+    window.dispatchEvent(new Event('online')); await vi.advanceTimersByTimeAsync(15000)
+    expect(fetcher).toHaveBeenCalledTimes(7)
+  } finally { subscription.close(); await subscription.done }
+})
+
+it('does not miss online while the offline reader is still closing', async () => {
+  const fetcher = respond(Response.json(snapshot()), stream(frame(event(1)), true), Response.json(snapshot()), stream('', true))
+  const received: number[] = []
+  const subscription = subscribeRun({ runId, onEvent: value => received.push(value.seq) })
+  try {
+    await vi.advanceTimersByTimeAsync(0)
+    window.dispatchEvent(new Event('offline')); window.dispatchEvent(new Event('online'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(fetcher).toHaveBeenCalledTimes(4)
+    expect(fetcher.mock.calls[3][0]).toContain('after=1'); expect(received).toEqual([1])
+    window.dispatchEvent(new Event('online')); await vi.advanceTimersByTimeAsync(15000)
+    expect(fetcher).toHaveBeenCalledTimes(4)
+  } finally { subscription.close(); await subscription.done }
+})
+
+it('preserves server Retry-After even when connectivity changes', async () => {
+  const fetcher = respond(Response.json({ code: 'rate_limited' }, { status: 429, headers: { 'Retry-After': '3' } }), Response.json(snapshot({ status: 'succeeded', lastSeq: 1 })), stream(terminal(1)))
+  const subscription = subscribeRun({ runId, onEvent: () => {} })
+  try {
+    await vi.advanceTimersByTimeAsync(0); window.dispatchEvent(new Event('online'))
+    await vi.advanceTimersByTimeAsync(2999); expect(fetcher).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(1); await subscription.done
+    expect(fetcher).toHaveBeenCalledTimes(3)
+  } finally { subscription.close(); await subscription.done }
+})

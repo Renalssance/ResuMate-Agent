@@ -1,304 +1,88 @@
-<div align="center">
+# ResuMate AI · 全栈与 Agent 教学项目
 
-# ResuMate Agent
+ResuMate 把收藏岗位、整理简历、补问信息、审阅来源、导出投递和文字面试放在同一个工作台。界面沿用奶油色、可可棕与米洛形象；每个开发单元同时保存设计理由、失败测试、修复记录和学习笔记。
 
-**你的招聘好伙伴。**
+**当前范围：** T01–T19的实现与本地确定性验收已收尾；T05/T13/T17/T19中的真实模型smoke、语义质量、分段耗时与重复评测仍未闭环。T20后续验收、T21实时双向面试和教学录屏已按用户要求取消，T20已有基础代码与历史证据保留；保留HTTP文字面试、开发教学文档与真实页面截图。真实模型质量门禁尚未通过，不将合成模型测试写成真实模型成功率。最新数字以[开发计划](docs/superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)和[测试记录](docs/learning/README.md)为准。
 
-和米洛一起整理简历、理解岗位匹配、准备面试，把求职与招聘中的零散信息变成下一步行动。
+[学习目录](docs/learning/README.md) · [整体架构](docs/architecture.md) · [开发命令](docs/development.md) · [扩展使用](extension/README.md) · [评测说明](evals/README.md) · [部署恢复](docs/deployment.md) · [性能报告](docs/performance.md)
 
-[界面预览](#界面预览) · [快速开始](#快速开始) · [项目架构](#项目架构) · [浏览器插件](#浏览器插件) · [云端部署](#云端部署)
+## 已实现的业务流程
 
-</div>
+| 用户操作 | 保存与恢复方式 |
+|---|---|
+| 收藏岗位、选择主简历 | 保存岗位原文与来源；每个资源校验账号归属 |
+| 准备投递材料 | 持久Run、补问动作、回答与有序事件；刷新、断网后找回进度 |
+| 审阅修改 | 核对before/after、来源引用与未确认信息，逐项决定后确认版本 |
+| 导出并投递 | 真实中文PDF；投递关联确认时的不可变正文快照 |
+| 文字模拟面试 | 冻结本次投递材料，回答与命令去重，最多八轮；反馈可明确确认为练习记忆 |
+| 原有文档/匹配/出题 | 独立worker处理，进度与结果进入同一持久任务体系 |
+| 浏览器辅助填表 | 核对版本、来源和勾选字段，支持收藏当前岗位；不自动提交招聘表单 |
 
-ResuMate 是一个基于 **Vue 3 + FastAPI + LangGraph** 的简历与岗位分析工作台。它将文档解析、结构资料维护、基于来源证据的匹配分析、面试题生成和投递跟踪串联起来，并通过浏览器扩展辅助填写招聘表单。
+以下为T16真实浏览器截图，使用合成资料。后续生产页面验收保存在各单元测试记录中。
 
-本地运行使用 **SQLite + 嵌入式 Chroma**，无需额外启动数据库容器；也支持部署到 CloudBase，使用 MySQL 和私有云存储。大模型与远程 Embedding 服务由你配置。
+![文字面试与来源材料](docs/learning/test-records/screens/t16/interview-question-desktop.png)
 
-## 界面预览
+## 推荐运行方式：同机 Compose
 
-以下图片来自当前代码版本，使用虚构演示数据，不包含真实候选人资料。
+需要Docker、可用的模型服务与Embedding配置。部署使用MySQL、两个API、Redis、一个worker、调度器和生产前端代理；不是只启动一个API就能完成长任务。
 
-### 首页 · 认识米洛
+1. 按`.env.example`准备`.env`；已有文件不要覆盖。
+2. 设置独立随机`JWT_SECRET_KEY`、`MYSQL_PASSWORD`和`MYSQL_ROOT_PASSWORD`。MySQL密码会进入内部连接URL，建议使用随机十六进制值。
+3. 配置`EMBEDDING_API_KEY`、`EMBEDDING_BASE_URL`及匹配的模型。登录后的个人模型设置单独保存API Key、Base URL、模型、上下文容量和超时。
+4. 在仓库根目录启动：
 
-奶油色与可可棕的界面、米洛陪伴，以及通往文档解析、岗位匹配和面试准备的入口。
+```sh
+docker compose --env-file .env -f deploy/compose.yaml up -d --build
+```
 
-![ResuMate 首页，展示米洛和产品能力入口](pics/homepage.png)
+生产前端默认入口为`http://127.0.0.1:8787`，可通过`RESUMATE_WEB_PORT`调整。数据库和Redis只在Compose网络内，API的本机调试端口可配置。账号、资料和checkpoint存于独立持久卷，不会自动读取另一个开发目录的数据。停止时保留卷；不要对真实资料执行`down -v`。
 
-### 工作台 · 从文档开始
+该发布配置已完成fresh构建、依赖就绪和独立备份恢复；后续HTTP客户端与前端状态修复的镜像及回归结果在T19记录中单独保存。没有在本轮自动公网发布，也没有宣称新worker部署已适配CloudBase。旧云配置保留在[CloudBase说明](deploy/cloudbase/README.md)。
 
-上传简历与 JD，查看解析状态、结构化结果和来源内容，再进入匹配与面试准备。
+## 本机开发与测试
 
-![ResuMate 文档工作台，展示上传入口、文档筛选与解析状态](pics/workspace.png)
+已验证开发工具为Python 3.12和Node 24。锁文件固定依赖；可选OCR依赖只在需要扫描PDF时安装。原生API与原生worker必须使用同一业务数据库和Redis。
 
-<details>
-<summary>查看投递记录与日程日历</summary>
-
-按公司和岗位管理投递，记录状态变化，并在日历中查看测评、笔试和面试安排。
-
-![ResuMate 投递工作台，展示阶段统计与日程日历](pics/applications.png)
-
-</details>
-
-## 核心能力
-
-| 能力 | 可以做什么 |
-| --- | --- |
-| 文档解析 | 上传简历、岗位描述或粘贴文本，提取结构资料，保留原文与可检索片段 |
-| 岗位匹配 | 按岗位标准分析候选人，查看得分、优势、差距、风险与证据引用 |
-| 结构资料 | 补充联系信息、求职意向、教育、工作、项目、论文及获奖经历，逐字段复制 |
-| 面试准备 | 根据岗位、候选人及匹配结果生成问题，查看考察点、回答方向、评分标准与追问 |
-| 投递管理 | 管理公司和岗位、关联简历、追加状态时间线、安排日程并导出记录 |
-| 浏览器填表 | 选择已保存简历，扫描招聘表单，核对匹配后仅填充勾选字段 |
-| 模型与用量 | 设置个人模型、API 地址和密钥，查看调用次数、Token 消耗与近期记录 |
-| 任务反馈 | 通过 SSE 展示解析、匹配和生成进度，米洛气泡同步提示处理阶段 |
-
-## 快速开始
-
-### 1. 准备环境
-
-- Python **3.11 或更新版本**
-- [uv](https://docs.astral.sh/uv/)：Python 依赖与环境管理
-- Node.js **24** 与 npm：与项目 Docker 构建版本一致
-- 可用的大模型 API；使用远程向量化时还需要 Embedding API
-
-在仓库根目录安装依赖：
-
-```bash
-uv sync --group dev
+```sh
+uv sync --locked
+npm ci
 npm --prefix frontend ci
-cp .env.example .env
+uv run python -m playwright install chromium
+npx playwright install chromium
 ```
 
-### 2. 配置模型与认证
+分别启动API、worker、调度器和Vite：
 
-编辑 `.env`，填写模型服务和 JWT 签名密钥。不要将示例占位值直接用于运行。
-
-```env
-JWT_SECRET_KEY=<生成的随机密钥>
-
-OPENAI_API_KEY=<模型服务 API Key>
-OPENAI_BASE_URL=<模型服务的兼容 API 地址>
-LLM_MODEL=<服务支持的模型名称>
-
-EMBEDDING_PROVIDER=qwen
-EMBEDDING_MODEL=<服务支持的 Embedding 模型名称>
-EMBEDDING_API_KEY=<Embedding API Key>
-EMBEDDING_BASE_URL=<Embedding 服务的兼容 API 地址>
-```
-
-用下面的命令生成 `JWT_SECRET_KEY`，将输出复制到 `.env`：
-
-```bash
-openssl rand -hex 32
-```
-
-Embedding 的模型和地址需要与服务匹配。`.env.example` 提供了 Qwen 配置示例；也可选择 `openai` 或下文的 `local`。未单独填写 `EMBEDDING_API_KEY` / `EMBEDDING_BASE_URL` 时，远程向量化会回退到对应的 `OPENAI_*` 配置。
-
-登录后可以在 **设置** 页保存个人模型配置；个人配置优先于服务端默认模型配置。Embedding 仍使用服务端的 `EMBEDDING_*` 设置。
-
-### 3. 分别启动后端与前端
-
-终端一，启动后端：
-
-```bash
-uv run uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
-```
-
-终端二，启动前端：
-
-```bash
+```sh
+uv run uvicorn backend.app:app --host 127.0.0.1 --port 8000
+uv run celery -A backend.worker:app worker --pool=solo --concurrency=1 --loglevel=INFO
+uv run celery -A backend.worker:app beat --loglevel=INFO --schedule=/tmp/resumate-dev-beat
 npm --prefix frontend run dev
 ```
 
-| 入口 | 地址 |
-| --- | --- |
-| Web 应用 | [localhost:5173](http://localhost:5173) |
-| 后端 API 文档 | [127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
-| 健康检查 | [127.0.0.1:8000/healthz](http://127.0.0.1:8000/healthz) |
+上述开发方式还需要可连接的Redis，`.env`默认`redis://127.0.0.1:6379/0`。macOS原生API不能与Docker里的worker共同访问同一SQLite WAL；已实测会读到旧状态。选择全部原生，或全部进入Compose/MySQL。PDF需要Chromium和Noto CJK字体；安装与证据见[第11课](docs/learning/11-pdf-and-submission-snapshots.md)。
 
-开发服务器默认将 `/api` 和 `/auth` 代理到 `http://127.0.0.1:8000`；后端地址不同时，可通过 `VITE_API_PROXY_TARGET` 调整。
+上传文件上限10MiB，所有PDF最多100页；OCR另受`PDF_OCR_MAX_PAGES`限制，默认关闭。文档一次尝试的提取、模型及Embedding合计最多120秒，超时会终止子进程并保存失败状态。远程Embedding请求30秒；普通模型请求使用账号设置的有限超时。
 
-### 4. 完成第一次分析
+## 框架与项目各自提供什么
 
-1. 注册并登录，确认模型配置可用。
-2. 在 **文档管理** 上传一份简历和一份 JD，等待解析完成。
-3. 在 **结构资料** 检查、补充解析出的字段。
-4. 在 **岗位匹配** 选择 JD 和候选人，查看分析结果及来源证据。
-5. 在 **试题生成** 选择对应匹配结果，生成面试题。
-6. 按需在 **投递记录** 维护进展，或使用浏览器插件辅助填表。
+Vue、FastAPI、SQLAlchemy、Celery、Deep Agents和LangGraph提供UI、路由、事务、队列、图执行、文件上下文与检查点。项目在这些能力上实现SQL受理和幂等、执行epoch、工具所有权、来源引用、人工确认、投递快照、断网恢复和费用受控评测。详细数据流见[架构说明](docs/architecture.md)。
 
-## 项目架构
+Redis不是唯一事实源，checkpoint也不是业务数据库。单worker控制checkpoint写入和执行顺序；故障恢复不意味着模型只计费一次。BYOK地址面向可信操作者配置，当前形态不宣称支持陌生人任意设置模型代理的公共SaaS。
 
-```mermaid
-flowchart TB
-    Web["Vue 3 工作台<br/>文档 · 匹配 · 试题 · 投递"]
-    Extension["浏览器扩展<br/>扫描 · 核对 · 填充"]
-    API["FastAPI<br/>JWT 认证 · 业务 API"]
-    Tasks["后台任务与 SSE<br/>进度 · 结果 · 心跳"]
-    Documents["文档服务<br/>提取文本 · 结构解析 · 分块"]
-    Workflow["LangGraph 候选人工作流<br/>加载资料 → 检索证据 → 评估 → 计分 → 保存"]
-    Harness["Agent Harness<br/>结构化输出 · 校验 · 重试"]
-    LLM["用户配置的模型 API"]
-    Embedding["Embedding<br/>远程 API / 可选本地模型"]
-    Repository["SQLAlchemy 数据访问"]
-    RAG["证据检索存储"]
-    Files["原始文件存储"]
+## 开发、测试与学习
 
-    Web --> API
-    Extension --> API
-    API --> Repository
-    API --> Tasks
-    Tasks -. "SSE 状态与结果" .-> Web
-    Tasks --> Documents
-    Tasks --> Workflow
-    Documents --> Harness
-    Workflow --> Harness
-    Harness --> LLM
-    Documents --> Embedding
-    Embedding --> RAG
-    Workflow --> RAG
-    Workflow --> Repository
-    Documents --> Repository
-    Documents --> Files
-
-    subgraph Local["本地运行"]
-        SQLite["SQLite<br/>业务数据"]
-        Chroma["嵌入式 Chroma<br/>文本片段与向量"]
-        Disk["data/documents/<br/>原始文件"]
-    end
-    subgraph Cloud["CloudBase 部署"]
-        MySQL["MySQL<br/>业务数据 + JSON 片段与向量"]
-        Storage["私有云存储<br/>原始文件"]
-    end
-
-    Repository --> SQLite
-    Repository --> MySQL
-    RAG --> Chroma
-    RAG --> MySQL
-    Files --> Disk
-    Files --> Storage
-```
-
-**匹配分析先检索来源证据，再让模型按标准评估。** 权重计分和推荐阈值由 Python 代码计算，报告、问题和业务记录写入数据库；向量存储负责片段检索。图中的本地与云端存储是两种运行模式，不会同时双写。
-
-| 层次 | 主要技术与职责 |
-| --- | --- |
-| 前端 | Vue 3、TypeScript、Vite、Pinia、Vue Router、Lucide |
-| API 与认证 | FastAPI、JWT、SQLAlchemy |
-| 工作流与模型 | LangGraph、Agent Harness、结构化模型调用 |
-| 文档处理 | PyMuPDF、python-docx，可选 OCR |
-| 本地持久化 | SQLite、Chroma、本地文件 |
-| 云端持久化 | MySQL、CloudBase 私有云存储 |
-| 扩展 | Manifest V3、浏览器侧栏、页面字段识别与填充 |
-
-### 目录结构
-
-```text
-frontend/src/           页面、组件、状态管理与 API 调用
-backend/
-├── routes/            HTTP 与 SSE 接口
-├── services/          文档、分析、模型配置和后台任务
-├── agents/            Agent Harness
-├── graph/             LangGraph 候选人分析工作流
-├── repositories/      业务数据读写
-├── db/                数据模型与数据库连接
-├── rag/               Chroma / MySQL 证据检索
-└── vector/            Embedding 服务
-extension/             浏览器扩展与本地表单示例
-deploy/cloudbase/      云端部署说明、SQL 与打包脚本
-docs/design/           视觉规范与设计资源
-pics/                  README 界面截图
-```
-
-## 支持的文档与可选能力
-
-后端支持 **PDF、DOCX、TXT、Markdown**。Web 上传入口会按简历和 JD 类型限制可选格式，也可以粘贴文本。旧版 `.doc` 不在默认解析支持范围，请先转换为 `.docx` 或 PDF。
-
-<details>
-<summary>启用本地 Embedding</summary>
-
-```bash
-uv sync --extra local-embeddings --group dev
-```
-
-在 `.env` 中设置：
-
-```env
-EMBEDDING_PROVIDER=local
-EMBEDDING_MODEL=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-EMBEDDING_DEVICE=cpu
-```
-
-首次运行需要下载模型权重。本地 Embedding 只替代向量化步骤，文档结构解析和匹配分析仍使用配置的模型 API。
-
-</details>
-
-<details>
-<summary>启用 PDF OCR</summary>
-
-```bash
-uv sync --extra ocr --group dev
-```
-
-在 `.env` 中设置：
-
-```env
-PDF_OCR_ENABLED=true
-```
-
-OCR 用于补充扫描型 PDF 的文本提取。页数上限、渲染比例等参数见 [.env.example](.env.example)。
-
-</details>
-
-## 浏览器插件
-
-在 Chrome 或 Edge 的扩展管理页开启开发者模式，加载仓库中的 `extension/` 目录。打开插件侧栏，配置后端地址并登录 ResuMate 账号。
-
-**主动读取岗位 → 核对并收藏；选择原简历或已确认版本 → 扫描页面 → 核对字段 → 填入选中项 → 手动提交。**
-
-已确认版本使用冻结内容，同来源收藏保留主应用里的整理；受限页面可直接粘贴。插件支持中文和英文，仅填充勾选项，不自动提交申请或创建投递记录；页面、简历或连接设置变化后需要重新扫描。安装步骤和本地表单示例见 [插件使用说明](extension/README.md)。
-
-## 云端部署
-
-仓库提供多阶段 `Dockerfile`：先构建 Vue 前端，再由 FastAPI 同时提供页面与 API。CloudBase 模式使用 MySQL 保存业务数据与检索片段，使用私有云存储保存原始文档。
-
-具体环境变量、数据库初始化、镜像构建及发布步骤见 [CloudBase 部署指南](deploy/cloudbase/README.md)。
-
-## 数据与运行边界
-
-本地默认持久化位置：
-
-```text
-data/resumate.db        账号、文档、结构资料、报告、问题与投递等业务数据
-data/chroma/            检索片段与向量
-data/documents/         上传的原始文档
-```
-
-- 当前后台任务、SSE 进度和限流计数位于进程内，使用 **单实例、单 worker**；重启会中断进行中的任务，已持久化数据保留。
-- 更换 Embedding 模型或提供方后，需要重建对应向量索引。本地模式应先备份数据，再清理 `data/chroma/` 并重新解析文档，不能混用不同模型的向量。
-- `.env`、数据库、原始简历和运行日志属于本地运行数据，不应提交到 Git。
-
-## 开发与验证
-
-AI 全栈与 Agent 教学开发见 [学习导航](docs/learning/README.md)，安装与测试命令见 [开发指南](docs/development.md)。每单元的设计理由、源码入口、测试实测与未验证边界都保存在文档中。
-
-后端测试：
-
-```bash
+```sh
 uv run pytest backend/tests -q
-```
-
-前端类型与业务测试、生产构建：
-
-```bash
 npm --prefix frontend test
+npm --prefix frontend run test:unit
 npm --prefix frontend run build
-```
-
-扩展测试：
-
-```bash
 node --test extension/tests/*.test.mjs
+npm run test:e2e
 ```
 
-界面规范与品牌资源见 [ResuMate · Milo 视觉语言](docs/design/visual-language.md)。
+浏览器用例会创建合成账号、真实API/worker、专用Redis与临时数据库。它会操作自己的测试页面、保存截图并验证结果；模型响应使用专用测试夹具。可通过`RESUMATE_E2E_FRONTEND_PORT`、`RESUMATE_E2E_API_PORT`和`RESUMATE_E2E_FIXTURE_PORT`避开正在查看的预览。普通单元测试中的集成跳过项不是已通过。
+
+本轮绑定新的四处真实SIGKILL证据，core30/30离线通过，详见[评测报告](docs/evaluation-report.md)。当前`core`包含30案；普通stub未提供本轮四次真实崩溃证据时，只能执行26案，4案为not_run，退出码2。真实模型试运行与首批评测共用已授权3元预算，目前两次请求失败且无usage，保留2.43941760元未知费用预约并停止；这不是已结算费用。8个durable和6个interview案例的live运行器现已补齐，并通过真实SDK与模拟HTTP验证预算、实际输入、取消和SQL行为；真实供应商质量仍未验收。三次live重复与语义审阅仍未完成。
+
+从[教学目录](docs/learning/README.md)按“问题→契约→源码→失败测试→修复→真实联调”阅读。每单元记录命令、实际通过/失败数量、截图发现、未测边界；一次定向修复通过不会被改写成首轮全量全绿。

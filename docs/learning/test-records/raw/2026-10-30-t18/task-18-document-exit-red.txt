@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_____ test_document_child_exits_cleanly_while_parent_pipe_is_open[sqlite] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10eae22a0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-247/test_document_child_exits_clea0/career.db)
+
+    def test_document_child_exits_cleanly_while_parent_pipe_is_open(career_db, career_engine):
+        # A delivery for a missing Run returns normally through the real child main.
+        # Keep the parent writer open, exactly as the production Popen.wait path does.
+        child = subprocess.Popen([sys.executable, '-m', 'backend.services.document_process', 'missing-run', '1'],
+            env={**os.environ, 'DATABASE_URL': career_engine.url.render_as_string(hide_password=False)},
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            code = child.wait(timeout=6)
+            stderr = child.stderr.read().decode()
+>           assert code == 0 and 'Fatal Python error' not in stderr, stderr
+E           AssertionError: Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
+E             Python runtime state: finalizing (tstate=0x0000000105b137b0)
+E             
+E             Current thread 0x00000001f81ddd80 (most recent call first):
+E               <no Python frame>
+E             
+E           assert (-6 == 0)
+
+backend/tests/test_upload_limits.py:185: AssertionError
+______ test_document_child_exits_cleanly_while_parent_pipe_is_open[mysql] ______
+
+career_db = <sqlalchemy.orm.session.Session object at 0x111d858b0>
+career_engine = Engine(mysql+pymysql://root@/resumate_test_d06dae79452542eda8f5dc9d1aa8e540?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+
+    def test_document_child_exits_cleanly_while_parent_pipe_is_open(career_db, career_engine):
+        # A delivery for a missing Run returns normally through the real child main.
+        # Keep the parent writer open, exactly as the production Popen.wait path does.
+        child = subprocess.Popen([sys.executable, '-m', 'backend.services.document_process', 'missing-run', '1'],
+            env={**os.environ, 'DATABASE_URL': career_engine.url.render_as_string(hide_password=False)},
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            code = child.wait(timeout=6)
+            stderr = child.stderr.read().decode()
+>           assert code == 0 and 'Fatal Python error' not in stderr, stderr
+E           AssertionError: Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
+E             Python runtime state: finalizing (tstate=0x0000000105af77b0)
+E             
+E             Current thread 0x00000001f81ddd80 (most recent call first):
+E               <no Python frame>
+E             
+E           assert (-6 == 0)
+
+backend/tests/test_upload_limits.py:185: AssertionError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_upload_limits.py::test_document_child_exits_cleanly_while_parent_pipe_is_open[sqlite]
+FAILED backend/tests/test_upload_limits.py::test_document_child_exits_cleanly_while_parent_pipe_is_open[mysql]
+2 failed, 12 deselected, 5 warnings in 4.31s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

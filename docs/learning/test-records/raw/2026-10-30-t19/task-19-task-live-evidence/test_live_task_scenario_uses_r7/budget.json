@@ -1,0 +1,69 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "8ec3313b-8479-47b7-a111-ca4fe6995e81": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "43819ad1-a76f-484c-b339-7cc6830ffd48": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "399c5416-ade6-47fc-97d8-ffc74f58b835": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "258ecc79-6f2b-411b-9976-488897c1b512": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "27fdb526-2333-490e-b9a7-5a2ef796cfbe": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "7f09f06d-973e-42d3-81ee-379549f46f19": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "0495413f-1699-4997-92ad-88580a1c8c31": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

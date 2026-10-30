@@ -10,6 +10,8 @@ export const useAgentRunStore = defineStore('agentRun', () => {
   const drafts = ref<Record<string, string>>({}), actionErrors = ref<Record<string, string>>({}), conflictedActions = ref<RunAction[]>([])
   const error = ref(''), notice = ref(''), disconnected = ref(false), loginRequired = ref(false), loading = ref(false), busy = ref(false)
   let subscription: RunSubscription | undefined, generation = 0, selectedId = '', listGeneration = 0
+  let pendingEvents: RunEvent[] = [], batchTimer: ReturnType<typeof setTimeout> | undefined, lastEventSeq = 0
+  let refreshRequestedSeq = 0, eventRefresh: Promise<void> | undefined
   let createIntent: { key: string; requestId: string } | undefined
   const auth = useAuthStore()
   watch(() => auth.token, () => clear(), { flush: 'sync' })
@@ -19,7 +21,13 @@ export const useAgentRunStore = defineStore('agentRun', () => {
     if (status === 401 || status === 403) { clear(); loginRequired.value = true; error.value = '请重新登录后查看你的任务'; return }
     error.value = cause instanceof Error ? cause.message : '请求失败，请重试'
   }
-  function disconnect() { generation++; subscription?.close(); subscription = undefined; loading.value = false; busy.value = false }
+  function discardBatch() {
+    clearTimeout(batchTimer); batchTimer = undefined; pendingEvents = []
+  }
+  function disconnect() {
+    generation++; subscription?.close(); subscription = undefined; discardBatch()
+    lastEventSeq = 0; refreshRequestedSeq = 0; eventRefresh = undefined; loading.value = false; busy.value = false
+  }
   function clear() {
     disconnect(); listGeneration++; selectedId = ''; runs.value = []; hasMore.value = false; listLoading.value = false
     snapshot.value = null; events.value = []; artifacts.value = []; drafts.value = {}; actionErrors.value = {}; conflictedActions.value = []
@@ -53,24 +61,63 @@ export const useAgentRunStore = defineStore('agentRun', () => {
       applySnapshot(value); artifacts.value = output
     } catch (cause) { if (epoch === generation) fail(cause) }
   }
+  async function refreshArtifacts(value: RunSnapshot) {
+    const epoch = generation
+    try {
+      const output = await fetchRunArtifacts(value.runId)
+      if (epoch === generation && snapshot.value?.lastSeq === value.lastSeq) artifacts.value = output
+    } catch (cause) { if (epoch === generation) fail(cause) }
+  }
+  function refreshForEvents(seq: number) {
+    refreshRequestedSeq = Math.max(refreshRequestedSeq, seq)
+    if (eventRefresh || refreshRequestedSeq <= (snapshot.value?.lastSeq ?? 0)) return
+    const epoch = generation
+    const update = async () => {
+      while (epoch === generation && refreshRequestedSeq > (snapshot.value?.lastSeq ?? 0)) {
+        const requested = refreshRequestedSeq
+        await refresh()
+        // A later batch may arrive during this request. Retry only for that batch,
+        // never loop on a failed request or a snapshot that has not caught up yet.
+        if (refreshRequestedSeq === requested) break
+      }
+    }
+    const pending = update().finally(() => { if (eventRefresh === pending) eventRefresh = undefined })
+    eventRefresh = pending
+  }
+  function flushBatch() {
+    clearTimeout(batchTimer); batchTimer = undefined
+    const batch = pendingEvents; pendingEvents = []
+    if (!batch.length) return
+    events.value.push(...batch)
+    // Replay remains history; only the SQL snapshot supplies status and actions.
+    const seq = batch.reduce((latest, event) => ['run.status', 'action.required', 'artifact.created'].includes(event.type) ? Math.max(latest, event.seq) : latest, 0)
+    if (seq) refreshForEvents(seq)
+  }
   function connect(epoch: number) {
     subscription?.close()
-    const accept = (value: RunSnapshot) => { if (epoch !== generation) return; applySnapshot(value); void refresh() }
+    const accept = (value: RunSnapshot) => {
+      if (epoch !== generation || value.lastSeq < (snapshot.value?.lastSeq ?? -1)) return
+      applySnapshot(value); void refreshArtifacts(value)
+    }
     subscription = subscribeRun({
-      runId: selectedId, onSnapshot: accept, onReset: (value) => { if (epoch !== generation) return; events.value = []; accept(value) },
+      runId: selectedId, onSnapshot: accept,
+      onReset: (value) => {
+        if (epoch !== generation) return
+        discardBatch(); events.value = []; lastEventSeq = value.lastSeq; accept(value)
+      },
       onConnected: (value) => {
         if (epoch !== generation) return
         disconnected.value = false
-        const newer = value.lastSeq > (snapshot.value?.lastSeq ?? -1)
-        applySnapshot(value)
-        if (newer) void refresh()
+        if (value.lastSeq > (snapshot.value?.lastSeq ?? -1)) accept(value)
       },
       onEvent: (event) => {
         if (epoch !== generation) return
         disconnected.value = false
-        if (!events.value.some(item => item.seq === event.seq)) events.value.push(event)
-        // Replay is history, never an authoritative status update.
-        if (event.seq > (snapshot.value?.lastSeq ?? 0) && ['run.status', 'action.required', 'artifact.created'].includes(event.type)) void refresh()
+        // subscribeRun validates contiguous sequence numbers before delivery.
+        if (event.seq <= lastEventSeq) return
+        lastEventSeq = event.seq; pendingEvents.push(event)
+        if (pendingEvents.length >= 100) flushBatch()
+        else batchTimer ??= setTimeout(flushBatch, 100)
       },
       onError: (cause) => {
         if (epoch !== generation) return

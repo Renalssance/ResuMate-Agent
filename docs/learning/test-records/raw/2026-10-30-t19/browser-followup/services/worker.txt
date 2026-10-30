@@ -1,0 +1,24 @@
+ 
+ -------------- celery@BonodeMacBook-Air.local v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- macOS-26.5.2-arm64-arm-64bit 2026-10-30 12:10:15
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         resumate:0x1116a24b0
+- ** ---------- .> transport:   redis://127.0.0.1:54455/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+LLM error | task=document.parse_jd | metadata={"task": "document.parse_jd", "model": "browser-deterministic", "schema": "JobProfile"} | error_type=InternalServerError | status=503
+Structured LLM call failed; retrying with reflection | task=document.parse_resume schema=ResumeProfile error=InternalServerError
+Structured LLM call failed; retrying with reflection | task=document.parse_resume schema=ResumeProfile error=InternalServerError
+LLM error | task=document.parse_resume | metadata={"task": "document.parse_resume", "model": "browser-deterministic", "schema": "ResumeProfile"} | error_type=InternalServerError | status=503
+
+worker: Warm shutdown (MainProcess)

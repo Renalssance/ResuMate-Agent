@@ -1,0 +1,85 @@
+T19 evidence: /tmp/task-19-artifacts-609ad187f2374c23b866b2631625775c
+F
+=================================== FAILURES ===================================
+________ test_fresh_images_and_offline_backup_resume_waiting_checkpoint ________
+
+    def test_fresh_images_and_offline_backup_resume_waiting_checkpoint():
+        root = Path(__file__).resolve().parents[2]
+        source = Path(os.environ['RESUMATE_DELIVERY_SOURCE'])
+        artifacts = Path('/tmp') / ('task-19-artifacts-' + uuid4().hex)
+        artifacts.mkdir()
+        os.chmod(artifacts, 0o700)
+        print('T19 evidence:', artifacts, flush=True)
+        projects = ['resumate-t19-source-' + uuid4().hex[:8], 'resumate-t19-restore-' + uuid4().hex[:8]]
+        secret = uuid4().hex
+        evidence = {'source': str(source), 'backend_image': os.environ['RESUMATE_BACKEND_IMAGE'],
+            'frontend_image': os.environ['RESUMATE_FRONTEND_IMAGE'], 'executed': False, 'projects': projects}
+        def save(): (artifacts / 'evidence.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2))
+        save()
+        override = artifacts / 'test-override.yaml'
+        override.write_text(f'''services:
+      api:
+        volumes: ["{source / 'backend/tests'}:/app/backend/tests:ro"]
+      api2:
+        volumes: ["{source / 'backend/tests'}:/app/backend/tests:ro"]
+      worker:
+        volumes: ["{source / 'backend/tests'}:/app/backend/tests:ro"]
+        command: [celery, -A, 'backend.tests.fixtures.delivery:app', worker, --loglevel=INFO, --concurrency=1]
+    ''')
+        commands, envfiles, clients = [], [], []
+        for project in projects:
+            port, api, api2 = free_port(), free_port(), free_port()
+            env = artifacts / (project + '.env')
+            env.write_text('\n'.join(f'{k}={v}' for k, v in {
+                'MYSQL_PASSWORD': uuid4().hex, 'MYSQL_ROOT_PASSWORD': uuid4().hex, 'JWT_SECRET_KEY': secret,
+                'RESUMATE_WEB_PORT': port, 'RESUMATE_API_PORT': api, 'RESUMATE_API2_PORT': api2,
+                'RESUMATE_ENV': project, 'RESUMATE_BACKEND_IMAGE': evidence['backend_image'],
+                'RESUMATE_FRONTEND_IMAGE': evidence['frontend_image']}.items()) + '\n')
+            env.chmod(0o600)
+            envfiles.append(env)
+            commands.append([DOCKER, 'compose', '--env-file', str(env), '-p', project,
+                             '-f', str(source / 'deploy/compose.yaml'), '-f', str(override)])
+            clients.append(httpx.Client(base_url=f'http://127.0.0.1:{port}', timeout=15,
+                headers={'Authorization': 'Bearer ' + jwt.encode({'sub': 'delivery-user', 'role': 'user'}, secret, algorithm='HS256')}))
+        def command(index, *args, check=True, timeout=180):
+            result = subprocess.run(commands[index] + list(args), capture_output=True, text=True, timeout=timeout)
+            with (artifacts / 'commands.txt').open('a') as out:
+                out.write(json.dumps({'project': projects[index], 'args': args, 'code': result.returncode}) + '\n')
+                out.write(result.stdout + result.stderr + '\n')
+            if check: assert result.returncode == 0, result.stderr[-2000:]
+            return result
+        def fixture(index, mode, rid=None):
+            result = command(index, 'exec', '-T', 'worker', 'python', '-m', 'backend.tests.fixtures.delivery', mode, *([rid] if rid else []))
+            return json.loads(result.stdout.strip().splitlines()[-1])
+        def snapshot(index, rid):
+            response = clients[index].get('/api/agent/runs/' + rid)
+            assert response.status_code == 200, response.text
+            return response.json()
+        def archive_command(index, mode):
+            result = subprocess.run([sys.executable, str(source / 'deploy/backup.py'), mode, str(artifacts / 'backup'),
+                '--project', projects[index], '--env-file', str(envfiles[index]), '-f', str(override)],
+                capture_output=True, text=True, timeout=300)
+            (artifacts / (mode + '.txt')).write_text(result.stdout + result.stderr)
+            assert result.returncode == 0, result.stderr[-2000:]
+        try:
+            command(0, 'up', '-d', '--no-build', '--wait')
+            evidence['executed'] = True
+            save()
+            fixture(0, 'seed')
+            for dependency in ('redis', 'mysql'):
+                command(0, 'stop', dependency)
+                status = wait(lambda: clients[0].get('/readyz').status_code, lambda code: code == 503, 20)
+                assert clients[0].get('/healthz').status_code == 200
+                evidence.setdefault('readiness_down', {})[dependency] = status
+                command(0, 'up', '-d', '--no-build', '--wait', dependency)
+                wait(lambda: clients[0].get('/readyz').status_code, lambda code: code == 200, 30)
+            response = clients[0].post('/api/resume-versions/delivery-confirmed/export', json={'requestId': 'delivery-pdf'})
+>           assert response.status_code == 202, response.text
+E           AssertionError: {"code":"unauthorized","message":"无效或过期的认证令牌","requestId":"dc30f925-7990-4e34-875c-65dce62a09e5"}
+E           assert 401 == 202
+E            +  where 401 = <Response [401 Unauthorized]>.status_code
+
+backend/tests/test_delivery_compose.py:106: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_delivery_compose.py::test_fresh_images_and_offline_backup_resume_waiting_checkpoint
+1 failed in 58.42s

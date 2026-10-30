@@ -1,0 +1,35 @@
+{
+  "file_count": 497,
+  "bytes": 11085017,
+  "groups": {
+    "task-19-delivery-report.md": {
+      "files": 1,
+      "bytes": 6991
+    },
+    "archive-privacy.json": {
+      "files": 1,
+      "bytes": 885
+    },
+    "README.md": {
+      "files": 1,
+      "bytes": 1699
+    },
+    "production-build-source": {
+      "files": 418,
+      "bytes": 6131647
+    },
+    "tests": {
+      "files": 4,
+      "bytes": 27883
+    },
+    "build-attempts": {
+      "files": 50,
+      "bytes": 3782544
+    },
+    "integration": {
+      "files": 22,
+      "bytes": 1133368
+    }
+  },
+  "no_private_env_files": true
+}

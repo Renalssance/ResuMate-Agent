@@ -1,0 +1,56 @@
+x-load: &load
+  image: ${LOAD_IMAGE:?}
+  cpuset: '0-3'
+  volumes:
+    - ${LOAD_SOURCE:?}/backend:/app/backend:ro
+    - ${LOAD_SOURCE:?}/tests/load:/app/tests/load:ro
+    - ${LOAD_OUTPUT:?}:/load-output
+services:
+  mysql:
+    cpuset: '0-3'
+    mem_limit: 2g
+  redis:
+    cpuset: '0-3'
+    mem_limit: 512m
+  schema:
+    <<: *load
+    mem_limit: 512m
+  api:
+    <<: *load
+    mem_limit: 1g
+    command: [uvicorn, 'backend.tests.fixtures.load_api:app', --host, 0.0.0.0, --port, '8000']
+  api2:
+    <<: *load
+    mem_limit: 1g
+    command: [uvicorn, 'backend.tests.fixtures.load_api:app', --host, 0.0.0.0, --port, '8000']
+  worker:
+    <<: *load
+    mem_limit: 2g
+  scheduler:
+    <<: *load
+    mem_limit: 256m
+  driver:
+    <<: *load
+    mem_limit: 512m
+    profiles: [load]
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?}
+    command: [python, /app/tests/load/api_sse.py, --inside, --output, /load-output]
+
+  proxy:
+    image: ${LOAD_PROXY_IMAGE:-nginx:stable-alpine}
+    cpuset: '0-3'
+    mem_limit: 256m
+    profiles: [proxy]
+    ports: ['127.0.0.1:${LOAD_PROXY_PORT:?}:80']
+    volumes:
+      - ${LOAD_SOURCE:?}/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${LOAD_SOURCE:?}/frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      api: {condition: service_healthy}
+      api2: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, wget, -qO-, 'http://127.0.0.1/healthz']
+      interval: 3s
+      timeout: 2s
+      retries: 10

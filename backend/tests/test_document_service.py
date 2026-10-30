@@ -573,7 +573,7 @@ def test_extract_stored_pages_rejects_ocr_beyond_hard_page_limit(
     path.write_bytes(_pdf_bytes_with_image_pages(["Native candidate experience content.", ""], {2}))
     monkeypatch.setattr(documents, "PDF_OCR_HARD_MAX_PAGES", 1)
 
-    with pytest.raises(UnsupportedDocumentError, match=r"^too-long\.pdf requires OCR.*exceeds the hard limit"):
+    with pytest.raises(UnsupportedDocumentError, match=r"^too-long\.pdf has 2 pages, exceeding the 1 page limit"):
         extract_stored_pages(path, "too-long.pdf")
 
 

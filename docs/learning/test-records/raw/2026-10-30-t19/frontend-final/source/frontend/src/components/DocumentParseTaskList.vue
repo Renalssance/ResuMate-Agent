@@ -1,0 +1,123 @@
+<template>
+  <section v-if="tasks.length" class="card progress-card">
+    <div class="progress-head">
+      <div>
+        <h2>文档解析进度</h2>
+        <p>{{ tasks.length }} 个任务</p>
+      </div>
+    </div>
+
+    <div class="parse-task-list">
+      <article
+        v-for="task in tasks"
+        :key="task.taskId"
+        class="parse-task-card"
+      >
+        <div class="parse-task-head">
+          <div class="parse-task-title">
+            <strong>{{ task.filename }}</strong>
+            <small>
+              {{ stageLabel(task.stage) }}
+              <template v-if="typeof task.stageProgress === 'number'">
+                · {{ task.stageProgress }}%
+              </template>
+            </small>
+          </div>
+
+          <div class="parse-task-status">
+            <strong>{{ task.overallProgress }}%</strong>
+            <StatusTag :status="task.status" />
+          </div>
+        </div>
+
+        <div class="progress-track segmented" aria-label="文档解析总体进度">
+          <span
+            v-for="segment in progressSegments(task.steps)"
+            :key="segment.key"
+            :class="['progress-segment', segment.status]"
+            :title="segment.title"
+          >
+            <span :style="{ width: `${segment.fillPercent}%` }"></span>
+          </span>
+        </div>
+
+        <div class="parse-step-grid">
+          <div
+            v-for="step in task.steps"
+            :key="step.key"
+            :class="['parse-step-item', step.status]"
+            :title="step.message || step.label"
+          >
+            <span :class="['parse-step-icon', step.status]">
+              <Check v-if="step.status === 'success'" class="app-icon" aria-hidden="true" />
+              <CircleAlert v-else-if="step.status === 'failed'" class="app-icon" aria-hidden="true" />
+              <LoaderCircle v-else-if="step.status === 'running'" class="app-icon mini-spinner" aria-hidden="true" />
+              <Minus v-else class="app-icon" aria-hidden="true" />
+            </span>
+
+            <div>
+              <strong>{{ step.label }}</strong>
+              <small>{{ stepStatusText(step) }}</small>
+            </div>
+          </div>
+        </div>
+
+        <p class="parse-task-message">{{ task.message }}</p>
+        <RouterLink v-if="task.accepted" class="parse-task-link" :to="`/agent/tasks/${task.taskId}`">查看任务与结果</RouterLink>
+
+        <p v-if="task.errorReason" class="error-note">
+          失败原因：{{ task.errorReason }}
+        </p>
+      </article>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { Check, CircleAlert, LoaderCircle, Minus } from '@lucide/vue'
+import StatusTag from './StatusTag.vue'
+import type { ProgressStep } from '../types/task'
+import { buildProgressSegments } from '../utils/taskProgressChart'
+import type {
+  DocumentParseTask,
+  ParseStage,
+} from '../composables/useDocumentParseTasks'
+
+defineProps<{
+  tasks: DocumentParseTask[]
+}>()
+
+const labels: Record<ParseStage, string> = {
+  pending: '等待上传',
+  upload_client: '文件上传',
+  server_save: '服务端保存',
+  extract: '文本提取',
+  llm_analyze: 'LLM 结构化分析',
+  embedding: '向量生成',
+  milvus_save: '向量入库',
+  chroma_save: '向量入库',
+  cancelled: '解析已取消',
+  local_save: '本地保存',
+  completed: '解析完成',
+  failed: '解析失败',
+}
+
+function stageLabel(stage: ParseStage) {
+  return labels[stage] || stage
+}
+
+function stepStatusText(step: ProgressStep) {
+  if (step.status === 'success') return '已完成'
+  if (step.status === 'failed') return '失败'
+  if (step.status === 'running') {
+    return step.progress > 0 ? `进行中 ${step.progress}%` : '进行中'
+  }
+  return '等待中'
+}
+
+function progressSegments(steps: ProgressStep[]) {
+  return buildProgressSegments(steps)
+}
+</script>
+
+<style scoped>.parse-task-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-primary); text-underline-offset: 4px; }</style>

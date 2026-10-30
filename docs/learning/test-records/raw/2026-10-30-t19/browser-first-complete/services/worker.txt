@@ -1,0 +1,40 @@
+ 
+ -------------- celery@BonodeMacBook-Air.local v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- macOS-26.5.2-arm64-arm-64bit 2026-10-30 11:58:34
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         resumate:0x1141ca4e0
+- ** ---------- .> transport:   redis://127.0.0.1:52268/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[2026-10-30 11:59:01,401: WARNING/MainProcess] Run 9fac5e45-b464-4315-95ad-dcb3938047c6 stopped (RunError)
+[2026-10-30 11:59:08,685: WARNING/MainProcess] Run d7f4d4fc-61aa-4024-924c-a6576ffdbc8f stopped (RunError)
+[2026-10-30 11:59:09,876: WARNING/MainProcess] Run 8af3b2eb-2e6f-45a7-b36e-d67eb44dbd91 stopped (RunError)
+[2026-10-30 11:59:17,031: WARNING/MainProcess] Run 26b42d0b-c221-4664-8cdf-60b733347de5 stopped (RunError)
+[2026-10-30 11:59:39,018: WARNING/MainProcess] Deserializing unregistered type backend.agent_runtime.interview_context.InterviewStep from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('backend.agent_runtime.interview_context', 'InterviewStep')]
+[2026-10-30 11:59:47,250: WARNING/MainProcess] Interview Run 51d22b56-cb0e-47c2-b799-542a71382f23 stopped (RunError)
+[2026-10-30 11:59:51,147: WARNING/MainProcess] Interview Run d1c28622-63b9-451a-b0f6-1650de47b754 stopped (RunError)
+[2026-10-30 12:00:02,949: WARNING/MainProcess] Interview Run f1b19533-81f1-443d-8c77-d1ac9b75286e stopped (RunError)
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+LLM error | task=document.parse_jd | metadata={"task": "document.parse_jd", "model": "browser-deterministic", "schema": "JobProfile"} | error_type=InternalServerError | status=503
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+Structured LLM call failed; retrying with reflection | task=document.parse_jd schema=JobProfile error=InternalServerError
+LLM error | task=document.parse_jd | metadata={"task": "document.parse_jd", "model": "browser-deterministic", "schema": "JobProfile"} | error_type=InternalServerError | status=503
+Structured LLM call failed; retrying with reflection | task=document.parse_resume schema=ResumeProfile error=InternalServerError
+Structured LLM call failed; retrying with reflection | task=document.parse_resume schema=ResumeProfile error=InternalServerError
+LLM error | task=document.parse_resume | metadata={"task": "document.parse_resume", "model": "browser-deterministic", "schema": "ResumeProfile"} | error_type=InternalServerError | status=503
+(node:98684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[2026-10-30 12:01:01,873: WARNING/MainProcess] PDF export c1f9b89d-74d1-421d-b278-eec2013e54b0 stopped (pdf_export_failed)
+(node:98712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+worker: Warm shutdown (MainProcess)

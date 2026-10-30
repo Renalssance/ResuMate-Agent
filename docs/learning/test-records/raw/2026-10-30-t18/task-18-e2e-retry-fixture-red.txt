@@ -1,0 +1,29 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_retry_example_succeeds_in_the_next_document_process ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-274/test_retry_example_succeeds_in0')
+
+    def test_retry_example_succeeds_in_the_next_document_process(tmp_path):
+        env = {**os.environ, 'RESUMATE_E2E_ROOT': str(tmp_path)}
+    
+        def responses(prompt, count):
+            result = subprocess.run(
+                [sys.executable, '-c', MODEL_RESPONSES, prompt, str(count)],
+                cwd=Path(__file__).resolve().parents[2], env=env,
+                check=True, capture_output=True, text=True, timeout=15,
+            )
+            return json.loads(result.stdout.strip().splitlines()[-1])
+    
+        prompt = 'E2E_RETRY_PARSE 负责 API 和数据库设计。'
+        assert responses(prompt, 3) == [503, 503, 503]
+>       assert responses(prompt, 1) == [200]
+E       assert [503] == [200]
+E         
+E         At index 0 diff: 503 != 200
+E         Use -v to get more diff
+
+backend/tests/test_e2e_retry_fixture.py:38: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_e2e_retry_fixture.py::test_retry_example_succeeds_in_the_next_document_process
+1 failed in 2.07s

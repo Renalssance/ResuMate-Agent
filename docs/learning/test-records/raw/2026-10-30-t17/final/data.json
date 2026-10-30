@@ -1,0 +1,89 @@
+{
+  "counts": {
+    "users": 1,
+    "job_descriptions": 10000,
+    "agent_runs": 10,
+    "agent_run_events": 50000
+  },
+  "run_ids": [
+    "load-run-00",
+    "load-run-01",
+    "load-run-02",
+    "load-run-03",
+    "load-run-04",
+    "load-run-05",
+    "load-run-06",
+    "load-run-07",
+    "load-run-08",
+    "load-run-09"
+  ],
+  "initial_seq": 5000,
+  "job_text_bytes": 2232,
+  "explains": {
+    "events": [
+      {
+        "id": 1,
+        "select_type": "SIMPLE",
+        "table": "agent_run_events",
+        "partitions": null,
+        "type": "range",
+        "possible_keys": "uq_agent_run_event_seq",
+        "key": "uq_agent_run_event_seq",
+        "key_len": "150",
+        "ref": null,
+        "rows": 100,
+        "filtered": 100.0,
+        "Extra": "Using index condition"
+      }
+    ],
+    "jobs_first": [
+      {
+        "id": 1,
+        "select_type": "SIMPLE",
+        "table": "job_descriptions",
+        "partitions": null,
+        "type": "ALL",
+        "possible_keys": "uq_job_source,ix_job_descriptions_user_id",
+        "key": null,
+        "key_len": null,
+        "ref": null,
+        "rows": 10000,
+        "filtered": 100.0,
+        "Extra": "Using where; Using filesort"
+      }
+    ],
+    "jobs_deep": [
+      {
+        "id": 1,
+        "select_type": "SIMPLE",
+        "table": "job_descriptions",
+        "partitions": null,
+        "type": "ALL",
+        "possible_keys": "uq_job_source,ix_job_descriptions_user_id",
+        "key": null,
+        "key_len": null,
+        "ref": null,
+        "rows": 10000,
+        "filtered": 100.0,
+        "Extra": "Using where; Using filesort"
+      }
+    ],
+    "jobs_search": [
+      {
+        "id": 1,
+        "select_type": "SIMPLE",
+        "table": "job_descriptions",
+        "partitions": null,
+        "type": "ALL",
+        "possible_keys": "uq_job_source,ix_job_descriptions_user_id",
+        "key": null,
+        "key_len": null,
+        "ref": null,
+        "rows": 10000,
+        "filtered": 20.99,
+        "Extra": "Using where; Using filesort"
+      }
+    ]
+  },
+  "mysql": "8.4.13"
+}

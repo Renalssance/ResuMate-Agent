@@ -129,10 +129,13 @@ class CallRecorder(BaseCallbackHandler):
         call_id = str(run_id)
         kind = 'summary' if (metadata or {}).get('lc_source') == 'summarization' else 'main'
         proof = self._required(messages, call_id, kind)
+        self.start_call(call_id, kind=kind, reserved_cost=reserved_cost, proof=proof)
+
+    def start_call(self, call_id, *, kind='main', reserved_cost=None, proof=None, **evidence):
         entry = dict(event='started', case_id=self.case_id, run_id=self.business_run_id,
                      sdk_call_id=call_id, model=self.model, attempt=self.attempt, execution_epoch=self.epoch,
-                     kind=kind,
-                     started_at=utc_now(), usage=None, reserved_cost=reserved_cost, observed_cost=None)
+                     kind=kind, started_at=utc_now(), usage=None, reserved_cost=reserved_cost,
+                     observed_cost=None, **evidence)
         if proof is not None:
             entry['required_context'] = proof
         self.calls[call_id] = {**entry, '_clock': time.monotonic()}

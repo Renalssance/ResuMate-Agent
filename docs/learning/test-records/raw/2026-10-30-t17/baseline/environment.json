@@ -1,0 +1,52 @@
+{
+  "invocation": "cc9a38258596493fbdf6cdf134a71712",
+  "project": "resumate-t17-cc9a382585",
+  "executed": true,
+  "source_ref": "cdde2c5",
+  "source": "/private/tmp/task-17-baseline/source",
+  "model_calls": 0,
+  "api_ports": [
+    "55422",
+    "55423"
+  ],
+  "docker": {
+    "vcpus": 10,
+    "memory_bytes": 8319504384,
+    "version": "29.9.2"
+  },
+  "containers": [
+    {
+      "name": "/resumate-t17-cc9a382585-api-1",
+      "memory": 1073741824,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-cc9a382585-api2-1",
+      "memory": 1073741824,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-cc9a382585-mysql-1",
+      "memory": 2147483648,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-cc9a382585-redis-1",
+      "memory": 536870912,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-cc9a382585-scheduler-1",
+      "memory": 268435456,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-cc9a382585-worker-1",
+      "memory": 2147483648,
+      "cpuset": "0-3"
+    }
+  ],
+  "steady_product_memory_limit_bytes": 7247757312,
+  "driver_memory_limit_bytes": 536870912,
+  "driver_exit_code": 0
+}

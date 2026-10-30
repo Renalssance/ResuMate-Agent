@@ -1,0 +1,168 @@
+{
+  "snapshot": {
+    "runId": "eba174fd-a31c-461a-a548-8883f799f7fb",
+    "sessionId": "6d19e3a5-7896-4cf4-83c8-6f71e709c53d",
+    "status": "succeeded",
+    "kind": "document_parse",
+    "input": {
+      "documentId": "resume:2",
+      "parseMode": "upload"
+    },
+    "inputVersions": {
+      "document": "2026-10-30T02:52:17.691788"
+    },
+    "attempt": 1,
+    "lastSeq": 12,
+    "errorCode": null,
+    "sessionInvalidated": false,
+    "cancelRequested": false,
+    "outputRefs": [],
+    "result": {
+      "documents": [
+        {
+          "id": "resume:2",
+          "type": "resume",
+          "filename": "生产代理上传验证.txt",
+          "size": 108,
+          "raw_text": "工作经历\n示例团队 API开发 2022-2025\n负责 API 和数据库设计，与团队核对接口需求。",
+          "parsed_content": {
+            "candidate_name": "示例求职者",
+            "contact": {},
+            "education": [],
+            "work_experience": [
+              {
+                "company": "示例团队",
+                "title": "API 开发",
+                "duration": "",
+                "start_date": "",
+                "end_date": "",
+                "description": "章节：工作经历\n公司：示例团队 API开发\n职位：负责 API 和数据库设计,与团队核对接口需求。\n时间：2022-2025\n示例团队 API开发 2022-2025",
+                "bullets": [],
+                "technologies": [],
+                "metrics": [],
+                "source_refs": [
+                  {
+                    "page_number": 1,
+                    "section": "工作经历",
+                    "text": "章节：工作经历\n公司：示例团队 API开发\n职位：负责 API 和数据库设计,与团队核对接口需求。\n时间：2022-2025\n示例团队 API开发 2022-2025",
+                    "chunk_id": "0:2:resume:0"
+                  }
+                ]
+              }
+            ],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "负责 API 和数据库设计。",
+            "certifications": [],
+            "languages": [],
+            "quality": {
+              "parse_completeness": 1,
+              "source_ref_coverage": 1,
+              "ocr_warning_count": 0,
+              "unresolved_ambiguity_count": 0,
+              "contact_extracted": false,
+              "cross_page_reference_warning": false,
+              "missing_required_fields": [],
+              "status": "success",
+              "source_ref_count": 2,
+              "chunk_count": 1,
+              "evidence_level_distribution": {}
+            },
+            "structured_ambiguities": [],
+            "source_refs": [
+              {
+                "page_number": 1,
+                "section": "工作经历",
+                "text": "章节：工作经历\n公司：示例团队 API开发\n职位：负责 API 和数据库设计,与团队核对接口需求。\n时间：2022-2025\n示例团队 API开发 2022-2025",
+                "chunk_id": "0:2:resume:0"
+              }
+            ],
+            "name": "示例求职者"
+          },
+          "parse_status": "success",
+          "created_at": "2026-10-30T02:52:17.691778Z",
+          "vectorized": true,
+          "local_stored": true
+        }
+      ],
+      "taskId": "eba174fd-a31c-461a-a548-8883f799f7fb"
+    },
+    "actions": []
+  },
+  "events": [
+    {
+      "seq": 1,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:52:17.693676",
+      "payload": "{\"status\": \"queued\", \"error_code\": null}"
+    },
+    {
+      "seq": 2,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:52:17.699656",
+      "payload": "{\"status\": \"running\", \"error_code\": null}"
+    },
+    {
+      "seq": 3,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.503516",
+      "payload": "{\"stage\": \"server_save\", \"status\": \"running\", \"progress\": 12, \"overall_progress\": 12, \"message\": \"\\u6b63\\u5728\\u8bfb\\u53d6\\u5df2\\u4fdd\\u5b58\\u7684\\u539f\\u4ef6\", \"document_id\": \"resume:2\", \"filename\": \"\\u751f\\u4ea7\\u4ee3\\u7406\\u4e0a\\u4f20\\u9a8c\\u8bc1.txt\", \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {}}"
+    },
+    {
+      "seq": 4,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.504848",
+      "payload": "{\"stage\": \"extract\", \"status\": \"running\", \"progress\": 32, \"overall_progress\": 32, \"message\": \"\\u6b63\\u5728\\u63d0\\u53d6\\u7b2c 1/1 \\u9875\", \"document_id\": \"resume:2\", \"filename\": \"\\u751f\\u4ea7\\u4ee3\\u7406\\u4e0a\\u4f20\\u9a8c\\u8bc1.txt\", \"stage_progress\": 100, \"current\": 1, \"total\": 1, \"data\": {}}"
+    },
+    {
+      "seq": 5,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.506960",
+      "payload": "{\"stage\": \"llm_analyze\", \"status\": \"running\", \"progress\": 45, \"overall_progress\": 45, \"message\": \"\\u6b63\\u5728\\u63d0\\u53d6\\u6587\\u6863\\u7ed3\\u6784\", \"document_id\": \"resume:2\", \"filename\": \"\\u751f\\u4ea7\\u4ee3\\u7406\\u4e0a\\u4f20\\u9a8c\\u8bc1.txt\", \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"cached\": false}}"
+    },
+    {
+      "seq": 6,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.528351",
+      "payload": "{\"stage\": \"llm_analyze\", \"status\": \"running\", \"progress\": 45, \"overall_progress\": 45, \"message\": \"Uploading prompt\", \"document_id\": null, \"filename\": null, \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"agent\": {\"phase\": \"prompt_uploading\", \"task\": \"document.parse_resume\", \"schema\": \"ResumeProfile\", \"attempt\": 1, \"message\": \"Uploading prompt\", \"level\": \"info\", \"timestamp\": \"2026-10-30T02:52:18.527528+00:00\"}}}"
+    },
+    {
+      "seq": 7,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.529205",
+      "payload": "{\"stage\": \"llm_analyze\", \"status\": \"running\", \"progress\": 45, \"overall_progress\": 45, \"message\": \"Waiting for LLM response, attempt 1\", \"document_id\": null, \"filename\": null, \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"agent\": {\"phase\": \"waiting_response\", \"task\": \"document.parse_resume\", \"schema\": \"ResumeProfile\", \"attempt\": 1, \"message\": \"Waiting for LLM response, attempt 1\", \"level\": \"info\", \"timestamp\": \"2026-10-30T02:52:18.528641+00:00\"}}}"
+    },
+    {
+      "seq": 8,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.660669",
+      "payload": "{\"stage\": \"llm_analyze\", \"status\": \"running\", \"progress\": 45, \"overall_progress\": 45, \"message\": \"Validating structured JSON response, attempt 1\", \"document_id\": null, \"filename\": null, \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"agent\": {\"phase\": \"validating_response\", \"task\": \"document.parse_resume\", \"schema\": \"ResumeProfile\", \"attempt\": 1, \"message\": \"Validating structured JSON response, attempt 1\", \"level\": \"info\", \"timestamp\": \"2026-10-30T02:52:18.659635+00:00\"}}}"
+    },
+    {
+      "seq": 9,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.662312",
+      "payload": "{\"stage\": \"llm_analyze\", \"status\": \"running\", \"progress\": 45, \"overall_progress\": 45, \"message\": \"Analysis completed\", \"document_id\": null, \"filename\": null, \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"agent\": {\"phase\": \"completed\", \"task\": \"document.parse_resume\", \"schema\": \"ResumeProfile\", \"attempt\": 1, \"message\": \"Analysis completed\", \"level\": \"success\", \"timestamp\": \"2026-10-30T02:52:18.661608+00:00\"}}}"
+    },
+    {
+      "seq": 10,
+      "type": "task.progress",
+      "created_at": "2026-10-30 02:52:18.663922",
+      "payload": "{\"stage\": \"embedding\", \"status\": \"running\", \"progress\": 65, \"overall_progress\": 65, \"message\": \"\\u6b63\\u5728\\u751f\\u6210\\u6587\\u6863\\u7d22\\u5f15\", \"document_id\": \"resume:2\", \"filename\": \"\\u751f\\u4ea7\\u4ee3\\u7406\\u4e0a\\u4f20\\u9a8c\\u8bc1.txt\", \"stage_progress\": null, \"current\": null, \"total\": null, \"data\": {\"chunk_count\": 1}}"
+    },
+    {
+      "seq": 11,
+      "type": "artifact.created",
+      "created_at": "2026-10-30 02:52:18.820367",
+      "payload": "{\"artifact_id\": \"resume:2\", \"kind\": \"document\"}"
+    },
+    {
+      "seq": 12,
+      "type": "run.status",
+      "created_at": "2026-10-30 02:52:18.821726",
+      "payload": "{\"status\": \"succeeded\", \"error_code\": null}"
+    }
+  ]
+}

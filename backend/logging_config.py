@@ -70,51 +70,43 @@ def setup_logging() -> None:
     llm_logger.propagate = False
 
 
+# Keep operational metadata; prompts, filenames, provider bodies and schemas can
+# contain private source material. The business record remains its own source.
+_LOG_METADATA_KEYS = frozenset({
+    "task", "model", "schema", "user_id", "session_id", "resume_id", "jd_id",
+    "attempt", "elapsed_ms", "finish_reason", "max_tokens", "timeout_seconds",
+    "message_count", "prompt_chars", "response_chars", "raw_text_chars",
+    "answer_chars", "question_chars", "validation_error_count",
+})
+
+
 def _format_metadata(metadata: dict[str, Any] | None) -> str:
-    if not metadata:
-        return "{}"
-    return json.dumps(metadata, ensure_ascii=False, default=str)
+    return json.dumps({key: value for key, value in (metadata or {}).items()
+                       if key in _LOG_METADATA_KEYS}, ensure_ascii=False, default=str)
 
 
 def log_llm_prompt(task: str, prompt: str, metadata: dict[str, Any] | None = None) -> None:
     logging.getLogger("backend.llm").info(
-        "LLM prompt | task=%s | metadata=%s\n%s",
-        task,
-        _format_metadata(metadata),
-        prompt,
-    )
+        "LLM prompt | task=%s | chars=%s | metadata=%s", task, len(prompt), _format_metadata(metadata))
 
 
 def log_llm_request(task: str, metadata: dict[str, Any] | None = None) -> None:
     logging.getLogger("backend.llm").info(
-        "LLM request start | task=%s | metadata=%s",
-        task,
-        _format_metadata(metadata),
-    )
+        "LLM request start | task=%s | metadata=%s", task, _format_metadata(metadata))
 
 
 def log_llm_response(task: str, response: str, metadata: dict[str, Any] | None = None) -> None:
     logging.getLogger("backend.llm").info(
-        "LLM response | task=%s | metadata=%s\n%s",
-        task,
-        _format_metadata(metadata),
-        response,
-    )
+        "LLM response | task=%s | chars=%s | metadata=%s", task, len(response), _format_metadata(metadata))
 
 
 def log_llm_error(task: str, error: Exception, metadata: dict[str, Any] | None = None) -> None:
-    logging.getLogger("backend.llm").exception(
-        "LLM error | task=%s | metadata=%s | error=%s",
-        task,
-        _format_metadata(metadata),
-        error,
-    )
+    logging.getLogger("backend.llm").warning(
+        "LLM error | task=%s | metadata=%s | error_type=%s | status=%s",
+        task, _format_metadata(metadata), type(error).__name__, getattr(error, "status_code", None))
 
 
 def log_llm_validation_error(task: str, errors: Any, metadata: dict[str, Any] | None = None) -> None:
     logging.getLogger("backend.llm").warning(
-        "LLM validation error | task=%s | metadata=%s | errors=%s",
-        task,
-        _format_metadata(metadata),
-        json.dumps(errors, ensure_ascii=False, default=str),
-    )
+        "LLM validation error | task=%s | metadata=%s | count=%s",
+        task, _format_metadata(metadata), len(errors) if isinstance(errors, list) else 1)

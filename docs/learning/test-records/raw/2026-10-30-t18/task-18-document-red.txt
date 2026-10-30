@@ -1,0 +1,97 @@
+.FF                                                                      [100%]
+=================================== FAILURES ===================================
+_____________ test_all_pdf_pages_obey_limit_before_extraction[101] _____________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-237/test_all_pdf_pages_obey_limit_1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ddbb200>
+pages = 101
+
+    @pytest.mark.parametrize('pages', [100, 101])
+    def test_all_pdf_pages_obey_limit_before_extraction(tmp_path, monkeypatch, pages):
+        path = tmp_path / 'many.pdf'
+        with fitz.open() as pdf:
+            for _ in range(pages):
+                pdf.new_page().insert_text((40, 40), 'Readable native resume text with sufficient content.')
+            pdf.save(path)
+        calls = []
+        original = fitz.Page.get_text
+        def read(page, *args, **kwargs):
+            calls.append(page.number)
+            return original(page, *args, **kwargs)
+        monkeypatch.setattr(fitz.Page, 'get_text', read)
+        if pages == 101:
+>           with pytest.raises(UnsupportedDocumentError, match='100'):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'backend.services.documents.UnsupportedDocumentError'>
+
+backend/tests/test_upload_limits.py:38: Failed
+___ test_whole_parse_timeout_terminates_work_and_releases_slot[sqlite-model] ___
+
+career_db = <sqlalchemy.orm.session.Session object at 0x10de52ab0>
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-237/test_whole_parse_timeout_termi0/career.db)
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-237/test_whole_parse_timeout_termi0')
+stage = 'model'
+
+    @pytest.mark.parametrize('stage', ['extract', 'model', 'embedding'])
+    def test_whole_parse_timeout_terminates_work_and_releases_slot(career_db, career_engine, tmp_path, stage):
+        worker, log, root, rid = start_worker(career_db, career_engine, tmp_path, stage=stage)
+        try:
+            wait_for(lambda: (root / 'started.json').exists(), bool)
+>           worker.wait(timeout=5)
+
+backend/tests/test_upload_limits.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py:1264: in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -9 args: ['/Users/bono/.codex/worktrees/resumate-fullsta...>
+timeout = 5
+
+    def _wait(self, timeout):
+        """Internal implementation of wait() on POSIX."""
+        if self.returncode is not None:
+            return self.returncode
+    
+        if timeout is not None:
+            endtime = _time() + timeout
+            # Enter a busy loop if we have a timeout.  This busy loop was
+            # cribbed from Lib/threading.py in Thread.wait() at r71065.
+            delay = 0.0005 # 500 us -> initial delay of 1 ms
+            while True:
+                if self._waitpid_lock.acquire(False):
+                    try:
+                        if self.returncode is not None:
+                            break  # Another thread waited.
+                        (pid, sts) = self._try_wait(os.WNOHANG)
+                        assert pid == self.pid or pid == 0
+                        if pid == self.pid:
+                            self._handle_exitstatus(sts)
+                            break
+                    finally:
+                        self._waitpid_lock.release()
+                remaining = self._remaining_time(endtime)
+                if remaining <= 0:
+>                   raise TimeoutExpired(self.args, timeout)
+E                   subprocess.TimeoutExpired: Command '['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-m', 'backend.tests.fixtures.document_worker', 'b2029990-e668-4c0c-ab71-99bbf4697ff0']' timed out after 5 seconds
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/subprocess.py:2045: TimeoutExpired
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_upload_limits.py::test_all_pdf_pages_obey_limit_before_extraction[101]
+FAILED backend/tests/test_upload_limits.py::test_whole_parse_timeout_terminates_work_and_releases_slot[sqlite-model]
+2 failed, 1 passed, 7 deselected, 5 warnings in 6.43s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

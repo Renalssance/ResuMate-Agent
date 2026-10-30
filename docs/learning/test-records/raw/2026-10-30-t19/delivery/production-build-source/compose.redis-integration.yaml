@@ -1,0 +1,26 @@
+# Tests only. Merge with deploy/compose.yaml; all application services share one build.
+x-test: &test
+  image: ${T20_IMAGE:?Set invocation image}
+  volumes:
+    - ${T20_SOURCE:?Set captured source}/backend:/app/backend:ro
+services:
+  web:
+    profiles: [delivery]
+  schema:
+    <<: *test
+  api:
+    <<: *test
+    command: [uvicorn, 'backend.tests.fixtures.redis_api:app', --host, 0.0.0.0, --port, '8000']
+  api2:
+    <<: *test
+    command: [uvicorn, 'backend.tests.fixtures.redis_api:app', --host, 0.0.0.0, --port, '8000']
+  worker:
+    <<: *test
+    command: [celery, -A, 'backend.tests.fixtures.redis_worker:app', worker, --loglevel=INFO, --concurrency=1]
+  scheduler:
+    <<: *test
+  redis-oom:
+    image: public.ecr.aws/docker/library/redis:7.4-alpine
+    command: [redis-server, --maxmemory, 8mb, --maxmemory-policy, noeviction]
+    mem_limit: 64m
+    profiles: [oom]

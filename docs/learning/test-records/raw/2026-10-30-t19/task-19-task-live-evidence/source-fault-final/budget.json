@@ -1,0 +1,24 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "47cde762-859d-4cd5-9b9e-8196e1a01c3c": {
+      "case_id": "source-deleted-or-reassigned",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "650c2b0a-5cc1-4354-b878-c046c8f5155d": {
+      "case_id": "source-deleted-or-reassigned",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "9b36cd80-6c95-4543-876a-228106bb3ea0": {
+      "case_id": "source-deleted-or-reassigned",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    }
+  },
+  "stop_reason": null
+}

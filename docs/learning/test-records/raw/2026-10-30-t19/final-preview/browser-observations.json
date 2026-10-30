@@ -1,0 +1,42 @@
+{
+  "pageErrors": [],
+  "screenshots": [
+    {
+      "path": "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/task-19-final-preview-wlvk8n49/screenshots/jobs-1440.png",
+      "url": "http://127.0.0.1:4175/jobs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "scrollWidth": 1440
+    },
+    {
+      "path": "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/task-19-final-preview-wlvk8n49/screenshots/jobs-390.png",
+      "url": "http://127.0.0.1:4175/jobs",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scrollWidth": 390
+    },
+    {
+      "path": "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/task-19-final-preview-wlvk8n49/screenshots/jobs-320.png",
+      "url": "http://127.0.0.1:4175/jobs",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "scrollWidth": 320
+    },
+    {
+      "path": "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/task-19-final-preview-wlvk8n49/screenshots/waiting-input-390.png",
+      "url": "http://127.0.0.1:4175/agent/tasks/1c38996d-f673-428d-a16f-9e042257fb79",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scrollWidth": 390,
+      "action": "waiting input preserved; no answer submitted"
+    }
+  ]
+}

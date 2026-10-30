@@ -1,0 +1,33 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18ad2-404b-7802-9f2e-5984479e7575": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18ad2-4064-7301-8d98-14db7d54c4ae": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18ad2-4085-7f40-bd35-5f477df28186": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": "budget_exhausted"
+}

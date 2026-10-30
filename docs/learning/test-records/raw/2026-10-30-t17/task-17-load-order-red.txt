@@ -1,0 +1,15 @@
+...F                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_sse_out_of_order_frames_cannot_pass_complete_delivery __________
+
+    def test_sse_out_of_order_frames_cannot_pass_complete_delivery():
+        commits = [{'run_id': 'r1', 'seq': n, 'committed_ns': 1_000_000_000} for n in (1, 2)]
+        receives = [{'subscriber': 0, 'run_id': 'r1', 'seq': n, 'received_ns': 1_100_000_000} for n in (2, 1)]
+        result = load_module().summarize_delivery(commits, receives, {0: 'r1'})
+>       assert result['passed'] is False
+E       assert True is False
+
+backend/tests/test_load_measurement.py:46: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_load_measurement.py::test_sse_out_of_order_frames_cannot_pass_complete_delivery
+1 failed, 3 passed in 0.31s

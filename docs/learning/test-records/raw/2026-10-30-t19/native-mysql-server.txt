@@ -1,0 +1,159 @@
+2026-10-29T13:50:20.632804Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-29T13:50:20.773158Z 0 [System] [MY-010116] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld (mysqld 9.6.0) starting as process 65156
+2026-10-29T13:50:20.773165Z 0 [System] [MY-015590] [Server] MySQL Server has access to 10 logical CPUs.
+2026-10-29T13:50:20.773170Z 0 [System] [MY-015590] [Server] MySQL Server has access to 17179869184 bytes of physical memory.
+2026-10-29T13:50:20.775462Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /tmp/resumate-mysql-t02/data/ is case insensitive
+2026-10-29T13:50:20.781942Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-29T13:50:20.844979Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-29T13:50:20.986912Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-29T13:50:20.986930Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-29T13:50:20.987727Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-10-29T13:50:20.998312Z 0 [System] [MY-010931] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld: ready for connections. Version: '9.6.0'  socket: '/tmp/resumate-mysql-t02/mysql.sock'  port: 0  Homebrew.
+2026-10-29T15:07:56.195799Z 589 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 9.6.0).
+2026-10-29T15:07:56.197308Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 9.6.0).
+2026-10-29T15:07:56.503661Z 0 [System] [MY-010910] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld: Shutdown complete (mysqld 9.6.0)  Homebrew.
+2026-10-29T15:07:56.503724Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-10-29T15:24:33.869102Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-29T15:24:34.018416Z 0 [System] [MY-010116] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld (mysqld 9.6.0) starting as process 77596
+2026-10-29T15:24:34.018422Z 0 [System] [MY-015590] [Server] MySQL Server has access to 10 logical CPUs.
+2026-10-29T15:24:34.018426Z 0 [System] [MY-015590] [Server] MySQL Server has access to 17179869184 bytes of physical memory.
+2026-10-29T15:24:34.024419Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /tmp/resumate-mysql-t02/data/ is case insensitive
+2026-10-29T15:24:34.036618Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-29T15:24:34.149358Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-29T15:24:34.316334Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-29T15:24:34.316360Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-29T15:24:34.317151Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-10-29T15:24:34.327766Z 0 [System] [MY-010931] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld: ready for connections. Version: '9.6.0'  socket: '/tmp/resumate-mysql-t02/mysql.sock'  port: 0  Homebrew.
+2026-10-29T15:29:21.362480Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 1669124928. Consider increasing innodb_redo_log_capacity.
+2026-10-29T15:31:04.513853Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 1939383862. Consider increasing innodb_redo_log_capacity.
+2026-10-29T15:35:21.931983Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 2265061012. Consider increasing innodb_redo_log_capacity.
+2026-10-29T15:38:20.752486Z 570 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 9.6.0).
+2026-10-29T15:38:20.753137Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 9.6.0).
+2026-10-29T15:38:21.868810Z 0 [System] [MY-010910] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld: Shutdown complete (mysqld 9.6.0)  Homebrew.
+2026-10-29T15:38:21.868833Z 0 [System] [MY-015016] [Server] MySQL Server - end.
+2026-10-29T15:47:09.897786Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-29T15:47:10.092850Z 0 [System] [MY-010116] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld (mysqld 9.6.0) starting as process 81991
+2026-10-29T15:47:10.092866Z 0 [System] [MY-015590] [Server] MySQL Server has access to 10 logical CPUs.
+2026-10-29T15:47:10.092874Z 0 [System] [MY-015590] [Server] MySQL Server has access to 17179869184 bytes of physical memory.
+2026-10-29T15:47:10.099226Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /tmp/resumate-mysql-t02/data/ is case insensitive
+2026-10-29T15:47:10.108195Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-29T15:47:10.191443Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-29T15:47:10.350620Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-29T15:47:10.350634Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-29T15:47:10.351590Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-10-29T15:47:10.366130Z 0 [System] [MY-010931] [Server] /opt/homebrew/Cellar/mysql/9.6.0_3/bin/mysqld: ready for connections. Version: '9.6.0'  socket: '/tmp/resumate-mysql-t02/mysql.sock'  port: 0  Homebrew.
+2026-10-29T15:47:59.147832Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 2586903273. Consider increasing innodb_redo_log_capacity.
+2026-10-29T15:56:20.370069Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 2801033209. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:08:01.017337Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 3219338329. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:10:46.772395Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 3554305592. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:19:39.840343Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 4153182255. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:19:53.041838Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 4379901593. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:29:56.744603Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 4804181915. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:31:08.270890Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 4992849232. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:32:08.634707Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 5277135613. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:32:45.701249Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 5709000825. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:32:58.531550Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 5885354638. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:33:10.725529Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 6222075476. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:37:43.594332Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 6928662717. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:43:13.308371Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 7393255110. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:44:01.733334Z 2243 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 7517329436. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:45:28.687370Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 7826517583. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:45:43.298168Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 8043275465. Consider increasing innodb_redo_log_capacity.
+2026-10-29T16:46:01.453254Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 8354395559. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:04:40.535277Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 9453964551. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:06:03.204502Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 9606099177. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:06:20.953338Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 9822309811. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:07:21.274383Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 10331382584. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:07:33.296841Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 10492185665. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:25:28.981013Z 3808 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 10929449825. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:31:04.321899Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 11285443559. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:31:25.420197Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 11635430950. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:31:50.289860Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 11987246856. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:38:59.169640Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 12733565797. Consider increasing innodb_redo_log_capacity.
+2026-10-29T17:42:26.366385Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 13379490181. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:08:04.182842Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 14405699048. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:08:17.478606Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 14638928271. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:08:56.310143Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 15012451724. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:09:11.255577Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 15242082159. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:09:24.137898Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 15456670300. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:41:03.167532Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 15863197483. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:41:44.869573Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 16106357186. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:42:15.242839Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 16403888392. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:44:16.134344Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 16665517087. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:56:36.347078Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 17021301914. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:57:11.787400Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 17466290502. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:57:26.900061Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 17684168562. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:58:29.878553Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 17897023767. Consider increasing innodb_redo_log_capacity.
+2026-10-29T18:59:01.276735Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 18431114438. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:19:54.848475Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 18883929142. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:20:07.641660Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 19093991958. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:20:20.392527Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 19245571518. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:20:33.998990Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 19462797967. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:21:37.796242Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 19754401393. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:21:57.183893Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 20065432563. Consider increasing innodb_redo_log_capacity.
+2026-10-29T19:22:20.237940Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 20444629152. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:21:41.804939Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 20860133361. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:22:10.268302Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 21188550039. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:23:30.173285Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 21711958585. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:23:41.879282Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 21934071079. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:24:01.122164Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 22235041130. Consider increasing innodb_redo_log_capacity.
+2026-10-30T01:58:12.500803Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 22675761401. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:10:05.764317Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 23304102377. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:12:00.395159Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 23758664012. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:12:13.920700Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 23915694462. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:14:10.547318Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 24567659613. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:14:29.404727Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 24875733220. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:14:42.479179Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 25024965446. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:14:55.257495Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 25260544898. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:55:20.584503Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 25736637498. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:55:32.323671Z 0 [Warning] [MY-014084] [InnoDB] Threads are unable to reserve space in redo log which can't be reclaimed due to the 'log_checkpointer' consumer still lagging behind at LSN = 25876752831. Consider increasing innodb_redo_log_capacity.
+2026-10-30T02:56:08.246543Z 10093 [ERROR] [MY-012644] [InnoDB] Encountered a problem with file './resumate_test_465603f73d984b1cb6774adb4c01aee5/interview_question_sets.ibd'
+2026-10-30T02:56:08.247275Z 10093 [ERROR] [MY-012645] [InnoDB] Disk is full. Try to clean the disk to free space.
+2026-10-30T02:56:08.247283Z 10093 [ERROR] [MY-012592] [InnoDB] Operating system error number 28 in a file operation.
+2026-10-30T02:56:08.247303Z 10093 [ERROR] [MY-012596] [InnoDB] Error number 28 means 'No space left on device'
+2026-10-30T02:56:08.247315Z 10093 [ERROR] [MY-012126] [InnoDB] Cannot create file './resumate_test_465603f73d984b1cb6774adb4c01aee5/interview_question_sets.ibd'
+2026-10-30T02:56:08.247563Z 10093 [ERROR] [MY-013133] [Server] Create table/tablespace 'interview_question_sets' failed, as disk is full.
+2026-10-30T02:56:08.753527Z 10095 [Warning] [MY-012638] [InnoDB] Retry attempts for writing partial data failed.
+2026-10-30T02:56:08.753550Z 10095 [ERROR] [MY-012129] [InnoDB] Could not write the first page to tablespace './resumate_test_a22ef588d23e41aa8bd737d55155969f/users.ibd'
+2026-10-30T02:56:08.753617Z 10095 [ERROR] [MY-013133] [Server] Create table/tablespace 'users' failed, as disk is full.
+2026-10-30T02:56:11.556302Z 10107 [Warning] [MY-012638] [InnoDB] Retry attempts for writing partial data failed.
+2026-10-30T02:56:11.556374Z 10107 [ERROR] [MY-012639] [InnoDB] Write to file ./resumate_test_8b905734acf24f6d8d2c54edcc14e1e5/tool_operations.ibd failed at offset 0, 114688 bytes should have been written, only 0 were written. Operating system error number 28. Check that your OS and file system support files of this size. Check also that the disk is not full or a disk quota exceeded.
+2026-10-30T02:56:11.556381Z 10107 [ERROR] [MY-012640] [InnoDB] Error number 28 means 'No space left on device'
+2026-10-30T02:56:11.556390Z 10107 [ERROR] [MY-012129] [InnoDB] Could not write the first page to tablespace './resumate_test_8b905734acf24f6d8d2c54edcc14e1e5/tool_operations.ibd'
+2026-10-30T02:56:11.556461Z 10107 [ERROR] [MY-013133] [Server] Create table/tablespace 'tool_operations' failed, as disk is full.
+2026-10-30T02:56:11.707930Z 10106 [ERROR] [MY-013904] [InnoDB] Failed to mark unused redo log file ./#innodb_redo/#ib_redo7959_tmp as in use (by renaming to ./#innodb_redo/#ib_redo7959).
+2026-10-30T02:56:11.708551Z 10106 [ERROR] [MY-013891] [InnoDB] Failed to rename ./#innodb_redo/#ib_redo7959_tmp when creating redo log file ./#innodb_redo/#ib_redo7959 (error: 11)
+2026-10-30T02:56:11.708559Z 10106 [ERROR] [MY-013864] [InnoDB] [FATAL] Error 11 encountered when writing to the redo log file: ./#innodb_redo/#ib_redo7958.
+2026-10-30T02:56:11.708751Z 10106 [ERROR] [MY-013183] [InnoDB] Assertion failure: log0write.cc:2111:ib::fatal triggered thread 0x16e6df000
+InnoDB: We intentionally generate a memory trap.
+InnoDB: Submit a detailed bug report to http://bugs.mysql.com.
+InnoDB: If you get repeated assertion failures or crashes, even
+InnoDB: immediately after the mysqld startup, there may be
+InnoDB: corruption in the InnoDB tablespace. Please refer to
+InnoDB: http://dev.mysql.com/doc/refman/9.6/en/forcing-innodb-recovery.html
+InnoDB: about forcing recovery.
+2026-10-30T02:56:11Z UTC - mysqld got signal 6 ;
+Most likely, you have hit a bug, but this error can also be caused by malfunctioning hardware.
+Thread pointer: 0x9041ce000
+Attempting backtrace. You can use the following information to find out
+where mysqld died. If you see no messages after this, something went
+terribly wrong...
+stack_bottom = 16e6def28 thread_stack 0x100000
+0   mysqld                              0x0000000103b5d784 my_print_stacktrace(unsigned char const*, unsigned long) + 68
+1   mysqld                              0x0000000103372e9c print_fatal_signal(int, __siginfo*) + 904
+2   mysqld                              0x0000000103373028 my_server_abort() + 92
+3   mysqld                              0x00000001041631ec my_abort() + 20
+4   mysqld                              0x0000000103e282b4 ut_dbg_assertion_failed(char const*, char const*, unsigned long long) + 396
+5   mysqld                              0x0000000103e2a708 ib::fatal::~fatal() + 164
+6   mysqld                              0x0000000103e2a71c ib::fatal::~fatal() + 0
+7   mysqld                              0x0000000103d751f4 log_writer_write_failed(log_t&, dberr_t) + 264
+8   mysqld                              0x0000000103d734f4 log_writer_write_buffer(log_t&, unsigned long long) + 3940
+9   mysqld                              0x0000000103d71b48 log_write_up_to(log_t&, unsigned long long, bool) + 412
+10  mysqld                              0x0000000103e1edac trx_flush_log_if_needed(unsigned long long, trx_t*) + 72
+11  mysqld                              0x0000000103e1e0a4 trx_commit_low(trx_t*, mtr_t*) + 1868
+12  mysqld                              0x0000000103e1e400 trx_commit(trx_t*) + 212
+13  mysqld                              0x0000000103e1ec6c trx_commit_for_mysql(trx_t*) + 288
+14  mysqld                              0x0000000103c452ec dict_stats_exec_sql(pars_info_t*, char const*, trx_t*) + 128
+15  mysqld                              0x0000000103c45434 dict_stats_drop_table(char const*, char*, unsigned long) + 212
+16  mysqld                              0x0000000103db5f0c row_drop_table_for_mysql(char const*, trx_t*, bool, dict_table_t*) + 832
+DROP DATABASE 

@@ -1,0 +1,105 @@
+Images space usage:
+
+REPOSITORY                            TAG             IMAGE ID       CREATED         SIZE      SHARED SIZE   UNIQUE SIZE   CONTAINERS
+resumate-t19-backend                  5cd2b8fd52      83629f6b72ea   2 minutes ago   3.03GB    284.5MB       2.75GB        0
+resumate-t20-deps                     aligned         a2f59cd86260   2 hours ago     3.62GB    3.619GB       6.012MB       0
+resumate-t11-worker                   latest          9f9721ac9425   10 hours ago    3.62GB    3.619GB       13.07kB       0
+public.ecr.aws/docker/library/mysql   8.4             a0225d1ea663   2 days ago      1.11GB    0B            1.112GB       0
+public.ecr.aws/docker/library/redis   7.4-alpine      8da19c7399dc   3 days ago      58.7MB    32B           58.7MB        1
+public.ecr.aws/docker/library/nginx   stable-alpine   0e52bd054126   8 days ago      93.1MB    0B            93.06MB       0
+
+Containers space usage:
+
+CONTAINER ID   IMAGE                                            COMMAND                  LOCAL VOLUMES   SIZE      CREATED          STATUS          NAMES
+76c88ebfa81b   public.ecr.aws/docker/library/redis:7.4-alpine   "docker-entrypoint.s…"   1               4.1kB     21 minutes ago   Up 21 minutes   resumate-preview-redis-recovered-20261030
+
+Local Volumes space usage:
+
+VOLUME NAME                                                        LINKS     SIZE
+0896f5b565a2739d5858051a7664aba6eecdfd1f662ff0b70dd9bab455e98de2   0         0B
+0ff97bbfc3b46c58b3d8fd89d108009fd16f1c3c6d14d7e86f8fc01cca119911   0         0B
+2f8536b321d310aaf0ae17255f57e5aa36daddec840816aeca1da3d259a15454   0         0B
+46341faf497338d591bbc3268ad40c6f1a7cd20ffdca16ef48db903d06497bd5   0         0B
+7f9a3dbd8e7f27a6f30a6a9596591128d0278f4b686a7869737f8aeedc568af4   0         0B
+89d2d8cc65410d71e45473e852092203bb354cd65b58b8138eaffe6328f87276   0         0B
+c373c55e6638da671aadad1ffefa687da03180742c7876b15d984e57c683b849   0         0B
+e11c6ebceebfe5cf7ee74eec2e73f332042ab511dfd9911d3d7d914acb624997   0         0B
+8ec3598e406d8951d213a44623573c06f301a6a3b93be4608a51ff47f976d6a0   0         0B
+042ee87decd4bfc89ddf43779d5ee2248b0d7bf3eaf37f2ed62c3251f3d0bb2f   0         0B
+3ae2e60c6abe9f876a2824fbf9ba6c36fc499ed7a17fdaaa43a6d02062a21608   0         0B
+416190f748a23d40c957eeb006d93135552372cdf3d0db27ce9e1564450354a6   0         0B
+81ee8999ccfabb73347eacf7861e4dac1d74abdb10605f0e35e0b09f4f176278   0         0B
+d635aa998b411e7ab14c5245bf76f9d607fd009b26136852208ddd2f0967d25a   0         0B
+daf7cb318749f0ea35f903f987c539a615c68517b34b2fb3bd79584a81b95ece   0         0B
+c7298a621823a0cb307bc6c957200b49cab9fb755e5e32b83ccc7a70fd50cdee   1         0B
+522d9796aa15025982538a77e52c26c6197ead12ce7f1a9e90a5ed21628746f1   0         0B
+bf3c53c5a7b5aa2f118c4ee2acfae45c1d12b85585a48b29f768ee1c81097645   0         0B
+eec3db9f684764367e078a1d8dd01f38da46c95463a61b5c913cd20fbc912521   0         0B
+f0f8011a2de2e94326aec09735fd5ae14ad4f74a57c03c5dabf2ee269939440c   0         0B
+69f98b48cc8367faa2d2065cfc69d5332d73b1bb58df00e8e9a43a5b489db6ed   0         0B
+7ce1ed10d512b1bd89a76e9cfbcb7b1327934cad73f535badc908df38fcd4ce8   0         0B
+1ef756ee9494e98a8fdad9d2f30dccafb063d2e6a08f467e2de9db027bb54c06   0         0B
+5aec9b51985ba3220a28963f75dd696706ebb411c67d8c220c7a8eeb3dead7ba   0         0B
+89fbe8297e932553c4a6ace0c468d3df4066474971f452d6f1cbc861c80e39df   0         0B
+c8b74f00ee664b6b1c12be9e46cfddadaf9982ff76fa51fad75551d0c09eaddf   0         0B
+c9bee2840faad7d3f2b4e3e19eeb78cb50a178a72b35c02b720cc3461bbe9e51   0         0B
+96c9b129dc820637f539134b504258d1a26746f8b25ff352ccf78b3623d5c9e1   0         0B
+6c90bd225dd5b6d69d9fa2710eeac855f38a8e4349366513a3312c56ec6f616e   0         0B
+8aa547a8a75bf17f025746687b5b2c84249ed53bc16a9a4b767b0f30f081d86c   0         0B
+8c5689cf4283999fcb2c57869e79042ca3b9d9c3f31b856cd1dfaaddc42ec82b   0         0B
+5fe80920c0d46c2486ce34d427b6f7d623e13a3139bba61cabc2e720c9d898ac   0         0B
+6eeaab00c9672d60aa207563a31db23e991bf0bbd42cc72df94c771f924c83c9   0         0B
+a81aa17886735d19ebd9f94637b7a3237e3e92df6ad7cf945e7e64606e6b1d53   0         0B
+e63abe6ee0b270e23aa75ef848c2d3857cae385f4f59807059475d22e3057b43   0         0B
+f286367d92880de50634905fb9f3d23b6cfaeddffae4b4bcdbc26c024adbe4e0   0         0B
+f43171af68566a459b74c70e2037ba821d19fd97f33c0e668afe08d023c80ce2   0         0B
+0789863e3d73b17b9734453d27d15e5383244e10af1def3d47f9fb50a715a2f9   0         0B
+4e1efb23b1a9e881656809f3828b1c9dd0717b82471b9e0f26c17dbe14b00d99   0         0B
+6d5e16a13fccb6b64825194da3f92a195a84d6c7c4e6acc785e2333ed81cb2ad   0         0B
+7aadbdbbf3f527f2d30a06033f1a5a9a1ecf44cd5cee6f62084c68af87cd4873   0         0B
+99062950217af1b9dc5f6d418d370912044f4a50b63c4ed526179955c771f778   0         0B
+a4a14a6abe8c54c3669cf8225055c8706e0af237c2ee91b91c9c6d610ef9d815   0         0B
+aeb59e6333025ab36ceeab496d1d72b8602d58bffb23d3dbde8390857f343044   0         0B
+bdf77b7a4265b5406cf60830e60c9ebcb9e5b175596bfd874c13746a6c155ff7   0         0B
+
+Build cache usage: 3.938GB
+
+CACHE ID       CACHE TYPE     SIZE      CREATED              LAST USED            USAGE     SHARED
+sfbu388bgkmz   regular        1.16MB    2 hours ago                               0         false
+wvchgihhx1h8   regular        136MB     13 hours ago         13 hours ago         1         true
+ukgxlab3muhl   regular        12.8MB    13 hours ago         13 hours ago         1         true
+lr5hc379kypk   regular        62MB      13 hours ago         13 hours ago         1         true
+pyvey9dyo65n   regular        73.7MB    13 hours ago         13 hours ago         1         true
+82tdssndv0bw   regular        8.29kB    13 hours ago         13 hours ago         1         true
+wckmakhiudgo   regular        16.6kB    13 hours ago         13 hours ago         1         true
+wa3t1x9a175i   regular        1.13MB    10 hours ago         10 hours ago         2         true
+4cb5lw64jyng   regular        29kB      10 hours ago         10 hours ago         1         true
+wo4kpf6r69kz   regular        829kB     10 hours ago         10 hours ago         1         true
+1v21zrrukxuw   regular        3.33GB    10 hours ago         10 hours ago         3         true
+tjj4sskse3rp   regular        29kB      2 hours ago          2 hours ago          1         false
+slatgrqs9v6b   regular        24.7kB    10 hours ago         2 hours ago          2         true
+ig6sfinasj64   regular        4.13kB    2 hours ago          2 hours ago          1         true
+rsoy5z01zj6d   source.local   901kB     2 hours ago          2 hours ago          1         false
+6w3xtzqh53fl   regular        1.16MB    2 hours ago          2 hours ago          1         true
+poragacu2z1s   regular        4.87MB    2 hours ago          2 hours ago          1         true
+kpz8ddzsdfu5   source.local   8.19kB    2 hours ago          2 hours ago          1         false
+2smr35n46x6p   source.local   4.1kB     2 hours ago          2 hours ago          1         false
+tes459gcxn37   regular        901kB     16 minutes ago       6 minutes ago        1         false
+co4m6hgij17x   regular        72.9kB    2 minutes ago        2 minutes ago        1         false
+mdwkafifirvv   regular        13.6MB    2 minutes ago        2 minutes ago        1         false
+vdzzg7fyia2d   regular        204MB     2 minutes ago        2 minutes ago        1         false
+rpplz33t95he   regular        7.54MB    2 minutes ago        2 minutes ago        1         false
+4s1ifddrrjh9   regular        9.04MB    2 minutes ago        2 minutes ago        1         false
+pndzyx5malso   regular        8.82kB    2 minutes ago        2 minutes ago        1         false
+ovn0mp581f9g   regular        13.2kB    2 minutes ago        2 minutes ago        1         false
+jh2j2p79msql   regular        12.7kB    2 minutes ago        2 minutes ago        1         false
+ih07p6eh2fdp   regular        13.5kB    2 minutes ago        2 minutes ago        1         false
+xmmwbmkui42b   regular        17.8kB    2 minutes ago        2 minutes ago        1         false
+2jdznj9mb523   regular        70.4MB    2 minutes ago        About a minute ago   1         false
+38u3qfb9bthc   source.local   4.3MB     16 minutes ago       About a minute ago   3         false
+un7079defb6p   regular        20.9kB    2 minutes ago        About a minute ago   1         false
+xmevvt626pda   regular        28.7kB    About a minute ago   About a minute ago   1         false
+cahpoa6386bc   regular        12.3kB    2 minutes ago        About a minute ago   1         false
+oow637vckc1l   source.local   8.19kB    16 minutes ago       About a minute ago   4         false
+z7xig8wqjjbh   source.local   8.19kB    16 minutes ago       About a minute ago   3         false
+xat3clky5jgo   regular        127kB     2 minutes ago        About a minute ago   1         false

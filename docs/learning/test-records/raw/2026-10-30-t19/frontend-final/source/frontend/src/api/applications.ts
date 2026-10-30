@@ -1,0 +1,47 @@
+import { request } from '../services/request'
+import type {
+  ApplicationSchedulePayload,
+  ApplicationStatusEventPayload,
+  BackendJobApplicationRecord,
+  JobApplicationPayload,
+} from '../types/application'
+
+export function fetchApplicationsApi() {
+  return request.get<BackendJobApplicationRecord[], BackendJobApplicationRecord[]>('/applications')
+}
+
+export function createApplicationApi(payload: JobApplicationPayload) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>('/applications', payload)
+}
+
+export function updateApplicationApi(id: number, payload: Partial<JobApplicationPayload>) {
+  return request.patch<BackendJobApplicationRecord, BackendJobApplicationRecord>(`/applications/${id}`, payload)
+}
+
+export function createApplicationStatusEventApi(id: number, payload: ApplicationStatusEventPayload) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
+    `/applications/${id}/status-events`,
+    payload,
+  )
+}
+
+export function createApplicationScheduleApi(id: number, payload: ApplicationSchedulePayload) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
+    `/applications/${id}/schedules`,
+    payload,
+  )
+}
+
+export function completeApplicationScheduleApi(id: number, scheduleId: number) {
+  return request.post<BackendJobApplicationRecord, BackendJobApplicationRecord>(
+    `/applications/${id}/schedules/${scheduleId}/complete`,
+  )
+}
+
+export function deleteApplicationApi(id: number) {
+  return request.delete<{ id: number }, { id: number }>(`/applications/${id}`)
+}
+
+export function attachApplicationSubmissionApi(id: number, payload: { jd_id: number; resume_version_id: string }) {
+  return request.put<BackendJobApplicationRecord, BackendJobApplicationRecord>(`/applications/${id}/submission`, payload)
+}

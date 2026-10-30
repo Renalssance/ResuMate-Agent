@@ -1,0 +1,50 @@
+{
+  "runId": "2c819b42-c025-4e59-9b27-86136e623aee",
+  "offline_ms": 35125,
+  "recovery_ms": 33,
+  "browser_clock": {
+    "inputSamples": [],
+    "recordInputs": false,
+    "onlineAt": 35282.90000000596,
+    "completedAt": 35315.90000000596,
+    "completedWallTime": 1793328371634
+  },
+  "streamRequests": [
+    {
+      "url": "http://127.0.0.1:4373/api/agent/runs/2c819b42-c025-4e59-9b27-86136e623aee/events?after=0",
+      "at": 1793328336434
+    },
+    {
+      "url": "http://127.0.0.1:4373/api/agent/runs/2c819b42-c025-4e59-9b27-86136e623aee/events?after=7",
+      "at": 1793328371627
+    }
+  ],
+  "failedRequests": [
+    {
+      "at": 1793328336477,
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "at": 1793328337483,
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "at": 1793328339486,
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "at": 1793328343493,
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "at": 1793328351496,
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "at": 1793328366507,
+      "error": "net::ERR_INTERNET_DISCONNECTED"
+    }
+  ],
+  "pageErrors": [],
+  "cspViolations": []
+}

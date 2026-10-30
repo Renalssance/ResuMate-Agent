@@ -1,0 +1,195 @@
+{
+  "run": {
+    "id": "29920d1b-e0e4-49e8-9561-76a08325ea7d",
+    "session_id": "9c1e97ee-7462-4313-8aaa-3cc89f3620d6",
+    "status": "succeeded",
+    "attempt": 2,
+    "epoch": 2,
+    "heartbeat_at": "2026-10-30T03:38:49.070632",
+    "output_refs": [
+      {
+        "type": "resume_version",
+        "id": "3b1a72b7-19d8-46cd-a5e3-bc4f9c15c27a"
+      }
+    ],
+    "error_code": null
+  },
+  "versions": [
+    {
+      "id": "3b1a72b7-19d8-46cd-a5e3-bc4f9c15c27a",
+      "structured_content": {
+        "resume": {
+          "self_summary": "Built an API"
+        },
+        "changes": [
+          {
+            "section": "/self_summary",
+            "before": "Built an API",
+            "after": "Built an API。负责 API 和数据库设计。",
+            "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。",
+            "fact_refs": [
+              {
+                "kind": "resume",
+                "resumeId": 1,
+                "inputVersion": "2026-10-30T03:36:41.057638",
+                "section": "/self_summary",
+                "sourceRefs": []
+              }
+            ],
+            "requires_input": false,
+            "id": "721d8071-5333-4cf1-8f41-4048f6ec2d35",
+            "status": "pending"
+          }
+        ],
+        "inputVersions": {
+          "resume": "2026-10-30T03:36:41.057638",
+          "jd": "2026-10-30T03:36:41.057161",
+          "memories": [],
+          "facts": []
+        }
+      },
+      "fact_refs": [
+        {
+          "kind": "resume",
+          "resumeId": 1,
+          "inputVersion": "2026-10-30T03:36:41.057638",
+          "section": "/self_summary",
+          "sourceRefs": []
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "id": 1,
+      "operation_key": "draft:1:initial",
+      "status": "succeeded",
+      "result_ref": "3b1a72b7-19d8-46cd-a5e3-bc4f9c15c27a"
+    }
+  ],
+  "actions": [],
+  "events": [
+    {
+      "seq": 1,
+      "type": "run.status",
+      "payload": {
+        "status": "queued",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 2,
+      "type": "run.status",
+      "payload": {
+        "status": "running",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 3,
+      "type": "run.status",
+      "payload": {
+        "status": "queued",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 4,
+      "type": "run.status",
+      "payload": {
+        "status": "running",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 5,
+      "type": "tool.started",
+      "payload": {
+        "tool_name": "get_application_context",
+        "operation_key": "call-0"
+      }
+    },
+    {
+      "seq": 6,
+      "type": "tool.completed",
+      "payload": {
+        "tool_name": "get_application_context",
+        "operation_key": "call-0",
+        "result_ref": null
+      }
+    },
+    {
+      "seq": 7,
+      "type": "tool.started",
+      "payload": {
+        "tool_name": "create_resume_draft",
+        "operation_key": "draft:1:initial"
+      }
+    },
+    {
+      "seq": 8,
+      "type": "artifact.created",
+      "payload": {
+        "artifact_id": "3b1a72b7-19d8-46cd-a5e3-bc4f9c15c27a",
+        "kind": "resume_version"
+      }
+    },
+    {
+      "seq": 9,
+      "type": "tool.completed",
+      "payload": {
+        "tool_name": "create_resume_draft",
+        "operation_key": "draft:1:initial",
+        "result_ref": "3b1a72b7-19d8-46cd-a5e3-bc4f9c15c27a"
+      }
+    },
+    {
+      "seq": 10,
+      "type": "assistant.delta",
+      "payload": {
+        "text": "请审阅草稿"
+      }
+    },
+    {
+      "seq": 11,
+      "type": "run.status",
+      "payload": {
+        "status": "succeeded",
+        "error_code": null
+      }
+    }
+  ],
+  "checkpoint": {
+    "run_id": "29920d1b-e0e4-49e8-9561-76a08325ea7d",
+    "next": [],
+    "interrupts": [],
+    "message_count": 6
+  },
+  "model_starts": [
+    {
+      "phase": [],
+      "started_at": 1793331423.997505,
+      "pid": 8
+    },
+    {
+      "phase": [],
+      "started_at": 1793331529.036339,
+      "pid": 8
+    },
+    {
+      "phase": [
+        "get_application_context"
+      ],
+      "started_at": 1793331529.0490806,
+      "pid": 8
+    },
+    {
+      "phase": [
+        "get_application_context",
+        "create_resume_draft"
+      ],
+      "started_at": 1793331529.0668993,
+      "pid": 8
+    }
+  ]
+}

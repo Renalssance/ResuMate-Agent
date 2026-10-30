@@ -107,8 +107,8 @@ def execute_run(run_id: str) -> None:
                     from backend.services.resume_export import run_resume_export
                     run_resume_export(run_id, epoch)
                 elif kind == 'document_parse':
-                    from backend.services.document_tasks import run_document_parse
-                    run_document_parse(run_id, epoch)
+                    from backend.services.document_process import run_document_parse_process
+                    run_document_parse_process(run_id, epoch)
                 elif kind == 'match_analysis':
                     from backend.services.analysis_tasks import run_match_analysis
                     run_match_analysis(run_id, epoch)

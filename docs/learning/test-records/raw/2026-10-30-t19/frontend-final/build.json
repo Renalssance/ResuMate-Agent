@@ -1,0 +1,22 @@
+{
+  "kind": "full production frontend Dockerfile build with final terminal-state fix",
+  "source": "/tmp/task-19-frontend-final-d4cbbe972e/source",
+  "image": "resumate-t19-frontend:d4cbbe972e-terminal",
+  "built": true,
+  "previous_image": "resumate-t19-frontend:5cd2b8fd52",
+  "backend_image": "resumate-t19-backend:7a3122655a-lifecycle",
+  "initial_free_bytes": 4974157824,
+  "minimum_free_bytes": 4964306944,
+  "disk_stop_threshold_bytes": 2147483648,
+  "source_commit": "cdde2c53c6a80e271c2d185bef80b179d8e2fcb7",
+  "build_exit_code": 0,
+  "image_metadata": {
+    "Id": "sha256:3d116c901b06f02b3ac685c494ddf3a279d6b5a9ec9912bd6b86d21eae4c9b39",
+    "Created": "2026-10-30T04:11:57.542273387Z",
+    "Architecture": "arm64",
+    "Size": 98776445
+  },
+  "final_free_bytes": 6018633728,
+  "static_runtime_passed": true,
+  "probe_cleanup_exit_code": 0
+}

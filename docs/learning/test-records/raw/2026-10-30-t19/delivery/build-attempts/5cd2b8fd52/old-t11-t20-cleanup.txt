@@ -1,0 +1,14 @@
+["resumate-t11-worker:latest"] sha256:9f9721ac9425b0e4aace30d382d43fddb187cf58c37d4df64615975ca5916b75 3618968373
+Untagged: resumate-t11-worker:latest
+Deleted: sha256:9f9721ac9425b0e4aace30d382d43fddb187cf58c37d4df64615975ca5916b75
+["resumate-t20-deps:aligned"] sha256:a2f59cd86260d3df4391438cbd581450dd2bc39124bd2fbd3662cd0bd9a4951f 3624967835
+Untagged: resumate-t20-deps:aligned
+Deleted: sha256:a2f59cd86260d3df4391438cbd581450dd2bc39124bd2fbd3662cd0bd9a4951f
+ID						RECLAIMABLE	SIZE		LAST ACCESSED
+poragacu2z1smglt8c9kgvpky               	true 		4.869MB   	2 hours ago
+6w3xtzqh53flin7qavaxy5wyj               	true 	1.162MB   	Less than a second ago
+ig6sfinasj64imig1lwgq4uus               	true 	4.128kB   	Less than a second ago
+slatgrqs9v6bb6jqq20a5hxtb               	true 	24.73kB   	Less than a second ago
+wo4kpf6r69kz1kbhs1f2mro07               	true 	829kB     	Less than a second ago
+1v21zrrukxuwef9zkcp9g1qlx               	true 	3.333GB   	Less than a second ago
+Total:	3.34GB

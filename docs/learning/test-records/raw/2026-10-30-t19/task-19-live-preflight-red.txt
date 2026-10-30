@@ -1,0 +1,38 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_new_task_live_mode_requires_verified_configuration_without_provider_calls _
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-258/test_new_task_live_mode_requir0')
+
+    def test_new_task_live_mode_requires_verified_configuration_without_provider_calls(tmp_path):
+        process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', 'followup-result-replay')
+        assert process.returncode == 2
+>       assert report['results'][0]['error_code'] == 'configuration_error'
+E       AssertionError: assert 'durable_live_not_implemented' == 'configuration_error'
+E         
+E         - configuration_error
+E         + durable_live_not_implemented
+
+backend/tests/test_eval_long_tasks.py:57: AssertionError
+____ test_interview_live_is_not_run_without_provider_or_budget_side_effects ____
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-258/test_interview_live_is_not_run0')
+
+    def test_interview_live_is_not_run_without_provider_or_budget_side_effects(tmp_path):
+        process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', ','.join(INTERVIEW_IDS))
+        assert process.returncode == 2
+        assert report['counts'] == {'pass': 0, 'fail': 0, 'incomplete': 0, 'not_run': 6}
+>       assert {row['error_code'] for row in report['results']} == {'configuration_error'}
+E       AssertionError: assert {'interview_l..._implemented'} == {'configuration_error'}
+E         
+E         Extra items in the left set:
+E         'interview_live_not_implemented'
+E         Extra items in the right set:
+E         'configuration_error'
+E         Use -v to get more diff
+
+backend/tests/test_interview_evals.py:121: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_eval_long_tasks.py::test_new_task_live_mode_requires_verified_configuration_without_provider_calls
+FAILED backend/tests/test_interview_evals.py::test_interview_live_is_not_run_without_provider_or_budget_side_effects
+2 failed, 22 deselected in 1.05s

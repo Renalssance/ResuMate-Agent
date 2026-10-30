@@ -1,0 +1,62 @@
+{
+  "status": "pass",
+  "class_module": "backend.model_transport",
+  "cases": [
+    {
+      "mode": "sync",
+      "status": 307,
+      "explicit_close": false,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "sync",
+      "status": 307,
+      "explicit_close": true,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "sync",
+      "status": 308,
+      "explicit_close": false,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "sync",
+      "status": 308,
+      "explicit_close": true,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "async",
+      "status": 307,
+      "explicit_close": false,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "async",
+      "status": 307,
+      "explicit_close": true,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "async",
+      "status": 308,
+      "explicit_close": false,
+      "requests": 1,
+      "closes": 1
+    },
+    {
+      "mode": "async",
+      "status": 308,
+      "explicit_close": true,
+      "requests": 1,
+      "closes": 1
+    }
+  ]
+}

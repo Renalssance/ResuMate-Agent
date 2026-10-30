@@ -1,0 +1,5 @@
+COMMAND     PID USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+python3.1  1335 bono   18u  IPv4  0x3b7a05b480207c7      0t0  TCP 127.0.0.1:4176 (LISTEN)
+node       1340 bono   12u  IPv4 0xeadf9749d44d0ed0      0t0  TCP 127.0.0.1:8898 (LISTEN)
+node       1356 bono   16u  IPv4 0x5fc52d723c16ab99      0t0  TCP 127.0.0.1:4175 (LISTEN)
+node      75022 bono   16u  IPv4 0xa4dc28230fa17891      0t0  TCP 127.0.0.1:4173 (LISTEN)

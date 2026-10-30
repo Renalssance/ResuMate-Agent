@@ -1,0 +1,69 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "524f04bf-21b9-4e2f-ab8a-19998ce228c9": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "bfaffeb5-bf30-4717-90f1-ab6af781368f": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "5d43c655-709d-462d-bd66-157bb6454e74": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "8ce0a512-dd3b-4a6e-9463-ba4a8e02ea52": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "6b1b8c74-227d-444c-a0fe-14d486095244": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "24a50c52-356c-44f5-9278-48c70f0d7e3f": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "225a156c-4d6a-4faa-8b8d-366760bc2449": {
+      "case_id": "question-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

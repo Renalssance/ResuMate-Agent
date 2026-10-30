@@ -1,0 +1,617 @@
+{
+  "case_id": "parse-upload-stable-identity",
+  "category": "durable_task",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "parse-upload-stable-identity",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "accepted-upload-replay",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "8db2f44a-dff6-495f-88b6-fdd6c8916902"
+    ],
+    "coverage": {
+      "accepted_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+      "duplicate_accepted_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+      "original_result": {
+        "documents": [
+          {
+            "id": "resume:3",
+            "type": "resume",
+            "filename": "synthetic-resume.txt",
+            "size": 71,
+            "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+            "parsed_content": {
+              "candidate_name": "Parsed Candidate",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "Original question",
+              "certifications": [],
+              "languages": [],
+              "quality": {
+                "parse_completeness": 1.0,
+                "source_ref_coverage": 1.0,
+                "ocr_warning_count": 0,
+                "unresolved_ambiguity_count": 0,
+                "contact_extracted": false,
+                "cross_page_reference_warning": false,
+                "missing_required_fields": [],
+                "status": "success",
+                "source_ref_count": 1,
+                "chunk_count": 1,
+                "evidence_level_distribution": {}
+              },
+              "structured_ambiguities": [],
+              "source_refs": [
+                {
+                  "page_number": 1,
+                  "section": "正文",
+                  "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                  "chunk_id": "0:3:resume:0"
+                }
+              ],
+              "name": "Parsed Candidate"
+            },
+            "parse_status": "success",
+            "created_at": "2026-10-30T03:44:38.623524Z",
+            "vectorized": true,
+            "local_stored": true
+          }
+        ],
+        "taskId": "8db2f44a-dff6-495f-88b6-fdd6c8916902"
+      },
+      "replay_result": {
+        "documents": [
+          {
+            "id": "resume:3",
+            "type": "resume",
+            "filename": "synthetic-resume.txt",
+            "size": 71,
+            "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+            "parsed_content": {
+              "candidate_name": "Parsed Candidate",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "Original question",
+              "certifications": [],
+              "languages": [],
+              "quality": {
+                "parse_completeness": 1.0,
+                "source_ref_coverage": 1.0,
+                "ocr_warning_count": 0,
+                "unresolved_ambiguity_count": 0,
+                "contact_extracted": false,
+                "cross_page_reference_warning": false,
+                "missing_required_fields": [],
+                "status": "success",
+                "source_ref_count": 1,
+                "chunk_count": 1,
+                "evidence_level_distribution": {}
+              },
+              "structured_ambiguities": [],
+              "source_refs": [
+                {
+                  "page_number": 1,
+                  "section": "正文",
+                  "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                  "chunk_id": "0:3:resume:0"
+                }
+              ],
+              "name": "Parsed Candidate"
+            },
+            "parse_status": "success",
+            "created_at": "2026-10-30T03:44:38.623524Z",
+            "vectorized": true,
+            "local_stored": true
+          }
+        ],
+        "taskId": "8db2f44a-dff6-495f-88b6-fdd6c8916902"
+      },
+      "calls_on_replay": 0,
+      "original_file_count": 1
+    },
+    "model_calls": [
+      {
+        "task": "document.parse_resume",
+        "candidate": null
+      }
+    ],
+    "model": "synthetic-durable-task-fixture",
+    "mode": "stub",
+    "database": "isolated SQLite",
+    "source_directory": "/private/tmp/task-19-final-evals/20261030T034423Z-3feb4818/state/parse-upload-stable-identity/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "user_id": 1,
+        "session_id": "2b8526c5-efd2-4ca6-983c-6717d7ee581b",
+        "request_id": "upload",
+        "kind": "document_parse",
+        "status": "succeeded",
+        "input_json": {
+          "documentId": "resume:3",
+          "parseMode": "upload",
+          "sourceRef": "/private/tmp/task-19-final-evals/20261030T034423Z-3feb4818/state/parse-upload-stable-identity/originals/synthetic-resume.txt"
+        },
+        "input_versions": {
+          "document": "2026-10-30T03:44:38.623526"
+        },
+        "result_json": {
+          "documents": [
+            {
+              "id": "resume:3",
+              "type": "resume",
+              "filename": "synthetic-resume.txt",
+              "size": 71,
+              "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+              "parsed_content": {
+                "candidate_name": "Parsed Candidate",
+                "contact": {},
+                "education": [],
+                "work_experience": [],
+                "projects": [],
+                "skills": [],
+                "achievements": [],
+                "ambiguities": [],
+                "self_summary": "Original question",
+                "certifications": [],
+                "languages": [],
+                "quality": {
+                  "parse_completeness": 1.0,
+                  "source_ref_coverage": 1.0,
+                  "ocr_warning_count": 0,
+                  "unresolved_ambiguity_count": 0,
+                  "contact_extracted": false,
+                  "cross_page_reference_warning": false,
+                  "missing_required_fields": [],
+                  "status": "success",
+                  "source_ref_count": 1,
+                  "chunk_count": 1,
+                  "evidence_level_distribution": {}
+                },
+                "structured_ambiguities": [],
+                "source_refs": [
+                  {
+                    "page_number": 1,
+                    "section": "正文",
+                    "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                    "chunk_id": "0:3:resume:0"
+                  }
+                ],
+                "name": "Parsed Candidate"
+              },
+              "parse_status": "success",
+              "created_at": "2026-10-30T03:44:38.623524Z",
+              "vectorized": true,
+              "local_stored": true
+            }
+          ],
+          "taskId": "8db2f44a-dff6-495f-88b6-fdd6c8916902"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:38.642694",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-30T03:44:38.625113",
+        "updated_at": "2026-10-30T03:44:38.643315"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "2b8526c5-efd2-4ca6-983c-6717d7ee581b",
+        "user_id": 1,
+        "purpose": "document_parse",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:44:38.624818"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "operation_key": "parse:resume:3",
+        "tool_name": "document_parse",
+        "status": "succeeded",
+        "result_ref": "resume:3"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:38.626345"
+      },
+      {
+        "id": 2,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:38.630597"
+      },
+      {
+        "id": 3,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "server_save",
+          "status": "running",
+          "progress": 12,
+          "overall_progress": 12,
+          "message": "正在读取已保存的原件",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:44:38.634488"
+      },
+      {
+        "id": 4,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "extract",
+          "status": "running",
+          "progress": 32,
+          "overall_progress": 32,
+          "message": "正在提取第 1/1 页",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": 100,
+          "current": 1,
+          "total": 1,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:44:38.635463"
+      },
+      {
+        "id": 5,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "正在提取文档结构",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "cached": false
+          }
+        },
+        "created_at": "2026-10-30T03:44:38.636301"
+      },
+      {
+        "id": 6,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "embedding",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "正在生成文档索引",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "chunk_count": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:38.638957"
+      },
+      {
+        "id": 7,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 7,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "resume:3",
+          "kind": "document"
+        },
+        "created_at": "2026-10-30T03:44:38.642564"
+      },
+      {
+        "id": 8,
+        "run_id": "8db2f44a-dff6-495f-88b6-fdd6c8916902",
+        "seq": 8,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:38.643558"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:44:38.611690",
+        "updated_at": "2026-10-30T03:44:38.611691"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:44:38.611691",
+        "updated_at": "2026-10-30T03:44:38.611692"
+      },
+      {
+        "id": 3,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "/private/tmp/task-19-final-evals/20261030T034423Z-3feb4818/state/parse-upload-stable-identity/originals/synthetic-resume.txt",
+        "content_hash": "1a895c185d0b09d14ad9341a479140f4b441eccdf646cd0c0f4ff1ec5e937bc5",
+        "document_size": 71,
+        "parse_status": "success",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Parsed Candidate",
+          "contact": {},
+          "education": [],
+          "work_experience": [],
+          "projects": [],
+          "skills": [],
+          "achievements": [],
+          "ambiguities": [],
+          "self_summary": "Original question",
+          "certifications": [],
+          "languages": [],
+          "quality": {
+            "parse_completeness": 1.0,
+            "source_ref_coverage": 1.0,
+            "ocr_warning_count": 0,
+            "unresolved_ambiguity_count": 0,
+            "contact_extracted": false,
+            "cross_page_reference_warning": false,
+            "missing_required_fields": [],
+            "status": "success",
+            "source_ref_count": 1,
+            "chunk_count": 1,
+            "evidence_level_distribution": {}
+          },
+          "structured_ambiguities": [],
+          "source_refs": [
+            {
+              "page_number": 1,
+              "section": "正文",
+              "text": "Synthetic Candidate: built API input validation and checked test cases.",
+              "chunk_id": "0:3:resume:0"
+            }
+          ],
+          "name": "Parsed Candidate"
+        },
+        "created_at": "2026-10-30T03:44:38.623524",
+        "updated_at": "2026-10-30T03:44:38.641807"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:44:38.611279",
+        "updated_at": "2026-10-30T03:44:38.611280"
+      }
+    ],
+    "analysis_jobs": [],
+    "candidates": [],
+    "match_results": [],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": [
+      {
+        "user_id": 1,
+        "document_id": 3,
+        "document_type": "resume",
+        "chunk_id": "0:3:resume:0",
+        "filename": "synthetic-resume.txt",
+        "page_number": 1,
+        "section": "正文",
+        "chunk_index": 0,
+        "text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "embedding": [
+          2.0,
+          2.0,
+          2.0,
+          1.0
+        ]
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as succeeded under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "immutable_result_present",
+        "passed": true,
+        "reason": "Successful task responses are stored on their own Run",
+        "evidence_refs": [
+          "runs.result_json"
+        ]
+      },
+      {
+        "name": "same_accepted_identity",
+        "passed": true,
+        "reason": "Duplicate request reuses one accepted source and one original file",
+        "evidence_refs": [
+          "resumes",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "replay_without_model",
+        "passed": true,
+        "reason": "Replay returns the saved upload response without parsing again",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "upload_response_shape",
+        "passed": true,
+        "reason": "Upload returns the accepted UUID and documents array",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      }
+    ],
+    "limitations": [
+      "Deterministic service execution is not a real worker process kill or real-model quality measurement.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

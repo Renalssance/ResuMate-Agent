@@ -1,0 +1,258 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-4215-75f0-bf28-d9d76cc6cfaf": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4230-7813-a852-af4918220dc2": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-424f-7d20-924e-3e03069654f4": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4257-7120-a39b-58bf493abed1": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4270-7cd2-9ea9-c55bb7654ee6": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4278-7243-acc3-d9c154141f1d": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-42ba-7860-927a-e70067e00551": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-42c2-7850-a620-559372f39c33": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-42dd-72c1-bca4-f6930848fc1c": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-42e6-7812-abc7-68126682f4e0": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4302-7502-b2d9-d0b7e271b01f": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-430c-7da0-adfc-75daa9526f91": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4329-78a3-b4b1-51a505581e9f": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4331-74e2-bf75-8351215d1022": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-434e-7a91-8a29-8759f7ab1014": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4357-7303-8833-1ec862d70e3c": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-435f-77c1-8657-bbeb7bf08ac7": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4366-7c42-9c1d-389b267cfff3": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-436e-7b72-8feb-dde4858ea63f": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4377-74e2-8241-7fc481cdb315": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-437f-7293-8208-d3221d96d3bf": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43a0-7390-8bb1-d302c692c087": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43aa-7ff1-ba4d-d92de55d503e": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43b3-7313-95d3-f7e3d03d14d2": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43bb-7d91-91d6-9a6b8e147dd9": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43c3-7273-8474-bf37ec3e584c": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43cb-7993-a560-1746559c6037": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-43d4-70f3-88aa-e0cbbe11d91e": {
+      "case_id": "interview-eight-turn-limit",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": null
+}

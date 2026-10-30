@@ -1,0 +1,1269 @@
+{
+  "case_id": "parse-upload-stable-identity",
+  "category": "durable_task",
+  "mode": "live",
+  "status": "pass",
+  "input": {
+    "id": "parse-upload-stable-identity",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "accepted-upload-replay",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "8d2243f4-95fa-4324-94ee-4c93084f3097"
+    ],
+    "coverage": {
+      "accepted_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+      "duplicate_accepted_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+      "original_result": {
+        "documents": [
+          {
+            "id": "resume:3",
+            "type": "resume",
+            "filename": "synthetic-resume.txt",
+            "size": 71,
+            "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+            "parsed_content": {
+              "candidate_name": "Parsed Candidate",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "Original question",
+              "certifications": [],
+              "languages": [],
+              "quality": {
+                "parse_completeness": 1.0,
+                "source_ref_coverage": 1.0,
+                "ocr_warning_count": 0,
+                "unresolved_ambiguity_count": 0,
+                "contact_extracted": false,
+                "cross_page_reference_warning": false,
+                "missing_required_fields": [],
+                "status": "success",
+                "source_ref_count": 1,
+                "chunk_count": 1,
+                "evidence_level_distribution": {}
+              },
+              "structured_ambiguities": [],
+              "source_refs": [
+                {
+                  "page_number": 1,
+                  "section": "正文",
+                  "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                  "chunk_id": "0:3:resume:0"
+                }
+              ],
+              "name": "Parsed Candidate"
+            },
+            "parse_status": "success",
+            "created_at": "2026-10-30T03:08:46.994326Z",
+            "vectorized": true,
+            "local_stored": true
+          }
+        ],
+        "taskId": "8d2243f4-95fa-4324-94ee-4c93084f3097"
+      },
+      "replay_result": {
+        "documents": [
+          {
+            "id": "resume:3",
+            "type": "resume",
+            "filename": "synthetic-resume.txt",
+            "size": 71,
+            "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+            "parsed_content": {
+              "candidate_name": "Parsed Candidate",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "Original question",
+              "certifications": [],
+              "languages": [],
+              "quality": {
+                "parse_completeness": 1.0,
+                "source_ref_coverage": 1.0,
+                "ocr_warning_count": 0,
+                "unresolved_ambiguity_count": 0,
+                "contact_extracted": false,
+                "cross_page_reference_warning": false,
+                "missing_required_fields": [],
+                "status": "success",
+                "source_ref_count": 1,
+                "chunk_count": 1,
+                "evidence_level_distribution": {}
+              },
+              "structured_ambiguities": [],
+              "source_refs": [
+                {
+                  "page_number": 1,
+                  "section": "正文",
+                  "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                  "chunk_id": "0:3:resume:0"
+                }
+              ],
+              "name": "Parsed Candidate"
+            },
+            "parse_status": "success",
+            "created_at": "2026-10-30T03:08:46.994326Z",
+            "vectorized": true,
+            "local_stored": true
+          }
+        ],
+        "taskId": "8d2243f4-95fa-4324-94ee-4c93084f3097"
+      },
+      "calls_on_replay": 0,
+      "original_file_count": 1
+    },
+    "model_calls": [
+      {
+        "task": "document.parse_resume",
+        "candidate": null,
+        "call_id": "08d0305e-465d-4d21-bcbf-48bd0a9fd9b7",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"AchievementItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"level\": {\"default\": \"\", \"title\": \"Level\", \"type\": \"string\"}, \"category\": {\"default\": \"\", \"title\": \"Category\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"AchievementItem\", \"type\": \"object\"}, \"EducationItem\": {\"properties\": {\"school\": {\"default\": \"\", \"title\": \"School\", \"type\": \"string\"}, \"college\": {\"default\": \"\", \"title\": \"College\", \"type\": \"string\"}, \"degree\": {\"default\": \"\", \"title\": \"Degree\", \"type\": \"string\"}, \"major\": {\"default\": \"\", \"title\": \"Major\", \"type\": \"string\"}, \"years\": {\"default\": \"\", \"title\": \"Years\", \"type\": \"string\"}, \"start_date\": {\"default\": \"\", \"title\": \"Start Date\", \"type\": \"string\"}, \"end_date\": {\"default\": \"\", \"title\": \"End Date\", \"type\": \"string\"}, \"gpa\": {\"default\": \"\", \"title\": \"Gpa\", \"type\": \"string\"}, \"rank\": {\"default\": \"\", \"title\": \"Rank\", \"type\": \"string\"}, \"lab\": {\"default\": \"\", \"title\": \"Lab\", \"type\": \"string\"}, \"research_direction\": {\"default\": \"\", \"title\": \"Research Direction\", \"type\": \"string\"}, \"advisor\": {\"default\": \"\", \"title\": \"Advisor\", \"type\": \"string\"}, \"papers\": {\"items\": {\"type\": \"string\"}, \"title\": \"Papers\", \"type\": \"array\"}, \"courses\": {\"items\": {\"type\": \"string\"}, \"title\": \"Courses\", \"type\": \"array\"}, \"achievements\": {\"items\": {\"type\": \"string\"}, \"title\": \"Achievements\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"EducationItem\", \"type\": \"object\"}, \"MetricItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"value\": {\"default\": \"\", \"title\": \"Value\", \"type\": \"string\"}, \"unit\": {\"default\": \"\", \"title\": \"Unit\", \"type\": \"string\"}, \"raw_text\": {\"default\": \"\", \"title\": \"Raw Text\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"MetricItem\", \"type\": \"object\"}, \"ProjectItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"role\": {\"default\": \"\", \"title\": \"Role\", \"type\": \"string\"}, \"duration\": {\"default\": \"\", \"title\": \"Duration\", \"type\": \"string\"}, \"description\": {\"default\": \"\", \"title\": \"Description\", \"type\": \"string\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"bullets\": {\"items\": {\"$ref\": \"#/$defs/ResumeBullet\"}, \"title\": \"Bullets\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"ProjectItem\", \"type\": \"object\"}, \"ResumeBullet\": {\"properties\": {\"raw_text\": {\"default\": \"\", \"title\": \"Raw Text\", \"type\": \"string\"}, \"action\": {\"default\": \"\", \"title\": \"Action\", \"type\": \"string\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"ResumeBullet\", \"type\": \"object\"}, \"SkillItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"category\": {\"default\": \"\", \"title\": \"Category\", \"type\": \"string\"}, \"evidence_level\": {\"default\": \"mentioned\", \"enum\": [\"demonstrated\", \"self_claimed\", \"course_only\", \"mentioned\"], \"title\": \"Evidence Level\", \"type\": \"string\"}, \"proficiency_claim\": {\"default\": \"\", \"title\": \"Proficiency Claim\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"SkillItem\", \"type\": \"object\"}, \"SourceRef\": {\"properties\": {\"page_number\": {\"minimum\": 0, \"title\": \"Page Number\", \"type\": \"integer\"}, \"section\": {\"title\": \"Section\", \"type\": \"string\"}, \"text\": {\"title\": \"Text\", \"type\": \"string\"}, \"chunk_id\": {\"title\": \"Chunk Id\", \"type\": \"string\"}}, \"required\": [\"page_number\", \"section\", \"text\", \"chunk_id\"], \"title\": \"SourceRef\", \"type\": \"object\"}, \"WorkItem\": {\"properties\": {\"company\": {\"default\": \"\", \"title\": \"Company\", \"type\": \"string\"}, \"title\": {\"default\": \"\", \"title\": \"Title\", \"type\": \"string\"}, \"duration\": {\"default\": \"\", \"title\": \"Duration\", \"type\": \"string\"}, \"start_date\": {\"default\": \"\", \"title\": \"Start Date\", \"type\": \"string\"}, \"end_date\": {\"default\": \"\", \"title\": \"End Date\", \"type\": \"string\"}, \"description\": {\"default\": \"\", \"title\": \"Description\", \"type\": \"string\"}, \"bullets\": {\"items\": {\"$ref\": \"#/$defs/ResumeBullet\"}, \"title\": \"Bullets\", \"type\": \"array\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"WorkItem\", \"type\": \"object\"}}, \"properties\": {\"candidate_name\": {\"title\": \"Candidate Name\", \"type\": \"string\"}, \"contact\": {\"additionalProperties\": {\"type\": \"string\"}, \"title\": \"Contact\", \"type\": \"object\"}, \"education\": {\"items\": {\"$ref\": \"#/$defs/EducationItem\"}, \"title\": \"Education\", \"type\": \"array\"}, \"work_experience\": {\"items\": {\"$ref\": \"#/$defs/WorkItem\"}, \"title\": \"Work Experience\", \"type\": \"array\"}, \"projects\": {\"items\": {\"$ref\": \"#/$defs/ProjectItem\"}, \"title\": \"Projects\", \"type\": \"array\"}, \"skills\": {\"items\": {\"$ref\": \"#/$defs/SkillItem\"}, \"title\": \"Skills\", \"type\": \"array\"}, \"achievements\": {\"items\": {\"$ref\": \"#/$defs/AchievementItem\"}, \"title\": \"Achievements\", \"type\": \"array\"}, \"ambiguities\": {\"items\": {\"type\": \"string\"}, \"title\": \"Ambiguities\", \"type\": \"array\"}, \"self_summary\": {\"default\": \"\", \"title\": \"Self Summary\", \"type\": \"string\"}, \"certifications\": {\"items\": {\"type\": \"string\"}, \"title\": \"Certifications\", \"type\": \"array\"}, \"languages\": {\"items\": {\"type\": \"string\"}, \"title\": \"Languages\", \"type\": \"array\"}, \"quality\": {\"additionalProperties\": true, \"title\": \"Quality\", \"type\": \"object\"}, \"structured_ambiguities\": {\"items\": {\"additionalProperties\": true, \"type\": \"object\"}, \"title\": \"Structured Ambiguities\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"required\": [\"candidate_name\"], \"title\": \"ResumeProfile\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"candidate_name\": \"\",\n  \"contact\": {},\n  \"education\": [\n    {\n      \"school\": \"\",\n      \"college\": \"\",\n      \"degree\": \"\",\n      \"major\": \"\",\n      \"years\": \"\",\n      \"start_date\": \"\",\n      \"end_date\": \"\",\n      \"gpa\": \"\",\n      \"rank\": \"\",\n      \"lab\": \"\",\n      \"research_direction\": \"\",\n      \"advisor\": \"\",\n      \"papers\": [\n        \"\"\n      ],\n      \"courses\": [\n        \"\"\n      ],\n      \"achievements\": [\n        \"\"\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"work_experience\": [\n    {\n      \"company\": \"\",\n      \"title\": \"\",\n      \"duration\": \"\",\n      \"start_date\": \"\",\n      \"end_date\": \"\",\n      \"description\": \"\",\n      \"bullets\": [\n        {\n          \"raw_text\": \"\",\n          \"action\": \"\",\n          \"technologies\": [\n            \"\"\n          ],\n          \"metrics\": [\n            null\n          ],\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"technologies\": [\n        \"\"\n      ],\n      \"metrics\": [\n        {\n          \"name\": \"\",\n          \"value\": \"\",\n          \"unit\": \"\",\n          \"raw_text\": \"\",\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"projects\": [\n    {\n      \"name\": \"\",\n      \"role\": \"\",\n      \"duration\": \"\",\n      \"description\": \"\",\n      \"technologies\": [\n        \"\"\n      ],\n      \"bullets\": [\n        {\n          \"raw_text\": \"\",\n          \"action\": \"\",\n          \"technologies\": [\n            \"\"\n          ],\n          \"metrics\": [\n            null\n          ],\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"metrics\": [\n        {\n          \"name\": \"\",\n          \"value\": \"\",\n          \"unit\": \"\",\n          \"raw_text\": \"\",\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"skills\": [\n    {\n      \"name\": \"\",\n      \"category\": \"\",\n      \"evidence_level\": \"demonstrated\",\n      \"proficiency_claim\": \"\",\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"achievements\": [\n    {\n      \"name\": \"\",\n      \"level\": \"\",\n      \"category\": \"\",\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"ambiguities\": [\n    \"\"\n  ],\n  \"self_summary\": \"\",\n  \"certifications\": [\n    \"\"\n  ],\n  \"languages\": [\n    \"\"\n  ],\n  \"quality\": {},\n  \"structured_ambiguities\": [\n    {}\n  ],\n  \"source_refs\": [\n    {\n      \"page_number\": 0,\n      \"section\": \"\",\n      \"text\": \"\",\n      \"chunk_id\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative resume parser. Convert the supplied resume chunks into a structured ResumeProfile with traceable source references.\n\nObjective:\n- Extract resume facts without inference.\n- Deduplicate overlapping chunks.\n- Preserve exact provenance for important facts supported by the schema.\n- Extract education courses, GPA, ranking, papers, work/project bullets, technologies, metrics, awards, certifications, languages, self summary, quality warnings, and structured ambiguities when explicitly present.\n\nFact boundary:\n- Use only the supplied chunks.\n- Do not infer missing employers, job titles, dates, degree levels, responsibilities, proficiency, ownership, causal impact, or contact details.\n- Do not upgrade a keyword mention into demonstrated experience.\n- Preserve the resume's dominant language.\n\nSource-reference integrity:\n- Every `chunk_id` must exactly match an input chunk ID.\n- Every `page_number` and `section` must be copied from the same input chunk.\n- Every `source_refs.text` must be one exact, contiguous substring of that chunk's text.\n- Do not paraphrase, translate, summarize, splice multiple chunks, add ellipses, or silently correct OCR inside a source reference.\n- Prefer the shortest excerpt sufficient to support the fact.\n\nFacts that require references:\n- The candidate name must be supported in top-level `source_refs`.\n- Every education item, work-experience item, project item, skill, achievement, quantified metric, and important certification must have at least one source reference when its schema supports references.\n- Every work/project achievement bullet should be a separate `bullets` entry with `raw_text`, action, technologies, metrics, and source references.\n- Quantified outcomes must be represented as structured `metrics` instead of only prose.\n- Explicit specialized skills, quantified outcomes, certifications, awards, and leadership claims must be supported by item references or top-level `source_refs`.\n- Do not output an important fact when no valid supporting chunk can be identified.\n\nSkill evidence levels:\n- `demonstrated`: used in work, project, research, or concrete implementation evidence.\n- `self_claimed`: listed in professional skills or self-described proficiency without usage evidence.\n- `course_only`: appears only in coursework or education.\n- `mentioned`: appears only as a generic mention.\n- Extract skills jointly from work experience, projects, research, and professional skills sections.\n- Do not treat self-evaluation text as hard skill evidence.\n\nOCR and ambiguity policy:\n- Never silently correct suspicious OCR tokens such as `Al` versus `AI` or `O` versus `0`.\n- Never write a corrected token as if it were the original source quote.\n- If a token is unreadable, internally inconsistent, or likely corrupted, omit the uncertain normalized fact and add a concise `ambiguities` and `structured_ambiguities` entry.\n- Treat phrases such as `根据方向微调`, `此处填写`, and `可选` as template residue and record them in `structured_ambiguities`; do not use them as candidate evidence.\n- If much of the input is unreadable, return the minimal safely supported profile and record the text-quality issue.\n\nSilent self-check before returning:\n- All extracted facts are explicitly supported by input chunks.\n- Every reference points to one input chunk and uses an exact substring.\n- No OCR correction, cross-chunk text construction, or unsupported inference was introduced.\n- Output matches the injected JSON Schema exactly.\n\nResume filename: synthetic-resume.txt\n\nResume chunks:\n[{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"正文\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "ResumeProfile",
+              "schema": {
+                "$defs": {
+                  "AchievementItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "level": {
+                        "default": "",
+                        "title": "Level",
+                        "type": "string"
+                      },
+                      "category": {
+                        "default": "",
+                        "title": "Category",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "AchievementItem",
+                    "type": "object"
+                  },
+                  "EducationItem": {
+                    "properties": {
+                      "school": {
+                        "default": "",
+                        "title": "School",
+                        "type": "string"
+                      },
+                      "college": {
+                        "default": "",
+                        "title": "College",
+                        "type": "string"
+                      },
+                      "degree": {
+                        "default": "",
+                        "title": "Degree",
+                        "type": "string"
+                      },
+                      "major": {
+                        "default": "",
+                        "title": "Major",
+                        "type": "string"
+                      },
+                      "years": {
+                        "default": "",
+                        "title": "Years",
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "default": "",
+                        "title": "Start Date",
+                        "type": "string"
+                      },
+                      "end_date": {
+                        "default": "",
+                        "title": "End Date",
+                        "type": "string"
+                      },
+                      "gpa": {
+                        "default": "",
+                        "title": "Gpa",
+                        "type": "string"
+                      },
+                      "rank": {
+                        "default": "",
+                        "title": "Rank",
+                        "type": "string"
+                      },
+                      "lab": {
+                        "default": "",
+                        "title": "Lab",
+                        "type": "string"
+                      },
+                      "research_direction": {
+                        "default": "",
+                        "title": "Research Direction",
+                        "type": "string"
+                      },
+                      "advisor": {
+                        "default": "",
+                        "title": "Advisor",
+                        "type": "string"
+                      },
+                      "papers": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Papers",
+                        "type": "array"
+                      },
+                      "courses": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Courses",
+                        "type": "array"
+                      },
+                      "achievements": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Achievements",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "EducationItem",
+                    "type": "object"
+                  },
+                  "MetricItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "",
+                        "title": "Value",
+                        "type": "string"
+                      },
+                      "unit": {
+                        "default": "",
+                        "title": "Unit",
+                        "type": "string"
+                      },
+                      "raw_text": {
+                        "default": "",
+                        "title": "Raw Text",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "MetricItem",
+                    "type": "object"
+                  },
+                  "ProjectItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "role": {
+                        "default": "",
+                        "title": "Role",
+                        "type": "string"
+                      },
+                      "duration": {
+                        "default": "",
+                        "title": "Duration",
+                        "type": "string"
+                      },
+                      "description": {
+                        "default": "",
+                        "title": "Description",
+                        "type": "string"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "bullets": {
+                        "items": {
+                          "$ref": "#/$defs/ResumeBullet"
+                        },
+                        "title": "Bullets",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "ProjectItem",
+                    "type": "object"
+                  },
+                  "ResumeBullet": {
+                    "properties": {
+                      "raw_text": {
+                        "default": "",
+                        "title": "Raw Text",
+                        "type": "string"
+                      },
+                      "action": {
+                        "default": "",
+                        "title": "Action",
+                        "type": "string"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "ResumeBullet",
+                    "type": "object"
+                  },
+                  "SkillItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "category": {
+                        "default": "",
+                        "title": "Category",
+                        "type": "string"
+                      },
+                      "evidence_level": {
+                        "default": "mentioned",
+                        "enum": [
+                          "demonstrated",
+                          "self_claimed",
+                          "course_only",
+                          "mentioned"
+                        ],
+                        "title": "Evidence Level",
+                        "type": "string"
+                      },
+                      "proficiency_claim": {
+                        "default": "",
+                        "title": "Proficiency Claim",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "SkillItem",
+                    "type": "object"
+                  },
+                  "SourceRef": {
+                    "properties": {
+                      "page_number": {
+                        "minimum": 0,
+                        "title": "Page Number",
+                        "type": "integer"
+                      },
+                      "section": {
+                        "title": "Section",
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "title": "Chunk Id",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "page_number",
+                      "section",
+                      "text",
+                      "chunk_id"
+                    ],
+                    "title": "SourceRef",
+                    "type": "object"
+                  },
+                  "WorkItem": {
+                    "properties": {
+                      "company": {
+                        "default": "",
+                        "title": "Company",
+                        "type": "string"
+                      },
+                      "title": {
+                        "default": "",
+                        "title": "Title",
+                        "type": "string"
+                      },
+                      "duration": {
+                        "default": "",
+                        "title": "Duration",
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "default": "",
+                        "title": "Start Date",
+                        "type": "string"
+                      },
+                      "end_date": {
+                        "default": "",
+                        "title": "End Date",
+                        "type": "string"
+                      },
+                      "description": {
+                        "default": "",
+                        "title": "Description",
+                        "type": "string"
+                      },
+                      "bullets": {
+                        "items": {
+                          "$ref": "#/$defs/ResumeBullet"
+                        },
+                        "title": "Bullets",
+                        "type": "array"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "WorkItem",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "candidate_name": {
+                    "title": "Candidate Name",
+                    "type": "string"
+                  },
+                  "contact": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "title": "Contact",
+                    "type": "object"
+                  },
+                  "education": {
+                    "items": {
+                      "$ref": "#/$defs/EducationItem"
+                    },
+                    "title": "Education",
+                    "type": "array"
+                  },
+                  "work_experience": {
+                    "items": {
+                      "$ref": "#/$defs/WorkItem"
+                    },
+                    "title": "Work Experience",
+                    "type": "array"
+                  },
+                  "projects": {
+                    "items": {
+                      "$ref": "#/$defs/ProjectItem"
+                    },
+                    "title": "Projects",
+                    "type": "array"
+                  },
+                  "skills": {
+                    "items": {
+                      "$ref": "#/$defs/SkillItem"
+                    },
+                    "title": "Skills",
+                    "type": "array"
+                  },
+                  "achievements": {
+                    "items": {
+                      "$ref": "#/$defs/AchievementItem"
+                    },
+                    "title": "Achievements",
+                    "type": "array"
+                  },
+                  "ambiguities": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Ambiguities",
+                    "type": "array"
+                  },
+                  "self_summary": {
+                    "default": "",
+                    "title": "Self Summary",
+                    "type": "string"
+                  },
+                  "certifications": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Certifications",
+                    "type": "array"
+                  },
+                  "languages": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Languages",
+                    "type": "array"
+                  },
+                  "quality": {
+                    "additionalProperties": true,
+                    "title": "Quality",
+                    "type": "object"
+                  },
+                  "structured_ambiguities": {
+                    "items": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "title": "Structured Ambiguities",
+                    "type": "array"
+                  },
+                  "source_refs": {
+                    "items": {
+                      "$ref": "#/$defs/SourceRef"
+                    },
+                    "title": "Source Refs",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "candidate_name"
+                ],
+                "title": "ResumeProfile",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"candidate_name\": \"Parsed Candidate\", \"self_summary\": \"Original question\", \"source_refs\": [{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"\\u6b63\\u6587\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]}"
+        }
+      }
+    ],
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "database": "isolated SQLite",
+    "source_directory": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r0/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately",
+    "public_model_output": [
+      {
+        "text": "{\"candidate_name\": \"Parsed Candidate\", \"self_summary\": \"Original question\", \"source_refs\": [{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"\\u6b63\\u6587\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]}"
+      }
+    ],
+    "business_calls": [
+      {
+        "task": "document.parse_resume",
+        "candidate": null
+      }
+    ],
+    "retrieval": "deterministic four-dimensional embedding; generation uses live provider boundary"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "user_id": 1,
+        "session_id": "8791fe59-ed0c-45a5-8802-ccd2ff70a5a4",
+        "request_id": "upload",
+        "kind": "document_parse",
+        "status": "succeeded",
+        "input_json": {
+          "documentId": "resume:3",
+          "parseMode": "upload",
+          "sourceRef": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r0/originals/synthetic-resume.txt"
+        },
+        "input_versions": {
+          "document": "2026-10-30T03:08:46.994330"
+        },
+        "result_json": {
+          "documents": [
+            {
+              "id": "resume:3",
+              "type": "resume",
+              "filename": "synthetic-resume.txt",
+              "size": 71,
+              "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+              "parsed_content": {
+                "candidate_name": "Parsed Candidate",
+                "contact": {},
+                "education": [],
+                "work_experience": [],
+                "projects": [],
+                "skills": [],
+                "achievements": [],
+                "ambiguities": [],
+                "self_summary": "Original question",
+                "certifications": [],
+                "languages": [],
+                "quality": {
+                  "parse_completeness": 1.0,
+                  "source_ref_coverage": 1.0,
+                  "ocr_warning_count": 0,
+                  "unresolved_ambiguity_count": 0,
+                  "contact_extracted": false,
+                  "cross_page_reference_warning": false,
+                  "missing_required_fields": [],
+                  "status": "success",
+                  "source_ref_count": 1,
+                  "chunk_count": 1,
+                  "evidence_level_distribution": {}
+                },
+                "structured_ambiguities": [],
+                "source_refs": [
+                  {
+                    "page_number": 1,
+                    "section": "正文",
+                    "text": "Synthetic Candidate: built API input validation and checked test cases.",
+                    "chunk_id": "0:3:resume:0"
+                  }
+                ],
+                "name": "Parsed Candidate"
+              },
+              "parse_status": "success",
+              "created_at": "2026-10-30T03:08:46.994326Z",
+              "vectorized": true,
+              "local_stored": true
+            }
+          ],
+          "taskId": "8d2243f4-95fa-4324-94ee-4c93084f3097"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:47.110546",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:46.995678",
+        "updated_at": "2026-10-30T03:08:47.111304"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "8791fe59-ed0c-45a5-8802-ccd2ff70a5a4",
+        "user_id": 1,
+        "purpose": "document_parse",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:46.995398"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "operation_key": "parse:resume:3",
+        "tool_name": "document_parse",
+        "status": "succeeded",
+        "result_ref": "resume:3"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:46.996904"
+      },
+      {
+        "id": 2,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:47.000397"
+      },
+      {
+        "id": 3,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "server_save",
+          "status": "running",
+          "progress": 12,
+          "overall_progress": 12,
+          "message": "正在读取已保存的原件",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:47.003758"
+      },
+      {
+        "id": 4,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "extract",
+          "status": "running",
+          "progress": 32,
+          "overall_progress": 32,
+          "message": "正在提取第 1/1 页",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": 100,
+          "current": 1,
+          "total": 1,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:47.004648"
+      },
+      {
+        "id": 5,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "正在提取文档结构",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "cached": false
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.005457"
+      },
+      {
+        "id": 6,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:47.008600+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.010025"
+      },
+      {
+        "id": 7,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:47.010313+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.010887"
+      },
+      {
+        "id": 8,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:47.102023+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.103078"
+      },
+      {
+        "id": 9,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:47.103391+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.104021"
+      },
+      {
+        "id": 10,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "embedding",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "正在生成文档索引",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "chunk_count": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:47.106281"
+      },
+      {
+        "id": 11,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 11,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "resume:3",
+          "kind": "document"
+        },
+        "created_at": "2026-10-30T03:08:47.110403"
+      },
+      {
+        "id": 12,
+        "run_id": "8d2243f4-95fa-4324-94ee-4c93084f3097",
+        "seq": 12,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:47.111576"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:08:46.983656",
+        "updated_at": "2026-10-30T03:08:46.983656"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:08:46.983657",
+        "updated_at": "2026-10-30T03:08:46.983657"
+      },
+      {
+        "id": 3,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r0/originals/synthetic-resume.txt",
+        "content_hash": "1a895c185d0b09d14ad9341a479140f4b441eccdf646cd0c0f4ff1ec5e937bc5",
+        "document_size": 71,
+        "parse_status": "success",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Parsed Candidate",
+          "contact": {},
+          "education": [],
+          "work_experience": [],
+          "projects": [],
+          "skills": [],
+          "achievements": [],
+          "ambiguities": [],
+          "self_summary": "Original question",
+          "certifications": [],
+          "languages": [],
+          "quality": {
+            "parse_completeness": 1.0,
+            "source_ref_coverage": 1.0,
+            "ocr_warning_count": 0,
+            "unresolved_ambiguity_count": 0,
+            "contact_extracted": false,
+            "cross_page_reference_warning": false,
+            "missing_required_fields": [],
+            "status": "success",
+            "source_ref_count": 1,
+            "chunk_count": 1,
+            "evidence_level_distribution": {}
+          },
+          "structured_ambiguities": [],
+          "source_refs": [
+            {
+              "page_number": 1,
+              "section": "正文",
+              "text": "Synthetic Candidate: built API input validation and checked test cases.",
+              "chunk_id": "0:3:resume:0"
+            }
+          ],
+          "name": "Parsed Candidate"
+        },
+        "created_at": "2026-10-30T03:08:46.994326",
+        "updated_at": "2026-10-30T03:08:47.109592"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:08:46.983253",
+        "updated_at": "2026-10-30T03:08:46.983254"
+      }
+    ],
+    "analysis_jobs": [],
+    "candidates": [],
+    "match_results": [],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": [
+      {
+        "user_id": 1,
+        "document_id": 3,
+        "document_type": "resume",
+        "chunk_id": "0:3:resume:0",
+        "filename": "synthetic-resume.txt",
+        "page_number": 1,
+        "section": "正文",
+        "chunk_index": 0,
+        "text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "embedding": [
+          2.0,
+          2.0,
+          2.0,
+          1.0
+        ]
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as succeeded under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "immutable_result_present",
+        "passed": true,
+        "reason": "Successful task responses are stored on their own Run",
+        "evidence_refs": [
+          "runs.result_json"
+        ]
+      },
+      {
+        "name": "same_accepted_identity",
+        "passed": true,
+        "reason": "Duplicate request reuses one accepted source and one original file",
+        "evidence_refs": [
+          "resumes",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "replay_without_model",
+        "passed": true,
+        "reason": "Replay returns the saved upload response without parsing again",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "upload_response_shape",
+        "passed": true,
+        "reason": "Upload returns the accepted UUID and documents array",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      }
+    ],
+    "limitations": [
+      "Live generation uses deterministic embedding; semantic quality still needs explicit review.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 1,
+    "observed_cost": "0.00021600",
+    "reserved_cost": "0",
+    "committed_cost": "0.00021600",
+    "unknown_usage_calls": 0,
+    "max_total_cost": "10",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

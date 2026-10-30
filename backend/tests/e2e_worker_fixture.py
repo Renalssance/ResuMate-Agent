@@ -1,7 +1,14 @@
 """Browser-test worker: deterministic model; real graph, tools and persistence."""
 import time
+import sys
 
 from backend.tests import e2e_legacy_fixture  # noqa: F401
+from backend.services import document_process
+
+# The isolated parser must install the same synthetic providers as this worker.
+document_process._command = lambda run_id, epoch: [
+    sys.executable, "-m", "backend.tests.e2e_document_process", run_id, str(epoch),
+]
 
 from backend.agent_runtime import factory
 from backend.tests.agent_fixtures import DraftModel

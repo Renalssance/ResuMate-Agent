@@ -51,10 +51,10 @@ def test_eight_task_cases_save_actual_sql_oracles_and_replay_results(tmp_path):
     assert all('interrupted provider usage is unknown' in ' '.join(detail['verdict']['limitations']) for detail in details.values())
 
 
-def test_new_task_live_mode_is_explicitly_unimplemented_without_provider_calls(tmp_path):
+def test_new_task_live_mode_requires_verified_configuration_without_provider_calls(tmp_path):
     process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', 'followup-result-replay')
     assert process.returncode == 2
-    assert report['results'][0]['error_code'] == 'durable_live_not_implemented'
+    assert report['results'][0]['error_code'] == 'configuration_error'
     assert report['results'][0]['status'] == 'not_run'
     assert not list(invocation.glob('state/*/eval.sqlite'))
 

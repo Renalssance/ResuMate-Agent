@@ -1,0 +1,19 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_source_oracle_counts_business_units_instead_of_http_format_retries ____
+
+    def test_source_oracle_counts_business_units_instead_of_http_format_retries():
+        from evals.task_verifiers import verify_task
+        # Both sources changed after a successful response; an earlier format retry is not a third business unit.
+        case = {'id':'source-deleted-or-reassigned'}
+        output = {'mode':'live', 'subject_run_ids':['one','two'], 'coverage':{'mutations':['delete_jd','reassign_resume']},
+                  'model_calls':[{'task':'evaluate_match'}] * 3, 'business_calls':[{'task':'evaluate_match'}] * 2}
+        data = {'runs':[{'id':rid,'user_id':1,'status':'failed','session_id':rid,'result_json':None} for rid in ('one','two')],
+                'sessions':[{'id':rid,'active_run_id':None} for rid in ('one','two')], 'operations':[], 'events':[], 'match_results':[]}
+>       assert verify_task(case, output, data)['passed']
+E       assert False
+
+backend/tests/test_task_live_runner.py:120: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_runner.py::test_source_oracle_counts_business_units_instead_of_http_format_retries
+1 failed in 0.34s

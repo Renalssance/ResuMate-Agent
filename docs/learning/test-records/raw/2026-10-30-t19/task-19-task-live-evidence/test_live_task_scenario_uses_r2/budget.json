@@ -1,0 +1,33 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "20266f7b-2e5b-4361-914f-c5dec7c3d8b2": {
+      "case_id": "match-partial-candidate-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "68930112-aa92-4fa0-ae5c-c73683c0a41a": {
+      "case_id": "match-partial-candidate-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "582ecdd2-d39a-46f0-8a3b-b3e97464144c": {
+      "case_id": "match-partial-candidate-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

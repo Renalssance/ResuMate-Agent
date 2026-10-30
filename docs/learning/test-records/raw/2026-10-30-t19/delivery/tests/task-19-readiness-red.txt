@@ -1,0 +1,312 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready] _
+
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-245/test_readiness_requires_sql_an0/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d6d87d0>
+dependency = 'ready'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+            assert response.status_code == (200 if dependency == 'ready' else 503)
+>           assert response.json() == {'status': 'ready' if dependency == 'ready' else 'not_ready'}
+                   ^^^^^^^^^^^^^^^
+
+backend/tests/test_readiness.py:25:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x10a661c40>
+s = '<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="widt...t" crossorigin href="/assets/index-CYzSPSXg.css">\n  </head>\n  <body>\n    <div id="app"></div>\n  </body>\n</html>\n'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/decoder.py:356: JSONDecodeError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:09,796 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:09,825 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:09,912 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:09,915 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=3
+2026-10-30 10:42:09,917 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=3
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-sql_down] _
+
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-245/test_readiness_requires_sql_an1/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11195c4d0>
+dependency = 'sql_down'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+>           assert response.status_code == (200 if dependency == 'ready' else 503)
+E           assert 200 == 503
+E            +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_readiness.py:24: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:10,023 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:10,053 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:10,054 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+2026-10-30 10:42:10,055 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-redis_down] _
+
+career_engine = Engine(sqlite:////private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-245/test_readiness_requires_sql_an2/career.db)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114863140>
+dependency = 'redis_down'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+>           assert response.status_code == (200 if dependency == 'ready' else 503)
+E           assert 200 == 503
+E            +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_readiness.py:24: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:10,060 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:10,087 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:10,089 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+2026-10-30 10:42:10,090 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-ready] _
+
+career_engine = Engine(mysql+pymysql://root@/resumate_test_1ae06b87e03b470fbc1404e68569a91f?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1147542c0>
+dependency = 'ready'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+            assert response.status_code == (200 if dependency == 'ready' else 503)
+>           assert response.json() == {'status': 'ready' if dependency == 'ready' else 'not_ready'}
+                   ^^^^^^^^^^^^^^^
+
+backend/tests/test_readiness.py:25:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv/lib/python3.12/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <json.decoder.JSONDecoder object at 0x10a661c40>
+s = '<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="widt...t" crossorigin href="/assets/index-CYzSPSXg.css">\n  </head>\n  <body>\n    <div id="app"></div>\n  </body>\n</html>\n'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+
+        """
+        try:
+            obj, end = self.scan_once(s, idx)
+        except StopIteration as err:
+>           raise JSONDecodeError("Expecting value", s, err.value) from None
+E           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+/Users/bono/.local/share/uv/python/cpython-3.12.14-macos-aarch64-none/lib/python3.12/json/decoder.py:356: JSONDecodeError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:10,126 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:10,155 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:10,156 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+2026-10-30 10:42:10,159 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-sql_down] _
+
+career_engine = Engine(mysql+pymysql://root@/resumate_test_9c5e77a4540f419eb1f11b25e59091e4?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x110e89790>
+dependency = 'sql_down'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+>           assert response.status_code == (200 if dependency == 'ready' else 503)
+E           assert 200 == 503
+E            +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_readiness.py:24: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:10,190 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:10,222 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:10,224 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+2026-10-30 10:42:10,226 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+_ test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-redis_down] _
+
+career_engine = Engine(mysql+pymysql://root@/resumate_test_f4225c4852a24a67b87683eb064ec8e5?charset=utf8mb4&unix_socket=%2Ftmp%2Fresumate-mysql-t02%2Fmysql.sock)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x114bf26f0>
+dependency = 'redis_down'
+
+    @pytest.mark.parametrize('dependency', ['ready', 'sql_down', 'redis_down'])
+    def test_readiness_requires_sql_and_redis_without_exposing_credentials(career_engine, monkeypatch, dependency):
+        from backend import app as app_module
+        secret = 'synthetic-connection-password'
+        class Redis:
+            async def ping(self):
+                if dependency == 'redis_down': raise RuntimeError(secret)
+                return True
+        class BrokenEngine:
+            def connect(self): raise RuntimeError(secret)
+        monkeypatch.setattr(app_module, 'engine', BrokenEngine() if dependency == 'sql_down' else career_engine, raising=False)
+        application = app_module.create_app()
+        application.state.redis = SimpleNamespace(commands=Redis())
+        client = TestClient(application)
+        try:
+            response = client.get('/readyz')
+>           assert response.status_code == (200 if dependency == 'ready' else 503)
+E           assert 200 == 503
+E            +  where 200 = <Response [200 OK]>.status_code
+
+backend/tests/test_readiness.py:24: AssertionError
+----------------------------- Captured stdout call -----------------------------
+2026-10-30 10:42:10,241 | INFO | backend.app | Creating FastAPI app
+2026-10-30 10:42:10,276 | INFO | backend.app | Request start | method=GET path=/readyz client=testclient
+2026-10-30 10:42:10,278 | INFO | backend.app | Request end | method=GET path=/readyz status=200 duration_ms=1
+2026-10-30 10:42:10,280 | INFO | httpx | HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     backend.app:app.py:65 Creating FastAPI app
+INFO     backend.app:app.py:88 Request start | method=GET path=/readyz client=testclient
+INFO     backend.app:app.py:101 Request end | method=GET path=/readyz status=200 duration_ms=1
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/readyz "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-ready]
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-sql_down]
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[sqlite-redis_down]
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-ready]
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-sql_down]
+FAILED backend/tests/test_readiness.py::test_readiness_requires_sql_and_redis_without_exposing_credentials[mysql-redis_down]
+6 failed, 5 warnings in 2.00s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

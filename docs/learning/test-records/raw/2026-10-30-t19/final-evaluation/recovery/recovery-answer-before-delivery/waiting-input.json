@@ -1,0 +1,105 @@
+{
+  "run": {
+    "id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+    "session_id": "993f884d-2970-437d-8998-f74abdede802",
+    "status": "waiting_input",
+    "attempt": 1,
+    "epoch": 1,
+    "heartbeat_at": "2026-10-30T03:43:47.179249",
+    "output_refs": [],
+    "error_code": null
+  },
+  "versions": [],
+  "operations": [],
+  "actions": [
+    {
+      "id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+      "interrupt_id": "52495152bab8ff5902678074cceb8c02",
+      "status": "pending",
+      "response": null
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "type": "run.status",
+      "payload": {
+        "status": "queued",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 2,
+      "type": "run.status",
+      "payload": {
+        "status": "running",
+        "error_code": null
+      }
+    },
+    {
+      "seq": 3,
+      "type": "tool.started",
+      "payload": {
+        "tool_name": "get_application_context",
+        "operation_key": "call-0"
+      }
+    },
+    {
+      "seq": 4,
+      "type": "tool.completed",
+      "payload": {
+        "tool_name": "get_application_context",
+        "operation_key": "call-0",
+        "result_ref": null
+      }
+    },
+    {
+      "seq": 5,
+      "type": "tool.started",
+      "payload": {
+        "tool_name": "ask_applicant",
+        "operation_key": "call-1"
+      }
+    },
+    {
+      "seq": 6,
+      "type": "action.required",
+      "payload": {
+        "action_id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+        "kind": "input"
+      }
+    },
+    {
+      "seq": 7,
+      "type": "run.status",
+      "payload": {
+        "status": "waiting_input",
+        "error_code": null
+      }
+    }
+  ],
+  "checkpoint": {
+    "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+    "next": [
+      "tools"
+    ],
+    "interrupts": [
+      "52495152bab8ff5902678074cceb8c02"
+    ],
+    "message_count": 4
+  },
+  "model_starts": [
+    {
+      "phase": [],
+      "started_at": 1793331827.1608164,
+      "pid": 8
+    },
+    {
+      "phase": [
+        "get_application_context"
+      ],
+      "started_at": 1793331827.1719306,
+      "pid": 8
+    }
+  ]
+}

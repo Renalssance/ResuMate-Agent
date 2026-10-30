@@ -1,0 +1,804 @@
+{
+  "case_id": "recovery-answer-before-delivery",
+  "category": "process_recovery",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "recovery-answer-before-delivery",
+    "category": "process_recovery",
+    "runner": "compose",
+    "input": {
+      "kind": "tailoring",
+      "resume": {
+        "filename": "synthetic.txt",
+        "raw_text": "Built an API",
+        "structured_data": {
+          "self_summary": "Built an API"
+        }
+      },
+      "job": {
+        "title": "Engineer",
+        "raw_text": "API development"
+      },
+      "breakpoint": "recovery-answer-before-delivery",
+      "answer": {
+        "experience": "负责 API 和数据库设计。"
+      }
+    }
+  },
+  "compose": {
+    "invocation_id": "9ce4a722-d79a-42ee-b637-cef24946d6a5",
+    "source": {
+      "base_commit": "cdde2c53c6a80e271c2d185bef80b179d8e2fcb7",
+      "backend_snapshot_path": "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/source/backend",
+      "mount": "/app/backend",
+      "image": "resumate-t19-backend:5cd2b8fd52",
+      "description": "Current backend source copied once before all four cases; image supplies dependencies only"
+    },
+    "started_at": "2026-10-30T03:43:24.647773+00:00",
+    "completed_at": "2026-10-30T03:44:13.494436+00:00",
+    "case_id": "recovery-answer-before-delivery",
+    "input": {
+      "kind": "tailoring",
+      "resume": {
+        "filename": "synthetic.txt",
+        "raw_text": "Built an API",
+        "structured_data": {
+          "self_summary": "Built an API"
+        }
+      },
+      "job": {
+        "title": "Engineer",
+        "raw_text": "API development"
+      },
+      "breakpoint": "recovery-answer-before-delivery",
+      "answer": {
+        "experience": "负责 API 和数据库设计。"
+      }
+    },
+    "executed": true,
+    "status": "pass",
+    "project": "resumate-recovery-1fc72f638b",
+    "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+    "observed": {
+      "barrier": {
+        "point": "recovery-answer-before-delivery",
+        "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+        "action_ids": [
+          "aaab3b0e-7aa4-4076-a28b-d5c158402255"
+        ]
+      },
+      "before": {
+        "run": {
+          "id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+          "session_id": "993f884d-2970-437d-8998-f74abdede802",
+          "status": "queued",
+          "attempt": 1,
+          "epoch": 1,
+          "heartbeat_at": "2026-10-30T03:43:47.179249",
+          "output_refs": [],
+          "error_code": null
+        },
+        "versions": [],
+        "operations": [],
+        "actions": [
+          {
+            "id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+            "interrupt_id": "52495152bab8ff5902678074cceb8c02",
+            "status": "answered",
+            "response": {
+              "decision": "submit",
+              "answers": {
+                "experience": "负责 API 和数据库设计。"
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 3,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0"
+            }
+          },
+          {
+            "seq": 4,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 5,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "ask_applicant",
+              "operation_key": "call-1"
+            }
+          },
+          {
+            "seq": 6,
+            "type": "action.required",
+            "payload": {
+              "action_id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+              "kind": "input"
+            }
+          },
+          {
+            "seq": 7,
+            "type": "run.status",
+            "payload": {
+              "status": "waiting_input",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 8,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          }
+        ],
+        "checkpoint": {
+          "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+          "next": [
+            "tools"
+          ],
+          "interrupts": [
+            "52495152bab8ff5902678074cceb8c02"
+          ],
+          "message_count": 4
+        },
+        "model_starts": [
+          {
+            "phase": [],
+            "started_at": 1793331827.1608164,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context"
+            ],
+            "started_at": 1793331827.1719306,
+            "pid": 8
+          }
+        ]
+      },
+      "run_before": {
+        "id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+        "session_id": "993f884d-2970-437d-8998-f74abdede802",
+        "status": "queued",
+        "attempt": 1,
+        "epoch": 1,
+        "heartbeat_at": "2026-10-30T03:43:47.179249",
+        "output_refs": [],
+        "error_code": null,
+        "execution_epoch": 1
+      },
+      "model_starts_before": 2,
+      "checkpoint_before": {
+        "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+        "next": [
+          "tools"
+        ],
+        "interrupts": [
+          "52495152bab8ff5902678074cceb8c02"
+        ],
+        "message_count": 4
+      },
+      "kill_signal": "SIGKILL",
+      "killed_service": "api",
+      "killed_container": "61746fb763061a80aa58db051d7896cb8639c49a9ba1fc0f56010019c2ecaa03",
+      "killed_state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 137,
+        "Error": "",
+        "StartedAt": "2026-10-30T03:43:24.923399386Z",
+        "FinishedAt": "2026-10-30T03:43:56.585463762Z",
+        "Health": {
+          "Status": "unhealthy",
+          "FailingStreak": 0,
+          "Log": [
+            {
+              "Start": "2026-10-30T03:43:35.136086043Z",
+              "End": "2026-10-30T03:43:35.31986621Z",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-10-30T03:43:40.320669879Z",
+              "End": "2026-10-30T03:43:40.515529462Z",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-10-30T03:43:45.520078882Z",
+              "End": "2026-10-30T03:43:45.688630298Z",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-10-30T03:43:50.689978884Z",
+              "End": "2026-10-30T03:43:50.872402176Z",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-10-30T03:43:55.873202178Z",
+              "End": "2026-10-30T03:43:56.009985012Z",
+              "ExitCode": 0,
+              "Output": ""
+            }
+          ]
+        }
+      },
+      "killed_at": "2026-10-30T03:43:56.723607+00:00",
+      "interrupted_http_result": "RemoteProtocolError",
+      "after": {
+        "run": {
+          "id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+          "session_id": "993f884d-2970-437d-8998-f74abdede802",
+          "status": "succeeded",
+          "attempt": 1,
+          "epoch": 2,
+          "heartbeat_at": "2026-10-30T03:44:06.416765",
+          "output_refs": [
+            {
+              "type": "resume_version",
+              "id": "8863759c-9bad-47db-9413-c3a2387622f1"
+            }
+          ],
+          "error_code": null
+        },
+        "versions": [
+          {
+            "id": "8863759c-9bad-47db-9413-c3a2387622f1",
+            "structured_content": {
+              "resume": {
+                "self_summary": "Built an API"
+              },
+              "changes": [
+                {
+                  "section": "/self_summary",
+                  "before": "Built an API",
+                  "after": "Built an API。负责 API 和数据库设计。",
+                  "reason": "突出原简历中的接口开发经历，具体内容仍需本人核对。",
+                  "fact_refs": [
+                    {
+                      "kind": "resume",
+                      "resumeId": 1,
+                      "inputVersion": "2026-10-30T03:43:24.638434",
+                      "section": "/self_summary",
+                      "sourceRefs": []
+                    },
+                    {
+                      "kind": "applicant_answer",
+                      "actionId": "aaab3b0e-7aa4-4076-a28b-d5c158402255"
+                    }
+                  ],
+                  "requires_input": false,
+                  "id": "3bd232b2-a341-49c3-86e3-1a0eb4bc99db",
+                  "status": "pending"
+                }
+              ],
+              "inputVersions": {
+                "resume": "2026-10-30T03:43:24.638434",
+                "jd": "2026-10-30T03:43:24.638073",
+                "memories": [],
+                "facts": []
+              }
+            },
+            "fact_refs": [
+              {
+                "kind": "resume",
+                "resumeId": 1,
+                "inputVersion": "2026-10-30T03:43:24.638434",
+                "section": "/self_summary",
+                "sourceRefs": []
+              },
+              {
+                "kind": "applicant_answer",
+                "actionId": "aaab3b0e-7aa4-4076-a28b-d5c158402255"
+              }
+            ]
+          }
+        ],
+        "operations": [
+          {
+            "id": 1,
+            "operation_key": "draft:1:initial",
+            "status": "succeeded",
+            "result_ref": "8863759c-9bad-47db-9413-c3a2387622f1"
+          }
+        ],
+        "actions": [
+          {
+            "id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+            "interrupt_id": "52495152bab8ff5902678074cceb8c02",
+            "status": "answered",
+            "response": {
+              "decision": "submit",
+              "answers": {
+                "experience": "负责 API 和数据库设计。"
+              }
+            }
+          }
+        ],
+        "events": [
+          {
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 3,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0"
+            }
+          },
+          {
+            "seq": 4,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-0",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 5,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "ask_applicant",
+              "operation_key": "call-1"
+            }
+          },
+          {
+            "seq": 6,
+            "type": "action.required",
+            "payload": {
+              "action_id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+              "kind": "input"
+            }
+          },
+          {
+            "seq": 7,
+            "type": "run.status",
+            "payload": {
+              "status": "waiting_input",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 8,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 9,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            }
+          },
+          {
+            "seq": 10,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "ask_applicant",
+              "operation_key": "call-1"
+            }
+          },
+          {
+            "seq": 11,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "ask_applicant",
+              "operation_key": "call-1",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 12,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-2"
+            }
+          },
+          {
+            "seq": 13,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "get_application_context",
+              "operation_key": "call-2",
+              "result_ref": null
+            }
+          },
+          {
+            "seq": 14,
+            "type": "tool.started",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial"
+            }
+          },
+          {
+            "seq": 15,
+            "type": "artifact.created",
+            "payload": {
+              "artifact_id": "8863759c-9bad-47db-9413-c3a2387622f1",
+              "kind": "resume_version"
+            }
+          },
+          {
+            "seq": 16,
+            "type": "tool.completed",
+            "payload": {
+              "tool_name": "create_resume_draft",
+              "operation_key": "draft:1:initial",
+              "result_ref": "8863759c-9bad-47db-9413-c3a2387622f1"
+            }
+          },
+          {
+            "seq": 17,
+            "type": "assistant.delta",
+            "payload": {
+              "text": "请审阅草稿"
+            }
+          },
+          {
+            "seq": 18,
+            "type": "run.status",
+            "payload": {
+              "status": "succeeded",
+              "error_code": null
+            }
+          }
+        ],
+        "checkpoint": {
+          "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+          "next": [],
+          "interrupts": [],
+          "message_count": 10
+        },
+        "model_starts": [
+          {
+            "phase": [],
+            "started_at": 1793331827.1608164,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context"
+            ],
+            "started_at": 1793331827.1719306,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context",
+              "ask_applicant"
+            ],
+            "started_at": 1793331846.386971,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context",
+              "ask_applicant",
+              "get_application_context"
+            ],
+            "started_at": 1793331846.3974545,
+            "pid": 8
+          },
+          {
+            "phase": [
+              "get_application_context",
+              "ask_applicant",
+              "get_application_context",
+              "create_resume_draft"
+            ],
+            "started_at": 1793331846.4132192,
+            "pid": 8
+          }
+        ]
+      },
+      "completed_at": "2026-10-30T03:44:09.771808+00:00",
+      "run_after": {
+        "id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+        "session_id": "993f884d-2970-437d-8998-f74abdede802",
+        "status": "succeeded",
+        "attempt": 1,
+        "epoch": 2,
+        "heartbeat_at": "2026-10-30T03:44:06.416765",
+        "output_refs": [
+          {
+            "type": "resume_version",
+            "id": "8863759c-9bad-47db-9413-c3a2387622f1"
+          }
+        ],
+        "error_code": null,
+        "execution_epoch": 2
+      },
+      "model_starts_after": 5,
+      "version_ids": [
+        "8863759c-9bad-47db-9413-c3a2387622f1"
+      ],
+      "operation_rows": [
+        {
+          "id": 1,
+          "operation_key": "draft:1:initial",
+          "status": "succeeded",
+          "result_ref": "8863759c-9bad-47db-9413-c3a2387622f1"
+        }
+      ],
+      "action_rows": [
+        {
+          "id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+          "interrupt_id": "52495152bab8ff5902678074cceb8c02",
+          "status": "answered",
+          "response": {
+            "decision": "submit",
+            "answers": {
+              "experience": "负责 API 和数据库设计。"
+            }
+          }
+        }
+      ],
+      "checkpoint": {
+        "run_id": "162a7ac9-a1f6-4b85-b8d1-169a29a6cabd",
+        "next": [],
+        "interrupts": [],
+        "message_count": 10
+      },
+      "events": [
+        {
+          "seq": 1,
+          "type": "run.status",
+          "payload": {
+            "status": "queued",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 2,
+          "type": "run.status",
+          "payload": {
+            "status": "running",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 3,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-0"
+          }
+        },
+        {
+          "seq": 4,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-0",
+            "result_ref": null
+          }
+        },
+        {
+          "seq": 5,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "ask_applicant",
+            "operation_key": "call-1"
+          }
+        },
+        {
+          "seq": 6,
+          "type": "action.required",
+          "payload": {
+            "action_id": "aaab3b0e-7aa4-4076-a28b-d5c158402255",
+            "kind": "input"
+          }
+        },
+        {
+          "seq": 7,
+          "type": "run.status",
+          "payload": {
+            "status": "waiting_input",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 8,
+          "type": "run.status",
+          "payload": {
+            "status": "queued",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 9,
+          "type": "run.status",
+          "payload": {
+            "status": "running",
+            "error_code": null
+          }
+        },
+        {
+          "seq": 10,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "ask_applicant",
+            "operation_key": "call-1"
+          }
+        },
+        {
+          "seq": 11,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "ask_applicant",
+            "operation_key": "call-1",
+            "result_ref": null
+          }
+        },
+        {
+          "seq": 12,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-2"
+          }
+        },
+        {
+          "seq": 13,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "get_application_context",
+            "operation_key": "call-2",
+            "result_ref": null
+          }
+        },
+        {
+          "seq": 14,
+          "type": "tool.started",
+          "payload": {
+            "tool_name": "create_resume_draft",
+            "operation_key": "draft:1:initial"
+          }
+        },
+        {
+          "seq": 15,
+          "type": "artifact.created",
+          "payload": {
+            "artifact_id": "8863759c-9bad-47db-9413-c3a2387622f1",
+            "kind": "resume_version"
+          }
+        },
+        {
+          "seq": 16,
+          "type": "tool.completed",
+          "payload": {
+            "tool_name": "create_resume_draft",
+            "operation_key": "draft:1:initial",
+            "result_ref": "8863759c-9bad-47db-9413-c3a2387622f1"
+          }
+        },
+        {
+          "seq": 17,
+          "type": "assistant.delta",
+          "payload": {
+            "text": "请审阅草稿"
+          }
+        },
+        {
+          "seq": 18,
+          "type": "run.status",
+          "payload": {
+            "status": "succeeded",
+            "error_code": null
+          }
+        }
+      ],
+      "killed_live_equivalent_usage": "unknown; deterministic fixture start counts do not establish paid-provider usage"
+    },
+    "artifacts": [
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/waiting-input.json",
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/before-kill.json",
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/after-recovery.json",
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/compose.log",
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/commands.log",
+      "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery/compose.yaml"
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "actual_process_kill",
+        "passed": true,
+        "reason": "Worker was killed at the named boundary",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "sql_converged",
+        "passed": true,
+        "reason": "The same persisted Run converged to success",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "one_saved_unit",
+        "passed": true,
+        "reason": "Exactly one draft version, operation and artifact event survived",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      },
+      {
+        "name": "answer_persisted",
+        "passed": true,
+        "reason": "Committed answer remained available when delivery resumed",
+        "evidence_refs": [
+          "compose.observed"
+        ]
+      }
+    ],
+    "limitations": [
+      "Process recovery evidence uses a deterministic model; interrupted provider usage is unknown."
+    ]
+  },
+  "semantic": {
+    "status": "not_applicable",
+    "reason": "Deterministic process recovery does not evaluate model semantics."
+  }
+}

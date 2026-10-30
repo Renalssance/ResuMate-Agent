@@ -1,0 +1,1 @@
+Error response from daemon: failed to resolve reference "docker.io/library/nginx:stable-alpine": failed to authorize: failed to fetch anonymous token: Get "https://auth.docker.io/token?scope=repository%3Alibrary%2Fnginx%3Apull&service=registry.docker.io": EOF

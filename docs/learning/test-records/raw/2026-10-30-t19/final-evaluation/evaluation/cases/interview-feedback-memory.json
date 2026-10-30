@@ -1,0 +1,2719 @@
+{
+  "case_id": "interview-feedback-memory",
+  "category": "interview",
+  "mode": "stub",
+  "status": "pass",
+  "error_code": null,
+  "input": {
+    "id": "interview-feedback-memory",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ]
+    }
+  },
+  "output": {
+    "executed": true,
+    "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+    "model": "openai:scripted-interview",
+    "mode": "stub",
+    "evidence_source": "sdk_model_inputs",
+    "error_code": null,
+    "model_calls": [
+      {
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "sdk_call_id": "01a18ae9-0fe2-7ae0-b54b-78c9ef2d5dba",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "c47ec100-3daf-4950-84db-b0df0fd50419",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/c47ec100-3daf-4950-84db-b0df0fd50419/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/c47ec100-3daf-4950-84db-b0df0fd50419/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1,
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-1",
+              "name": "get_interview_context",
+              "args": {}
+            }
+          ],
+          "invalid_tool_calls": []
+        }
+      },
+      {
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "sdk_call_id": "01a18ae9-0fe8-7bd1-a02a-3a79f0fe433d",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "c47ec100-3daf-4950-84db-b0df0fd50419",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 0,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": null,
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/c47ec100-3daf-4950-84db-b0df0fd50419/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/c47ec100-3daf-4950-84db-b0df0fd50419/turns.json",
+              "lines": 1
+            }
+          ]
+        },
+        "tool_inputs": [
+          {
+            "tool_call_id": "interview-call-1",
+            "name": "get_interview_context",
+            "args": {},
+            "content": "{\"interviewId\": \"1bc48b13-dd6a-49d2-9170-0e6289a29393\", \"expectedTurn\": 0, \"source\": {\"resumeVersionId\": \"a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T03:44:52.084132Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T03:44:52.123684+00:00\"}}, \"turns\": [], \"memories\": []}"
+          }
+        ],
+        "required_block_count": 1,
+        "context": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 0,
+          "source": {
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T03:44:52.084132Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+            }
+          },
+          "turns": [],
+          "memories": []
+        },
+        "context_input_call_ids": [
+          "01a18ae9-0fe8-7bd1-a02a-3a79f0fe433d"
+        ],
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-2",
+              "name": "InterviewStep",
+              "args": {
+                "feedback": null,
+                "question": {
+                  "text": "请介绍「Built an API」的具体经历。",
+                  "mode": "opening",
+                  "refs": [
+                    {
+                      "kind": "resume",
+                      "section": "/self_summary",
+                      "quote": "Built an API"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "invalid_tool_calls": []
+        },
+        "step": {
+          "feedback": null,
+          "question": {
+            "text": "请介绍「Built an API」的具体经历。",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "sdk_call_id": "01a18ae9-1002-7f23-9a1e-15a6027c37ff",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/7ceaca47-b5a8-4ad3-aed1-3e5a704cd606/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/7ceaca47-b5a8-4ad3-aed1-3e5a704cd606/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1,
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-3",
+              "name": "get_interview_context",
+              "args": {}
+            }
+          ],
+          "invalid_tool_calls": []
+        }
+      },
+      {
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "sdk_call_id": "01a18ae9-1008-7e41-bc2a-8fb34fe64692",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 1,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "answer": "I validated fields inside one SQL transaction."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/7ceaca47-b5a8-4ad3-aed1-3e5a704cd606/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/7ceaca47-b5a8-4ad3-aed1-3e5a704cd606/turns.json",
+              "lines": 21
+            }
+          ]
+        },
+        "tool_inputs": [
+          {
+            "tool_call_id": "interview-call-3",
+            "name": "get_interview_context",
+            "args": {},
+            "content": "{\"interviewId\": \"1bc48b13-dd6a-49d2-9170-0e6289a29393\", \"expectedTurn\": 1, \"source\": {\"resumeVersionId\": \"a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T03:44:52.084132Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T03:44:52.123684+00:00\"}}, \"turns\": [{\"id\": 1, \"turnIndex\": 1, \"question\": \"请介绍「Built an API」的具体经历。\", \"questionContext\": {\"mode\": \"opening\", \"refs\": [{\"kind\": \"resume\", \"section\": \"/self_summary\", \"quote\": \"Built an API\", \"resumeVersionId\": \"a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1\", \"revision\": 3}]}, \"answer\": \"I validated fields inside one SQL transaction.\", \"feedback\": null}], \"memories\": []}"
+          }
+        ],
+        "required_block_count": 1,
+        "context": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 1,
+          "source": {
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T03:44:52.084132Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+            }
+          },
+          "turns": [
+            {
+              "id": 1,
+              "turnIndex": 1,
+              "question": "请介绍「Built an API」的具体经历。",
+              "questionContext": {
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API",
+                    "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                    "revision": 3
+                  }
+                ]
+              },
+              "answer": "I validated fields inside one SQL transaction.",
+              "feedback": null
+            }
+          ],
+          "memories": []
+        },
+        "context_input_call_ids": [
+          "01a18ae9-1008-7e41-bc2a-8fb34fe64692"
+        ],
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-4",
+              "name": "InterviewStep",
+              "args": {
+                "feedback": {
+                  "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                  "strengths": [
+                    {
+                      "text": "回答给出了明确的方法。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction."
+                        }
+                      ]
+                    }
+                  ],
+                  "improvements": [
+                    {
+                      "text": "补充验证结果与失败处理的具体过程。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 1,
+                          "quote": "I validated fields inside one SQL transaction."
+                        }
+                      ]
+                    }
+                  ],
+                  "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                },
+                "question": {
+                  "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                  "mode": "follow_up",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction."
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "invalid_tool_calls": []
+        },
+        "step": {
+          "feedback": {
+            "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "sdk_call_id": "01a18ae9-1024-7902-808a-ec58b810dc73",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 2,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 2,
+            "turnIndex": 2,
+            "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "answer": "I checked rollback using a failed insert."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [
+            {
+              "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+              "kind": "interview_feedback",
+              "content": "练习说明验证步骤与失败处理，不补造经历。",
+              "sourceRef": {
+                "kind": "interview_turn",
+                "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+                "turnId": 1
+              },
+              "confirmedAt": "2026-10-30T03:44:52.239387+00:00",
+              "createdAt": "2026-10-30T03:44:52.239600+00:00"
+            }
+          ],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/3431f964-3677-4ab0-99fc-da8ea2870b55/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/3431f964-3677-4ab0-99fc-da8ea2870b55/turns.json",
+              "lines": 69
+            }
+          ]
+        },
+        "tool_inputs": [],
+        "required_block_count": 1,
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-5",
+              "name": "get_interview_context",
+              "args": {}
+            }
+          ],
+          "invalid_tool_calls": []
+        }
+      },
+      {
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "sdk_call_id": "01a18ae9-102a-7460-8a63-dc29b3fe0ee2",
+        "attempt": 1,
+        "execution_epoch": 1,
+        "required": {
+          "kind": "interview_generation",
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "sessionId": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 2,
+          "maxQuestions": 8,
+          "sourceIdentity": {
+            "applicationId": 1,
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "submittedAt": "2026-10-30T03:44:52.084132Z"
+          },
+          "jobIdentity": {
+            "jdId": 1,
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          },
+          "currentAnswer": {
+            "turnId": 2,
+            "turnIndex": 2,
+            "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "answer": "I checked rollback using a failed insert."
+          },
+          "constraints": [
+            "只使用冻结投递材料和开始练习时的岗位；岗位不是经历证据。",
+            "这是模拟练习；回答和反馈不能成为候选人经历事实。",
+            "expectedTurn=0 只给首题；1..7 给该轮反馈和下一题；8 只给反馈。",
+            "追问必须引用上一条已接受回答；所有引用逐字存在于对应材料。",
+            "记忆只指导练习偏好，不能作为简历事实或引用来源。"
+          ],
+          "memories": [
+            {
+              "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+              "kind": "interview_feedback",
+              "content": "练习说明验证步骤与失败处理，不补造经历。",
+              "sourceRef": {
+                "kind": "interview_turn",
+                "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+                "turnId": 1
+              },
+              "confirmedAt": "2026-10-30T03:44:52.239387+00:00",
+              "createdAt": "2026-10-30T03:44:52.239600+00:00"
+            }
+          ],
+          "artifacts": [
+            {
+              "kind": "source",
+              "path": "/inputs/3431f964-3677-4ab0-99fc-da8ea2870b55/source.json",
+              "lines": 26
+            },
+            {
+              "kind": "turns",
+              "path": "/inputs/3431f964-3677-4ab0-99fc-da8ea2870b55/turns.json",
+              "lines": 69
+            }
+          ]
+        },
+        "tool_inputs": [
+          {
+            "tool_call_id": "interview-call-5",
+            "name": "get_interview_context",
+            "args": {},
+            "content": "{\"interviewId\": \"1bc48b13-dd6a-49d2-9170-0e6289a29393\", \"expectedTurn\": 2, \"source\": {\"resumeVersionId\": \"a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1\", \"revision\": 3, \"structuredContent\": {\"resume\": {\"self_summary\": \"Built an API\", \"work_experience\": [{\"description\": \"Designed SQL transactions\"}]}, \"changes\": []}, \"factRefs\": [], \"submittedAt\": \"2026-10-30T03:44:52.084132Z\", \"applicationId\": 1, \"job\": {\"jdId\": 1, \"title\": \"API Engineer\", \"company\": \"Synthetic\", \"rawText\": \"Build APIs and explain SQL transactions.\", \"structuredData\": {}, \"capturedAt\": \"2026-10-30T03:44:52.123684+00:00\"}}, \"turns\": [{\"id\": 1, \"turnIndex\": 1, \"question\": \"请介绍「Built an API」的具体经历。\", \"questionContext\": {\"mode\": \"opening\", \"refs\": [{\"kind\": \"resume\", \"section\": \"/self_summary\", \"quote\": \"Built an API\", \"resumeVersionId\": \"a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1\", \"revision\": 3}]}, \"answer\": \"I validated fields inside one SQL transaction.\", \"feedback\": {\"summary\": \"本轮回答提到了：I validated fields inside one SQL transaction.\", \"strengths\": [{\"text\": \"回答给出了明确的方法。\", \"refs\": [{\"kind\": \"answer\", \"turnIndex\": 1, \"quote\": \"I validated fields inside one SQL transaction.\", \"turnId\": 1}]}], \"improvements\": [{\"text\": \"补充验证结果与失败处理的具体过程。\", \"refs\": [{\"kind\": \"answer\", \"turnIndex\": 1, \"quote\": \"I validated fields inside one SQL transaction.\", \"turnId\": 1}]}], \"practiceFocus\": \"练习说明验证步骤与失败处理，不补造经历。\", \"memoryId\": \"bac24707-5def-4220-b54d-c9b2186c901a\"}}, {\"id\": 2, \"turnIndex\": 2, \"question\": \"请进一步说明「I validated fields inside one SQL transaction.」的具体过程。\", \"questionContext\": {\"mode\": \"follow_up\", \"refs\": [{\"kind\": \"answer\", \"turnIndex\": 1, \"quote\": \"I validated fields inside one SQL transaction.\", \"turnId\": 1}]}, \"answer\": \"I checked rollback using a failed insert.\", \"feedback\": null}], \"memories\": [{\"id\": \"bac24707-5def-4220-b54d-c9b2186c901a\", \"kind\": \"interview_feedback\", \"content\": \"练习说明验证步骤与失败处理，不补造经历。\", \"sourceRef\": {\"kind\": \"interview_turn\", \"interviewId\": \"1bc48b13-dd6a-49d2-9170-0e6289a29393\", \"turnId\": 1}, \"confirmedAt\": \"2026-10-30T03:44:52.239387+00:00\", \"createdAt\": \"2026-10-30T03:44:52.239600+00:00\"}]}"
+          }
+        ],
+        "required_block_count": 1,
+        "context": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 2,
+          "source": {
+            "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "revision": 3,
+            "structuredContent": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "factRefs": [],
+            "submittedAt": "2026-10-30T03:44:52.084132Z",
+            "applicationId": 1,
+            "job": {
+              "jdId": 1,
+              "title": "API Engineer",
+              "company": "Synthetic",
+              "rawText": "Build APIs and explain SQL transactions.",
+              "structuredData": {},
+              "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+            }
+          },
+          "turns": [
+            {
+              "id": 1,
+              "turnIndex": 1,
+              "question": "请介绍「Built an API」的具体经历。",
+              "questionContext": {
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API",
+                    "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                    "revision": 3
+                  }
+                ]
+              },
+              "answer": "I validated fields inside one SQL transaction.",
+              "feedback": {
+                "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                "strengths": [
+                  {
+                    "text": "回答给出了明确的方法。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "补充验证结果与失败处理的具体过程。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。",
+                "memoryId": "bac24707-5def-4220-b54d-c9b2186c901a"
+              }
+            },
+            {
+              "id": 2,
+              "turnIndex": 2,
+              "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+              "questionContext": {
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              },
+              "answer": "I checked rollback using a failed insert.",
+              "feedback": null
+            }
+          ],
+          "memories": [
+            {
+              "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+              "kind": "interview_feedback",
+              "content": "练习说明验证步骤与失败处理，不补造经历。",
+              "sourceRef": {
+                "kind": "interview_turn",
+                "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+                "turnId": 1
+              },
+              "confirmedAt": "2026-10-30T03:44:52.239387+00:00",
+              "createdAt": "2026-10-30T03:44:52.239600+00:00"
+            }
+          ]
+        },
+        "context_input_call_ids": [
+          "01a18ae9-102a-7460-8a63-dc29b3fe0ee2"
+        ],
+        "public_output": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "interview-call-6",
+              "name": "InterviewStep",
+              "args": {
+                "feedback": {
+                  "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+                  "strengths": [
+                    {
+                      "text": "回答给出了明确的方法。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 2,
+                          "quote": "I checked rollback using a failed insert."
+                        }
+                      ]
+                    }
+                  ],
+                  "improvements": [
+                    {
+                      "text": "补充验证结果与失败处理的具体过程。",
+                      "refs": [
+                        {
+                          "kind": "answer",
+                          "turnIndex": 2,
+                          "quote": "I checked rollback using a failed insert."
+                        }
+                      ]
+                    }
+                  ],
+                  "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+                },
+                "question": {
+                  "text": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+                  "mode": "follow_up",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 2,
+                      "quote": "I checked rollback using a failed insert."
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "invalid_tool_calls": []
+        },
+        "step": {
+          "feedback": {
+            "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 2,
+                    "quote": "I checked rollback using a failed insert."
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 2,
+                    "quote": "I checked rollback using a failed insert."
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 2,
+                "quote": "I checked rollback using a failed insert."
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "public_model_output": [
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-1",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-2",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": null,
+              "question": {
+                "text": "请介绍「Built an API」的具体经历。",
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-3",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-4",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": {
+                "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                "strengths": [
+                  {
+                    "text": "回答给出了明确的方法。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "补充验证结果与失败处理的具体过程。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction."
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+              },
+              "question": {
+                "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction."
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-5",
+            "name": "get_interview_context",
+            "args": {}
+          }
+        ],
+        "invalid_tool_calls": []
+      },
+      {
+        "text": "",
+        "tool_calls": [
+          {
+            "id": "interview-call-6",
+            "name": "InterviewStep",
+            "args": {
+              "feedback": {
+                "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+                "strengths": [
+                  {
+                    "text": "回答给出了明确的方法。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 2,
+                        "quote": "I checked rollback using a failed insert."
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "补充验证结果与失败处理的具体过程。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 2,
+                        "quote": "I checked rollback using a failed insert."
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+              },
+              "question": {
+                "text": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 2,
+                    "quote": "I checked rollback using a failed insert."
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "invalid_tool_calls": []
+      }
+    ],
+    "summary_calls": [],
+    "observations": {
+      "before_confirmation": {
+        "interviews": [
+          {
+            "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "user_id": 1,
+            "agent_session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+            "source_snapshot": {
+              "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+              "revision": 3,
+              "structuredContent": {
+                "resume": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "changes": []
+              },
+              "factRefs": [],
+              "submittedAt": "2026-10-30T03:44:52.084132Z",
+              "applicationId": 1,
+              "job": {
+                "jdId": 1,
+                "title": "API Engineer",
+                "company": "Synthetic",
+                "rawText": "Build APIs and explain SQL transactions.",
+                "structuredData": {},
+                "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+              }
+            },
+            "application_id": 1,
+            "jd_id": 1,
+            "resume_version_id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "status": "active",
+            "created_at": "2026-10-30T03:44:52.124250"
+          }
+        ],
+        "turns": [
+          {
+            "id": 1,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "turn_index": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "question_context": {
+              "mode": "opening",
+              "refs": [
+                {
+                  "kind": "resume",
+                  "section": "/self_summary",
+                  "quote": "Built an API",
+                  "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                  "revision": 3
+                }
+              ]
+            },
+            "answer": "I validated fields inside one SQL transaction.",
+            "feedback": {
+              "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+              "strengths": [
+                {
+                  "text": "回答给出了明确的方法。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "improvements": [
+                {
+                  "text": "补充验证结果与失败处理的具体过程。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+            }
+          },
+          {
+            "id": 2,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "turn_index": 2,
+            "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "question_context": {
+              "mode": "follow_up",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            },
+            "answer": null,
+            "feedback": null
+          }
+        ],
+        "commands": [
+          {
+            "id": 1,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "user_id": 1,
+            "client_message_id": "3318ff27-46a2-4856-a185-2e16e6327391",
+            "type": "answer.submit",
+            "request_json": {
+              "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+              "expectedTurn": 1,
+              "type": "answer.submit",
+              "payload": {
+                "text": "I validated fields inside one SQL transaction."
+              }
+            },
+            "ack_json": {
+              "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+              "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+              "status": "accepted",
+              "resultRef": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+              "acceptedSeq": 2
+            },
+            "result_ref": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "status": "accepted"
+          }
+        ],
+        "events": [
+          {
+            "id": 1,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "seq": 1,
+            "type": "question.completed",
+            "payload": {
+              "runId": "c47ec100-3daf-4950-84db-b0df0fd50419",
+              "turnIndex": 1,
+              "turnId": 1
+            },
+            "created_at": "2026-10-30T03:44:52.203991"
+          },
+          {
+            "id": 2,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "seq": 2,
+            "type": "answer.accepted",
+            "payload": {
+              "turnIndex": 1,
+              "turnId": 1,
+              "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606"
+            },
+            "created_at": "2026-10-30T03:44:52.210306"
+          },
+          {
+            "id": 3,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "seq": 3,
+            "type": "feedback.ready",
+            "payload": {
+              "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+              "turnIndex": 1,
+              "turnId": 1
+            },
+            "created_at": "2026-10-30T03:44:52.234959"
+          },
+          {
+            "id": 4,
+            "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+            "seq": 4,
+            "type": "question.completed",
+            "payload": {
+              "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+              "turnIndex": 2,
+              "turnId": 2
+            },
+            "created_at": "2026-10-30T03:44:52.235225"
+          }
+        ],
+        "runs": [
+          {
+            "id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "user_id": 1,
+            "session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+            "request_id": "2386de69-ac68-4fa1-bb9c-9aa5a3fd11d5",
+            "kind": "interview_generation",
+            "status": "succeeded",
+            "input_json": {
+              "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+              "expectedTurn": 1,
+              "applicationId": 1
+            },
+            "input_versions": {
+              "memories": []
+            },
+            "result_json": {
+              "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+              "expectedTurn": 1,
+              "feedback": {
+                "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+                "strengths": [
+                  {
+                    "text": "回答给出了明确的方法。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ]
+                  }
+                ],
+                "improvements": [
+                  {
+                    "text": "补充验证结果与失败处理的具体过程。",
+                    "refs": [
+                      {
+                        "kind": "answer",
+                        "turnIndex": 1,
+                        "quote": "I validated fields inside one SQL transaction.",
+                        "turnId": 1
+                      }
+                    ]
+                  }
+                ],
+                "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+              },
+              "question": {
+                "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+                "mode": "follow_up",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ],
+                "turnIndex": 2
+              }
+            },
+            "attempt": 1,
+            "execution_epoch": 1,
+            "heartbeat_at": "2026-10-30T03:44:52.235738",
+            "cancel_requested_at": null,
+            "error_code": null,
+            "output_refs": [
+              {
+                "type": "interview",
+                "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+              }
+            ],
+            "created_at": "2026-10-30T03:44:52.209720",
+            "updated_at": "2026-10-30T03:44:52.236117"
+          },
+          {
+            "id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+            "user_id": 1,
+            "session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+            "request_id": "interview-eval-start",
+            "kind": "interview_generation",
+            "status": "succeeded",
+            "input_json": {
+              "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+              "expectedTurn": 0,
+              "applicationId": 1
+            },
+            "input_versions": {
+              "memories": []
+            },
+            "result_json": {
+              "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+              "expectedTurn": 0,
+              "feedback": null,
+              "question": {
+                "text": "请介绍「Built an API」的具体经历。",
+                "mode": "opening",
+                "refs": [
+                  {
+                    "kind": "resume",
+                    "section": "/self_summary",
+                    "quote": "Built an API",
+                    "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                    "revision": 3
+                  }
+                ],
+                "turnIndex": 1
+              }
+            },
+            "attempt": 1,
+            "execution_epoch": 1,
+            "heartbeat_at": "2026-10-30T03:44:52.204745",
+            "cancel_requested_at": null,
+            "error_code": null,
+            "output_refs": [
+              {
+                "type": "interview",
+                "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+              }
+            ],
+            "created_at": "2026-10-30T03:44:52.125862",
+            "updated_at": "2026-10-30T03:44:52.205623"
+          }
+        ],
+        "sessions": [
+          {
+            "id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+            "user_id": 1,
+            "purpose": "interview_generation",
+            "context_invalidated_at": null,
+            "checkpoint_deleted_at": null,
+            "active_run_id": null,
+            "created_at": "2026-10-30T03:44:52.123959"
+          }
+        ],
+        "operations": [
+          {
+            "id": 1,
+            "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+            "operation_key": "interview:step",
+            "tool_name": "interview_step",
+            "status": "succeeded",
+            "result_ref": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+          },
+          {
+            "id": 2,
+            "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "operation_key": "interview:step",
+            "tool_name": "interview_step",
+            "status": "succeeded",
+            "result_ref": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+          }
+        ],
+        "run_events": [
+          {
+            "id": 1,
+            "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.126723"
+          },
+          {
+            "id": 2,
+            "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.128668"
+          },
+          {
+            "id": 3,
+            "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+            "seq": 3,
+            "type": "run.status",
+            "payload": {
+              "status": "succeeded",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.206064"
+          },
+          {
+            "id": 4,
+            "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "seq": 1,
+            "type": "run.status",
+            "payload": {
+              "status": "queued",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.210083"
+          },
+          {
+            "id": 5,
+            "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "seq": 2,
+            "type": "run.status",
+            "payload": {
+              "status": "running",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.211429"
+          },
+          {
+            "id": 6,
+            "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+            "seq": 3,
+            "type": "run.status",
+            "payload": {
+              "status": "succeeded",
+              "error_code": null
+            },
+            "created_at": "2026-10-30T03:44:52.236396"
+          }
+        ],
+        "facts": [],
+        "memories": [],
+        "applications": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "resume_id": 1,
+            "jd_id": 1,
+            "resume_version_id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "submitted_snapshot": {
+              "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+              "revision": 3,
+              "jdId": 1,
+              "structuredContent": {
+                "resume": {
+                  "self_summary": "Built an API",
+                  "work_experience": [
+                    {
+                      "description": "Designed SQL transactions"
+                    }
+                  ]
+                },
+                "changes": []
+              },
+              "factRefs": [],
+              "submittedAt": "2026-10-30T03:44:52.084132Z"
+            },
+            "company": "Synthetic",
+            "position": "API Engineer",
+            "applied_date": "2026-10-30",
+            "status": "applied",
+            "job_url": "",
+            "source": "",
+            "notes": "",
+            "created_at": "2026-10-30T03:44:52.082265",
+            "updated_at": "2026-10-30T03:44:52.084132"
+          }
+        ],
+        "versions": [
+          {
+            "id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+            "user_id": 1,
+            "run_id": null,
+            "resume_id": 1,
+            "jd_id": 1,
+            "parent_version_id": null,
+            "revision": 3,
+            "structured_content": {
+              "resume": {
+                "self_summary": "Built an API",
+                "work_experience": [
+                  {
+                    "description": "Designed SQL transactions"
+                  }
+                ]
+              },
+              "changes": []
+            },
+            "fact_refs": [],
+            "status": "confirmed",
+            "created_at": "2026-10-30T03:44:52.081818"
+          }
+        ],
+        "resumes": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "filename": "synthetic-resume.txt",
+            "file_path": "",
+            "content_hash": "",
+            "document_size": 0,
+            "parse_status": "pending",
+            "raw_text": "Built an API and designed SQL transactions in a test environment.",
+            "structured_data": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "created_at": "2026-10-30T03:44:52.081418",
+            "updated_at": "2026-10-30T03:44:52.081419"
+          }
+        ],
+        "jobs": [
+          {
+            "primary_resume_id": null,
+            "source_url": null,
+            "source_site": null,
+            "source_job_id": null,
+            "captured_at": null,
+            "status": "saved",
+            "id": 1,
+            "user_id": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "filename": "",
+            "file_path": "",
+            "content_hash": "",
+            "document_size": 0,
+            "parse_status": "pending",
+            "raw_text": "Build APIs and explain SQL transactions.",
+            "structured_data": {},
+            "created_at": "2026-10-30T03:44:52.081045",
+            "updated_at": "2026-10-30T03:44:52.081046"
+          }
+        ]
+      },
+      "unconfirmed_rejection": {
+        "code": "confirmation_required",
+        "status": 422
+      },
+      "other_owner_rejection": {
+        "code": "not_found",
+        "status": 404
+      },
+      "first_memory": {
+        "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+        "kind": "interview_feedback",
+        "content": "练习说明验证步骤与失败处理，不补造经历。",
+        "sourceRef": {
+          "kind": "interview_turn",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "turnId": 1
+        },
+        "confirmedAt": "2026-10-30T03:44:52.239387+00:00",
+        "createdAt": "2026-10-30T03:44:52.239600+00:00"
+      },
+      "replayed_memory": {
+        "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+        "kind": "interview_feedback",
+        "content": "练习说明验证步骤与失败处理，不补造经历。",
+        "sourceRef": {
+          "kind": "interview_turn",
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "turnId": 1
+        },
+        "confirmedAt": "2026-10-30T03:44:52.239387+00:00",
+        "createdAt": "2026-10-30T03:44:52.239600+00:00"
+      },
+      "memory_usage_run": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+      "deletion": {
+        "memoryId": "bac24707-5def-4220-b54d-c9b2186c901a",
+        "cleanupStatus": "pending",
+        "affectedRunIds": [
+          "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "c47ec100-3daf-4950-84db-b0df0fd50419"
+        ],
+        "newSessionRequired": true
+      },
+      "after_delete_confirmation": {
+        "code": "memory_deleted",
+        "status": 409
+      },
+      "after_delete_generation": {
+        "code": "session_context_invalidated",
+        "status": 409
+      },
+      "refreshed_snapshot": {
+        "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "userId": 1,
+        "applicationId": 1,
+        "status": "active",
+        "currentTurn": 3,
+        "lastSeq": 7,
+        "sessionInvalidated": true,
+        "sourceSnapshot": {
+          "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:44:52.084132Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          }
+        },
+        "turns": [
+          {
+            "id": 1,
+            "turnIndex": 1,
+            "question": "请介绍「Built an API」的具体经历。",
+            "questionContext": {
+              "mode": "opening",
+              "refs": [
+                {
+                  "kind": "resume",
+                  "section": "/self_summary",
+                  "quote": "Built an API",
+                  "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                  "revision": 3
+                }
+              ]
+            },
+            "answer": "I validated fields inside one SQL transaction.",
+            "feedback": {
+              "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+              "strengths": [
+                {
+                  "text": "回答给出了明确的方法。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "improvements": [
+                {
+                  "text": "补充验证结果与失败处理的具体过程。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 1,
+                      "quote": "I validated fields inside one SQL transaction.",
+                      "turnId": 1
+                    }
+                  ]
+                }
+              ],
+              "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。",
+              "memoryId": "bac24707-5def-4220-b54d-c9b2186c901a"
+            }
+          },
+          {
+            "id": 2,
+            "turnIndex": 2,
+            "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "questionContext": {
+              "mode": "follow_up",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            },
+            "answer": "I checked rollback using a failed insert.",
+            "feedback": {
+              "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+              "strengths": [
+                {
+                  "text": "回答给出了明确的方法。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 2,
+                      "quote": "I checked rollback using a failed insert.",
+                      "turnId": 2
+                    }
+                  ]
+                }
+              ],
+              "improvements": [
+                {
+                  "text": "补充验证结果与失败处理的具体过程。",
+                  "refs": [
+                    {
+                      "kind": "answer",
+                      "turnIndex": 2,
+                      "quote": "I checked rollback using a failed insert.",
+                      "turnId": 2
+                    }
+                  ]
+                }
+              ],
+              "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+            }
+          },
+          {
+            "id": 3,
+            "turnIndex": 3,
+            "question": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+            "questionContext": {
+              "mode": "follow_up",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 2,
+                  "quote": "I checked rollback using a failed insert.",
+                  "turnId": 2
+                }
+              ]
+            },
+            "answer": null,
+            "feedback": null
+          }
+        ],
+        "generation": {
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "status": "succeeded",
+          "errorCode": null,
+          "cancelRequested": false
+        }
+      }
+    },
+    "trajectory": [
+      {
+        "action": "created",
+        "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "runId": "c47ec100-3daf-4950-84db-b0df0fd50419"
+      },
+      {
+        "action": "claimed",
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "epoch": 1,
+        "status": "succeeded",
+        "error_code": null
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+          "type": "answer.submit",
+          "expectedTurn": 1,
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+          "status": "accepted",
+          "resultRef": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "acceptedSeq": 2
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "epoch": 1,
+        "status": "succeeded",
+        "error_code": null
+      },
+      {
+        "action": "command.accepted",
+        "command": {
+          "clientMessageId": "5f21710c-9257-43e0-b26b-8aafb1775223",
+          "type": "answer.submit",
+          "expectedTurn": 2,
+          "payload": {
+            "text": "I checked rollback using a failed insert."
+          }
+        },
+        "ack": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "clientMessageId": "5f21710c-9257-43e0-b26b-8aafb1775223",
+          "status": "accepted",
+          "resultRef": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "acceptedSeq": 5
+        }
+      },
+      {
+        "action": "claimed",
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "epoch": 1,
+        "status": "succeeded",
+        "error_code": null
+      }
+    ],
+    "baseline_facts": [],
+    "checkpoint_files": [
+      "checkpoints.sqlite"
+    ]
+  },
+  "db_snapshot": {
+    "interviews": [
+      {
+        "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "user_id": 1,
+        "agent_session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+        "source_snapshot": {
+          "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:44:52.084132Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:44:52.123684+00:00"
+          }
+        },
+        "application_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+        "status": "active",
+        "created_at": "2026-10-30T03:44:52.124250"
+      }
+    ],
+    "turns": [
+      {
+        "id": 1,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "turn_index": 1,
+        "question": "请介绍「Built an API」的具体经历。",
+        "question_context": {
+          "mode": "opening",
+          "refs": [
+            {
+              "kind": "resume",
+              "section": "/self_summary",
+              "quote": "Built an API",
+              "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+              "revision": 3
+            }
+          ]
+        },
+        "answer": "I validated fields inside one SQL transaction.",
+        "feedback": {
+          "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+          "strengths": [
+            {
+              "text": "回答给出了明确的方法。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "improvements": [
+            {
+              "text": "补充验证结果与失败处理的具体过程。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 1,
+                  "quote": "I validated fields inside one SQL transaction.",
+                  "turnId": 1
+                }
+              ]
+            }
+          ],
+          "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。",
+          "memoryId": "bac24707-5def-4220-b54d-c9b2186c901a"
+        }
+      },
+      {
+        "id": 2,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "turn_index": 2,
+        "question": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+        "question_context": {
+          "mode": "follow_up",
+          "refs": [
+            {
+              "kind": "answer",
+              "turnIndex": 1,
+              "quote": "I validated fields inside one SQL transaction.",
+              "turnId": 1
+            }
+          ]
+        },
+        "answer": "I checked rollback using a failed insert.",
+        "feedback": {
+          "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+          "strengths": [
+            {
+              "text": "回答给出了明确的方法。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 2,
+                  "quote": "I checked rollback using a failed insert.",
+                  "turnId": 2
+                }
+              ]
+            }
+          ],
+          "improvements": [
+            {
+              "text": "补充验证结果与失败处理的具体过程。",
+              "refs": [
+                {
+                  "kind": "answer",
+                  "turnIndex": 2,
+                  "quote": "I checked rollback using a failed insert.",
+                  "turnId": 2
+                }
+              ]
+            }
+          ],
+          "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+        }
+      },
+      {
+        "id": 3,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "turn_index": 3,
+        "question": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+        "question_context": {
+          "mode": "follow_up",
+          "refs": [
+            {
+              "kind": "answer",
+              "turnIndex": 2,
+              "quote": "I checked rollback using a failed insert.",
+              "turnId": 2
+            }
+          ]
+        },
+        "answer": null,
+        "feedback": null
+      }
+    ],
+    "commands": [
+      {
+        "id": 1,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "user_id": 1,
+        "client_message_id": "3318ff27-46a2-4856-a185-2e16e6327391",
+        "type": "answer.submit",
+        "request_json": {
+          "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+          "expectedTurn": 1,
+          "type": "answer.submit",
+          "payload": {
+            "text": "I validated fields inside one SQL transaction."
+          }
+        },
+        "ack_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "clientMessageId": "3318ff27-46a2-4856-a185-2e16e6327391",
+          "status": "accepted",
+          "resultRef": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "acceptedSeq": 2
+        },
+        "result_ref": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "status": "accepted"
+      },
+      {
+        "id": 2,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "user_id": 1,
+        "client_message_id": "5f21710c-9257-43e0-b26b-8aafb1775223",
+        "type": "answer.submit",
+        "request_json": {
+          "clientMessageId": "5f21710c-9257-43e0-b26b-8aafb1775223",
+          "expectedTurn": 2,
+          "type": "answer.submit",
+          "payload": {
+            "text": "I checked rollback using a failed insert."
+          }
+        },
+        "ack_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "clientMessageId": "5f21710c-9257-43e0-b26b-8aafb1775223",
+          "status": "accepted",
+          "resultRef": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "acceptedSeq": 5
+        },
+        "result_ref": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "status": "accepted"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 1,
+        "type": "question.completed",
+        "payload": {
+          "runId": "c47ec100-3daf-4950-84db-b0df0fd50419",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T03:44:52.203991"
+      },
+      {
+        "id": 2,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 2,
+        "type": "answer.accepted",
+        "payload": {
+          "turnIndex": 1,
+          "turnId": 1,
+          "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606"
+        },
+        "created_at": "2026-10-30T03:44:52.210306"
+      },
+      {
+        "id": 3,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 3,
+        "type": "feedback.ready",
+        "payload": {
+          "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "turnIndex": 1,
+          "turnId": 1
+        },
+        "created_at": "2026-10-30T03:44:52.234959"
+      },
+      {
+        "id": 4,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 4,
+        "type": "question.completed",
+        "payload": {
+          "runId": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+          "turnIndex": 2,
+          "turnId": 2
+        },
+        "created_at": "2026-10-30T03:44:52.235225"
+      },
+      {
+        "id": 5,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 5,
+        "type": "answer.accepted",
+        "payload": {
+          "turnIndex": 2,
+          "turnId": 2,
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55"
+        },
+        "created_at": "2026-10-30T03:44:52.243272"
+      },
+      {
+        "id": 6,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 6,
+        "type": "feedback.ready",
+        "payload": {
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "turnIndex": 2,
+          "turnId": 2
+        },
+        "created_at": "2026-10-30T03:44:52.269068"
+      },
+      {
+        "id": 7,
+        "interview_id": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+        "seq": 7,
+        "type": "question.completed",
+        "payload": {
+          "runId": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+          "turnIndex": 3,
+          "turnId": 3
+        },
+        "created_at": "2026-10-30T03:44:52.269319"
+      }
+    ],
+    "runs": [
+      {
+        "id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "user_id": 1,
+        "session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+        "request_id": "a4976b2f-0f8c-43dc-84a9-7a60dd1fd418",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 2,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": [
+            {
+              "memoryId": "bac24707-5def-4220-b54d-c9b2186c901a"
+            }
+          ]
+        },
+        "result_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 2,
+          "feedback": {
+            "summary": "本轮回答提到了：I checked rollback using a failed insert.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 2,
+                    "quote": "I checked rollback using a failed insert.",
+                    "turnId": 2
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 2,
+                    "quote": "I checked rollback using a failed insert.",
+                    "turnId": 2
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I checked rollback using a failed insert.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 2,
+                "quote": "I checked rollback using a failed insert.",
+                "turnId": 2
+              }
+            ],
+            "turnIndex": 3
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:52.269802",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+          }
+        ],
+        "created_at": "2026-10-30T03:44:52.242015",
+        "updated_at": "2026-10-30T03:44:52.270145"
+      },
+      {
+        "id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "user_id": 1,
+        "session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+        "request_id": "2386de69-ac68-4fa1-bb9c-9aa5a3fd11d5",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 1,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 1,
+          "feedback": {
+            "summary": "本轮回答提到了：I validated fields inside one SQL transaction.",
+            "strengths": [
+              {
+                "text": "回答给出了明确的方法。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "improvements": [
+              {
+                "text": "补充验证结果与失败处理的具体过程。",
+                "refs": [
+                  {
+                    "kind": "answer",
+                    "turnIndex": 1,
+                    "quote": "I validated fields inside one SQL transaction.",
+                    "turnId": 1
+                  }
+                ]
+              }
+            ],
+            "practiceFocus": "练习说明验证步骤与失败处理，不补造经历。"
+          },
+          "question": {
+            "text": "请进一步说明「I validated fields inside one SQL transaction.」的具体过程。",
+            "mode": "follow_up",
+            "refs": [
+              {
+                "kind": "answer",
+                "turnIndex": 1,
+                "quote": "I validated fields inside one SQL transaction.",
+                "turnId": 1
+              }
+            ],
+            "turnIndex": 2
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:52.235738",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+          }
+        ],
+        "created_at": "2026-10-30T03:44:52.209720",
+        "updated_at": "2026-10-30T03:44:52.236117"
+      },
+      {
+        "id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "user_id": 1,
+        "session_id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+        "request_id": "interview-eval-start",
+        "kind": "interview_generation",
+        "status": "succeeded",
+        "input_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 0,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": {
+          "interviewId": "1bc48b13-dd6a-49d2-9170-0e6289a29393",
+          "expectedTurn": 0,
+          "feedback": null,
+          "question": {
+            "text": "请介绍「Built an API」的具体经历。",
+            "mode": "opening",
+            "refs": [
+              {
+                "kind": "resume",
+                "section": "/self_summary",
+                "quote": "Built an API",
+                "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+                "revision": 3
+              }
+            ],
+            "turnIndex": 1
+          }
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:52.204745",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "interview",
+            "id": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+          }
+        ],
+        "created_at": "2026-10-30T03:44:52.125862",
+        "updated_at": "2026-10-30T03:44:52.205623"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "ae1f387b-f37a-4f53-8c13-0c6169a71106",
+        "user_id": 1,
+        "purpose": "interview_generation",
+        "context_invalidated_at": "2026-10-30T03:44:52.272614",
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:44:52.123959"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+      },
+      {
+        "id": 2,
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+      },
+      {
+        "id": 3,
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "operation_key": "interview:step",
+        "tool_name": "interview_step",
+        "status": "succeeded",
+        "result_ref": "1bc48b13-dd6a-49d2-9170-0e6289a29393"
+      }
+    ],
+    "run_events": [
+      {
+        "id": 1,
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.126723"
+      },
+      {
+        "id": 2,
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.128668"
+      },
+      {
+        "id": 3,
+        "run_id": "c47ec100-3daf-4950-84db-b0df0fd50419",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.206064"
+      },
+      {
+        "id": 4,
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.210083"
+      },
+      {
+        "id": 5,
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.211429"
+      },
+      {
+        "id": 6,
+        "run_id": "7ceaca47-b5a8-4ad3-aed1-3e5a704cd606",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.236396"
+      },
+      {
+        "id": 7,
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.243042"
+      },
+      {
+        "id": 8,
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.244280"
+      },
+      {
+        "id": 9,
+        "run_id": "3431f964-3677-4ab0-99fc-da8ea2870b55",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:52.270406"
+      }
+    ],
+    "facts": [],
+    "memories": [
+      {
+        "id": "bac24707-5def-4220-b54d-c9b2186c901a",
+        "user_id": 1,
+        "kind": "interview_feedback",
+        "content": "",
+        "source_ref": {},
+        "confirmed_at": "2026-10-30T03:44:52.239387",
+        "created_at": "2026-10-30T03:44:52.239600",
+        "deleted_at": "2026-10-30T03:44:52.271840"
+      }
+    ],
+    "applications": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+        "submitted_snapshot": {
+          "resumeVersionId": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+          "revision": 3,
+          "jdId": 1,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:44:52.084132Z"
+        },
+        "company": "Synthetic",
+        "position": "API Engineer",
+        "applied_date": "2026-10-30",
+        "status": "applied",
+        "job_url": "",
+        "source": "",
+        "notes": "",
+        "created_at": "2026-10-30T03:44:52.082265",
+        "updated_at": "2026-10-30T03:44:52.084132"
+      }
+    ],
+    "versions": [
+      {
+        "id": "a7a92ae0-b2d8-4ea9-ae64-08fb943fe5d1",
+        "user_id": 1,
+        "run_id": null,
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 3,
+        "structured_content": {
+          "resume": {
+            "self_summary": "Built an API",
+            "work_experience": [
+              {
+                "description": "Designed SQL transactions"
+              }
+            ]
+          },
+          "changes": []
+        },
+        "fact_refs": [],
+        "status": "confirmed",
+        "created_at": "2026-10-30T03:44:52.081818"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:44:52.081418",
+        "updated_at": "2026-10-30T03:44:52.081419"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "Synthetic",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build APIs and explain SQL transactions.",
+        "structured_data": {},
+        "created_at": "2026-10-30T03:44:52.081045",
+        "updated_at": "2026-10-30T03:44:52.081046"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "actual_execution",
+        "passed": true,
+        "reason": "The case reached real generation calls and persisted their Run identities",
+        "evidence_refs": [
+          "output.model_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "sdk_input_identity",
+        "passed": true,
+        "reason": "Every main/summary input contains one current required block bound to its Run and execution epoch",
+        "evidence_refs": [
+          "output.model_calls",
+          "output.summary_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "owned_frozen_session",
+        "passed": true,
+        "reason": "An owned interview keeps the accepted frozen source",
+        "evidence_refs": [
+          "interviews",
+          "runs"
+        ]
+      },
+      {
+        "name": "bounded_unique_rounds",
+        "passed": true,
+        "reason": "Persisted rounds are contiguous, unique, and bounded by eight",
+        "evidence_refs": [
+          "turns"
+        ]
+      },
+      {
+        "name": "frozen_reference_integrity",
+        "passed": true,
+        "reason": "Question and feedback quotes resolve to the exact snapshot or accepted answer",
+        "evidence_refs": [
+          "turns",
+          "interviews.source_snapshot"
+        ]
+      },
+      {
+        "name": "durable_question_feedback_events",
+        "passed": true,
+        "reason": "Each committed question/feedback has exactly one ordered SQL event",
+        "evidence_refs": [
+          "turns",
+          "events"
+        ]
+      },
+      {
+        "name": "run_result_operation_atomicity",
+        "passed": true,
+        "reason": "Successful steps own one immutable result and operation; stopped steps own neither",
+        "evidence_refs": [
+          "runs",
+          "operations"
+        ]
+      },
+      {
+        "name": "practice_does_not_create_facts",
+        "passed": true,
+        "reason": "Practice answers do not become ProfileFact records",
+        "evidence_refs": [
+          "facts",
+          "output.baseline_facts"
+        ]
+      },
+      {
+        "name": "confirmation_binds_one_real_feedback_memory",
+        "passed": true,
+        "reason": "Only explicit confirmation creates one source-bound memory used by a later real model call",
+        "evidence_refs": [
+          "memories",
+          "turns",
+          "output.observations",
+          "output.model_calls"
+        ]
+      },
+      {
+        "name": "deletion_cannot_resurrect_practice_memory",
+        "passed": true,
+        "reason": "Deletion clears memory content, invalidates the old graph and rejects reconfirmation or another answer",
+        "evidence_refs": [
+          "memories",
+          "sessions",
+          "output.observations"
+        ]
+      }
+    ],
+    "limitations": [
+      "Quoted text existing is not proof of semantic quality; live output requires human review.",
+      "This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.",
+      "Live mode uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

@@ -1,0 +1,278 @@
+import asyncio
+import json
+import logging
+import os
+import time
+from datetime import datetime
+
+from dotenv import load_dotenv
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+from openai import DefaultHttpxClient, DefaultAsyncHttpxClient
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
+
+from backend.agent.interview_tools import create_interview_tools
+from backend.db.database import SessionLocal
+from backend.db.models import ChatMessage, ChatSession, User
+from backend.logging_config import log_llm_prompt, log_llm_response
+from backend.services.llm_settings import record_llm_usage, resolve_effective_llm_settings
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+MAX_CONTEXT_MESSAGES = 20
+
+
+class ConversationStorage:
+    """Minimal conversation storage for the interview assistant chat surface."""
+
+    def __init__(self, session_factory=SessionLocal):
+        self.session_factory = session_factory
+
+    @staticmethod
+    def _to_langchain_messages(records: list[dict]) -> list:
+        messages = []
+        for msg_data in records:
+            content = msg_data.get("content", "")
+            if msg_data.get("type") == "human":
+                messages.append(HumanMessage(content=content))
+            elif msg_data.get("type") == "ai":
+                messages.append(AIMessage(content=content))
+        return messages
+
+    def save(self, user_id: str, session_id: str, messages: list):
+        db = self.session_factory()
+        try:
+            user = db.query(User).filter(User.username == user_id).first()
+            if not user:
+                return
+
+            session = (
+                db.query(ChatSession)
+                .filter(ChatSession.user_id == user.id, ChatSession.session_id == session_id)
+                .first()
+            )
+            if not session:
+                session = ChatSession(user_id=user.id, session_id=session_id, metadata_json={})
+                db.add(session)
+                db.flush()
+
+            db.query(ChatMessage).filter(ChatMessage.session_ref_id == session.id).delete(synchronize_session=False)
+
+            now = datetime.utcnow()
+            for msg in messages[-MAX_CONTEXT_MESSAGES:]:
+                db.add(
+                    ChatMessage(
+                        session_ref_id=session.id,
+                        message_type=msg.type,
+                        content=str(msg.content),
+                        timestamp=now,
+                    )
+                )
+
+            session.updated_at = now
+            db.commit()
+        finally:
+            db.close()
+
+    def load(self, user_id: str, session_id: str) -> list:
+        records = self.get_session_messages(user_id, session_id)
+        return self._to_langchain_messages(records[-MAX_CONTEXT_MESSAGES:])
+
+    def get_session_messages(self, user_id: str, session_id: str) -> list[dict]:
+        db = self.session_factory()
+        try:
+            user = db.query(User).filter(User.username == user_id).first()
+            if not user:
+                return []
+            session = (
+                db.query(ChatSession)
+                .filter(ChatSession.user_id == user.id, ChatSession.session_id == session_id)
+                .first()
+            )
+            if not session:
+                return []
+
+            rows = (
+                db.query(ChatMessage)
+                .filter(ChatMessage.session_ref_id == session.id)
+                .order_by(ChatMessage.id.asc())
+                .all()
+            )
+            result = [
+                {
+                    "type": row.message_type,
+                    "content": row.content,
+                    "timestamp": row.timestamp.isoformat(),
+                }
+                for row in rows
+            ]
+            return result
+        finally:
+            db.close()
+
+def _build_system_prompt() -> str:
+    return (
+        "You are a professional interview coach and recruiting assistant. "
+        "Focus only on resume parsing, JD analysis, resume-JD matching, interview question generation, "
+        "and mock interview evaluation.\n\n"
+        "Use the available tools when the user asks to analyze a resume, analyze a JD, match a resume "
+        "with a JD, generate interview questions, or evaluate an interview answer. "
+        "Do not claim to have knowledge-base, weather, or long-term memory capabilities."
+    )
+
+
+def create_agent_with_interview_tools(user_id: str):
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.username == user_id).first()
+        int_user_id = user.id if user else 0
+        settings = resolve_effective_llm_settings(int_user_id, db)
+    finally:
+        db.close()
+
+    if int_user_id and (not settings.api_key or not settings.model or not settings.base_url):
+        raise RuntimeError("请先在模型设置中配置 API Key、Base URL 和模型名称")
+
+    logger.info("Creating interview agent | user_id=%s model=%s", user_id, settings.model)
+    model = init_chat_model(
+        model=settings.model,
+        model_provider="openai",
+        api_key=settings.api_key,
+        base_url=settings.base_url or None,
+        timeout=settings.request_timeout_seconds,
+        max_retries=0,
+        http_client=DefaultHttpxClient(follow_redirects=False),
+        http_async_client=DefaultAsyncHttpxClient(follow_redirects=False),
+        temperature=0.3,
+        stream_usage=True,
+    )
+
+    system_prompt = _build_system_prompt()
+    agent = create_agent(
+        model=model,
+        tools=create_interview_tools(int_user_id),
+        system_prompt=system_prompt,
+    )
+    logger.info("Interview agent created | user_id=%s int_user_id=%s", user_id, int_user_id)
+    return agent, model, int_user_id, settings
+
+
+storage = ConversationStorage()
+
+
+async def chat_with_agent_stream(user_text: str, user_id: str = "default_user", session_id: str = "default_session"):
+    yield ": heartbeat\n\n"
+    messages = storage.load(user_id, session_id)
+    messages.append(HumanMessage(content=user_text))
+    logger.info(
+        "Chat stream start | user_id=%s session_id=%s history_messages=%s user_text_chars=%s",
+        user_id,
+        session_id,
+        len(messages) - 1,
+        len(user_text),
+    )
+    prompt_snapshot = {
+        "system_prompt": _build_system_prompt(),
+        "messages": [{"type": msg.type, "content": str(msg.content)} for msg in messages],
+    }
+    log_llm_prompt(
+        "agent.chat_stream",
+        json.dumps(prompt_snapshot, ensure_ascii=False, indent=2),
+        {"user_id": user_id, "session_id": session_id, "message_count": len(messages)},
+    )
+
+    output_queue = asyncio.Queue()
+    full_response = ""
+    started = time.perf_counter()
+    usage_metadata = {}
+    stream_error_type = ""
+    agent, _, int_user_id, settings = create_agent_with_interview_tools(user_id)
+
+    async def _agent_worker():
+        nonlocal full_response, stream_error_type
+        try:
+            async for msg, _ in agent.astream(
+                {"messages": messages},
+                stream_mode="messages",
+                config={"recursion_limit": 12},
+            ):
+                if not isinstance(msg, AIMessageChunk):
+                    continue
+                if getattr(msg, "tool_call_chunks", None):
+                    continue
+                if getattr(msg, "usage_metadata", None):
+                    usage_metadata = msg.usage_metadata
+
+                content = ""
+                if isinstance(msg.content, str):
+                    content = msg.content
+                elif isinstance(msg.content, list):
+                    for block in msg.content:
+                        if isinstance(block, str):
+                            content += block
+                        elif isinstance(block, dict) and block.get("type") == "text":
+                            content += block.get("text", "")
+
+                if content:
+                    full_response += content
+                    await output_queue.put({"type": "content", "content": content})
+        except Exception as exc:
+            stream_error_type = type(exc).__name__
+            logger.warning("Agent stream failed | error_type=%s", type(exc).__name__)
+            await output_queue.put({"type": "error", "code": "model_request_failed",
+                                    "content": f"模型请求失败（{type(exc).__name__}），请检查模型设置后重试。"})
+        finally:
+            await output_queue.put(None)
+
+    agent_task = asyncio.create_task(_agent_worker())
+
+    try:
+        while True:
+            try:
+                event = await asyncio.wait_for(output_queue.get(), timeout=15)
+            except TimeoutError:
+                yield ": heartbeat\n\n"
+                continue
+            if event is None:
+                break
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+    except GeneratorExit:
+        agent_task.cancel()
+        try:
+            await agent_task
+        except asyncio.CancelledError:
+            pass
+        raise
+    finally:
+        if not agent_task.done():
+            agent_task.cancel()
+
+    yield "data: [DONE]\n\n"
+
+    logger.info(
+        "Chat stream completed | user_id=%s session_id=%s response_chars=%s",
+        user_id,
+        session_id,
+        len(full_response),
+    )
+    log_llm_response(
+        "agent.chat_stream",
+        full_response,
+        {"user_id": user_id, "session_id": session_id, "response_chars": len(full_response)},
+    )
+    record_llm_usage(
+        user_id=int_user_id,
+        task="agent.chat_stream",
+        model=settings.model,
+        base_url=settings.base_url,
+        prompt_tokens=int(usage_metadata.get("input_tokens") or 0),
+        completion_tokens=int(usage_metadata.get("output_tokens") or 0),
+        total_tokens=int(usage_metadata.get("total_tokens") or 0),
+        success=not stream_error_type,
+        error_type=stream_error_type,
+        elapsed_ms=int((time.perf_counter() - started) * 1000),
+    )
+    messages.append(AIMessage(content=full_response))
+    storage.save(user_id, session_id, messages)

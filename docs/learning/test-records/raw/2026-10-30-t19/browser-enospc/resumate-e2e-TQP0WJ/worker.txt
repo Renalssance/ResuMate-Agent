@@ -1,0 +1,161 @@
+ 
+ -------------- celery@BonodeMacBook-Air.local v5.6.3 (recovery)
+--- ***** ----- 
+-- ******* ---- macOS-26.5.2-arm64-arm-64bit 2026-10-30 10:55:30
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         resumate:0x11416e1b0
+- ** ---------- .> transport:   redis://127.0.0.1:57728/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 1 (solo)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[2026-10-30 10:56:09,451: WARNING/MainProcess] Run 45d09c1c-9e2b-4d7c-82fe-260a3efc3034 stopped (OperationalError)
+[2026-10-30 10:56:14,163: WARNING/MainProcess] --- Logging error ---
+[2026-10-30 10:56:14,164: WARNING/MainProcess] Traceback (most recent call last):
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/retry.py", line 105, in call_with_retry
+    return do()
+           ^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 915, in <lambda>
+    lambda: command(*args, **kwargs),
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 936, in try_read
+    return conn.read_response(disconnect_on_error=False, push_request=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/connection.py", line 650, in read_response
+    response = self._parser.read_response(disable_decoding=disable_decoding)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/_parsers/resp2.py", line 15, in read_response
+    result = self._read_response(disable_decoding=disable_decoding)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/_parsers/resp2.py", line 25, in _read_response
+    raw = self._buffer.readline()
+          ^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/_parsers/socket.py", line 115, in readline
+    self._read_from_socket()
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/_parsers/socket.py", line 68, in _read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+[2026-10-30 10:56:14,165: WARNING/MainProcess] redis.exceptions.ConnectionError: Connection closed by server.
+[2026-10-30 10:56:14,165: WARNING/MainProcess] 
+During handling of the above exception, another exception occurred:
+[2026-10-30 10:56:14,165: WARNING/MainProcess] Traceback (most recent call last):
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/celery/worker/consumer/consumer.py", line 346, in start
+    blueprint.start(self)
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/celery/bootsteps.py", line 116, in start
+    step.start(parent)
+[2026-10-30 10:56:14,165: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/celery/worker/consumer/consumer.py", line 788, in start
+    c.loop(*c.loop_args())
+[2026-10-30 10:56:14,176: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/celery/worker/loops.py", line 97, in asynloop
+    next(loop)
+[2026-10-30 10:56:14,178: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/kombu/asynchronous/hub.py", line 377, in create_loop
+    cb(*cbargs)
+[2026-10-30 10:56:14,179: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 1394, in on_readable
+    self.cycle.on_readable(fileno)
+[2026-10-30 10:56:14,180: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 579, in on_readable
+    chan.handlers[type]()
+[2026-10-30 10:56:14,181: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 931, in _receive
+    ret.append(self._receive_one(c))
+               ^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,182: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/kombu/transport/redis.py", line 941, in _receive_one
+    response = c.parse_response()
+               ^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,182: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 938, in parse_response
+    response = self._execute(conn, try_read)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,183: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 914, in _execute
+    return conn.retry.call_with_retry(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,184: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/retry.py", line 108, in call_with_retry
+    fail(error)
+[2026-10-30 10:56:14,185: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 916, in <lambda>
+    lambda _: self._reconnect(conn),
+              ^^^^^^^^^^^^^^^^^^^^^
+[2026-10-30 10:56:14,185: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/client.py", line 904, in _reconnect
+    conn.connect()
+[2026-10-30 10:56:14,186: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/connection.py", line 380, in connect
+    self.connect_check_health(check_health=True)
+[2026-10-30 10:56:14,187: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/connection.py", line 403, in connect_check_health
+    self.on_connect_check_health(check_health=check_health)
+[2026-10-30 10:56:14,188: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/connection.py", line 523, in on_connect_check_health
+    self.read_response()
+[2026-10-30 10:56:14,191: WARNING/MainProcess]   File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/redis/_parsers/socket.py", line 115, in readline
+    self._read_from_socket()
+[2026-10-30 10:58:05,504: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 22.00 seconds... (11/100)
+
+[2026-10-30 10:58:27,653: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 24.00 seconds... (12/100)
+
+[2026-10-30 10:58:51,830: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 26.00 seconds... (13/100)
+
+[2026-10-30 10:59:17,989: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 28.00 seconds... (14/100)
+
+[2026-10-30 10:59:46,191: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 30.00 seconds... (15/100)
+
+[2026-10-30 11:00:16,420: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (16/100)
+
+[2026-10-30 11:00:48,638: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (17/100)
+
+[2026-10-30 11:01:20,872: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (18/100)
+
+[2026-10-30 11:01:53,065: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (19/100)
+
+[2026-10-30 11:02:25,310: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (20/100)
+
+[2026-10-30 11:02:57,500: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (21/100)
+
+[2026-10-30 11:03:29,716: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (22/100)
+
+[2026-10-30 11:04:01,959: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (23/100)
+
+[2026-10-30 11:04:34,187: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (24/100)
+
+[2026-10-30 11:05:06,424: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (25/100)
+
+[2026-10-30 11:05:38,652: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (26/100)
+
+[2026-10-30 11:06:10,916: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (27/100)
+
+[2026-10-30 11:06:43,130: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (28/100)
+
+[2026-10-30 11:07:15,344: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (29/100)
+
+[2026-10-30 11:07:47,568: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (30/100)
+
+[2026-10-30 11:08:19,748: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (31/100)
+
+[2026-10-30 11:08:51,974: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (32/100)
+
+[2026-10-30 11:09:24,207: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (33/100)
+
+[2026-10-30 11:09:56,425: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (34/100)
+
+[2026-10-30 11:10:28,606: ERROR/MainProcess] consumer: Cannot connect to redis://127.0.0.1:57728/0: Error 61 connecting to 127.0.0.1:57728. Connection refused..
+Trying again in 32.00 seconds... (35/100)
+

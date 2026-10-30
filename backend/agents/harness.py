@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 from openai import OpenAI
+from backend.model_transport import DefaultHttpxClient
 from pydantic import BaseModel, ValidationError
 
 from backend.logging_config import (
@@ -51,7 +52,9 @@ class AgentHarness:
             raise RuntimeError("请先在模型设置中配置模型名称" if user_id else "LLM_MODEL is required for AgentHarness")
         if user_id and not settings.base_url:
             raise RuntimeError("请先在模型设置中配置 Base URL")
-        self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None, max_retries=0)
+        self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url or None,
+                             max_retries=0, timeout=self.request_timeout,
+                             http_client=DefaultHttpxClient(follow_redirects=False))
         self.guard = guard
         self.progress_callback = progress_callback
 
@@ -145,7 +148,7 @@ class AgentHarness:
                             "task=%s schema=%s error=%s",
                             task,
                             schema.__name__,
-                            exc,
+                            type(exc).__name__,
                         )
                         try:
                             response = self._create_chat_completion(
@@ -176,14 +179,14 @@ class AgentHarness:
                                 phase="failed",
                                 attempt=attempt,
                                 level="error",
-                                message=f"LLM call failed: {type(exc).__name__}: {exc}",
+                                message=f"LLM call failed: {type(exc).__name__}",
                             )
                             raise
                         logger.warning(
                             "Structured LLM call failed; retrying with reflection | task=%s schema=%s error=%s",
                             task,
                             schema.__name__,
-                            exc,
+                            type(exc).__name__,
                         )
                         self._publish_agent_progress(
                             task_id=task_id,
@@ -203,7 +206,7 @@ class AgentHarness:
                                 "content": self._reflection_prompt(
                                     reflection_number=attempt,
                                     schema_name=schema.__name__,
-                                    error_text=f"{type(exc).__name__}: {exc}",
+                                    error_text=type(exc).__name__,
                                 ),
                             },
                         ]
@@ -341,7 +344,7 @@ class AgentHarness:
                 phase="failed",
                 attempt=MAX_REFLECTIONS + 1,
                 level="error",
-                message=f"LLM analysis failed: {type(exc).__name__}: {exc}",
+                message=f"LLM analysis failed: {type(exc).__name__}",
             )
             raise
 

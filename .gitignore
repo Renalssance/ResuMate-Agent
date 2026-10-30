@@ -58,6 +58,11 @@ data/
 docs/*
 !docs/design/
 !docs/development.md
+!docs/performance.md
+!docs/architecture.md
+!docs/deployment.md
+!docs/evaluation-report.md
+!docs/demo.md
 !docs/learning/
 !docs/superpowers/
 log/

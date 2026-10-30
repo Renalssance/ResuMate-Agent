@@ -1,0 +1,109 @@
+.FFF..                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_actual_chatopenai_interview_graph_and_budget[followup] __________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-262/test_actual_chatopenai_intervi0')
+scenario = 'followup'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+>           assert result['status'] == 'pass', result['verdict']
+E           AssertionError: {'checks': [{'evidence_refs': ['output.model_calls', 'runs'], 'name': 'actual_execution', 'passed': True, 'reason': 'T...e uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model.'], 'passed': False}
+E           assert 'fail' == 'pass'
+E             
+E             - pass
+E             + fail
+
+backend/tests/test_interview_live.py:77: AssertionError
+___________ test_actual_chatopenai_interview_graph_and_budget[pages] ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-262/test_actual_chatopenai_intervi1')
+scenario = 'pages'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+>           assert result['status'] == 'pass', result['verdict']
+E           AssertionError: {'checks': [{'evidence_refs': ['output.model_calls', 'runs'], 'name': 'actual_execution', 'passed': True, 'reason': 'T...e uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model.'], 'passed': False}
+E           assert 'fail' == 'pass'
+E             
+E             - pass
+E             + fail
+
+backend/tests/test_interview_live.py:77: AssertionError
+__________ test_actual_chatopenai_interview_graph_and_budget[cancel] ___________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-262/test_actual_chatopenai_intervi2')
+scenario = 'cancel'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+>           assert result['status'] == 'pass', result['verdict']
+E           AssertionError: {'checks': [{'evidence_refs': ['output.model_calls', 'runs'], 'name': 'actual_execution', 'passed': True, 'reason': 'T...e uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model.'], 'passed': False}
+E           assert 'fail' == 'pass'
+E             
+E             - pass
+E             + fail
+
+backend/tests/test_interview_live.py:77: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[followup]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[pages]
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[cancel]
+3 failed, 3 passed in 8.42s

@@ -1,0 +1,22 @@
+{
+  "backend": {
+    "tag": "resumate-t19-backend:7a3122655a-lifecycle",
+    "id": "sha256:eda8e67eef1ab340f033ad368d00b10bcc43009fae0ff32bb32df152cc670f89",
+    "evidence": "/tmp/task-19-backend-revision-7a3122655a",
+    "source": "/tmp/task-19-backend-revision-7a3122655a/source",
+    "build_kind": "backend source revision of previously fresh validated image",
+    "base_tag": "resumate-t19-backend:5cd2b8fd52",
+    "base_id": "sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455",
+    "runtime_probe_passed": true
+  },
+  "frontend": {
+    "tag": "resumate-t19-frontend:d4cbbe972e-terminal",
+    "id": "sha256:3d116c901b06f02b3ac685c494ddf3a279d6b5a9ec9912bd6b86d21eae4c9b39",
+    "evidence": "/tmp/task-19-frontend-final-d4cbbe972e",
+    "source": "/tmp/task-19-frontend-final-d4cbbe972e/source",
+    "build_kind": "full production frontend Dockerfile build with final terminal-state fix",
+    "static_runtime_passed": true
+  },
+  "original_fresh_evidence": "/tmp/task-19-build-5cd2b8fd52",
+  "repeated_backup_or_sigkill_tests": false
+}

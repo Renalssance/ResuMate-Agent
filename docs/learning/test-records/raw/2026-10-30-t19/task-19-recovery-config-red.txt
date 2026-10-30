@@ -1,0 +1,45 @@
+F.F                                                                      [100%]
+=================================== FAILURES ===================================
+_____________________ test_recovery_uses_docker_from_path ______________________
+
+    def test_recovery_uses_docker_from_path():
+>       assert load_recovery('/usr/bin/docker')['DOCKER'] == '/usr/bin/docker'
+E       AssertionError: assert '/Application...es/bin/docker' == '/usr/bin/docker'
+E         
+E         - /usr/bin/docker
+E         + /Applications/Docker.app/Contents/Resources/bin/docker
+
+backend/tests/test_recovery_configuration.py:18: AssertionError
+________ test_recovery_evidence_records_selected_image_and_actual_head _________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-249/test_recovery_evidence_records0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10cc907a0>
+
+    def test_recovery_evidence_records_selected_image_and_actual_head(tmp_path, monkeypatch):
+        module = load_recovery('/usr/bin/docker')
+        context = tmp_path / 'context.json'
+        context.write_text(json.dumps({'invocation_id': 'portable-test', 'cases': [
+            {'id': case_id, 'input': {}} for case_id in module['CASE_IDS']]}))
+        evidence = tmp_path / 'evidence.json'
+        monkeypatch.setenv('RESUMATE_RECOVERY_CONTEXT', str(context))
+        monkeypatch.setenv('RESUMATE_RECOVERY_EVIDENCE', str(evidence))
+        monkeypatch.setenv('RESUMATE_RECOVERY_IMAGE', 'resumate-ci-backend:latest')
+        generator = module['recovery_context'].__wrapped__()
+        try:
+            _, root, snapshot, _, _, _ = next(generator)
+            source = json.loads(evidence.read_text())['source']
+            head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+>           assert {key: source[key] for key in ('base_commit', 'image')} == {
+                'base_commit': head, 'image': 'resumate-ci-backend:latest'}
+E               AssertionError: assert {'base_commit...orker:latest'} == {'base_commit...ckend:latest'}
+E                 
+E                 Differing items:
+E                 {'base_commit': '26d1a35'} != {'base_commit': 'cdde2c53c6a80e271c2d185bef80b179d8e2fcb7'}
+E                 {'image': 'resumate-t11-worker:latest'} != {'image': 'resumate-ci-backend:latest'}
+E                 Use -v to get more diff
+
+backend/tests/test_recovery_configuration.py:39: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_recovery_configuration.py::test_recovery_uses_docker_from_path
+FAILED backend/tests/test_recovery_configuration.py::test_recovery_evidence_records_selected_image_and_actual_head
+2 failed, 1 passed in 0.42s

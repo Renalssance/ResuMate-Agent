@@ -1,0 +1,86 @@
+['/Applications/Docker.app/Contents/Resources/bin/docker', 'image', 'rm', 'resumate-t19-backend:a5454d0f71']
+Untagged: resumate-t19-backend:a5454d0f71
+Deleted: sha256:d410ad2c435c9a963dca0b1b38804182dfe36be306fbbb447dc78e4aa0a9199f
+['/Applications/Docker.app/Contents/Resources/bin/docker', 'buildx', 'prune', '--force', '--filter', 'id~=^(o4wnoq6ae7a4pye8la9yi8smy|xou7knsxt7dsnzkzedgdccfgz|rl1qv27i31lhe82wabyoxzj5a|ziiseduzzvofzmdy7mj5qn44o|tf73naqf7pkot4qjd7jdhiswz|m4ptd7s4sqy0qt5s3uqy78lbq|jcpo6oy5fnmd2hsjfffnnia11|wpeq8s565t39tp7fr25kb9g6v)$', '--verbose']
+ID:		m4ptd7s4sqy0qt5s3uqy78lbq
+Created at:	2026-10-30 02:53:52.054209545 +0000 UTC
+Mutable:	true
+Reclaimable:	true
+Shared:		false
+Size:		1.782MB
+Description:	local source for context
+Usage count:	0
+
+ID:		o4wnoq6ae7a4pye8la9yi8smy
+Created at:	2026-10-30 02:53:52.02956867 +0000 UTC
+Mutable:	true
+Reclaimable:	true
+Shared:		false
+Size:		8.192kB
+Description:	local source for context
+Usage count:	0
+
+ID:		rl1qv27i31lhe82wabyoxzj5a
+Parent:		ziiseduzzvofzmdy7mj5qn44o
+Created at:	2026-10-30 02:54:59.328588006 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		24.72kB
+Description:	mount / from exec /bin/sh -c mkdir -p /app/data/agent /app/data/exports
+Usage count:	0
+
+ID:		xou7knsxt7dsnzkzedgdccfgz
+Created at:	2026-10-30 02:53:48.938417418 +0000 UTC
+Mutable:	true
+Reclaimable:	true
+Shared:		false
+Size:		8.192kB
+Description:	local source for dockerfile
+Usage count:	0
+
+ID:		ziiseduzzvofzmdy7mj5qn44o
+Parent:		wpeq8s565t39tp7fr25kb9g6v
+Created at:	2026-10-30 02:54:59.211726465 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		1.032MB
+Description:	[7/8] COPY backend/ ./backend/
+Usage count:	1
+Last used:	Less than a second ago
+
+ID:		wpeq8s565t39tp7fr25kb9g6v
+Parent:		jcpo6oy5fnmd2hsjfffnnia11
+Created at:	2026-10-30 02:54:59.097281381 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		2.46GB
+Description:	mount / from exec /bin/sh -c uv sync --no-cache --locked --no-dev --no-install-project --extra ocr     && python -c "from rapidocr_onnxruntime import RapidOCR"     && python -m playwright install --with-deps chromium     && apt-get install -y --no-install-recommends fonts-noto-cjk=1:20220127+repack1-1     && rm -rf /var/lib/apt/lists/*
+Usage count:	1
+Last used:	Less than a second ago
+
+ID:		jcpo6oy5fnmd2hsjfffnnia11
+Parent:		tf73naqf7pkot4qjd7jdhiswz
+Created at:	2026-10-30 02:53:58.681124423 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		288.6MB
+Description:	mount / from exec /bin/sh -c sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources     && apt-get update     && apt-get install -y --no-install-recommends libgomp1 libgl1 libglib2.0-0     && rm -rf /var/lib/apt/lists/*
+Usage count:	1
+Last used:	Less than a second ago
+
+ID:		tf73naqf7pkot4qjd7jdhiswz
+Parent:		pyvey9dyo65nh2gw4xzc84vm3
+Created at:	2026-10-30 02:53:52.099251253 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		1.156MB
+Description:	[4/8] COPY pyproject.toml uv.lock README.md ./
+Usage count:	1
+Last used:	Less than a second ago
+
+Total:	2.753GB

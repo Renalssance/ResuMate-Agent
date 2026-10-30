@@ -1,0 +1,22 @@
+[
+  [
+    "/Applications/Docker.app/Contents/Resources/bin/docker",
+    "build",
+    "--progress=plain",
+    "-f",
+    "/tmp/task-19-backend-revision-7a3122655a/backend-revision.Dockerfile",
+    "-t",
+    "resumate-t19-backend:7a3122655a-lifecycle",
+    "/tmp/task-19-backend-revision-7a3122655a/source"
+  ],
+  [
+    "/Applications/Docker.app/Contents/Resources/bin/docker",
+    "run",
+    "--rm",
+    "-i",
+    "--entrypoint",
+    "python",
+    "resumate-t19-backend:7a3122655a-lifecycle",
+    "-"
+  ]
+]

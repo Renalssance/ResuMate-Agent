@@ -1,0 +1,87 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "7b87d940-178c-4a42-81c2-21cf002808c5": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "aee972f1-cd37-47bf-b9cf-48583f7d18c1": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "2e5febf1-a0ef-4df0-afc2-9f8a5152f44b": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "4bc9829c-ba3b-4531-8886-ebbbdea6893d": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "9866cc74-20d5-4324-90e8-c3321acad145": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "d07c4a5b-0ff2-4c7d-8351-86a8819c7726": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "3185fd2f-d430-4282-8bdd-e7f7c4eabc25": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "b4bb0514-7f6c-4299-bbaf-28fbc67455e1": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "13bbef85-df0e-4991-9b1c-8b77b0985b59": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "5020d2f1-095b-4a2a-ba63-29fa60a1fcea": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "e1e8eeb2-8b4e-45b0-9cab-e499dd2680a8": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "a4b518c4-2c8a-495c-bb0c-a7831a9f0023": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    },
+    "86cb7a5e-cafa-40c6-ae22-85b274a8c7e9": {
+      "case_id": "business-write-rollback",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    }
+  },
+  "stop_reason": null
+}

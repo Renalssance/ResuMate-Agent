@@ -1,0 +1,64 @@
+{
+  "invocation": "1a63241a3229415b92e6c7908a3b5eca",
+  "project": "resumate-t17-1a63241a32",
+  "executed": true,
+  "source_ref": null,
+  "captured_source_directory": "/private/tmp/task-17-final-source",
+  "source": "/private/tmp/task-17-final/source",
+  "model_calls": 0,
+  "proxy_port": "56340",
+  "api_ports": [
+    "56338",
+    "56339"
+  ],
+  "docker": {
+    "vcpus": 10,
+    "memory_bytes": 8319504384,
+    "version": "29.9.2"
+  },
+  "containers": [
+    {
+      "name": "/resumate-t17-1a63241a32-api-1",
+      "memory": 1073741824,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-api2-1",
+      "memory": 1073741824,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-mysql-1",
+      "memory": 2147483648,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-proxy-1",
+      "memory": 268435456,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-redis-1",
+      "memory": 536870912,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-scheduler-1",
+      "memory": 268435456,
+      "cpuset": "0-3"
+    },
+    {
+      "name": "/resumate-t17-1a63241a32-worker-1",
+      "memory": 2147483648,
+      "cpuset": "0-3"
+    }
+  ],
+  "steady_product_memory_limit_bytes": 7516192768,
+  "driver_memory_limit_bytes": 536870912,
+  "driver": {
+    "memory": 536870912,
+    "cpuset": "0-3"
+  },
+  "nginx": "nginx version: nginx/1.30.6",
+  "driver_exit_code": 0
+}

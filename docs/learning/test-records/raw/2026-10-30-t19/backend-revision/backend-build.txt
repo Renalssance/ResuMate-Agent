@@ -1,0 +1,50 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from backend-revision.Dockerfile
+#1 transferring dockerfile: 119B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/resumate-t19-backend:5cd2b8fd52
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 385B done
+#3 DONE 0.0s
+
+#4 [1/2] FROM docker.io/library/resumate-t19-backend:5cd2b8fd52@sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455
+#4 resolve docker.io/library/resumate-t19-backend:5cd2b8fd52@sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 574.39kB 0.0s done
+#5 DONE 0.1s
+
+#4 [1/2] FROM docker.io/library/resumate-t19-backend:5cd2b8fd52@sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455
+#4 extracting sha256:1856bf73043908b4030f8fffa591a89b261655c47c923a1375eb7681b93d1281 0.0s done
+#4 extracting sha256:00a9bafae5adcb6e13481bc5f6ff38057994f9525cd6f8d7286124708c956cc2
+#4 extracting sha256:00a9bafae5adcb6e13481bc5f6ff38057994f9525cd6f8d7286124708c956cc2 1.7s done
+#4 DONE 1.8s
+
+#4 [1/2] FROM docker.io/library/resumate-t19-backend:5cd2b8fd52@sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455
+#4 extracting sha256:cfda0bec767bfa164b72838f5f2a3250a56d5ff8eedbc9bb586c5c9abccc9d84
+#4 extracting sha256:cfda0bec767bfa164b72838f5f2a3250a56d5ff8eedbc9bb586c5c9abccc9d84 14.3s done
+#4 DONE 16.1s
+
+#4 [1/2] FROM docker.io/library/resumate-t19-backend:5cd2b8fd52@sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455
+#4 extracting sha256:a9a4f88da34a79798320f06954a3d20c1168d916c39f89bb9b6a5b6bce88a315 0.0s done
+#4 extracting sha256:6269ee285917cd88424b5236cfa543a86a34aff4409390c29106c11308483f84 0.0s done
+#4 DONE 16.1s
+
+#6 [2/2] COPY backend/ /app/backend/
+#6 DONE 0.8s
+
+#7 exporting to image
+#7 exporting layers 0.1s done
+#7 exporting manifest sha256:54cd3a041d8c17c83d6ed3485974947c145a81e4399d5198423a9c9023696712 done
+#7 exporting config sha256:4b7ebbb7bbedf72795522a96f06df6da8ef9b91f72fdad8d9eaae98b461a273c done
+#7 exporting attestation manifest sha256:abaf00ffeb69dc1b5affadcbeda58fdef6c5104ae9335b4dbab4c5f69a570cc4 done
+#7 exporting manifest list sha256:eda8e67eef1ab340f033ad368d00b10bcc43009fae0ff32bb32df152cc670f89 done
+#7 naming to docker.io/library/resumate-t19-backend:7a3122655a-lifecycle
+#7 naming to docker.io/library/resumate-t19-backend:7a3122655a-lifecycle done
+#7 unpacking to docker.io/library/resumate-t19-backend:7a3122655a-lifecycle 0.0s done
+#7 DONE 0.1s

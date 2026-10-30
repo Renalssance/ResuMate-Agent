@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAgentRunStore } from './agentRun'
 import { useAuthStore } from './auth'
@@ -10,11 +10,13 @@ const action = { actionId: 'a1', kind: 'input' as const, payload: { question: '�
 const snapshot = (overrides: Partial<RunSnapshot> = {}): RunSnapshot => ({ runId: 'r1', sessionId: 's1', kind: 'tailoring', status: 'waiting_input', input: { jdId: 1, resumeId: 2 }, inputVersions: {}, attempt: 1, lastSeq: 4, errorCode: null, sessionInvalidated: false, cancelRequested: false, outputRefs: [], actions: [action], ...overrides })
 let options: RunSubscriptionOptions
 let close: ReturnType<typeof vi.fn<() => void>>
-beforeEach(() => { setActivePinia(createPinia()); vi.resetAllMocks(); close = vi.fn(); vi.mocked(subscribeRun).mockImplementation((value) => { options = value; return { close, done: Promise.resolve() } }); vi.mocked(api.fetchRunArtifacts).mockResolvedValue([]); vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot()) })
+beforeEach(() => { vi.useFakeTimers(); setActivePinia(createPinia()); vi.resetAllMocks(); close = vi.fn(); vi.mocked(subscribeRun).mockImplementation((value) => { options = value; return { close, done: Promise.resolve() } }); vi.mocked(api.fetchRunArtifacts).mockResolvedValue([]); vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot()) })
+afterEach(() => { vi.clearAllTimers(); vi.useRealTimers() })
 describe('persistent task workspace', () => {
-  it('keeps the authoritative snapshot while replaying older statuses, and disconnect never fails a run', () => {
+  it('keeps the authoritative snapshot while replaying older statuses, and disconnect never fails a run', async () => {
     const store = useAgentRunStore(); store.openRun('r1'); options.onSnapshot?.(snapshot())
     options.onEvent({ runId: 'r1', seq: 1, createdAt: '', type: 'run.status', payload: { status: 'running' } }); options.onError?.(new TypeError('offline'))
+    await vi.advanceTimersByTimeAsync(100)
     expect(store.snapshot?.status).toBe('waiting_input'); expect(store.disconnected).toBe(true); expect(store.events).toHaveLength(1)
   })
   it('ignores an old page response and closes the stream without cancelling the task', () => {
@@ -65,4 +67,60 @@ it('refreshes an already open failed task when retry reports a session invalidat
  vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot({ status: 'failed', errorCode: 'model_timeout', sessionInvalidated: true, actions: [] }))
  await store.changeRun('retry')
  expect(store.snapshot?.sessionInvalidated).toBe(true); expect(store.snapshot?.status).toBe('failed'); expect(store.snapshot?.errorCode).toBe('model_timeout'); expect(store.notice).toContain('旧会话不能恢复'); expect(store.notice).toContain('重新准备材料'); expect(store.error).toBe('')
+})
+
+
+describe('batched Run events', () => {
+  const event = (seq: number, type = 'assistant.delta') => ({ runId: 'r1', seq, createdAt: '', type, payload: { text: String(seq) } })
+  it('uses the subscription snapshot without fetching it again or loading artifacts twice on connect', async () => {
+    const store = useAgentRunStore(); store.openRun('r1')
+    options.onSnapshot?.(snapshot()); options.onConnected?.(snapshot())
+    await vi.advanceTimersByTimeAsync(0)
+    expect(api.fetchAgentRun).not.toHaveBeenCalled()
+    expect(api.fetchRunArtifacts).toHaveBeenCalledTimes(1)
+  })
+  it.each(['waiting_input', 'succeeded'] as const)('commits ordered events once per 100 ms and retains the %s snapshot', async status => {
+    const store = useAgentRunStore(); store.openRun('r1')
+    options.onSnapshot?.(snapshot({ status: 'running', lastSeq: 0, actions: [] }))
+    await vi.advanceTimersByTimeAsync(0)
+    vi.mocked(api.fetchAgentRun).mockClear(); vi.mocked(api.fetchRunArtifacts).mockClear()
+    vi.mocked(api.fetchAgentRun).mockResolvedValue(snapshot({ status, lastSeq: 4, actions: status === 'waiting_input' ? [action] : [] }))
+    options.onEvent(event(1)); options.onEvent(event(2, 'run.status')); options.onEvent(event(2, 'run.status'))
+    options.onEvent(event(3, 'artifact.created')); options.onEvent(event(4, status === 'waiting_input' ? 'action.required' : 'run.status'))
+    expect(store.events).toEqual([]); expect(api.fetchAgentRun).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(99); expect(store.events).toEqual([])
+    await vi.advanceTimersByTimeAsync(1)
+    expect(store.events.map(item => item.seq)).toEqual([1, 2, 3, 4])
+    expect(api.fetchAgentRun).toHaveBeenCalledTimes(1); expect(api.fetchRunArtifacts).toHaveBeenCalledTimes(1)
+    expect(store.snapshot?.status).toBe(status)
+    expect(store.snapshot?.actions).toEqual(status === 'waiting_input' ? [action] : [])
+  })
+  it('flushes a full batch rather than retaining an unbounded replay queue', async () => {
+    const store = useAgentRunStore(); store.openRun('r1')
+    for (let seq = 1; seq <= 101; seq++) options.onEvent(event(seq))
+    expect(store.events).toHaveLength(100)
+    await vi.advanceTimersByTimeAsync(100)
+    expect(store.events.map(item => item.seq)).toEqual(Array.from({ length: 101 }, (_, index) => index + 1))
+  })
+  it.each(['navigation', 'logout', 'reset'])('discards an uncommitted batch after %s', async reason => {
+    const store = useAgentRunStore(); store.openRun('r1'); const previous = options
+    previous.onEvent(event(1, 'run.status'))
+    if (reason === 'navigation') store.openRun('r2')
+    else if (reason === 'logout') useAuthStore().token = 'another-account'
+    else previous.onReset?.(snapshot({ lastSeq: 8 }))
+    await vi.advanceTimersByTimeAsync(100)
+    expect(store.events).toEqual([]); expect(api.fetchAgentRun).not.toHaveBeenCalled()
+  })
+  it('coalesces in-flight refreshes and follows up for a later pending action', async () => {
+    const store = useAgentRunStore(); store.openRun('r1')
+    options.onSnapshot?.(snapshot({ status: 'running', lastSeq: 0, actions: [] })); await vi.advanceTimersByTimeAsync(0)
+    let resolveFirst!: (value: RunSnapshot) => void
+    vi.mocked(api.fetchAgentRun).mockClear().mockImplementationOnce(() => new Promise(resolve => { resolveFirst = resolve })).mockResolvedValueOnce(snapshot({ lastSeq: 3 }))
+    options.onEvent(event(1, 'run.status')); await vi.advanceTimersByTimeAsync(100)
+    options.onEvent(event(2, 'artifact.created')); options.onEvent(event(3, 'action.required')); await vi.advanceTimersByTimeAsync(100)
+    expect(api.fetchAgentRun).toHaveBeenCalledTimes(1)
+    resolveFirst(snapshot({ status: 'running', lastSeq: 1, actions: [] })); await vi.advanceTimersByTimeAsync(0)
+    expect(api.fetchAgentRun).toHaveBeenCalledTimes(2)
+    expect(store.snapshot?.actions).toEqual([action]); expect(store.snapshot?.lastSeq).toBe(3)
+  })
 })

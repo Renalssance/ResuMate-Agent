@@ -1,0 +1,14 @@
+{
+  "source": "/tmp/task-19-build-5cd2b8fd52/source",
+  "backend_image": "resumate-t19-backend:5cd2b8fd52",
+  "frontend_image": "resumate-t19-frontend:5cd2b8fd52",
+  "backend_built": true,
+  "frontend_built": false,
+  "previous_failed_build": "/tmp/task-19-build-6738606881",
+  "disk_stop_threshold_bytes": 2147483648,
+  "initial_free_bytes": 9391525888,
+  "minimum_free_bytes": 2031759360,
+  "backend_exit_code": 0,
+  "stopped_for_disk_space": "frontend",
+  "frontend_exit_code": 130
+}

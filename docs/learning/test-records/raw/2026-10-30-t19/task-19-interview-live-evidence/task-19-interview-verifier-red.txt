@@ -1,0 +1,59 @@
+.F........                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_actual_chatopenai_interview_graph_and_budget[followup] __________
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-265/test_actual_chatopenai_intervi0')
+scenario = 'followup'
+
+    @pytest.mark.parametrize('scenario', ['followup', 'pages', 'cancel', 'eight', 'replay', 'frozen', 'memory', 'forbidden', 'budget'])
+    def test_actual_chatopenai_interview_graph_and_budget(tmp_path, scenario):
+        result, requests, directory = run_live(tmp_path, scenario)
+        output = result['output']
+        if scenario == 'budget':
+            assert result['status'] == 'incomplete'
+            assert result['error_code'] == 'budget_exhausted'
+            assert requests == []
+            assert result['cost']['model_calls'] == 0
+            assert output['executed'] is False
+            assert result['db_snapshot']['runs'][0]['error_code'] == 'budget_exhausted'
+        elif scenario == 'forbidden':
+            assert result['status'] == 'fail'
+            assert len(requests) == result['cost']['model_calls'] == 1
+            assert result['cost']['unknown_usage_calls'] == 1
+            assert len(result['db_snapshot']['runs']) == 1
+            assert result['db_snapshot']['runs'][0]['status'] == 'failed'
+            records = (directory / 'calls.jsonl').read_text()
+            assert 'PermissionDeniedError' in records and '403' in records
+            assert 'PRIVATE_PROVIDER_BODY' not in records + json.dumps(result)
+        else:
+            assert result['status'] == 'pass', result['verdict']
+            assert {item['status'] for item in result['semantic']['items']} == {'unreviewed'}
+            assert result['cost']['model_calls'] == len(requests) > 0
+            assert result['cost']['unknown_usage_calls'] == 0
+            assert output['evidence_source'] == 'sdk_model_inputs'
+            assert all(call['run_id'] == call['required']['runId'] for call in output['model_calls'])
+            assert len(output['model_calls']) == len(requests)
+            if scenario == 'pages':
+                reads = [tool for call in output['model_calls'] for tool in call['tool_inputs'] if tool['name'] == 'read_file']
+                assert any(item['args'].get('offset', 0) > 0 for item in reads)
+                contexts = [call['context'] for call in output['model_calls'] if 'context' in call]
+                assert any('LONG_SOURCE_END' in json.dumps(item['source']) for item in contexts)
+            if scenario == 'cancel':
+                for stop in output['observations']['stops']:
+                    assert stop['barrier'] == 'after_model_response_before_delivery'
+                    assert stop['model_calls_at_stop'] == stop['model_calls_after']
+                    assert stop['settled_calls_at_stop'] > 0
+                    assert stop['public_step_at_stop']['feedback'] is not None
+            if scenario == 'followup':
+                assert len(result['db_snapshot']['turns']) == 3
+                from copy import deepcopy
+                from evals.interview_verifiers import verify_interview
+                corrupted = deepcopy(output)
+                corrupted['model_calls'][0]['required']['runId'] = 'not-this-run'
+>               assert not verify_interview(result['input'], corrupted, result['db_snapshot'])['passed']
+E               assert not True
+
+backend/tests/test_interview_live.py:101: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_interview_live.py::test_actual_chatopenai_interview_graph_and_budget[followup]
+1 failed, 9 passed in 12.68s

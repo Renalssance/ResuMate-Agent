@@ -1,0 +1,48 @@
+api_only {"samples": 19998, "p50_ms": 47.64125, "p95_ms": 151.92925, "max_ms": 495.418084, "errors": 0, "statuses": {"200": 19998}}
+api_with_30_sse {"samples": 13046, "p50_ms": 85.717792, "p95_ms": 214.568709, "max_ms": 763.800292, "errors": 0, "statuses": {"200": 13046}}
+{
+  "sse": {
+    "commits": 300,
+    "expected": 900,
+    "received": 900,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "out_of_order": 0,
+    "p50_ms": 255.050833,
+    "p95_ms": 501.134251,
+    "max_ms": 597.631167,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "reconnect": {
+    "commits": 10,
+    "expected": 6,
+    "received": 6,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "out_of_order": 0,
+    "p50_ms": 26.468584,
+    "p95_ms": 30.244,
+    "max_ms": 30.244,
+    "negative_clock_samples": 0,
+    "passed": true,
+    "visible_after_reconnect_ms": 14.15875
+  },
+  "slow_consumer_other_29": {
+    "commits": 50,
+    "expected": 145,
+    "received": 145,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "out_of_order": 0,
+    "p50_ms": 243.195875,
+    "p95_ms": 492.500583,
+    "max_ms": 506.751625,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "passed": true
+}

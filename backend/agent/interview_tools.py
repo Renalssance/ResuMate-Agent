@@ -5,6 +5,7 @@ import time
 
 from langchain_core.tools import tool
 from langchain.chat_models import init_chat_model
+from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 
 from backend.db.database import SessionLocal
 from backend.db.models import Resume, JobDescription
@@ -21,12 +22,16 @@ def _get_llm(temperature: float = 0.1, *, user_id: int | None = None):
     if not settings.api_key or not settings.model or (user_id and not settings.base_url):
         logger.warning("LLM is not configured: model credentials, model name or account base URL is missing")
         return None
-    logger.info("Creating LLM client | model=%s base_url=%s temperature=%s", settings.model, settings.base_url, temperature)
+    logger.info("Creating LLM client | model=%s temperature=%s", settings.model, temperature)
     return init_chat_model(
         model=settings.model,
         model_provider="openai",
         api_key=settings.api_key,
         base_url=settings.base_url or None,
+        timeout=settings.request_timeout_seconds,
+        max_retries=0,
+        http_client=DefaultHttpxClient(follow_redirects=False),
+        http_async_client=DefaultAsyncHttpxClient(follow_redirects=False),
         temperature=temperature,
     )
 
@@ -48,7 +53,7 @@ def _invoke_llm(llm, prompt: str, task: str, metadata: dict | None = None) -> st
         elapsed_ms = int((time.perf_counter() - start_time) * 1000)
         metadata.update({"elapsed_ms": elapsed_ms})
         log_llm_error(task, exc, metadata)
-        logger.exception("LLM call failed | task=%s elapsed_ms=%s", task, elapsed_ms)
+        logger.warning("LLM call failed | task=%s elapsed_ms=%s error_type=%s", task, elapsed_ms, type(exc).__name__)
         raise
 
     elapsed_ms = int((time.perf_counter() - start_time) * 1000)
@@ -319,8 +324,8 @@ def create_interview_tools(user_id: int):
             return "\n".join(parts)
 
         except Exception as e:
-            logger.error("简历解析失败: %s", e)
-            return f"错误：简历解析失败 - {e}"
+            logger.error("简历解析失败: %s", type(e).__name__)
+            return f"错误：简历解析失败 - {type(e).__name__}"
 
     @tool("analyze_jd")
     def analyze_jd(jd_text: str, title: str = "", company: str = "") -> str:
@@ -394,8 +399,8 @@ def create_interview_tools(user_id: int):
             return "\n".join(parts)
 
         except Exception as e:
-            logger.error("JD 分析失败: %s", e)
-            return f"错误：JD 分析失败 - {e}"
+            logger.error("JD 分析失败: %s", type(e).__name__)
+            return f"错误：JD 分析失败 - {type(e).__name__}"
 
     @tool("match_resume_jd")
     def match_resume_jd(resume_id: int, jd_id: int) -> str:
@@ -497,8 +502,8 @@ def create_interview_tools(user_id: int):
             return "\n".join(parts)
 
         except Exception as e:
-            logger.error("匹配分析失败: %s", e)
-            return f"错误：匹配分析失败 - {e}"
+            logger.error("匹配分析失败: %s", type(e).__name__)
+            return f"错误：匹配分析失败 - {type(e).__name__}"
 
     @tool("mock_interview")
     def mock_interview(jd_id: int, mode: str = "question", interview_type: str = "综合面", answer: str = "", question_text: str = "", key_points: str = "") -> str:
@@ -563,8 +568,8 @@ def create_interview_tools(user_id: int):
                 return "\n".join(parts)
 
             except Exception as e:
-                logger.error("面试题生成失败: %s", e)
-                return f"错误：面试题生成失败 - {e}"
+                logger.error("面试题生成失败: %s", type(e).__name__)
+                return f"错误：面试题生成失败 - {type(e).__name__}"
 
         elif mode == "evaluate":
             if not answer:
@@ -632,8 +637,8 @@ def create_interview_tools(user_id: int):
                 return "\n".join(parts)
 
             except Exception as e:
-                logger.error("回答评估失败: %s", e)
-                return f"错误：回答评估失败 - {e}"
+                logger.error("回答评估失败: %s", type(e).__name__)
+                return f"错误：回答评估失败 - {type(e).__name__}"
 
         else:
             return f"错误：不支持的模式 '{mode}'，请使用 'question' 或 'evaluate'"

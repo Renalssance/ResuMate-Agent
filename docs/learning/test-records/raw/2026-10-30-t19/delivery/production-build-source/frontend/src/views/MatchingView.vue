@@ -1,0 +1,272 @@
+<template>
+  <div class="page-stack">
+    <section class="card workflow-card matching-config-card">
+      <div class="section-head">
+        <div>
+          <h2>匹配任务配置</h2>
+          <p>选择已解析的 JD 和简历，开始匹配后可在下方查看处理进度。</p>
+        </div>
+      </div>
+
+      <p v-if="documentStore.error" class="error-note" role="alert">{{ documentStore.error }}</p>
+      <div class="matching-flow-grid">
+        <div class="workflow-config-panel">
+          <label class="workflow-row">
+            <span>目标 JD</span>
+            <select v-model="selectedJdId">
+              <option value="">请选择 JD</option>
+              <option v-for="jd in documentStore.parsedJds" :key="jd.id" :value="jd.id">
+                {{ jd.parsedContent?.title || jd.filename }}
+              </option>
+            </select>
+          </label>
+
+          <label class="workflow-row">
+            <span>候选人简历</span>
+            <select v-model="selectedResumeIds" multiple>
+              <option v-for="resume in documentStore.parsedResumes" :key="resume.id" :value="resume.id">
+                {{ formatResumeLabel(resume) }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="workflow-action-panel">
+          <strong>{{ selectedResumeIds.length || 0 }}</strong>
+          <span>已选择候选人</span>
+          <button class="button-primary" type="button" :disabled="!canRun" @click="runMatch">开始匹配</button>
+        </div>
+      </div>
+    </section>
+
+    <TaskProgress
+      title="岗位匹配进度"
+      :task-id="task.taskId.value"
+      :progress="task.progress.value"
+      :current-step="task.currentStep.value"
+      :completed-count="task.completedSteps.value.length"
+      :steps="task.steps.value"
+      :message="task.message.value"
+      :error-reason="task.errorReason.value"
+    />
+
+    <section class="card workflow-card matching-results-card">
+      <div class="section-head">
+        <div>
+          <h2>匹配结果</h2>
+          <p>结果仅删除匹配记录及对应向量，不影响 JD 和简历文档。</p>
+        </div>
+        <button class="button-secondary" type="button" :disabled="matchStore.loading" @click="refreshMatches">{{ matchStore.loading ? '刷新中…' : '刷新' }}</button>
+      </div>
+      <p v-if="matchStore.error" class="error-note" role="alert">{{ matchStore.error }}</p>
+      <div v-if="matchStore.loading && !matchStore.results.length" class="loading-state">正在加载匹配结果...</div>
+      <EmptyState v-else-if="!matchStore.results.length && !matchStore.error" title="暂无匹配结果" description="选择 JD 与简历后开始一次匹配。" />
+      <div v-else-if="matchStore.results.length" class="result-grid" :aria-busy="matchStore.loading">
+        <article
+          v-for="result in matchStore.results"
+          :key="result.id"
+          :class="['result-card', { active: selectedResult?.id === result.id }]"
+        >
+          <div class="result-card-head">
+            <div>
+              <h3>{{ result.candidateName }}</h3>
+              <p>{{ result.jdTitle }}</p>
+              <p>{{ result.resumeFilename }}</p>
+            </div>
+            <div class="match-score" :aria-label="`匹配度 ${clampScorePercent(result.score)} 分`">
+              <strong :class="scoreTone(result.score)">{{ clampScorePercent(result.score) }}</strong>
+              <span>/100</span>
+            </div>
+          </div>
+          <div class="match-score-track" aria-hidden="true">
+            <span :class="scoreTone(result.score)" :style="{ width: `${clampScorePercent(result.score)}%` }"></span>
+          </div>
+          <p class="result-summary">{{ result.conclusion }}</p>
+          <div class="compact-list">
+            <span>优势：{{ result.strengths[0] }}</span>
+            <span>差距：{{ result.gaps[0] }}</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" @click="showDetail(result)">
+              <Eye class="app-icon" aria-hidden="true" />
+              <span>查看详情</span>
+            </button>
+            <button type="button" class="danger-text" @click="remove(result.id)">
+              <Trash2 class="app-icon" aria-hidden="true" />
+              <span>删除</span>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section v-if="selectedResult" ref="detailSection" class="card workflow-card matching-detail-card">
+      <div class="section-head">
+        <div>
+          <h2>{{ selectedResult.candidateName }} · 匹配详情</h2>
+          <p>{{ selectedResult.summary }}</p>
+        </div>
+        <button class="button-secondary" type="button" @click="collapseDetail">
+          <X class="app-icon" aria-hidden="true" />
+          <span>收起</span>
+        </button>
+      </div>
+      <div v-if="selectedResult.warnings.length" class="warning-list">
+        <p v-for="warning in selectedResult.warnings" :key="warning">{{ warning }}</p>
+      </div>
+      <div class="match-detail-groups" aria-label="优势、差距与风险">
+        <article v-for="group in detailGroups" :key="group.key" :class="['match-detail-group', group.key]">
+          <h3>{{ group.label }}</h3>
+          <ul class="plain-list">
+            <li v-for="item in group.items" :key="item">{{ item }}</li>
+            <li v-if="!group.items.length">暂无</li>
+          </ul>
+        </article>
+      </div>
+      <details class="match-evidence-panel">
+        <summary>证据引用（{{ selectedResult.evidence.length }}）</summary>
+        <div v-if="selectedResult.evidence.length">
+          <EvidenceList :items="selectedResult.evidence" />
+        </div>
+        <p v-else>暂无证据引用</p>
+      </details>
+      <div class="criteria-chart" aria-label="标准得分">
+        <article v-for="item in criterionRows" :key="item.name" class="criterion-row">
+          <div class="criterion-row-head">
+            <div>
+              <strong>{{ item.name }}</strong>
+              <span>权重 {{ item.weight }} · 加权贡献 {{ item.contribution }}</span>
+            </div>
+            <b>{{ item.score }}/5</b>
+          </div>
+          <div class="criterion-track" :aria-label="`${item.name} 得分 ${item.score} / 5`">
+            <span :class="item.tone" :style="{ width: `${item.scorePercent}%` }"></span>
+          </div>
+          <p>{{ item.reason }}</p>
+        </article>
+      </div>
+      <p class="analysis-note">{{ selectedResult.agentContent }}</p>
+    </section>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Eye, Trash2, X } from '@lucide/vue'
+import { activeTaskKey, readActiveTask, saveActiveTask } from '../services/activeTasks'
+import { computed, nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import EmptyState from '../components/EmptyState.vue'
+import EvidenceList from '../components/EvidenceList.vue'
+import TaskProgress from '../components/TaskProgress.vue'
+import { useTaskSse } from '../composables/useTaskSse'
+import { useDocumentStore } from '../stores/document'
+import { useMatchStore } from '../stores/match'
+import type { MatchResult } from '../types/match'
+import { MATCH_STEPS } from '../types/task'
+import { createId, formatResumeLabel } from '../utils/format'
+import { buildCriterionChartRows, buildMatchDetailGroups, clampScorePercent } from '../utils/matchChart'
+
+const documentStore = useDocumentStore()
+const route = useRoute(), auth = useAuthStore()
+const matchStore = useMatchStore()
+const task = useTaskSse(MATCH_STEPS)
+interface ActiveMatch { taskId: string; jdId: string; resumeIds: string[] }
+let matchStorageKey = activeTaskKey('match-task')
+
+const selectedJdId = ref('')
+const selectedResumeIds = ref<string[]>([])
+const selectedResult = ref<MatchResult | null>(matchStore.results[0] || null)
+const detailSection = ref<HTMLElement | null>(null)
+
+const canRun = computed(() => Boolean(selectedJdId.value && selectedResumeIds.value.length && !matchStore.loading && task.status.value !== 'running'))
+const criterionRows = computed(() => (
+  selectedResult.value ? buildCriterionChartRows(selectedResult.value.criteria) : []
+))
+const detailGroups = computed(() => (
+  selectedResult.value ? buildMatchDetailGroups(selectedResult.value) : []
+))
+
+watch(() => auth.token, () => {
+  selectedJdId.value = ''; selectedResumeIds.value = []; selectedResult.value = null
+  task.reset()
+  matchStorageKey = activeTaskKey('match-task')
+  if (auth.token) {
+    void documentStore.loadDocuments(); void matchStore.loadMatches()
+    const active = readActiveTask<ActiveMatch>(matchStorageKey)
+    if (active) { selectedJdId.value = active.jdId; selectedResumeIds.value = active.resumeIds; task.start(active.taskId) }
+  }
+}, { immediate: true })
+watch([() => route.query.jdId, () => route.query.resumeId, () => documentStore.parsedJds, () => documentStore.parsedResumes], () => {
+  const jd = String(route.query.jdId || ''), resume = String(route.query.resumeId || '')
+  if (jd) selectedJdId.value = documentStore.parsedJds.find(doc => doc.id === jd || doc.id === `jd:${jd}`)?.id || ''
+  if (resume) { const found = documentStore.parsedResumes.find(doc => doc.id === resume || doc.id === `resume:${resume}`); selectedResumeIds.value = found ? [found.id] : [] }
+}, { immediate: true })
+watch([() => route.query.matchId, () => matchStore.results], () => {
+  const id = String(route.query.matchId || '')
+  if (id) selectedResult.value = matchStore.results.find(result => result.id === id) || null
+}, { immediate: true })
+
+watch(task.status, async (status) => {
+  if (status === 'success' || status === 'failed') {
+    if (readActiveTask<ActiveMatch>(matchStorageKey)?.taskId === task.taskId.value) localStorage.removeItem(matchStorageKey)
+  }
+  if (status !== 'success') return
+  await matchStore.loadMatches()
+  selectedResult.value = matchStore.results[0] || null
+})
+
+async function refreshMatches() {
+  const selectedId = selectedResult.value?.id
+  await matchStore.loadMatches()
+  if (!matchStore.error && selectedId) selectedResult.value = matchStore.results.find(item => item.id === selectedId) || null
+}
+
+async function runMatch() {
+  if (!canRun.value) return
+  const jd = documentStore.parsedJds.find((item) => item.id === selectedJdId.value)
+  const resumes = documentStore.parsedResumes.filter((item) => selectedResumeIds.value.includes(item.id))
+  if (!jd || !resumes.length) return
+  const taskId = createId('task_match')
+  const storageKey = matchStorageKey
+  task.startManual(taskId, '正在提交匹配任务')
+  try {
+    await matchStore.createMatch(jd, resumes, taskId, acceptedId => {
+      saveActiveTask(storageKey, { taskId: acceptedId, jdId: jd.id, resumeIds: resumes.map(resume => resume.id) })
+      task.start(acceptedId)
+    })
+    selectedResult.value = matchStore.results[0] || null
+  } catch (err) {
+    task.failManual(err instanceof Error ? err.message : String(err))
+  }
+}
+
+async function remove(id: string) {
+  const confirmed = window.confirm('仅删除该匹配结果及对应向量记录，不删除 JD 和简历。确定删除吗？')
+  if (!confirmed) return
+  await matchStore.deleteMatch(id)
+  if (selectedResult.value?.id === id) selectedResult.value = matchStore.results[0] || null
+}
+
+async function showDetail(result: MatchResult) {
+  selectedResult.value = result
+  await nextTick()
+  const detailTop = detailSection.value?.getBoundingClientRect().top
+  if (detailTop == null) return
+  window.scrollTo({
+    top: Math.max(0, window.scrollY + detailTop - window.innerHeight / 2),
+    behavior: 'smooth',
+  })
+}
+
+function collapseDetail() {
+  selectedResult.value = null
+}
+
+function scoreTone(score: number) {
+  if (score >= 80) return 'score-success'
+  if (score >= 65) return 'score-info'
+  if (score >= 50) return 'score-warning'
+  return 'score-danger'
+}
+</script>

@@ -88,7 +88,7 @@ def test_cloud_chat_stream_calls_configured_endpoint_with_configured_key(cloud_e
     with httpx.Client(transport=httpx.MockTransport(respond)) as client:
         monkeypatch.setattr(agent, "SessionLocal", sessions)
         monkeypatch.setattr(agent, "create_agent", lambda **kwargs: object())
-        monkeypatch.setattr(agent, "init_chat_model", lambda **kwargs: init_chat_model(**kwargs, http_client=client))
+        monkeypatch.setattr(agent, "init_chat_model", lambda **kwargs: init_chat_model(**{**kwargs, "http_client": client}))
         _, model, _, _ = agent.create_agent_with_interview_tools("stream-user")
         assert list(model.stream("hello"))
     assert requests[0].headers["authorization"] == "Bearer external-key"

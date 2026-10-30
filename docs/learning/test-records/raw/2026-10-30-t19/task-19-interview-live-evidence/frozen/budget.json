@@ -1,0 +1,60 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-4d26-7130-b9ff-a3e445c9dccd": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4d45-7c40-854f-c7421bcf6a96": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4d68-7273-9f44-9a761710a9a6": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4d71-7c10-9462-6e210fe590d3": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4d8c-75e1-91d6-a181084dc3cf": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-4dbc-7360-bb93-0e5c56799b2d": {
+      "case_id": "interview-frozen-submission",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": null
+}

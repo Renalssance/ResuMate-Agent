@@ -1,0 +1,10 @@
+{
+  "source": "/tmp/task-19-build-5cd2b8fd52/source",
+  "frontend_image": "resumate-t19-frontend:5cd2b8fd52",
+  "frontend_built": true,
+  "initial_free_bytes": 9072615424,
+  "minimum_free_bytes": 8843804672,
+  "disk_stop_threshold_bytes": 2147483648,
+  "previous_attempt": "build.json",
+  "exit_code": 0
+}

@@ -1,0 +1,15 @@
+Backup completed: /private/tmp/task-19-artifacts-9ad7a2f23b2c48e49299126f985dd6dc/backup. Source API, scheduler and worker remain stopped.
+ Container resumate-t19-source-3ac10193-web-1 Stopping
+ Container resumate-t19-source-3ac10193-web-1 Stopped
+ Container resumate-t19-source-3ac10193-api2-1 Stopping
+ Container resumate-t19-source-3ac10193-api-1 Stopping
+ Container resumate-t19-source-3ac10193-api-1 Stopped
+ Container resumate-t19-source-3ac10193-api2-1 Stopped
+ Container resumate-t19-source-3ac10193-scheduler-1 Stopping
+ Container resumate-t19-source-3ac10193-worker-1 Stopping
+ Container resumate-t19-source-3ac10193-scheduler-1 Stopped
+ Container resumate-t19-source-3ac10193-worker-1 Stopped
+ Container resumate-t19-source-3ac10193-worker-run-1081237888f5 Creating
+ Container resumate-t19-source-3ac10193-worker-run-1081237888f5 Created
+ Container resumate-t19-source-3ac10193-worker-run-2d36c765940f Creating
+ Container resumate-t19-source-3ac10193-worker-run-2d36c765940f Created

@@ -1,0 +1,132 @@
+# Shared SQL is authoritative across both APIs; only the worker owns checkpoints.
+name: resumate-agent
+
+x-backend: &backend
+  image: ${RESUMATE_BACKEND_IMAGE:-resumate-backend:local}
+  build:
+    context: ..
+    dockerfile: deploy/worker.Dockerfile
+  environment: &backend-environment
+    DATABASE_URL: mysql+pymysql://resumate:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}@mysql:3306/resumate?charset=utf8mb4
+    REDIS_URL: redis://redis:6379/0
+    RESUMATE_ENV: ${RESUMATE_ENV:-local}
+    JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY for the local API}
+    ADMIN_INVITE_CODE: ${ADMIN_INVITE_CODE:-}
+    CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+    LLM_MODEL: ${LLM_MODEL:-}
+    LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-8192}
+    LLM_CONTEXT_WINDOW_TOKENS: ${LLM_CONTEXT_WINDOW_TOKENS:-}
+    LLM_REQUEST_TIMEOUT_SECONDS: ${LLM_REQUEST_TIMEOUT_SECONDS:-300}
+    EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-openai}
+    EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+    EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+    EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+    EMBEDDING_DEVICE: ${EMBEDDING_DEVICE:-cpu}
+    PDF_OCR_ENABLED: ${PDF_OCR_ENABLED:-false}
+    PDF_OCR_MAX_PAGES: ${PDF_OCR_MAX_PAGES:-8}
+    PDF_OCR_HARD_MAX_PAGES: ${PDF_OCR_HARD_MAX_PAGES:-100}
+    PDF_OCR_RENDER_SCALE: ${PDF_OCR_RENDER_SCALE:-2.5}
+    PDF_TEXT_MIN_CHARS: ${PDF_TEXT_MIN_CHARS:-30}
+    CHROMA_PATH: /app/data/chroma
+    RESUME_EXPORT_DIR: /app/data/exports
+    LANGCHAIN_TRACING_V2: 'false'
+  volumes:
+    - type: volume
+      source: backend-data
+      target: /app/data
+      volume: {nocopy: true}
+
+x-api: &api
+  <<: *backend
+  depends_on:
+    schema: {condition: service_completed_successfully}
+  command: [uvicorn, 'backend.app:app', --host, 0.0.0.0, --port, '8000', --workers, '1']
+  healthcheck:
+    test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=2)"]
+    interval: 5s
+    timeout: 3s
+    start_period: 15s
+    retries: 10
+
+services:
+  web:
+    image: ${RESUMATE_FRONTEND_IMAGE:-resumate-frontend:local}
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+    ports: ['127.0.0.1:${RESUMATE_WEB_PORT:-8787}:80']
+    depends_on:
+      api: {condition: service_healthy}
+      api2: {condition: service_healthy}
+  mysql:
+    image: public.ecr.aws/docker/library/mysql:8.4
+    environment:
+      MYSQL_DATABASE: resumate
+      MYSQL_USER: resumate
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci]
+    volumes: [mysql-data:/var/lib/mysql]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$${MYSQL_ROOT_PASSWORD}" mysqladmin ping -h 127.0.0.1 -u root --silent']
+      interval: 5s
+      timeout: 3s
+      start_period: 20s
+      retries: 20
+  schema:
+    <<: *backend
+    depends_on:
+      mysql: {condition: service_healthy}
+    command: [python, -c, 'from backend.db.database import init_db; init_db()']
+    volumes: []
+    restart: 'no'
+  api:
+    <<: *api
+    ports: ['127.0.0.1:${RESUMATE_API_PORT:-8000}:8000']
+  api2:
+    <<: *api
+    ports: ['127.0.0.1:${RESUMATE_API2_PORT:-8001}:8000']
+  redis:
+    image: public.ecr.aws/docker/library/redis:7.4-alpine
+    command: [redis-server, --appendonly, 'yes', --maxmemory, 256mb, --maxmemory-policy, noeviction]
+    mem_limit: 512m
+    volumes: [redis-data:/data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+  worker:
+    <<: *backend
+    environment:
+      <<: *backend-environment
+      AGENT_STATE_DIR: /app/agent-state
+    volumes:
+      - type: volume
+        source: backend-data
+        target: /app/data
+        volume: {nocopy: true}
+      - agent-state:/app/agent-state
+    depends_on:
+      redis: {condition: service_healthy}
+      schema: {condition: service_completed_successfully}
+    command: [celery, -A, 'backend.worker:app', worker, --loglevel=INFO, --concurrency=1]
+    stop_grace_period: 30s
+  scheduler:
+    image: ${RESUMATE_BACKEND_IMAGE:-resumate-backend:local}
+    build:
+      context: ..
+      dockerfile: deploy/worker.Dockerfile
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      RESUMATE_ENV: ${RESUMATE_ENV:-local}
+    depends_on:
+      redis: {condition: service_healthy}
+    command: [celery, -A, 'backend.worker:app', beat, --loglevel=INFO, --schedule=/tmp/celerybeat-schedule]
+volumes:
+  mysql-data:
+  backend-data:
+  agent-state:
+  redis-data:

@@ -46,7 +46,8 @@ def verify_task(case, output, data):
               and len(operations)==2,'The same job and candidate identities own both reports',['analysis_jobs','candidates','match_results','operations'])
     elif case_id=='question-result-replay':
         check('old_response_is_immutable',coverage['original_question']==coverage['replayed_question']
-              and coverage['original_question']!=coverage['current_question'] and coverage['calls_on_replay']==0,
+              and (coverage['current_question']==coverage.get('second_question') if output.get('mode')=='live'
+                   else coverage['original_question']!=coverage['current_question']) and coverage['calls_on_replay']==0,
               'Older task returns its old question after a new explicit task replaces the current set',['runs','question_sets','output.coverage'])
         check('one_current_question_set',len(data['question_sets'])==len(data['followup_sets'])==1 and len(operations)==2,
               'Current question tables contain one set, while each explicit Run has its own operation',['question_sets','followup_sets','operations'])
@@ -59,7 +60,8 @@ def verify_task(case, output, data):
         check('no_cancelled_questions',not data['question_sets'] and not data['followup_sets'],
               'No question business rows survive a cancelled task',['question_sets','followup_sets'])
     elif case_id=='source-deleted-or-reassigned':
-        check('source_checks_exercised',coverage['mutations']==['delete_jd','reassign_resume'] and len(output['model_calls'])==2
+        check('source_checks_exercised',coverage['mutations']==['delete_jd','reassign_resume']
+              and len(output['business_calls'] if output.get('mode')=='live' else output['model_calls'])==2
               and not data['match_results'],'Both supported source changes occur after a model call and prevent a report',['match_results','output.coverage','output.model_calls'])
     elif case_id=='business-write-rollback':
         check('four_write_boundaries',coverage['fault_kinds']==['document_parse','match_analysis','question_generation','answer_followup']
@@ -68,6 +70,7 @@ def verify_task(case, output, data):
               and all(not row['structured_data'] and not row['raw_text'] for row in data['resumes'] if row['id']>2),
               'Only the setup match remains; failed reports, parsed output and question tables roll back',['resumes','match_results','question_sets','followup_sets'])
     return {'passed':all(check['passed'] for check in checks),'checks':checks,'limitations':[
-        'Deterministic service execution is not a real worker process kill or real-model quality measurement.',
+        ('Live generation uses deterministic embedding; semantic quality still needs explicit review.'
+         if output.get('mode')=='live' else 'Deterministic service execution is not a real worker process kill or real-model quality measurement.'),
         'Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.',
         'This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL.']}

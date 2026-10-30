@@ -1,0 +1,127 @@
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_http_failure_cannot_claim_source_ownership_fault_was_exercised ______
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-266/test_http_failure_cannot_claim0')
+
+    def test_http_failure_cannot_claim_source_ownership_fault_was_exercised(tmp_path):
+>       result, wire = run_local(tmp_path, 'source-deleted-or-reassigned', fail=True, total='10')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_task_live_runner.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-266/test_http_failure_cannot_claim0')
+case_id = 'source-deleted-or-reassigned'
+
+    def run_local(tmp_path, case_id, *, fail=False, total=None):
+        case = next(case for case in load_cases() if case['id'] == case_id)
+        request = {'case':case, 'mode':'live', 'invocation':str(tmp_path), 'config':config(
+            max_total_cost=total or ('1.3' if fail else '10'), max_case_cost='10', max_model_calls=100, max_case_model_calls=100).public()}
+        (tmp_path / 'request.json').write_text(json.dumps(request))
+        script = '''
+    import json, os
+    from pathlib import Path
+    from unittest.mock import patch
+    import httpx
+    from evals import task_live_model
+    from backend.tests.task_http_fixture import TaskHTTPFixture
+    from evals.task_runner import execute_task_case
+    root = Path(os.environ['DATABASE_URL'].removeprefix('sqlite:///')).parent
+    request = json.loads((root / 'request.json').read_text())
+    original = task_live_model.LiveTaskModel
+    fixture = TaskHTTPFixture(root / 'http-requests.jsonl', fail=FAIL)
+    def model(config, recorder):
+        return original(config, recorder, transport=httpx.MockTransport(fixture))
+    with patch.object(task_live_model, 'LiveTaskModel', model):
+        result = execute_task_case(request)
+    print(json.dumps({'status':result['status'], 'error_code':result.get('error_code')}))
+    '''.replace('fail=FAIL', f'fail={fail!r}')
+        env = isolated_environment(tmp_path, {'OPENAI_API_KEY':'synthetic-not-secret', 'OPENAI_BASE_URL':'https://synthetic.invalid/v1'})
+        process = subprocess.run([sys.executable, '-c', script], cwd=Path(__file__).resolve().parents[2],
+                                 env=env, capture_output=True, text=True)
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Usage cache invalidation unavailable user_id=1 error=RedisUnavailable
+E         Structured LLM call failed; retrying with reflection | task=evaluate_match schema=MatchEvaluation error=PermissionDeniedError
+E         Usage cache invalidation unavailable user_id=1 error=RedisUnavailable
+E         Structured LLM call failed; retrying with reflection | task=evaluate_match schema=MatchEvaluation error=PermissionDeniedError
+E         Usage cache invalidation unavailable user_id=1 error=RedisUnavailable
+E         LLM error | task=evaluate_match | metadata={"task": "evaluate_match", "model": "qwen3.7-flash-2026-07-15", "schema": "MatchEvaluation"} | error_type=PermissionDeniedError | status=403
+E         Analysis task 79f2a86c-6be9-40ec-b52e-55ed261127ae stopped (match_analysis_failed)
+E         Traceback (most recent call last):
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+E             self.dialect.do_execute(
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+E             cursor.execute(statement, parameters)
+E         sqlite3.IntegrityError: UNIQUE constraint failed: job_descriptions.id
+E         
+E         The above exception was the direct cause of the following exception:
+E         
+E         Traceback (most recent call last):
+E           File "<string>", line 16, in <module>
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/evals/task_runner.py", line 214, in execute_task_case
+E             db.commit()
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+E             trans.commit(_to_root=True)
+E           File "<string>", line 2, in commit
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+E             ret_value = fn(self, *arg, **kw)
+E                         ^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+E             self._prepare_impl()
+E           File "<string>", line 2, in _prepare_impl
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+E             ret_value = fn(self, *arg, **kw)
+E                         ^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+E             self.session.flush()
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+E             self._flush(objects)
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+E             with util.safe_reraise():
+E                  ^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+E             raise exc_value.with_traceback(exc_tb)
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+E             flush_context.execute()
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+E             rec.execute(self)
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+E             util.preloaded.orm_persistence.save_obj(
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+E             _emit_insert_statements(
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+E             result = connection.execute(
+E                      ^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+E             return meth(
+E                    ^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+E             return connection._execute_clauseelement(
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+E             ret = self._execute_context(
+E                   ^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+E             return self._exec_single_context(
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+E             self._handle_dbapi_exception(
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+E             raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+E             self.dialect.do_execute(
+E           File "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+E             cursor.execute(statement, parameters)
+E         sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: job_descriptions.id
+E         [SQL: INSERT INTO job_descriptions (primary_resume_id, source_url, source_site, source_job_id, captured_at, status, id, user_id, title, company, filename, file_path, content_hash, document_size, parse_status, raw_text, structured_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id]
+E         [parameters: (None, None, None, None, None, 'saved', 1, 1, 'API Engineer', '', '', '', '', 0, 'pending', 'Build API services and validate request fields.', '{"job_title": "API Engineer", "summary": "Build APIs", "criteria": [{"criterion_id": "api", "name": "API", "description": "Build APIs", "importance": "must", "weight": 100, "evidence_query": "API"}]}', '2026-10-30 03:14:03.179108', '2026-10-30 03:14:03.179109')]
+E         (Background on this error at: https://sqlalche.me/e/20/gkpj)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/bin/python', '-c...0 03:14:03.179108\', \'2026-10-30 03:14:03.179109\')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)\n').returncode
+
+backend/tests/test_task_live_runner.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_task_live_runner.py::test_http_failure_cannot_claim_source_ownership_fault_was_exercised
+1 failed, 2 passed, 9 deselected in 2.86s

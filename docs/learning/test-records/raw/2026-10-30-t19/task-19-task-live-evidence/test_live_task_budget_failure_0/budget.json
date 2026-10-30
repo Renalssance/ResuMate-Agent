@@ -1,0 +1,12 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "2bfba840-71bb-480a-a170-7ae69a1ae190": {
+      "case_id": "followup-result-replay",
+      "reserved_cost": "1.21970880",
+      "observed_cost": null,
+      "usage": null
+    }
+  },
+  "stop_reason": "budget_exhausted"
+}

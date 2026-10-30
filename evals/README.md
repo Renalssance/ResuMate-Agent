@@ -100,7 +100,7 @@ python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-tasks \
   --cases parse-upload-stable-identity,parse-reparse-saved-job,match-partial-candidate-replay,question-result-replay,followup-result-replay,cancel-recovery,source-deleted-or-reassigned,business-write-rollback
 ```
 
-八案覆盖上传稳定身份、文件重解析与粘贴岗位、部分候选恢复、旧题目结果重放、回答分析重放、取消后恢复、源删除/归属变化、四类业务最终事务回滚。此运行器的 SQL oracle 使用隔离 SQLite；MySQL 的真实验证由对应 focused 双库集成测试记录，不能从 SQLite eval 结果推断 MySQL 已执行。`--mode live` 的这八案尚未实现，明确返回 `not_run / durable_live_not_implemented`，不绕过原 T13 的价格与预算协议。
+八案覆盖上传稳定身份、文件重解析与粘贴岗位、部分候选恢复、旧题目结果重放、回答分析重放、取消后恢复、源删除/归属变化、四类业务最终事务回滚。此运行器的 SQL oracle 使用隔离 SQLite；MySQL 的真实验证由对应 focused 双库集成测试记录，不能从 SQLite eval 结果推断 MySQL 已执行。`--mode live` 的这八案已接真实 AgentHarness 和 OpenAI HTTP 客户端，仍使用可重复的 embedding，并与原12案共用价格预检及同一 invocation 预算账本。每次格式回退/反思都单独预留和记录实际请求，原Run回放不再发请求；来源变更、取消和回滚只按真正触发的业务边界判定。供应商失败没有触发故障点时不能算覆盖。模型两次生成相同文本不算重放错误，语义仍待人工复核。
 
 真实崩溃实验先约定一份 JSON 上下文，格式为 `{invocation_id, cases:[{id,input}]}`；四条 `input` 必须与当前 `recovery.jsonl` 的 Compose 输入逐字段一致。集成测试读取 `RESUMATE_RECOVERY_CONTEXT`，把实际进程与 SQL 证据写到 `RESUMATE_RECOVERY_EVIDENCE`。证据包含相同 invocation、case ID、输入、是否实际执行、通过/失败、SIGKILL、恢复前后 Run/attempt/epoch、模型开始次数、版本/操作/事件及原始证据路径。评估命令必须显式提供两份文件：
 
@@ -112,7 +112,7 @@ python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-complet
 
 只有 invocation、case ID 与输入精确对应，而且该进程场景实际执行并满足恢复 oracle，才计为通过。缺证据为 `requires_compose`；其他 invocation 或不同输入为 `recovery_evidence_mismatch`，保持 `not_run`。当前完整报告可以计入 30 案的前提是本轮四个真实崩溃实验也确实通过，且另外 26 案实际执行通过。原始 12 案仍按原来的隔离、预算、事实来源和人工语义审阅约束执行。
 
-这些结果证明业务持久化和恢复边界。它们不证明真实模型语义质量，也不证明模型只计费一次。旧 Harness 的 usage 仍是用户级记录，未自动关联 T13 的 Run/attempt/epoch；被杀死的未完成调用 usage 未知，不能记成零。
+这些结果证明业务持久化和恢复边界。它们不证明真实模型语义质量，也不证明模型只计费一次。生产旧 Harness 的 usage 仍是用户级记录；live评测专用HTTP边界额外关联Run/attempt/epoch与共享预算，不能据此宣称生产旧记录已迁移。被杀死的未完成调用usage未知，不能记成零。
 
 
 ## T16：文本模拟面试六条真实业务轨迹
@@ -135,8 +135,14 @@ python -m evals.run --suite core --mode stub --output /tmp/resumate-eval-intervi
 
 案例产物保存实际模型输入与结构化输出、每条命令及确认、SQL 快照、取消前后对照、冻结来源与记忆操作。独立只读 oracle 检查轮次、引用、持久事件、Run 结果和业务操作的一致性，并用篡改证据的测试检验它会拒绝假成功。模型调用使用 `openai:scripted-interview` 标识；没有供应商请求，不把合成响应当成语义质量证明。
 
-`--mode live` 的六案尚未实现，明确为 `not_run / interview_live_not_implemented`，不建立模型客户端或预算账本。SQLite 评测不替代双库测试、真实进程恢复、WS 或浏览器验收。
+`--mode live` 的六案使用真实 ChatOpenAI、图、工具与同一 invocation 预算；实际模型输入证据来自当前System required块及get_interview_context/read_file工具响应，不从数据库回读冒充模型已经看到。只有读齐分页才记录完整context。取消barrier在真实InterviewStep返回且usage已结算后、图处理该结果之前执行，按配置请求上限和剩余调用数有限等待。live公开输出与SQL可复核，语义仍为unreviewed。SQLite评测不替代双库测试、真实进程恢复或浏览器验收。
 
 ```sh
 uv run pytest backend/tests/test_interview_evals.py -q
 ```
+
+## T19：离线验证 live 调用链
+
+新增 `backend/tests/test_task_live_model.py`、`test_task_live_runner.py` 和 `test_interview_live.py` 通过本地 MockTransport（CLI预算传播另用本机HTTP服务）验证实际SDK请求、工具、结构化输出、SQL、取消迟到结果及403未知预约。它们不访问供应商，返回的usage是合成测试数据，不能写作真实费用/模型质量。完整实际请求不含Authorization；不保留provider错误正文或隐藏推理。
+
+当前14案的live路径可执行，但既有3元真实预算仍受原预留与供应商额度限制，本轮没有新的付费调用。先前 `not_implemented` 记录是历史事实；实现补齐也不等于90%完成率、零关键错误或3次真实重复已通过。

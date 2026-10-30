@@ -103,8 +103,9 @@ def case_injections(case, coverage, mode):
         yield
 
 
-def make_live_model(config, recorder, case):
+def make_live_model(config, recorder, case, *, transport=None):
     from langchain_openai import ChatOpenAI
+    from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
     key = os.getenv('OPENAI_API_KEY') or os.getenv('ARK_API_KEY')
     base_url = os.getenv('OPENAI_BASE_URL') or os.getenv('BASE_URL')
     # A narrow working context forces real SDK summarization in the long case.
@@ -113,7 +114,9 @@ def make_live_model(config, recorder, case):
     return ChatOpenAI(model=config.model, api_key=key, base_url=base_url,
                       profile={'max_input_tokens': capacity}, max_tokens=config.max_output_tokens,
                       timeout=config.request_timeout_seconds, max_retries=0, stream_usage=True,
-                      extra_body={'enable_thinking': config.enable_thinking}, callbacks=[recorder])
+                      extra_body={'enable_thinking': config.enable_thinking}, callbacks=[recorder],
+                      http_client=DefaultHttpxClient(follow_redirects=False, transport=transport),
+                      http_async_client=DefaultAsyncHttpxClient(follow_redirects=False))
 
 
 def execute_case(request):
@@ -321,7 +324,7 @@ def main(argv=None):
         error = 'Invalid or unreadable recovery context/evidence'
     if set(chosen) != {case['id'] for case in cases}:
         error = 'Unknown case ID in --cases'
-    if args.mode == 'live' and not error and any(case.get('runner') not in ('durable','compose','interview') for case in cases):
+    if args.mode == 'live' and not error and any(case.get('runner') != 'compose' for case in cases):
         try:
             from evals.budget import BudgetConfig
             if args.config is None:
@@ -362,12 +365,6 @@ def main(argv=None):
                 path = invocation / 'cases' / (case['id'] + '.json')
                 write_json(path, detail)
                 results.append(dict(case_id=case['id'], category=case['category'], status=detail['status'], artifact='cases/' + path.name))
-            continue
-        if case.get('runner') == 'interview' and args.mode == 'live':
-            results.append(dict(case_id=case['id'], category=case['category'], status='not_run', error_code='interview_live_not_implemented'))
-            continue
-        if case.get('runner') == 'durable' and args.mode == 'live':
-            results.append(dict(case_id=case['id'], category=case['category'], status='not_run', error_code='durable_live_not_implemented'))
             continue
         if stop_reason:
             results.append(dict(case_id=case['id'], category=case['category'], status='not_run', error_code=stop_reason))

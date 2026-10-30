@@ -1,0 +1,3461 @@
+{
+  "case_id": "business-write-rollback",
+  "category": "durable_task",
+  "mode": "live",
+  "status": "pass",
+  "input": {
+    "id": "business-write-rollback",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "artifact-event-fails-for-all-four-kinds",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "87689a94-1a4a-4154-81df-c521660deb27",
+      "32639a04-cb37-40c5-9197-24e9ad55b720",
+      "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+      "437c22ab-7393-4343-adc3-38227e8f6afd"
+    ],
+    "coverage": {
+      "fault_kinds": [
+        "document_parse",
+        "match_analysis",
+        "question_generation",
+        "answer_followup"
+      ]
+    },
+    "model_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First",
+        "call_id": "8ec3313b-8479-47b7-a111-ca4fe6995e81",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"CriterionEvaluation\": {\"properties\": {\"criterion_id\": {\"title\": \"Criterion Id\", \"type\": \"string\"}, \"name\": {\"title\": \"Name\", \"type\": \"string\"}, \"weight\": {\"maximum\": 100, \"minimum\": 0, \"title\": \"Weight\", \"type\": \"number\"}, \"score\": {\"maximum\": 5, \"minimum\": 0, \"title\": \"Score\", \"type\": \"integer\"}, \"status\": {\"enum\": [\"strong_match\", \"match\", \"partial_match\", \"no_evidence\", \"conflict\"], \"title\": \"Status\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 5, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"missing_evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Missing Evidence\", \"type\": \"array\"}, \"risk\": {\"default\": \"\", \"title\": \"Risk\", \"type\": \"string\"}}, \"required\": [\"criterion_id\", \"name\", \"weight\", \"score\", \"status\", \"reason\"], \"title\": \"CriterionEvaluation\", \"type\": \"object\"}}, \"properties\": {\"evaluations\": {\"items\": {\"$ref\": \"#/$defs/CriterionEvaluation\"}, \"title\": \"Evaluations\", \"type\": \"array\"}}, \"required\": [\"evaluations\"], \"title\": \"MatchEvaluation\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"evaluations\": [\n    {\n      \"criterion_id\": \"\",\n      \"name\": \"\",\n      \"weight\": 0,\n      \"score\": 0,\n      \"status\": \"strong_match\",\n      \"reason\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"missing_evidence\": [\n        \"\"\n      ],\n      \"risk\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative hiring-match evaluator. Evaluate each JD criterion from the evidence candidates supplied for that criterion, with the structured resume used only for global context and risk awareness.\n\nStrict fact boundary:\n- Use only the evidence objects supplied under each criterion as proof for positive scores.\n- Use the structured resume to understand candidate background, ownership context, self-claimed skills, OCR ambiguities, and template residue, but not as standalone proof.\n- Do not use outside knowledge, assumptions, adjacent skills, or retrieval similarity as proof.\n- Retrieval similarity is only a retrieval signal; it is not evidence of a match.\n- Self-claimed skills, OCR ambiguities, and template residue are weak context and must not be treated as strong evidence.\n- Do not calculate `total_score` or a final recommendation.\n\nCriterion coverage and identity:\n- Return every input criterion exactly once, in the same order.\n- Copy `criterion_id`, `name`, and `weight` exactly from the input criterion.\n- Do not add, omit, merge, split, rename, or reorder criteria.\n\nEvidence integrity:\n- Return only `evidence_chunk_ids`.\n- Evidence IDs must come only from the candidate evidence list attached to the same criterion.\n- Do not create, rewrite, shorten, paraphrase, translate, correct OCR, splice, or rebuild evidence.\n- If no supplied object directly supports the criterion, return `score=0` and `evidence_chunk_ids=[]`.\n\nScoring:\n- 5: direct, specific, sufficient evidence demonstrates the criterion at required scope.\n- 4: clear direct practical evidence supports the criterion; only a minor dimension is missing.\n- 3: direct but partial evidence demonstrates a meaningful subset or incomplete depth.\n- 2: explicitly related evidence exists but is indirect, shallow, keyword-level, or lacks demonstrated execution.\n- 1: weak explicit relation exists and is insufficient.\n- 0: no supplied evidence supports the criterion, or supplied evidence explicitly conflicts with it.\n\nStatus mapping:\n- score 5 -> `strong_match`\n- score 4 -> `match`\n- score 1 to 3 -> `partial_match`\n- score 0 with no direct support -> `no_evidence`\n- score 0 with explicit contradiction -> `conflict`\n\nSilent self-check:\n- Criterion count, IDs, order, names, and weights exactly match the input.\n- Score/status/evidence state follows the fixed rules.\n- Every positive score has at least one allowed chunk ID.\n- Every score-0 item has no evidence IDs.\n- Output matches the injected JSON Schema exactly.\n\nJob criteria:\n[{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}]\n\nStructured resume profile:\n{\"candidate_name\": \"First\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}\n\nEvidence by criterion:\n{\"api\": []}\n\nResume ambiguities and quality warnings:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "MatchEvaluation",
+              "schema": {
+                "$defs": {
+                  "CriterionEvaluation": {
+                    "properties": {
+                      "criterion_id": {
+                        "title": "Criterion Id",
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "weight": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "score": {
+                        "maximum": 5,
+                        "minimum": 0,
+                        "title": "Score",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "enum": [
+                          "strong_match",
+                          "match",
+                          "partial_match",
+                          "no_evidence",
+                          "conflict"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 5,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "missing_evidence": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Missing Evidence",
+                        "type": "array"
+                      },
+                      "risk": {
+                        "default": "",
+                        "title": "Risk",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "criterion_id",
+                      "name",
+                      "weight",
+                      "score",
+                      "status",
+                      "reason"
+                    ],
+                    "title": "CriterionEvaluation",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "evaluations": {
+                    "items": {
+                      "$ref": "#/$defs/CriterionEvaluation"
+                    },
+                    "title": "Evaluations",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "evaluations"
+                ],
+                "title": "MatchEvaluation",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+        }
+      },
+      {
+        "task": "document.parse_resume",
+        "candidate": null,
+        "call_id": "43819ad1-a76f-484c-b339-7cc6830ffd48",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"AchievementItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"level\": {\"default\": \"\", \"title\": \"Level\", \"type\": \"string\"}, \"category\": {\"default\": \"\", \"title\": \"Category\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"AchievementItem\", \"type\": \"object\"}, \"EducationItem\": {\"properties\": {\"school\": {\"default\": \"\", \"title\": \"School\", \"type\": \"string\"}, \"college\": {\"default\": \"\", \"title\": \"College\", \"type\": \"string\"}, \"degree\": {\"default\": \"\", \"title\": \"Degree\", \"type\": \"string\"}, \"major\": {\"default\": \"\", \"title\": \"Major\", \"type\": \"string\"}, \"years\": {\"default\": \"\", \"title\": \"Years\", \"type\": \"string\"}, \"start_date\": {\"default\": \"\", \"title\": \"Start Date\", \"type\": \"string\"}, \"end_date\": {\"default\": \"\", \"title\": \"End Date\", \"type\": \"string\"}, \"gpa\": {\"default\": \"\", \"title\": \"Gpa\", \"type\": \"string\"}, \"rank\": {\"default\": \"\", \"title\": \"Rank\", \"type\": \"string\"}, \"lab\": {\"default\": \"\", \"title\": \"Lab\", \"type\": \"string\"}, \"research_direction\": {\"default\": \"\", \"title\": \"Research Direction\", \"type\": \"string\"}, \"advisor\": {\"default\": \"\", \"title\": \"Advisor\", \"type\": \"string\"}, \"papers\": {\"items\": {\"type\": \"string\"}, \"title\": \"Papers\", \"type\": \"array\"}, \"courses\": {\"items\": {\"type\": \"string\"}, \"title\": \"Courses\", \"type\": \"array\"}, \"achievements\": {\"items\": {\"type\": \"string\"}, \"title\": \"Achievements\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"EducationItem\", \"type\": \"object\"}, \"MetricItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"value\": {\"default\": \"\", \"title\": \"Value\", \"type\": \"string\"}, \"unit\": {\"default\": \"\", \"title\": \"Unit\", \"type\": \"string\"}, \"raw_text\": {\"default\": \"\", \"title\": \"Raw Text\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"MetricItem\", \"type\": \"object\"}, \"ProjectItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"role\": {\"default\": \"\", \"title\": \"Role\", \"type\": \"string\"}, \"duration\": {\"default\": \"\", \"title\": \"Duration\", \"type\": \"string\"}, \"description\": {\"default\": \"\", \"title\": \"Description\", \"type\": \"string\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"bullets\": {\"items\": {\"$ref\": \"#/$defs/ResumeBullet\"}, \"title\": \"Bullets\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"ProjectItem\", \"type\": \"object\"}, \"ResumeBullet\": {\"properties\": {\"raw_text\": {\"default\": \"\", \"title\": \"Raw Text\", \"type\": \"string\"}, \"action\": {\"default\": \"\", \"title\": \"Action\", \"type\": \"string\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"ResumeBullet\", \"type\": \"object\"}, \"SkillItem\": {\"properties\": {\"name\": {\"default\": \"\", \"title\": \"Name\", \"type\": \"string\"}, \"category\": {\"default\": \"\", \"title\": \"Category\", \"type\": \"string\"}, \"evidence_level\": {\"default\": \"mentioned\", \"enum\": [\"demonstrated\", \"self_claimed\", \"course_only\", \"mentioned\"], \"title\": \"Evidence Level\", \"type\": \"string\"}, \"proficiency_claim\": {\"default\": \"\", \"title\": \"Proficiency Claim\", \"type\": \"string\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"SkillItem\", \"type\": \"object\"}, \"SourceRef\": {\"properties\": {\"page_number\": {\"minimum\": 0, \"title\": \"Page Number\", \"type\": \"integer\"}, \"section\": {\"title\": \"Section\", \"type\": \"string\"}, \"text\": {\"title\": \"Text\", \"type\": \"string\"}, \"chunk_id\": {\"title\": \"Chunk Id\", \"type\": \"string\"}}, \"required\": [\"page_number\", \"section\", \"text\", \"chunk_id\"], \"title\": \"SourceRef\", \"type\": \"object\"}, \"WorkItem\": {\"properties\": {\"company\": {\"default\": \"\", \"title\": \"Company\", \"type\": \"string\"}, \"title\": {\"default\": \"\", \"title\": \"Title\", \"type\": \"string\"}, \"duration\": {\"default\": \"\", \"title\": \"Duration\", \"type\": \"string\"}, \"start_date\": {\"default\": \"\", \"title\": \"Start Date\", \"type\": \"string\"}, \"end_date\": {\"default\": \"\", \"title\": \"End Date\", \"type\": \"string\"}, \"description\": {\"default\": \"\", \"title\": \"Description\", \"type\": \"string\"}, \"bullets\": {\"items\": {\"$ref\": \"#/$defs/ResumeBullet\"}, \"title\": \"Bullets\", \"type\": \"array\"}, \"technologies\": {\"items\": {\"type\": \"string\"}, \"title\": \"Technologies\", \"type\": \"array\"}, \"metrics\": {\"items\": {\"$ref\": \"#/$defs/MetricItem\"}, \"title\": \"Metrics\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"title\": \"WorkItem\", \"type\": \"object\"}}, \"properties\": {\"candidate_name\": {\"title\": \"Candidate Name\", \"type\": \"string\"}, \"contact\": {\"additionalProperties\": {\"type\": \"string\"}, \"title\": \"Contact\", \"type\": \"object\"}, \"education\": {\"items\": {\"$ref\": \"#/$defs/EducationItem\"}, \"title\": \"Education\", \"type\": \"array\"}, \"work_experience\": {\"items\": {\"$ref\": \"#/$defs/WorkItem\"}, \"title\": \"Work Experience\", \"type\": \"array\"}, \"projects\": {\"items\": {\"$ref\": \"#/$defs/ProjectItem\"}, \"title\": \"Projects\", \"type\": \"array\"}, \"skills\": {\"items\": {\"$ref\": \"#/$defs/SkillItem\"}, \"title\": \"Skills\", \"type\": \"array\"}, \"achievements\": {\"items\": {\"$ref\": \"#/$defs/AchievementItem\"}, \"title\": \"Achievements\", \"type\": \"array\"}, \"ambiguities\": {\"items\": {\"type\": \"string\"}, \"title\": \"Ambiguities\", \"type\": \"array\"}, \"self_summary\": {\"default\": \"\", \"title\": \"Self Summary\", \"type\": \"string\"}, \"certifications\": {\"items\": {\"type\": \"string\"}, \"title\": \"Certifications\", \"type\": \"array\"}, \"languages\": {\"items\": {\"type\": \"string\"}, \"title\": \"Languages\", \"type\": \"array\"}, \"quality\": {\"additionalProperties\": true, \"title\": \"Quality\", \"type\": \"object\"}, \"structured_ambiguities\": {\"items\": {\"additionalProperties\": true, \"type\": \"object\"}, \"title\": \"Structured Ambiguities\", \"type\": \"array\"}, \"source_refs\": {\"items\": {\"$ref\": \"#/$defs/SourceRef\"}, \"title\": \"Source Refs\", \"type\": \"array\"}}, \"required\": [\"candidate_name\"], \"title\": \"ResumeProfile\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"candidate_name\": \"\",\n  \"contact\": {},\n  \"education\": [\n    {\n      \"school\": \"\",\n      \"college\": \"\",\n      \"degree\": \"\",\n      \"major\": \"\",\n      \"years\": \"\",\n      \"start_date\": \"\",\n      \"end_date\": \"\",\n      \"gpa\": \"\",\n      \"rank\": \"\",\n      \"lab\": \"\",\n      \"research_direction\": \"\",\n      \"advisor\": \"\",\n      \"papers\": [\n        \"\"\n      ],\n      \"courses\": [\n        \"\"\n      ],\n      \"achievements\": [\n        \"\"\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"work_experience\": [\n    {\n      \"company\": \"\",\n      \"title\": \"\",\n      \"duration\": \"\",\n      \"start_date\": \"\",\n      \"end_date\": \"\",\n      \"description\": \"\",\n      \"bullets\": [\n        {\n          \"raw_text\": \"\",\n          \"action\": \"\",\n          \"technologies\": [\n            \"\"\n          ],\n          \"metrics\": [\n            null\n          ],\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"technologies\": [\n        \"\"\n      ],\n      \"metrics\": [\n        {\n          \"name\": \"\",\n          \"value\": \"\",\n          \"unit\": \"\",\n          \"raw_text\": \"\",\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"projects\": [\n    {\n      \"name\": \"\",\n      \"role\": \"\",\n      \"duration\": \"\",\n      \"description\": \"\",\n      \"technologies\": [\n        \"\"\n      ],\n      \"bullets\": [\n        {\n          \"raw_text\": \"\",\n          \"action\": \"\",\n          \"technologies\": [\n            \"\"\n          ],\n          \"metrics\": [\n            null\n          ],\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"metrics\": [\n        {\n          \"name\": \"\",\n          \"value\": \"\",\n          \"unit\": \"\",\n          \"raw_text\": \"\",\n          \"source_refs\": [\n            null\n          ]\n        }\n      ],\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"skills\": [\n    {\n      \"name\": \"\",\n      \"category\": \"\",\n      \"evidence_level\": \"demonstrated\",\n      \"proficiency_claim\": \"\",\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"achievements\": [\n    {\n      \"name\": \"\",\n      \"level\": \"\",\n      \"category\": \"\",\n      \"source_refs\": [\n        {\n          \"page_number\": 0,\n          \"section\": \"\",\n          \"text\": \"\",\n          \"chunk_id\": \"\"\n        }\n      ]\n    }\n  ],\n  \"ambiguities\": [\n    \"\"\n  ],\n  \"self_summary\": \"\",\n  \"certifications\": [\n    \"\"\n  ],\n  \"languages\": [\n    \"\"\n  ],\n  \"quality\": {},\n  \"structured_ambiguities\": [\n    {}\n  ],\n  \"source_refs\": [\n    {\n      \"page_number\": 0,\n      \"section\": \"\",\n      \"text\": \"\",\n      \"chunk_id\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative resume parser. Convert the supplied resume chunks into a structured ResumeProfile with traceable source references.\n\nObjective:\n- Extract resume facts without inference.\n- Deduplicate overlapping chunks.\n- Preserve exact provenance for important facts supported by the schema.\n- Extract education courses, GPA, ranking, papers, work/project bullets, technologies, metrics, awards, certifications, languages, self summary, quality warnings, and structured ambiguities when explicitly present.\n\nFact boundary:\n- Use only the supplied chunks.\n- Do not infer missing employers, job titles, dates, degree levels, responsibilities, proficiency, ownership, causal impact, or contact details.\n- Do not upgrade a keyword mention into demonstrated experience.\n- Preserve the resume's dominant language.\n\nSource-reference integrity:\n- Every `chunk_id` must exactly match an input chunk ID.\n- Every `page_number` and `section` must be copied from the same input chunk.\n- Every `source_refs.text` must be one exact, contiguous substring of that chunk's text.\n- Do not paraphrase, translate, summarize, splice multiple chunks, add ellipses, or silently correct OCR inside a source reference.\n- Prefer the shortest excerpt sufficient to support the fact.\n\nFacts that require references:\n- The candidate name must be supported in top-level `source_refs`.\n- Every education item, work-experience item, project item, skill, achievement, quantified metric, and important certification must have at least one source reference when its schema supports references.\n- Every work/project achievement bullet should be a separate `bullets` entry with `raw_text`, action, technologies, metrics, and source references.\n- Quantified outcomes must be represented as structured `metrics` instead of only prose.\n- Explicit specialized skills, quantified outcomes, certifications, awards, and leadership claims must be supported by item references or top-level `source_refs`.\n- Do not output an important fact when no valid supporting chunk can be identified.\n\nSkill evidence levels:\n- `demonstrated`: used in work, project, research, or concrete implementation evidence.\n- `self_claimed`: listed in professional skills or self-described proficiency without usage evidence.\n- `course_only`: appears only in coursework or education.\n- `mentioned`: appears only as a generic mention.\n- Extract skills jointly from work experience, projects, research, and professional skills sections.\n- Do not treat self-evaluation text as hard skill evidence.\n\nOCR and ambiguity policy:\n- Never silently correct suspicious OCR tokens such as `Al` versus `AI` or `O` versus `0`.\n- Never write a corrected token as if it were the original source quote.\n- If a token is unreadable, internally inconsistent, or likely corrupted, omit the uncertain normalized fact and add a concise `ambiguities` and `structured_ambiguities` entry.\n- Treat phrases such as `根据方向微调`, `此处填写`, and `可选` as template residue and record them in `structured_ambiguities`; do not use them as candidate evidence.\n- If much of the input is unreadable, return the minimal safely supported profile and record the text-quality issue.\n\nSilent self-check before returning:\n- All extracted facts are explicitly supported by input chunks.\n- Every reference points to one input chunk and uses an exact substring.\n- No OCR correction, cross-chunk text construction, or unsupported inference was introduced.\n- Output matches the injected JSON Schema exactly.\n\nResume filename: synthetic-resume.txt\n\nResume chunks:\n[{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"正文\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "ResumeProfile",
+              "schema": {
+                "$defs": {
+                  "AchievementItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "level": {
+                        "default": "",
+                        "title": "Level",
+                        "type": "string"
+                      },
+                      "category": {
+                        "default": "",
+                        "title": "Category",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "AchievementItem",
+                    "type": "object"
+                  },
+                  "EducationItem": {
+                    "properties": {
+                      "school": {
+                        "default": "",
+                        "title": "School",
+                        "type": "string"
+                      },
+                      "college": {
+                        "default": "",
+                        "title": "College",
+                        "type": "string"
+                      },
+                      "degree": {
+                        "default": "",
+                        "title": "Degree",
+                        "type": "string"
+                      },
+                      "major": {
+                        "default": "",
+                        "title": "Major",
+                        "type": "string"
+                      },
+                      "years": {
+                        "default": "",
+                        "title": "Years",
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "default": "",
+                        "title": "Start Date",
+                        "type": "string"
+                      },
+                      "end_date": {
+                        "default": "",
+                        "title": "End Date",
+                        "type": "string"
+                      },
+                      "gpa": {
+                        "default": "",
+                        "title": "Gpa",
+                        "type": "string"
+                      },
+                      "rank": {
+                        "default": "",
+                        "title": "Rank",
+                        "type": "string"
+                      },
+                      "lab": {
+                        "default": "",
+                        "title": "Lab",
+                        "type": "string"
+                      },
+                      "research_direction": {
+                        "default": "",
+                        "title": "Research Direction",
+                        "type": "string"
+                      },
+                      "advisor": {
+                        "default": "",
+                        "title": "Advisor",
+                        "type": "string"
+                      },
+                      "papers": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Papers",
+                        "type": "array"
+                      },
+                      "courses": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Courses",
+                        "type": "array"
+                      },
+                      "achievements": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Achievements",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "EducationItem",
+                    "type": "object"
+                  },
+                  "MetricItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "default": "",
+                        "title": "Value",
+                        "type": "string"
+                      },
+                      "unit": {
+                        "default": "",
+                        "title": "Unit",
+                        "type": "string"
+                      },
+                      "raw_text": {
+                        "default": "",
+                        "title": "Raw Text",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "MetricItem",
+                    "type": "object"
+                  },
+                  "ProjectItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "role": {
+                        "default": "",
+                        "title": "Role",
+                        "type": "string"
+                      },
+                      "duration": {
+                        "default": "",
+                        "title": "Duration",
+                        "type": "string"
+                      },
+                      "description": {
+                        "default": "",
+                        "title": "Description",
+                        "type": "string"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "bullets": {
+                        "items": {
+                          "$ref": "#/$defs/ResumeBullet"
+                        },
+                        "title": "Bullets",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "ProjectItem",
+                    "type": "object"
+                  },
+                  "ResumeBullet": {
+                    "properties": {
+                      "raw_text": {
+                        "default": "",
+                        "title": "Raw Text",
+                        "type": "string"
+                      },
+                      "action": {
+                        "default": "",
+                        "title": "Action",
+                        "type": "string"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "ResumeBullet",
+                    "type": "object"
+                  },
+                  "SkillItem": {
+                    "properties": {
+                      "name": {
+                        "default": "",
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "category": {
+                        "default": "",
+                        "title": "Category",
+                        "type": "string"
+                      },
+                      "evidence_level": {
+                        "default": "mentioned",
+                        "enum": [
+                          "demonstrated",
+                          "self_claimed",
+                          "course_only",
+                          "mentioned"
+                        ],
+                        "title": "Evidence Level",
+                        "type": "string"
+                      },
+                      "proficiency_claim": {
+                        "default": "",
+                        "title": "Proficiency Claim",
+                        "type": "string"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "SkillItem",
+                    "type": "object"
+                  },
+                  "SourceRef": {
+                    "properties": {
+                      "page_number": {
+                        "minimum": 0,
+                        "title": "Page Number",
+                        "type": "integer"
+                      },
+                      "section": {
+                        "title": "Section",
+                        "type": "string"
+                      },
+                      "text": {
+                        "title": "Text",
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "title": "Chunk Id",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "page_number",
+                      "section",
+                      "text",
+                      "chunk_id"
+                    ],
+                    "title": "SourceRef",
+                    "type": "object"
+                  },
+                  "WorkItem": {
+                    "properties": {
+                      "company": {
+                        "default": "",
+                        "title": "Company",
+                        "type": "string"
+                      },
+                      "title": {
+                        "default": "",
+                        "title": "Title",
+                        "type": "string"
+                      },
+                      "duration": {
+                        "default": "",
+                        "title": "Duration",
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "default": "",
+                        "title": "Start Date",
+                        "type": "string"
+                      },
+                      "end_date": {
+                        "default": "",
+                        "title": "End Date",
+                        "type": "string"
+                      },
+                      "description": {
+                        "default": "",
+                        "title": "Description",
+                        "type": "string"
+                      },
+                      "bullets": {
+                        "items": {
+                          "$ref": "#/$defs/ResumeBullet"
+                        },
+                        "title": "Bullets",
+                        "type": "array"
+                      },
+                      "technologies": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Technologies",
+                        "type": "array"
+                      },
+                      "metrics": {
+                        "items": {
+                          "$ref": "#/$defs/MetricItem"
+                        },
+                        "title": "Metrics",
+                        "type": "array"
+                      },
+                      "source_refs": {
+                        "items": {
+                          "$ref": "#/$defs/SourceRef"
+                        },
+                        "title": "Source Refs",
+                        "type": "array"
+                      }
+                    },
+                    "title": "WorkItem",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "candidate_name": {
+                    "title": "Candidate Name",
+                    "type": "string"
+                  },
+                  "contact": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "title": "Contact",
+                    "type": "object"
+                  },
+                  "education": {
+                    "items": {
+                      "$ref": "#/$defs/EducationItem"
+                    },
+                    "title": "Education",
+                    "type": "array"
+                  },
+                  "work_experience": {
+                    "items": {
+                      "$ref": "#/$defs/WorkItem"
+                    },
+                    "title": "Work Experience",
+                    "type": "array"
+                  },
+                  "projects": {
+                    "items": {
+                      "$ref": "#/$defs/ProjectItem"
+                    },
+                    "title": "Projects",
+                    "type": "array"
+                  },
+                  "skills": {
+                    "items": {
+                      "$ref": "#/$defs/SkillItem"
+                    },
+                    "title": "Skills",
+                    "type": "array"
+                  },
+                  "achievements": {
+                    "items": {
+                      "$ref": "#/$defs/AchievementItem"
+                    },
+                    "title": "Achievements",
+                    "type": "array"
+                  },
+                  "ambiguities": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Ambiguities",
+                    "type": "array"
+                  },
+                  "self_summary": {
+                    "default": "",
+                    "title": "Self Summary",
+                    "type": "string"
+                  },
+                  "certifications": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Certifications",
+                    "type": "array"
+                  },
+                  "languages": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Languages",
+                    "type": "array"
+                  },
+                  "quality": {
+                    "additionalProperties": true,
+                    "title": "Quality",
+                    "type": "object"
+                  },
+                  "structured_ambiguities": {
+                    "items": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "title": "Structured Ambiguities",
+                    "type": "array"
+                  },
+                  "source_refs": {
+                    "items": {
+                      "$ref": "#/$defs/SourceRef"
+                    },
+                    "title": "Source Refs",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "candidate_name"
+                ],
+                "title": "ResumeProfile",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"candidate_name\": \"Parsed Candidate\", \"self_summary\": \"Original question\", \"source_refs\": [{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"\\u6b63\\u6587\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]}"
+        }
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second",
+        "call_id": "399c5416-ade6-47fc-97d8-ffc74f58b835",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"CriterionEvaluation\": {\"properties\": {\"criterion_id\": {\"title\": \"Criterion Id\", \"type\": \"string\"}, \"name\": {\"title\": \"Name\", \"type\": \"string\"}, \"weight\": {\"maximum\": 100, \"minimum\": 0, \"title\": \"Weight\", \"type\": \"number\"}, \"score\": {\"maximum\": 5, \"minimum\": 0, \"title\": \"Score\", \"type\": \"integer\"}, \"status\": {\"enum\": [\"strong_match\", \"match\", \"partial_match\", \"no_evidence\", \"conflict\"], \"title\": \"Status\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 5, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"missing_evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Missing Evidence\", \"type\": \"array\"}, \"risk\": {\"default\": \"\", \"title\": \"Risk\", \"type\": \"string\"}}, \"required\": [\"criterion_id\", \"name\", \"weight\", \"score\", \"status\", \"reason\"], \"title\": \"CriterionEvaluation\", \"type\": \"object\"}}, \"properties\": {\"evaluations\": {\"items\": {\"$ref\": \"#/$defs/CriterionEvaluation\"}, \"title\": \"Evaluations\", \"type\": \"array\"}}, \"required\": [\"evaluations\"], \"title\": \"MatchEvaluation\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"evaluations\": [\n    {\n      \"criterion_id\": \"\",\n      \"name\": \"\",\n      \"weight\": 0,\n      \"score\": 0,\n      \"status\": \"strong_match\",\n      \"reason\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"missing_evidence\": [\n        \"\"\n      ],\n      \"risk\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative hiring-match evaluator. Evaluate each JD criterion from the evidence candidates supplied for that criterion, with the structured resume used only for global context and risk awareness.\n\nStrict fact boundary:\n- Use only the evidence objects supplied under each criterion as proof for positive scores.\n- Use the structured resume to understand candidate background, ownership context, self-claimed skills, OCR ambiguities, and template residue, but not as standalone proof.\n- Do not use outside knowledge, assumptions, adjacent skills, or retrieval similarity as proof.\n- Retrieval similarity is only a retrieval signal; it is not evidence of a match.\n- Self-claimed skills, OCR ambiguities, and template residue are weak context and must not be treated as strong evidence.\n- Do not calculate `total_score` or a final recommendation.\n\nCriterion coverage and identity:\n- Return every input criterion exactly once, in the same order.\n- Copy `criterion_id`, `name`, and `weight` exactly from the input criterion.\n- Do not add, omit, merge, split, rename, or reorder criteria.\n\nEvidence integrity:\n- Return only `evidence_chunk_ids`.\n- Evidence IDs must come only from the candidate evidence list attached to the same criterion.\n- Do not create, rewrite, shorten, paraphrase, translate, correct OCR, splice, or rebuild evidence.\n- If no supplied object directly supports the criterion, return `score=0` and `evidence_chunk_ids=[]`.\n\nScoring:\n- 5: direct, specific, sufficient evidence demonstrates the criterion at required scope.\n- 4: clear direct practical evidence supports the criterion; only a minor dimension is missing.\n- 3: direct but partial evidence demonstrates a meaningful subset or incomplete depth.\n- 2: explicitly related evidence exists but is indirect, shallow, keyword-level, or lacks demonstrated execution.\n- 1: weak explicit relation exists and is insufficient.\n- 0: no supplied evidence supports the criterion, or supplied evidence explicitly conflicts with it.\n\nStatus mapping:\n- score 5 -> `strong_match`\n- score 4 -> `match`\n- score 1 to 3 -> `partial_match`\n- score 0 with no direct support -> `no_evidence`\n- score 0 with explicit contradiction -> `conflict`\n\nSilent self-check:\n- Criterion count, IDs, order, names, and weights exactly match the input.\n- Score/status/evidence state follows the fixed rules.\n- Every positive score has at least one allowed chunk ID.\n- Every score-0 item has no evidence IDs.\n- Output matches the injected JSON Schema exactly.\n\nJob criteria:\n[{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}]\n\nStructured resume profile:\n{\"candidate_name\": \"Second\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}\n\nEvidence by criterion:\n{\"api\": []}\n\nResume ambiguities and quality warnings:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "MatchEvaluation",
+              "schema": {
+                "$defs": {
+                  "CriterionEvaluation": {
+                    "properties": {
+                      "criterion_id": {
+                        "title": "Criterion Id",
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "weight": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "score": {
+                        "maximum": 5,
+                        "minimum": 0,
+                        "title": "Score",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "enum": [
+                          "strong_match",
+                          "match",
+                          "partial_match",
+                          "no_evidence",
+                          "conflict"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 5,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "missing_evidence": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Missing Evidence",
+                        "type": "array"
+                      },
+                      "risk": {
+                        "default": "",
+                        "title": "Risk",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "criterion_id",
+                      "name",
+                      "weight",
+                      "score",
+                      "status",
+                      "reason"
+                    ],
+                    "title": "CriterionEvaluation",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "evaluations": {
+                    "items": {
+                      "$ref": "#/$defs/CriterionEvaluation"
+                    },
+                    "title": "Evaluations",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "evaluations"
+                ],
+                "title": "MatchEvaluation",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+        }
+      },
+      {
+        "task": "plan_question_blueprint",
+        "candidate": null,
+        "call_id": "258ecc79-6f2b-411b-9976-488897c1b512",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"AmbiguitySource\": {\"properties\": {\"source_id\": {\"title\": \"Source Id\", \"type\": \"string\"}, \"related_criterion_id\": {\"default\": \"\", \"title\": \"Related Criterion Id\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 2, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}}, \"required\": [\"source_id\", \"reason\"], \"title\": \"AmbiguitySource\", \"type\": \"object\"}, \"QuestionBlueprintItem\": {\"properties\": {\"question_id\": {\"title\": \"Question Id\", \"type\": \"string\"}, \"question_type\": {\"enum\": [\"resume_experience\", \"jd_core_capability\", \"scenario_design\", \"gap_validation\", \"behavior_review\"], \"title\": \"Question Type\", \"type\": \"string\"}, \"primary_criterion_id\": {\"title\": \"Primary Criterion Id\", \"type\": \"string\"}, \"secondary_criterion_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 1, \"title\": \"Secondary Criterion Ids\", \"type\": \"array\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 2, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"objective\": {\"title\": \"Objective\", \"type\": \"string\"}, \"difficulty\": {\"enum\": [\"easy\", \"medium\", \"hard\"], \"title\": \"Difficulty\", \"type\": \"string\"}}, \"required\": [\"question_id\", \"question_type\", \"primary_criterion_id\", \"objective\", \"difficulty\"], \"title\": \"QuestionBlueprintItem\", \"type\": \"object\"}}, \"properties\": {\"formal_questions\": {\"items\": {\"$ref\": \"#/$defs/QuestionBlueprintItem\"}, \"maxItems\": 10, \"minItems\": 1, \"title\": \"Formal Questions\", \"type\": \"array\"}, \"ambiguity_sources\": {\"items\": {\"$ref\": \"#/$defs/AmbiguitySource\"}, \"maxItems\": 5, \"title\": \"Ambiguity Sources\", \"type\": \"array\"}}, \"required\": [\"formal_questions\"], \"title\": \"QuestionBlueprint\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"formal_questions\": [\n    {\n      \"question_id\": \"\",\n      \"question_type\": \"resume_experience\",\n      \"primary_criterion_id\": \"\",\n      \"secondary_criterion_ids\": [\n        \"\"\n      ],\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"objective\": \"\",\n      \"difficulty\": \"easy\"\n    }\n  ],\n  \"ambiguity_sources\": [\n    {\n      \"source_id\": \"\",\n      \"related_criterion_id\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"reason\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are planning an interview question set. Return a compact QuestionBlueprint only.\n\nUse only the supplied candidate report. Do not write full questions, rubrics, answer directions, or follow-ups.\n\nBlueprint rules:\n- Create exactly 1 formal question blueprint items.\n- Question type counts must match this distribution: {\"resume_experience\": 1}.\n- Use stable unique IDs such as `q01`, `q02`, and so on up to the requested count.\n- Cover at least four distinct criteria when at least four criteria exist.\n- Do not repeat the same assessment objective.\n- Use `evidence_chunk_ids` only from the candidate report evaluations.\n- Non-gap items must include 1-2 direct evidence IDs from the candidate report evaluations.\n- Do not use the same first `evidence_chunk_ids` value as the primary basis for more than two formal questions.\n- Gap items may have empty evidence IDs when the report has no supporting evidence.\n- Ambiguity sources should describe only resume ambiguities or evidence conflicts present in the report.\n\nCandidate report context:\n{\"job_profile\": {\"job_title\": \"API Engineer\", \"summary\": \"Build APIs\", \"responsibilities\": [], \"criteria\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}], \"interview_focus\": []}, \"resume_profile\": {\"candidate_name\": \"First\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}, \"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100.0, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\", \"evidence\": []}], \"total_score\": 0.0, \"recommendation\": \"reject\"}\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "QuestionBlueprint",
+              "schema": {
+                "$defs": {
+                  "AmbiguitySource": {
+                    "properties": {
+                      "source_id": {
+                        "title": "Source Id",
+                        "type": "string"
+                      },
+                      "related_criterion_id": {
+                        "default": "",
+                        "title": "Related Criterion Id",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 2,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source_id",
+                      "reason"
+                    ],
+                    "title": "AmbiguitySource",
+                    "type": "object"
+                  },
+                  "QuestionBlueprintItem": {
+                    "properties": {
+                      "question_id": {
+                        "title": "Question Id",
+                        "type": "string"
+                      },
+                      "question_type": {
+                        "enum": [
+                          "resume_experience",
+                          "jd_core_capability",
+                          "scenario_design",
+                          "gap_validation",
+                          "behavior_review"
+                        ],
+                        "title": "Question Type",
+                        "type": "string"
+                      },
+                      "primary_criterion_id": {
+                        "title": "Primary Criterion Id",
+                        "type": "string"
+                      },
+                      "secondary_criterion_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 1,
+                        "title": "Secondary Criterion Ids",
+                        "type": "array"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 2,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "objective": {
+                        "title": "Objective",
+                        "type": "string"
+                      },
+                      "difficulty": {
+                        "enum": [
+                          "easy",
+                          "medium",
+                          "hard"
+                        ],
+                        "title": "Difficulty",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "question_id",
+                      "question_type",
+                      "primary_criterion_id",
+                      "objective",
+                      "difficulty"
+                    ],
+                    "title": "QuestionBlueprintItem",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "formal_questions": {
+                    "items": {
+                      "$ref": "#/$defs/QuestionBlueprintItem"
+                    },
+                    "maxItems": 10,
+                    "minItems": 1,
+                    "title": "Formal Questions",
+                    "type": "array"
+                  },
+                  "ambiguity_sources": {
+                    "items": {
+                      "$ref": "#/$defs/AmbiguitySource"
+                    },
+                    "maxItems": 5,
+                    "title": "Ambiguity Sources",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "formal_questions"
+                ],
+                "title": "QuestionBlueprint",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"formal_questions\": [{\"question_id\": \"q1\", \"question_type\": \"gap_validation\", \"primary_criterion_id\": \"api\", \"objective\": \"Verify API experience\", \"difficulty\": \"medium\"}]}"
+        }
+      },
+      {
+        "task": "generate_question_batch",
+        "candidate": null,
+        "call_id": "27fdb526-2333-490e-b9a7-5a2ef796cfbe",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"InterviewQuestion\": {\"properties\": {\"question\": {\"title\": \"Question\", \"type\": \"string\"}, \"question_type\": {\"enum\": [\"resume_experience\", \"jd_core_capability\", \"scenario_design\", \"gap_validation\", \"behavior_review\"], \"title\": \"Question Type\", \"type\": \"string\"}, \"difficulty\": {\"enum\": [\"easy\", \"medium\", \"hard\"], \"title\": \"Difficulty\", \"type\": \"string\"}, \"assessment_points\": {\"items\": {\"type\": \"string\"}, \"title\": \"Assessment Points\", \"type\": \"array\"}, \"related_criteria\": {\"items\": {\"type\": \"string\"}, \"title\": \"Related Criteria\", \"type\": \"array\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 2, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"reference_answer_direction\": {\"title\": \"Reference Answer Direction\", \"type\": \"string\"}, \"scoring_rubric\": {\"items\": {\"type\": \"string\"}, \"title\": \"Scoring Rubric\", \"type\": \"array\"}, \"suggested_followups\": {\"items\": {\"type\": \"string\"}, \"title\": \"Suggested Followups\", \"type\": \"array\"}}, \"required\": [\"question\", \"question_type\", \"difficulty\", \"assessment_points\", \"related_criteria\", \"reference_answer_direction\", \"scoring_rubric\", \"suggested_followups\"], \"title\": \"InterviewQuestion\", \"type\": \"object\"}}, \"properties\": {\"formal_questions\": {\"items\": {\"$ref\": \"#/$defs/InterviewQuestion\"}, \"maxItems\": 5, \"minItems\": 0, \"title\": \"Formal Questions\", \"type\": \"array\"}}, \"required\": [\"formal_questions\"], \"title\": \"QuestionBatch\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"formal_questions\": [\n    {\n      \"question\": \"\",\n      \"question_type\": \"resume_experience\",\n      \"difficulty\": \"easy\",\n      \"assessment_points\": [\n        \"\"\n      ],\n      \"related_criteria\": [\n        \"\"\n      ],\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"reference_answer_direction\": \"\",\n      \"scoring_rubric\": [\n        \"\"\n      ],\n      \"suggested_followups\": [\n        \"\"\n      ]\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are writing one batch of formal interview questions from a fixed blueprint.\n\nUse only the supplied candidate report and the supplied blueprint items. Do not choose new criteria or evidence IDs.\n\nRules:\n- Return only JSON matching the injected QuestionBatch schema.\n- Generate one formal question per supplied blueprint item, in the same order.\n- Copy each blueprint item's question type, difficulty, related criteria, and evidence_chunk_ids.\n- Use only `evidence_chunk_ids`; do not create or rewrite evidence objects.\n- Make questions answerable and scoreable. Avoid compound questions and answer leakage.\n- Keep assessment_points to 2-4 items and scoring_rubric to 3-5 items.\n- `suggested_followups` must always be a JSON array with exactly 1 string item. Correct: `\"suggested_followups\": [\"...\"]`. Incorrect: `\"suggested_followups\": \"...\"`.\n- Avoid duplicating or paraphrasing existing questions listed below.\n\nCandidate report context:\n{\"job_profile\": {\"job_title\": \"API Engineer\", \"summary\": \"Build APIs\", \"responsibilities\": [], \"criteria\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}], \"interview_focus\": []}, \"resume_profile\": {\"candidate_name\": \"First\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}, \"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100.0, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\", \"evidence\": []}], \"total_score\": 0.0, \"recommendation\": \"reject\"}\n\nBlueprint items:\n{\"formal_questions\": [{\"question_id\": \"q1\", \"question_type\": \"gap_validation\", \"primary_criterion_id\": \"api\", \"secondary_criterion_ids\": [], \"evidence_chunk_ids\": [], \"objective\": \"Verify API experience\", \"difficulty\": \"medium\"}]}\n\nExisting question texts:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "QuestionBatch",
+              "schema": {
+                "$defs": {
+                  "InterviewQuestion": {
+                    "properties": {
+                      "question": {
+                        "title": "Question",
+                        "type": "string"
+                      },
+                      "question_type": {
+                        "enum": [
+                          "resume_experience",
+                          "jd_core_capability",
+                          "scenario_design",
+                          "gap_validation",
+                          "behavior_review"
+                        ],
+                        "title": "Question Type",
+                        "type": "string"
+                      },
+                      "difficulty": {
+                        "enum": [
+                          "easy",
+                          "medium",
+                          "hard"
+                        ],
+                        "title": "Difficulty",
+                        "type": "string"
+                      },
+                      "assessment_points": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Assessment Points",
+                        "type": "array"
+                      },
+                      "related_criteria": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Related Criteria",
+                        "type": "array"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 2,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "reference_answer_direction": {
+                        "title": "Reference Answer Direction",
+                        "type": "string"
+                      },
+                      "scoring_rubric": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Scoring Rubric",
+                        "type": "array"
+                      },
+                      "suggested_followups": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Suggested Followups",
+                        "type": "array"
+                      }
+                    },
+                    "required": [
+                      "question",
+                      "question_type",
+                      "difficulty",
+                      "assessment_points",
+                      "related_criteria",
+                      "reference_answer_direction",
+                      "scoring_rubric",
+                      "suggested_followups"
+                    ],
+                    "title": "InterviewQuestion",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "formal_questions": {
+                    "items": {
+                      "$ref": "#/$defs/InterviewQuestion"
+                    },
+                    "maxItems": 5,
+                    "minItems": 0,
+                    "title": "Formal Questions",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "formal_questions"
+                ],
+                "title": "QuestionBatch",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"formal_questions\": [{\"question\": \"Original question\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}]}"
+        }
+      },
+      {
+        "task": "generate_ambiguity_followups",
+        "candidate": null,
+        "call_id": "7f09f06d-973e-42d3-81ee-379549f46f19",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"InterviewQuestion\": {\"properties\": {\"question\": {\"title\": \"Question\", \"type\": \"string\"}, \"question_type\": {\"enum\": [\"resume_experience\", \"jd_core_capability\", \"scenario_design\", \"gap_validation\", \"behavior_review\"], \"title\": \"Question Type\", \"type\": \"string\"}, \"difficulty\": {\"enum\": [\"easy\", \"medium\", \"hard\"], \"title\": \"Difficulty\", \"type\": \"string\"}, \"assessment_points\": {\"items\": {\"type\": \"string\"}, \"title\": \"Assessment Points\", \"type\": \"array\"}, \"related_criteria\": {\"items\": {\"type\": \"string\"}, \"title\": \"Related Criteria\", \"type\": \"array\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 2, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"reference_answer_direction\": {\"title\": \"Reference Answer Direction\", \"type\": \"string\"}, \"scoring_rubric\": {\"items\": {\"type\": \"string\"}, \"title\": \"Scoring Rubric\", \"type\": \"array\"}, \"suggested_followups\": {\"items\": {\"type\": \"string\"}, \"title\": \"Suggested Followups\", \"type\": \"array\"}}, \"required\": [\"question\", \"question_type\", \"difficulty\", \"assessment_points\", \"related_criteria\", \"reference_answer_direction\", \"scoring_rubric\", \"suggested_followups\"], \"title\": \"InterviewQuestion\", \"type\": \"object\"}}, \"properties\": {\"ambiguity_followups\": {\"items\": {\"$ref\": \"#/$defs/InterviewQuestion\"}, \"maxItems\": 5, \"minItems\": 3, \"title\": \"Ambiguity Followups\", \"type\": \"array\"}}, \"required\": [\"ambiguity_followups\"], \"title\": \"AmbiguityFollowupSet\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"ambiguity_followups\": [\n    {\n      \"question\": \"\",\n      \"question_type\": \"resume_experience\",\n      \"difficulty\": \"easy\",\n      \"assessment_points\": [\n        \"\"\n      ],\n      \"related_criteria\": [\n        \"\"\n      ],\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"reference_answer_direction\": \"\",\n      \"scoring_rubric\": [\n        \"\"\n      ],\n      \"suggested_followups\": [\n        \"\"\n      ]\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are writing ambiguity follow-up questions after the formal interview questions have been drafted.\n\nUse only the supplied candidate report, blueprint, and formal question texts.\n\nRules:\n- Return only JSON matching the injected AmbiguityFollowupSet schema.\n- Generate 3 to 5 `ambiguity_followups`.\n- Ambiguity follow-ups should verify contradictions, unclear ownership, metric scope, technical depth, decision tradeoffs, or failure learning.\n- Return only `evidence_chunk_ids`; do not create or rewrite evidence objects.\n- Do not duplicate formal question objectives.\n- Each follow-up must be answerable and must not reveal a preferred answer.\n\nCandidate report context:\n{\"job_profile\": {\"job_title\": \"API Engineer\", \"summary\": \"Build APIs\", \"responsibilities\": [], \"criteria\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}], \"interview_focus\": []}, \"resume_profile\": {\"candidate_name\": \"First\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}, \"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100.0, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\", \"evidence\": []}], \"total_score\": 0.0, \"recommendation\": \"reject\"}\n\nBlueprint:\n{\"formal_questions\": [{\"question_id\": \"q1\", \"question_type\": \"gap_validation\", \"primary_criterion_id\": \"api\", \"secondary_criterion_ids\": [], \"evidence_chunk_ids\": [], \"objective\": \"Verify API experience\", \"difficulty\": \"medium\"}], \"ambiguity_sources\": []}\n\nFormal questions:\n[{\"question\": \"Original question\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "AmbiguityFollowupSet",
+              "schema": {
+                "$defs": {
+                  "InterviewQuestion": {
+                    "properties": {
+                      "question": {
+                        "title": "Question",
+                        "type": "string"
+                      },
+                      "question_type": {
+                        "enum": [
+                          "resume_experience",
+                          "jd_core_capability",
+                          "scenario_design",
+                          "gap_validation",
+                          "behavior_review"
+                        ],
+                        "title": "Question Type",
+                        "type": "string"
+                      },
+                      "difficulty": {
+                        "enum": [
+                          "easy",
+                          "medium",
+                          "hard"
+                        ],
+                        "title": "Difficulty",
+                        "type": "string"
+                      },
+                      "assessment_points": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Assessment Points",
+                        "type": "array"
+                      },
+                      "related_criteria": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Related Criteria",
+                        "type": "array"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 2,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "reference_answer_direction": {
+                        "title": "Reference Answer Direction",
+                        "type": "string"
+                      },
+                      "scoring_rubric": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Scoring Rubric",
+                        "type": "array"
+                      },
+                      "suggested_followups": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Suggested Followups",
+                        "type": "array"
+                      }
+                    },
+                    "required": [
+                      "question",
+                      "question_type",
+                      "difficulty",
+                      "assessment_points",
+                      "related_criteria",
+                      "reference_answer_direction",
+                      "scoring_rubric",
+                      "suggested_followups"
+                    ],
+                    "title": "InterviewQuestion",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "ambiguity_followups": {
+                    "items": {
+                      "$ref": "#/$defs/InterviewQuestion"
+                    },
+                    "maxItems": 5,
+                    "minItems": 3,
+                    "title": "Ambiguity Followups",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "ambiguity_followups"
+                ],
+                "title": "AmbiguityFollowupSet",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"ambiguity_followups\": [{\"question\": \"Clarify 0\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}, {\"question\": \"Clarify 1\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}, {\"question\": \"Clarify 2\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}]}"
+        }
+      },
+      {
+        "task": "followup.analyze_answer",
+        "candidate": null,
+        "call_id": "0495413f-1699-4997-92ad-88580a1c8c31",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"properties\": {\"follow_up\": {\"title\": \"Follow Up\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Evidence\", \"type\": \"array\"}, \"risks\": {\"items\": {\"type\": \"string\"}, \"title\": \"Risks\", \"type\": \"array\"}, \"current_ability\": {\"title\": \"Current Ability\", \"type\": \"string\"}, \"next_suggestion\": {\"title\": \"Next Suggestion\", \"type\": \"string\"}}, \"required\": [\"follow_up\", \"reason\", \"current_ability\", \"next_suggestion\"], \"title\": \"FollowUpAnalysisResponse\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"follow_up\": \"\",\n  \"reason\": \"\",\n  \"evidence\": [\n    \"\"\n  ],\n  \"risks\": [\n    \"\"\n  ],\n  \"current_ability\": \"\",\n  \"next_suggestion\": \"\"\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a senior interviewer. Analyze the candidate answer and generate the next follow-up question.\n\nRules:\n- Return only JSON matching the provided FollowUpAnalysisResponse schema.\n- The follow-up must be specific to the current question, candidate answer, JD context, and resume context.\n- Do not invent resume facts. Use the provided contexts only.\n- Evidence items should be short text references from the resume or prior question context when available.\n- Risks should identify unclear ownership, missing metrics, weak technical depth, contradictions, or gaps.\n\nJD context:\n{}\n\nResume context:\n{}\n\nQuestion context:\n{}\n\nConversation history:\n[]\n\nCurrent question:\nHow?\n\nCandidate answer:\nValidated API fields in a test environment.\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "FollowUpAnalysisResponse",
+              "schema": {
+                "properties": {
+                  "follow_up": {
+                    "title": "Follow Up",
+                    "type": "string"
+                  },
+                  "reason": {
+                    "title": "Reason",
+                    "type": "string"
+                  },
+                  "evidence": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Evidence",
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Risks",
+                    "type": "array"
+                  },
+                  "current_ability": {
+                    "title": "Current Ability",
+                    "type": "string"
+                  },
+                  "next_suggestion": {
+                    "title": "Next Suggestion",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "follow_up",
+                  "reason",
+                  "current_ability",
+                  "next_suggestion"
+                ],
+                "title": "FollowUpAnalysisResponse",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"follow_up\": \"Original question\", \"reason\": \"Need concrete evidence\", \"evidence\": [], \"risks\": [], \"current_ability\": \"Pending verification\", \"next_suggestion\": \"Give an example\"}"
+        }
+      }
+    ],
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "database": "isolated SQLite",
+    "source_directory": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r7/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately",
+    "public_model_output": [
+      {
+        "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+      },
+      {
+        "text": "{\"candidate_name\": \"Parsed Candidate\", \"self_summary\": \"Original question\", \"source_refs\": [{\"chunk_id\": \"0:3:resume:0\", \"page_number\": 1, \"section\": \"\\u6b63\\u6587\", \"text\": \"Synthetic Candidate: built API input validation and checked test cases.\"}]}"
+      },
+      {
+        "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+      },
+      {
+        "text": "{\"formal_questions\": [{\"question_id\": \"q1\", \"question_type\": \"gap_validation\", \"primary_criterion_id\": \"api\", \"objective\": \"Verify API experience\", \"difficulty\": \"medium\"}]}"
+      },
+      {
+        "text": "{\"formal_questions\": [{\"question\": \"Original question\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}]}"
+      },
+      {
+        "text": "{\"ambiguity_followups\": [{\"question\": \"Clarify 0\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}, {\"question\": \"Clarify 1\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}, {\"question\": \"Clarify 2\", \"question_type\": \"gap_validation\", \"difficulty\": \"medium\", \"assessment_points\": [\"API evidence\"], \"related_criteria\": [\"api\"], \"evidence_chunk_ids\": [], \"reference_answer_direction\": \"Explain actual responsibility\", \"scoring_rubric\": [\"Concrete evidence\"], \"suggested_followups\": [\"How was it verified?\"]}]}"
+      },
+      {
+        "text": "{\"follow_up\": \"Original question\", \"reason\": \"Need concrete evidence\", \"evidence\": [], \"risks\": [], \"current_ability\": \"Pending verification\", \"next_suggestion\": \"Give an example\"}"
+      }
+    ],
+    "business_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      },
+      {
+        "task": "document.parse_resume",
+        "candidate": null
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second"
+      },
+      {
+        "task": "plan_question_blueprint",
+        "candidate": null
+      },
+      {
+        "task": "generate_question_batch",
+        "candidate": null
+      },
+      {
+        "task": "generate_ambiguity_followups",
+        "candidate": null
+      },
+      {
+        "task": "followup.analyze_answer",
+        "candidate": null
+      }
+    ],
+    "retrieval": "deterministic four-dimensional embedding; generation uses live provider boundary"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "user_id": 1,
+        "session_id": "92e0bfed-7bf9-4dbb-b94c-e9560b3a9eac",
+        "request_id": "7843f45e-8907-4ca9-a5da-21d94b3034a6",
+        "kind": "match_analysis",
+        "status": "succeeded",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1
+          ],
+          "analysisJobId": 1,
+          "candidateIds": [
+            1
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-30T03:08:54.542484",
+          "resumes": {
+            "1": "2026-10-30T03:08:54.542891"
+          }
+        },
+        "result_json": {
+          "run_id": 1,
+          "job_title": "API Engineer",
+          "candidates": [
+            {
+              "candidate_id": 1,
+              "candidate_name": "First",
+              "filename": "first.txt",
+              "total_score": 0.0,
+              "recommendation": "reject",
+              "top_strengths": [
+                "API"
+              ]
+            }
+          ],
+          "taskId": "9052b289-b607-452f-9e75-41a57c9608de"
+        },
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:54.657009",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "match_analysis",
+            "id": 1
+          }
+        ],
+        "created_at": "2026-10-30T03:08:54.553048",
+        "updated_at": "2026-10-30T03:08:54.657646"
+      },
+      {
+        "id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "user_id": 1,
+        "session_id": "0901c380-00f1-484c-95c4-841122b1400a",
+        "request_id": "3bd268cb-7d70-48e8-b68b-f5339f8df675",
+        "kind": "question_generation",
+        "status": "failed",
+        "input_json": {
+          "analysisJobId": 1,
+          "candidateId": 1,
+          "questionCount": 1,
+          "resumeId": 1,
+          "jdId": 1,
+          "reportSnapshot": {
+            "run_id": 1,
+            "candidate_id": 1,
+            "candidate_name": "First",
+            "filename": "first.txt",
+            "job_profile": {
+              "job_title": "API Engineer",
+              "summary": "Build APIs",
+              "responsibilities": [],
+              "criteria": [
+                {
+                  "criterion_id": "api",
+                  "name": "API",
+                  "description": "Build APIs",
+                  "importance": "must",
+                  "weight": 100.0,
+                  "evidence_query": "API"
+                }
+              ],
+              "interview_focus": []
+            },
+            "resume_profile": {
+              "candidate_name": "First",
+              "contact": {},
+              "education": [],
+              "work_experience": [],
+              "projects": [],
+              "skills": [],
+              "achievements": [],
+              "ambiguities": [],
+              "self_summary": "",
+              "certifications": [],
+              "languages": [],
+              "quality": {},
+              "structured_ambiguities": [],
+              "source_refs": []
+            },
+            "evaluations": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "weight": 100.0,
+                "score": 0,
+                "status": "no_evidence",
+                "reason": "Need concrete citation",
+                "evidence_chunk_ids": [],
+                "missing_evidence": [
+                  "API evidence"
+                ],
+                "risk": "",
+                "evidence": []
+              }
+            ],
+            "total_score": 0.0,
+            "recommendation": "reject",
+            "top_strengths": [
+              "API"
+            ],
+            "warnings": [
+              "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+            ],
+            "summary": "First matched API Engineer with score 0 and recommendation reject.",
+            "formal_questions": [],
+            "ambiguity_followups": []
+          }
+        },
+        "input_versions": {
+          "resume": "2026-10-30T03:08:54.542891",
+          "jd": "2026-10-30T03:08:54.542484"
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:54.736631",
+        "cancel_requested_at": null,
+        "error_code": "question_generation_failed",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:54.661620",
+        "updated_at": "2026-10-30T03:08:54.737025"
+      },
+      {
+        "id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "user_id": 1,
+        "session_id": "0b12339b-ae39-421e-bd4e-fdaf0693471d",
+        "request_id": "upload",
+        "kind": "document_parse",
+        "status": "failed",
+        "input_json": {
+          "documentId": "resume:3",
+          "parseMode": "upload",
+          "sourceRef": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r7/originals/synthetic-resume.txt"
+        },
+        "input_versions": {
+          "document": "2026-10-30T03:08:54.665984"
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:54.689106",
+        "cancel_requested_at": null,
+        "error_code": "document_parse_failed",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:54.666446",
+        "updated_at": "2026-10-30T03:08:54.689765"
+      },
+      {
+        "id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "user_id": 1,
+        "session_id": "8e4ae4d7-2e35-45b0-bd2c-7083ee8faf21",
+        "request_id": "12fc30e4-abf0-4885-affb-b393a5444281",
+        "kind": "match_analysis",
+        "status": "failed",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            2
+          ],
+          "analysisJobId": 2,
+          "candidateIds": [
+            2
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-30T03:08:54.542484",
+          "resumes": {
+            "2": "2026-10-30T03:08:54.542892"
+          }
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:54.710520",
+        "cancel_requested_at": null,
+        "error_code": "match_analysis_failed",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:54.668554",
+        "updated_at": "2026-10-30T03:08:54.710917"
+      },
+      {
+        "id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "user_id": 1,
+        "session_id": "1585b3c6-fb99-41a6-bd4d-e0c1ee83bbd3",
+        "request_id": "f30c0af8-671a-4d32-bd1c-6b304d1d33ca",
+        "kind": "answer_followup",
+        "status": "failed",
+        "input_json": {
+          "followup": {
+            "question": "How?",
+            "answer": "Validated API fields in a test environment.",
+            "jd_context": {},
+            "resume_context": {},
+            "question_context": {},
+            "history": []
+          }
+        },
+        "input_versions": {},
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:54.744990",
+        "cancel_requested_at": null,
+        "error_code": "answer_followup_failed",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:54.669655",
+        "updated_at": "2026-10-30T03:08:54.745350"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "92e0bfed-7bf9-4dbb-b94c-e9560b3a9eac",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:54.552781"
+      },
+      {
+        "id": "0901c380-00f1-484c-95c4-841122b1400a",
+        "user_id": 1,
+        "purpose": "question_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:54.661497"
+      },
+      {
+        "id": "0b12339b-ae39-421e-bd4e-fdaf0693471d",
+        "user_id": 1,
+        "purpose": "document_parse",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:54.666370"
+      },
+      {
+        "id": "8e4ae4d7-2e35-45b0-bd2c-7083ee8faf21",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:54.668474"
+      },
+      {
+        "id": "1585b3c6-fb99-41a6-bd4d-e0c1ee83bbd3",
+        "user_id": 1,
+        "purpose": "answer_followup",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:54.669575"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "operation_key": "match:1",
+        "tool_name": "match_report",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.554219"
+      },
+      {
+        "id": 2,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.556275"
+      },
+      {
+        "id": 3,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.565069"
+      },
+      {
+        "id": 4,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.565939"
+      },
+      {
+        "id": 5,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.566954"
+      },
+      {
+        "id": 6,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.569798"
+      },
+      {
+        "id": 7,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.570648+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.571195"
+      },
+      {
+        "id": 8,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.571404+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.571907"
+      },
+      {
+        "id": 9,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.645359+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.646417"
+      },
+      {
+        "id": 10,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.646750+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.647428"
+      },
+      {
+        "id": 11,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.648847"
+      },
+      {
+        "id": 12,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 12,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.649849"
+      },
+      {
+        "id": 13,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 13,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.650679"
+      },
+      {
+        "id": 14,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 14,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "match_report"
+        },
+        "created_at": "2026-10-30T03:08:54.654459"
+      },
+      {
+        "id": 15,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 15,
+        "type": "task.progress",
+        "payload": {
+          "stage": "save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Saved candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": 1,
+          "total": 1,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.655090"
+      },
+      {
+        "id": 16,
+        "run_id": "9052b289-b607-452f-9e75-41a57c9608de",
+        "seq": 16,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.657943"
+      },
+      {
+        "id": 17,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.662112"
+      },
+      {
+        "id": 18,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.666843"
+      },
+      {
+        "id": 19,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.668945"
+      },
+      {
+        "id": 20,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.670001"
+      },
+      {
+        "id": 21,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.670960"
+      },
+      {
+        "id": 22,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "server_save",
+          "status": "running",
+          "progress": 12,
+          "overall_progress": 12,
+          "message": "正在读取已保存的原件",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:54.674027"
+      },
+      {
+        "id": 23,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "extract",
+          "status": "running",
+          "progress": 32,
+          "overall_progress": 32,
+          "message": "正在提取第 1/1 页",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": 100,
+          "current": 1,
+          "total": 1,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:54.675061"
+      },
+      {
+        "id": 24,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "正在提取文档结构",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "cached": false
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.675987"
+      },
+      {
+        "id": 25,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.678966+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.679569"
+      },
+      {
+        "id": 26,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.679788+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.680404"
+      },
+      {
+        "id": 27,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.683387+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.683993"
+      },
+      {
+        "id": 28,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_analyze",
+          "status": "running",
+          "progress": 45,
+          "overall_progress": 45,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "document.parse_resume",
+              "schema": "ResumeProfile",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.684231+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.684768"
+      },
+      {
+        "id": 29,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "embedding",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "正在生成文档索引",
+          "document_id": "resume:3",
+          "filename": "synthetic-resume.txt",
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "chunk_count": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.686106"
+      },
+      {
+        "id": 30,
+        "run_id": "87689a94-1a4a-4154-81df-c521660deb27",
+        "seq": 11,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "document_parse_failed"
+        },
+        "created_at": "2026-10-30T03:08:54.690011"
+      },
+      {
+        "id": 31,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.690961"
+      },
+      {
+        "id": 32,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.695841"
+      },
+      {
+        "id": 33,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.696578"
+      },
+      {
+        "id": 34,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.697506"
+      },
+      {
+        "id": 35,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.699612"
+      },
+      {
+        "id": 36,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.700314+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.700909"
+      },
+      {
+        "id": 37,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.701144+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.701690"
+      },
+      {
+        "id": 38,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.704474+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.705047"
+      },
+      {
+        "id": 39,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.705271+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.705783"
+      },
+      {
+        "id": 40,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.706671"
+      },
+      {
+        "id": 41,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 12,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.707520"
+      },
+      {
+        "id": 42,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 13,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.708264"
+      },
+      {
+        "id": 43,
+        "run_id": "32639a04-cb37-40c5-9197-24e9ad55b720",
+        "seq": 14,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "match_analysis_failed"
+        },
+        "created_at": "2026-10-30T03:08:54.711137"
+      },
+      {
+        "id": 44,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.712064"
+      },
+      {
+        "id": 45,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Generating interview questions from saved match context",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:54.713985"
+      },
+      {
+        "id": 46,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "plan_question_blueprint",
+              "schema": "QuestionBlueprint",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.714761+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.715340"
+      },
+      {
+        "id": 47,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "plan_question_blueprint",
+              "schema": "QuestionBlueprint",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.715587+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.716297"
+      },
+      {
+        "id": 48,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "plan_question_blueprint",
+              "schema": "QuestionBlueprint",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.719254+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.719912"
+      },
+      {
+        "id": 49,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 65,
+          "overall_progress": 65,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "plan_question_blueprint",
+              "schema": "QuestionBlueprint",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.720141+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.720690"
+      },
+      {
+        "id": 50,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 68,
+          "overall_progress": 68,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "generate_question_batch",
+              "schema": "QuestionBatch",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.721345+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.721999"
+      },
+      {
+        "id": 51,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 68,
+          "overall_progress": 68,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "generate_question_batch",
+              "schema": "QuestionBatch",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.722214+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.722767"
+      },
+      {
+        "id": 52,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 68,
+          "overall_progress": 68,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "generate_question_batch",
+              "schema": "QuestionBatch",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.725326+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.725924"
+      },
+      {
+        "id": 53,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 68,
+          "overall_progress": 68,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "generate_question_batch",
+              "schema": "QuestionBatch",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.726161+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.726707"
+      },
+      {
+        "id": 54,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 12,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 76,
+          "overall_progress": 76,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "generate_ambiguity_followups",
+              "schema": "AmbiguityFollowupSet",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.727402+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.727977"
+      },
+      {
+        "id": 55,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 13,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 76,
+          "overall_progress": 76,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "generate_ambiguity_followups",
+              "schema": "AmbiguityFollowupSet",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.728183+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.728706"
+      },
+      {
+        "id": 56,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 14,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 76,
+          "overall_progress": 76,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "generate_ambiguity_followups",
+              "schema": "AmbiguityFollowupSet",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.731477+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.732085"
+      },
+      {
+        "id": 57,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 15,
+        "type": "task.progress",
+        "payload": {
+          "stage": "generate_questions",
+          "status": "running",
+          "progress": 76,
+          "overall_progress": 76,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "generate_ambiguity_followups",
+              "schema": "AmbiguityFollowupSet",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.732314+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.732862"
+      },
+      {
+        "id": 58,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 16,
+        "type": "task.progress",
+        "payload": {
+          "stage": "rubric",
+          "status": "running",
+          "progress": 82,
+          "overall_progress": 82,
+          "message": "Validated question rubric and follow-up prompts",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {}
+        },
+        "created_at": "2026-10-30T03:08:54.733666"
+      },
+      {
+        "id": 59,
+        "run_id": "e13f3c7a-ccee-4718-b7a9-1a8ceb98513b",
+        "seq": 17,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "question_generation_failed"
+        },
+        "created_at": "2026-10-30T03:08:54.737239"
+      },
+      {
+        "id": 60,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:54.738160"
+      },
+      {
+        "id": 61,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.739220+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.739740"
+      },
+      {
+        "id": 62,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.739924+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.740425"
+      },
+      {
+        "id": 63,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:54.742723+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.743346"
+      },
+      {
+        "id": 64,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:54.743550+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:54.744077"
+      },
+      {
+        "id": 65,
+        "run_id": "437c22ab-7393-4343-adc3-38227e8f6afd",
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "answer_followup_failed"
+        },
+        "created_at": "2026-10-30T03:08:54.745556"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:08:54.542890",
+        "updated_at": "2026-10-30T03:08:54.542891"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:08:54.542891",
+        "updated_at": "2026-10-30T03:08:54.542892"
+      },
+      {
+        "id": 3,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r7/originals/synthetic-resume.txt",
+        "content_hash": "1a895c185d0b09d14ad9341a479140f4b441eccdf646cd0c0f4ff1ec5e937bc5",
+        "document_size": 71,
+        "parse_status": "failed",
+        "raw_text": "",
+        "structured_data": {},
+        "created_at": "2026-10-30T03:08:54.665983",
+        "updated_at": "2026-10-30T03:08:54.665984"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:08:54.542482",
+        "updated_at": "2026-10-30T03:08:54.542484"
+      }
+    ],
+    "analysis_jobs": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "completed",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-30T03:08:54.550991",
+        "updated_at": "2026-10-30T03:08:54.550993"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "running",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-30T03:08:54.667968",
+        "updated_at": "2026-10-30T03:08:54.667969"
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "resume_id": 1,
+        "status": "completed",
+        "note": "",
+        "created_at": "2026-10-30T03:08:54.551368",
+        "updated_at": "2026-10-30T03:08:54.551369"
+      },
+      {
+        "id": 2,
+        "job_id": 2,
+        "resume_id": 2,
+        "status": "pending",
+        "note": "",
+        "created_at": "2026-10-30T03:08:54.668113",
+        "updated_at": "2026-10-30T03:08:54.668114"
+      }
+    ],
+    "match_results": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "overall_score": 0.0,
+        "recommendation": "reject",
+        "reason": "First matched API Engineer with score 0 and recommendation reject.",
+        "dimension_scores": {
+          "API": 0
+        },
+        "matched_skills": [],
+        "missing_skills": [],
+        "strengths": [
+          "API"
+        ],
+        "gaps": [
+          "API evidence"
+        ],
+        "report_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [],
+          "ambiguity_followups": []
+        },
+        "created_at": "2026-10-30T03:08:54.653875",
+        "updated_at": "2026-10-30T03:08:54.653878"
+      }
+    ],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": [
+      {
+        "user_id": 1,
+        "document_id": 3,
+        "document_type": "resume",
+        "chunk_id": "0:3:resume:0",
+        "filename": "synthetic-resume.txt",
+        "page_number": 1,
+        "section": "正文",
+        "chunk_index": 0,
+        "text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "embedding": [
+          2.0,
+          2.0,
+          2.0,
+          1.0
+        ]
+      }
+    ]
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as failed under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "no_success_after_stop",
+        "passed": true,
+        "reason": "Stopped units publish neither operation nor final result",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "four_write_boundaries",
+        "passed": true,
+        "reason": "Artifact insertion failed inside all four actual business transactions",
+        "evidence_refs": [
+          "runs",
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "business_rows_rolled_back",
+        "passed": true,
+        "reason": "Only the setup match remains; failed reports, parsed output and question tables roll back",
+        "evidence_refs": [
+          "resumes",
+          "match_results",
+          "question_sets",
+          "followup_sets"
+        ]
+      }
+    ],
+    "limitations": [
+      "Live generation uses deterministic embedding; semantic quality still needs explicit review.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 7,
+    "observed_cost": "0.00151200",
+    "reserved_cost": "0",
+    "committed_cost": "0.00151200",
+    "unknown_usage_calls": 0,
+    "max_total_cost": "10",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

@@ -2,7 +2,6 @@
 import json
 import os
 import time
-from collections import defaultdict
 from contextvars import ContextVar
 from pathlib import Path
 
@@ -12,7 +11,6 @@ from backend.agents import harness
 from backend.rag import chroma
 
 _context = ContextVar('browser_schema_context')
-_calls = defaultdict(int)
 _original_run_schema = harness.AgentHarness.run_schema
 
 
@@ -83,8 +81,14 @@ def model_response(request):
         time.sleep(0.1)
     payload = json.loads(request.content)
     prompt = payload['messages'][1]['content']
-    _calls[prompt] += 1
-    if 'E2E_ALWAYS_FAIL' in prompt or ('E2E_RETRY_PARSE' in prompt and _calls[prompt] <= 3):
+    retry_failure = False
+    if 'E2E_RETRY_PARSE' in prompt:
+        # This one browser example spans two dedicated parser processes.
+        attempts = state / 'legacy-retry-parse-count'
+        count = int(attempts.read_text()) + 1 if attempts.exists() else 1
+        attempts.write_text(str(count))
+        retry_failure = count <= 3
+    if 'E2E_ALWAYS_FAIL' in prompt or retry_failure:
         return httpx.Response(503, json={'error': {'message': 'Synthetic model temporarily unavailable', 'type': 'server_error'}})
     content = content_for(context)
     return httpx.Response(200, json={'id': 'browser-long-task', 'object': 'chat.completion', 'created': 1,
@@ -102,7 +106,10 @@ class BrowserEmbedding:
 
 
 def fixture_client(**kwargs):
-    return OpenAI(**kwargs, http_client=httpx.Client(transport=httpx.MockTransport(model_response)))
+    production_client = kwargs.pop('http_client', None)
+    if production_client is not None:
+        production_client.close()
+    return OpenAI(**kwargs, http_client=httpx.Client(transport=httpx.MockTransport(model_response), follow_redirects=False))
 
 
 harness.AgentHarness.run_schema = browser_run_schema

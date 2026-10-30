@@ -1,0 +1,1757 @@
+{
+  "case_id": "match-partial-candidate-replay",
+  "category": "durable_task",
+  "mode": "live",
+  "status": "pass",
+  "input": {
+    "id": "match-partial-candidate-replay",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "two-candidates-second-fails-once",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "8cd5efa1-4ac9-45b7-836b-27fa953e2387"
+    ],
+    "coverage": {
+      "partial_results": 1,
+      "candidate_calls": {
+        "First": 1,
+        "Second": 2
+      }
+    },
+    "model_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First",
+        "call_id": "20266f7b-2e5b-4361-914f-c5dec7c3d8b2",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"CriterionEvaluation\": {\"properties\": {\"criterion_id\": {\"title\": \"Criterion Id\", \"type\": \"string\"}, \"name\": {\"title\": \"Name\", \"type\": \"string\"}, \"weight\": {\"maximum\": 100, \"minimum\": 0, \"title\": \"Weight\", \"type\": \"number\"}, \"score\": {\"maximum\": 5, \"minimum\": 0, \"title\": \"Score\", \"type\": \"integer\"}, \"status\": {\"enum\": [\"strong_match\", \"match\", \"partial_match\", \"no_evidence\", \"conflict\"], \"title\": \"Status\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 5, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"missing_evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Missing Evidence\", \"type\": \"array\"}, \"risk\": {\"default\": \"\", \"title\": \"Risk\", \"type\": \"string\"}}, \"required\": [\"criterion_id\", \"name\", \"weight\", \"score\", \"status\", \"reason\"], \"title\": \"CriterionEvaluation\", \"type\": \"object\"}}, \"properties\": {\"evaluations\": {\"items\": {\"$ref\": \"#/$defs/CriterionEvaluation\"}, \"title\": \"Evaluations\", \"type\": \"array\"}}, \"required\": [\"evaluations\"], \"title\": \"MatchEvaluation\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"evaluations\": [\n    {\n      \"criterion_id\": \"\",\n      \"name\": \"\",\n      \"weight\": 0,\n      \"score\": 0,\n      \"status\": \"strong_match\",\n      \"reason\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"missing_evidence\": [\n        \"\"\n      ],\n      \"risk\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative hiring-match evaluator. Evaluate each JD criterion from the evidence candidates supplied for that criterion, with the structured resume used only for global context and risk awareness.\n\nStrict fact boundary:\n- Use only the evidence objects supplied under each criterion as proof for positive scores.\n- Use the structured resume to understand candidate background, ownership context, self-claimed skills, OCR ambiguities, and template residue, but not as standalone proof.\n- Do not use outside knowledge, assumptions, adjacent skills, or retrieval similarity as proof.\n- Retrieval similarity is only a retrieval signal; it is not evidence of a match.\n- Self-claimed skills, OCR ambiguities, and template residue are weak context and must not be treated as strong evidence.\n- Do not calculate `total_score` or a final recommendation.\n\nCriterion coverage and identity:\n- Return every input criterion exactly once, in the same order.\n- Copy `criterion_id`, `name`, and `weight` exactly from the input criterion.\n- Do not add, omit, merge, split, rename, or reorder criteria.\n\nEvidence integrity:\n- Return only `evidence_chunk_ids`.\n- Evidence IDs must come only from the candidate evidence list attached to the same criterion.\n- Do not create, rewrite, shorten, paraphrase, translate, correct OCR, splice, or rebuild evidence.\n- If no supplied object directly supports the criterion, return `score=0` and `evidence_chunk_ids=[]`.\n\nScoring:\n- 5: direct, specific, sufficient evidence demonstrates the criterion at required scope.\n- 4: clear direct practical evidence supports the criterion; only a minor dimension is missing.\n- 3: direct but partial evidence demonstrates a meaningful subset or incomplete depth.\n- 2: explicitly related evidence exists but is indirect, shallow, keyword-level, or lacks demonstrated execution.\n- 1: weak explicit relation exists and is insufficient.\n- 0: no supplied evidence supports the criterion, or supplied evidence explicitly conflicts with it.\n\nStatus mapping:\n- score 5 -> `strong_match`\n- score 4 -> `match`\n- score 1 to 3 -> `partial_match`\n- score 0 with no direct support -> `no_evidence`\n- score 0 with explicit contradiction -> `conflict`\n\nSilent self-check:\n- Criterion count, IDs, order, names, and weights exactly match the input.\n- Score/status/evidence state follows the fixed rules.\n- Every positive score has at least one allowed chunk ID.\n- Every score-0 item has no evidence IDs.\n- Output matches the injected JSON Schema exactly.\n\nJob criteria:\n[{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}]\n\nStructured resume profile:\n{\"candidate_name\": \"First\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}\n\nEvidence by criterion:\n{\"api\": []}\n\nResume ambiguities and quality warnings:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "MatchEvaluation",
+              "schema": {
+                "$defs": {
+                  "CriterionEvaluation": {
+                    "properties": {
+                      "criterion_id": {
+                        "title": "Criterion Id",
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "weight": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "score": {
+                        "maximum": 5,
+                        "minimum": 0,
+                        "title": "Score",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "enum": [
+                          "strong_match",
+                          "match",
+                          "partial_match",
+                          "no_evidence",
+                          "conflict"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 5,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "missing_evidence": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Missing Evidence",
+                        "type": "array"
+                      },
+                      "risk": {
+                        "default": "",
+                        "title": "Risk",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "criterion_id",
+                      "name",
+                      "weight",
+                      "score",
+                      "status",
+                      "reason"
+                    ],
+                    "title": "CriterionEvaluation",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "evaluations": {
+                    "items": {
+                      "$ref": "#/$defs/CriterionEvaluation"
+                    },
+                    "title": "Evaluations",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "evaluations"
+                ],
+                "title": "MatchEvaluation",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+        }
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second",
+        "call_id": "68930112-aa92-4fa0-ae5c-c73683c0a41a",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"CriterionEvaluation\": {\"properties\": {\"criterion_id\": {\"title\": \"Criterion Id\", \"type\": \"string\"}, \"name\": {\"title\": \"Name\", \"type\": \"string\"}, \"weight\": {\"maximum\": 100, \"minimum\": 0, \"title\": \"Weight\", \"type\": \"number\"}, \"score\": {\"maximum\": 5, \"minimum\": 0, \"title\": \"Score\", \"type\": \"integer\"}, \"status\": {\"enum\": [\"strong_match\", \"match\", \"partial_match\", \"no_evidence\", \"conflict\"], \"title\": \"Status\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 5, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"missing_evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Missing Evidence\", \"type\": \"array\"}, \"risk\": {\"default\": \"\", \"title\": \"Risk\", \"type\": \"string\"}}, \"required\": [\"criterion_id\", \"name\", \"weight\", \"score\", \"status\", \"reason\"], \"title\": \"CriterionEvaluation\", \"type\": \"object\"}}, \"properties\": {\"evaluations\": {\"items\": {\"$ref\": \"#/$defs/CriterionEvaluation\"}, \"title\": \"Evaluations\", \"type\": \"array\"}}, \"required\": [\"evaluations\"], \"title\": \"MatchEvaluation\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"evaluations\": [\n    {\n      \"criterion_id\": \"\",\n      \"name\": \"\",\n      \"weight\": 0,\n      \"score\": 0,\n      \"status\": \"strong_match\",\n      \"reason\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"missing_evidence\": [\n        \"\"\n      ],\n      \"risk\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative hiring-match evaluator. Evaluate each JD criterion from the evidence candidates supplied for that criterion, with the structured resume used only for global context and risk awareness.\n\nStrict fact boundary:\n- Use only the evidence objects supplied under each criterion as proof for positive scores.\n- Use the structured resume to understand candidate background, ownership context, self-claimed skills, OCR ambiguities, and template residue, but not as standalone proof.\n- Do not use outside knowledge, assumptions, adjacent skills, or retrieval similarity as proof.\n- Retrieval similarity is only a retrieval signal; it is not evidence of a match.\n- Self-claimed skills, OCR ambiguities, and template residue are weak context and must not be treated as strong evidence.\n- Do not calculate `total_score` or a final recommendation.\n\nCriterion coverage and identity:\n- Return every input criterion exactly once, in the same order.\n- Copy `criterion_id`, `name`, and `weight` exactly from the input criterion.\n- Do not add, omit, merge, split, rename, or reorder criteria.\n\nEvidence integrity:\n- Return only `evidence_chunk_ids`.\n- Evidence IDs must come only from the candidate evidence list attached to the same criterion.\n- Do not create, rewrite, shorten, paraphrase, translate, correct OCR, splice, or rebuild evidence.\n- If no supplied object directly supports the criterion, return `score=0` and `evidence_chunk_ids=[]`.\n\nScoring:\n- 5: direct, specific, sufficient evidence demonstrates the criterion at required scope.\n- 4: clear direct practical evidence supports the criterion; only a minor dimension is missing.\n- 3: direct but partial evidence demonstrates a meaningful subset or incomplete depth.\n- 2: explicitly related evidence exists but is indirect, shallow, keyword-level, or lacks demonstrated execution.\n- 1: weak explicit relation exists and is insufficient.\n- 0: no supplied evidence supports the criterion, or supplied evidence explicitly conflicts with it.\n\nStatus mapping:\n- score 5 -> `strong_match`\n- score 4 -> `match`\n- score 1 to 3 -> `partial_match`\n- score 0 with no direct support -> `no_evidence`\n- score 0 with explicit contradiction -> `conflict`\n\nSilent self-check:\n- Criterion count, IDs, order, names, and weights exactly match the input.\n- Score/status/evidence state follows the fixed rules.\n- Every positive score has at least one allowed chunk ID.\n- Every score-0 item has no evidence IDs.\n- Output matches the injected JSON Schema exactly.\n\nJob criteria:\n[{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}]\n\nStructured resume profile:\n{\"candidate_name\": \"Second\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}\n\nEvidence by criterion:\n{\"api\": []}\n\nResume ambiguities and quality warnings:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "MatchEvaluation",
+              "schema": {
+                "$defs": {
+                  "CriterionEvaluation": {
+                    "properties": {
+                      "criterion_id": {
+                        "title": "Criterion Id",
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "weight": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "score": {
+                        "maximum": 5,
+                        "minimum": 0,
+                        "title": "Score",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "enum": [
+                          "strong_match",
+                          "match",
+                          "partial_match",
+                          "no_evidence",
+                          "conflict"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 5,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "missing_evidence": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Missing Evidence",
+                        "type": "array"
+                      },
+                      "risk": {
+                        "default": "",
+                        "title": "Risk",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "criterion_id",
+                      "name",
+                      "weight",
+                      "score",
+                      "status",
+                      "reason"
+                    ],
+                    "title": "CriterionEvaluation",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "evaluations": {
+                    "items": {
+                      "$ref": "#/$defs/CriterionEvaluation"
+                    },
+                    "title": "Evaluations",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "evaluations"
+                ],
+                "title": "MatchEvaluation",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+        }
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second",
+        "call_id": "582ecdd2-d39a-46f0-8a3b-b3e97464144c",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"$defs\": {\"CriterionEvaluation\": {\"properties\": {\"criterion_id\": {\"title\": \"Criterion Id\", \"type\": \"string\"}, \"name\": {\"title\": \"Name\", \"type\": \"string\"}, \"weight\": {\"maximum\": 100, \"minimum\": 0, \"title\": \"Weight\", \"type\": \"number\"}, \"score\": {\"maximum\": 5, \"minimum\": 0, \"title\": \"Score\", \"type\": \"integer\"}, \"status\": {\"enum\": [\"strong_match\", \"match\", \"partial_match\", \"no_evidence\", \"conflict\"], \"title\": \"Status\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence_chunk_ids\": {\"items\": {\"type\": \"string\"}, \"maxItems\": 5, \"title\": \"Evidence Chunk Ids\", \"type\": \"array\"}, \"missing_evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Missing Evidence\", \"type\": \"array\"}, \"risk\": {\"default\": \"\", \"title\": \"Risk\", \"type\": \"string\"}}, \"required\": [\"criterion_id\", \"name\", \"weight\", \"score\", \"status\", \"reason\"], \"title\": \"CriterionEvaluation\", \"type\": \"object\"}}, \"properties\": {\"evaluations\": {\"items\": {\"$ref\": \"#/$defs/CriterionEvaluation\"}, \"title\": \"Evaluations\", \"type\": \"array\"}}, \"required\": [\"evaluations\"], \"title\": \"MatchEvaluation\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"evaluations\": [\n    {\n      \"criterion_id\": \"\",\n      \"name\": \"\",\n      \"weight\": 0,\n      \"score\": 0,\n      \"status\": \"strong_match\",\n      \"reason\": \"\",\n      \"evidence_chunk_ids\": [\n        \"\"\n      ],\n      \"missing_evidence\": [\n        \"\"\n      ],\n      \"risk\": \"\"\n    }\n  ]\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a conservative hiring-match evaluator. Evaluate each JD criterion from the evidence candidates supplied for that criterion, with the structured resume used only for global context and risk awareness.\n\nStrict fact boundary:\n- Use only the evidence objects supplied under each criterion as proof for positive scores.\n- Use the structured resume to understand candidate background, ownership context, self-claimed skills, OCR ambiguities, and template residue, but not as standalone proof.\n- Do not use outside knowledge, assumptions, adjacent skills, or retrieval similarity as proof.\n- Retrieval similarity is only a retrieval signal; it is not evidence of a match.\n- Self-claimed skills, OCR ambiguities, and template residue are weak context and must not be treated as strong evidence.\n- Do not calculate `total_score` or a final recommendation.\n\nCriterion coverage and identity:\n- Return every input criterion exactly once, in the same order.\n- Copy `criterion_id`, `name`, and `weight` exactly from the input criterion.\n- Do not add, omit, merge, split, rename, or reorder criteria.\n\nEvidence integrity:\n- Return only `evidence_chunk_ids`.\n- Evidence IDs must come only from the candidate evidence list attached to the same criterion.\n- Do not create, rewrite, shorten, paraphrase, translate, correct OCR, splice, or rebuild evidence.\n- If no supplied object directly supports the criterion, return `score=0` and `evidence_chunk_ids=[]`.\n\nScoring:\n- 5: direct, specific, sufficient evidence demonstrates the criterion at required scope.\n- 4: clear direct practical evidence supports the criterion; only a minor dimension is missing.\n- 3: direct but partial evidence demonstrates a meaningful subset or incomplete depth.\n- 2: explicitly related evidence exists but is indirect, shallow, keyword-level, or lacks demonstrated execution.\n- 1: weak explicit relation exists and is insufficient.\n- 0: no supplied evidence supports the criterion, or supplied evidence explicitly conflicts with it.\n\nStatus mapping:\n- score 5 -> `strong_match`\n- score 4 -> `match`\n- score 1 to 3 -> `partial_match`\n- score 0 with no direct support -> `no_evidence`\n- score 0 with explicit contradiction -> `conflict`\n\nSilent self-check:\n- Criterion count, IDs, order, names, and weights exactly match the input.\n- Score/status/evidence state follows the fixed rules.\n- Every positive score has at least one allowed chunk ID.\n- Every score-0 item has no evidence IDs.\n- Output matches the injected JSON Schema exactly.\n\nJob criteria:\n[{\"criterion_id\": \"api\", \"name\": \"API\", \"description\": \"Build APIs\", \"importance\": \"must\", \"weight\": 100.0, \"evidence_query\": \"API\"}]\n\nStructured resume profile:\n{\"candidate_name\": \"Second\", \"contact\": {}, \"education\": [], \"work_experience\": [], \"projects\": [], \"skills\": [], \"achievements\": [], \"ambiguities\": [], \"self_summary\": \"\", \"certifications\": [], \"languages\": [], \"quality\": {}, \"structured_ambiguities\": [], \"source_refs\": []}\n\nEvidence by criterion:\n{\"api\": []}\n\nResume ambiguities and quality warnings:\n[]\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "MatchEvaluation",
+              "schema": {
+                "$defs": {
+                  "CriterionEvaluation": {
+                    "properties": {
+                      "criterion_id": {
+                        "title": "Criterion Id",
+                        "type": "string"
+                      },
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "weight": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "title": "Weight",
+                        "type": "number"
+                      },
+                      "score": {
+                        "maximum": 5,
+                        "minimum": 0,
+                        "title": "Score",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "enum": [
+                          "strong_match",
+                          "match",
+                          "partial_match",
+                          "no_evidence",
+                          "conflict"
+                        ],
+                        "title": "Status",
+                        "type": "string"
+                      },
+                      "reason": {
+                        "title": "Reason",
+                        "type": "string"
+                      },
+                      "evidence_chunk_ids": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 5,
+                        "title": "Evidence Chunk Ids",
+                        "type": "array"
+                      },
+                      "missing_evidence": {
+                        "items": {
+                          "type": "string"
+                        },
+                        "title": "Missing Evidence",
+                        "type": "array"
+                      },
+                      "risk": {
+                        "default": "",
+                        "title": "Risk",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "criterion_id",
+                      "name",
+                      "weight",
+                      "score",
+                      "status",
+                      "reason"
+                    ],
+                    "title": "CriterionEvaluation",
+                    "type": "object"
+                  }
+                },
+                "properties": {
+                  "evaluations": {
+                    "items": {
+                      "$ref": "#/$defs/CriterionEvaluation"
+                    },
+                    "title": "Evaluations",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "evaluations"
+                ],
+                "title": "MatchEvaluation",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        },
+        "public_output": {
+          "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+        }
+      }
+    ],
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "database": "isolated SQLite",
+    "source_directory": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_scenario_uses_r2/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately",
+    "public_model_output": [
+      {
+        "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+      },
+      {
+        "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+      },
+      {
+        "text": "{\"evaluations\": [{\"criterion_id\": \"api\", \"name\": \"API\", \"weight\": 100, \"score\": 0, \"status\": \"no_evidence\", \"reason\": \"Need concrete citation\", \"evidence_chunk_ids\": [], \"missing_evidence\": [\"API evidence\"], \"risk\": \"\"}]}"
+      }
+    ],
+    "business_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second"
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "Second"
+      }
+    ],
+    "retrieval": "deterministic four-dimensional embedding; generation uses live provider boundary"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "user_id": 1,
+        "session_id": "008d1743-c44a-4d62-8900-5ea7def1d162",
+        "request_id": "571e3305-1789-4e52-bd58-51fe0ebc820b",
+        "kind": "match_analysis",
+        "status": "succeeded",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1,
+            2
+          ],
+          "analysisJobId": 1,
+          "candidateIds": [
+            1,
+            2
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-30T03:08:49.108385",
+          "resumes": {
+            "1": "2026-10-30T03:08:49.108777",
+            "2": "2026-10-30T03:08:49.108778"
+          }
+        },
+        "result_json": {
+          "run_id": 1,
+          "job_title": "API Engineer",
+          "candidates": [
+            {
+              "candidate_id": 1,
+              "candidate_name": "First",
+              "filename": "first.txt",
+              "total_score": 0.0,
+              "recommendation": "reject",
+              "top_strengths": [
+                "API"
+              ]
+            },
+            {
+              "candidate_id": 2,
+              "candidate_name": "Second",
+              "filename": "second.txt",
+              "total_score": 0.0,
+              "recommendation": "reject",
+              "top_strengths": [
+                "API"
+              ]
+            }
+          ],
+          "taskId": "8cd5efa1-4ac9-45b7-836b-27fa953e2387"
+        },
+        "attempt": 2,
+        "execution_epoch": 2,
+        "heartbeat_at": "2026-10-30T03:08:49.258629",
+        "cancel_requested_at": null,
+        "error_code": null,
+        "output_refs": [
+          {
+            "type": "match_analysis",
+            "id": 1
+          }
+        ],
+        "created_at": "2026-10-30T03:08:49.119453",
+        "updated_at": "2026-10-30T03:08:49.259042"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "008d1743-c44a-4d62-8900-5ea7def1d162",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:49.119193"
+      }
+    ],
+    "operations": [
+      {
+        "id": 1,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "operation_key": "match:1",
+        "tool_name": "match_report",
+        "status": "succeeded",
+        "result_ref": "1:1"
+      },
+      {
+        "id": 2,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "operation_key": "match:2",
+        "tool_name": "match_report",
+        "status": "succeeded",
+        "result_ref": "1:2"
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:49.120620"
+      },
+      {
+        "id": 2,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:49.122527"
+      },
+      {
+        "id": 3,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.131020"
+      },
+      {
+        "id": 4,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.131848"
+      },
+      {
+        "id": 5,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.132839"
+      },
+      {
+        "id": 6,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.135757"
+      },
+      {
+        "id": 7,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.136805+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.137405"
+      },
+      {
+        "id": 8,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.137614+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.138128"
+      },
+      {
+        "id": 9,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.208408+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.209475"
+      },
+      {
+        "id": 10,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 10,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:49.209814+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.210535"
+      },
+      {
+        "id": 11,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 11,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.211893"
+      },
+      {
+        "id": 12,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 12,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.212892"
+      },
+      {
+        "id": 13,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 13,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.213822"
+      },
+      {
+        "id": 14,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 14,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:1",
+          "kind": "match_report"
+        },
+        "created_at": "2026-10-30T03:08:49.217715"
+      },
+      {
+        "id": 15,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 15,
+        "type": "task.progress",
+        "payload": {
+          "stage": "save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Saved candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": 1,
+          "total": 2,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.218388"
+      },
+      {
+        "id": 16,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 16,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.221242"
+      },
+      {
+        "id": 17,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 17,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.221986"
+      },
+      {
+        "id": 18,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 18,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.222865"
+      },
+      {
+        "id": 19,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 19,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.225111"
+      },
+      {
+        "id": 20,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 20,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.225837+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.226379"
+      },
+      {
+        "id": 21,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 21,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.226571+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.227060"
+      },
+      {
+        "id": 22,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 22,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "eval_interrupted_candidate"
+        },
+        "created_at": "2026-10-30T03:08:49.230720"
+      },
+      {
+        "id": 23,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 23,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:49.234002"
+      },
+      {
+        "id": 24,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 24,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:49.234885"
+      },
+      {
+        "id": 25,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 25,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.240849"
+      },
+      {
+        "id": 26,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 26,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.241572"
+      },
+      {
+        "id": 27,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 27,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.242406"
+      },
+      {
+        "id": 28,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 28,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.244443"
+      },
+      {
+        "id": 29,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 29,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.245119+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.245617"
+      },
+      {
+        "id": 30,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 30,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.245823+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.246322"
+      },
+      {
+        "id": 31,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 31,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Validating structured JSON response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "validating_response",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Validating structured JSON response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:49.249740+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.250417"
+      },
+      {
+        "id": 32,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 32,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Analysis completed",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "completed",
+              "task": "evaluate_match",
+              "schema": "MatchEvaluation",
+              "attempt": 1,
+              "message": "Analysis completed",
+              "level": "success",
+              "timestamp": "2026-10-30T03:08:49.250657+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.251200"
+      },
+      {
+        "id": 33,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 33,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.252195"
+      },
+      {
+        "id": 34,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 34,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.253080"
+      },
+      {
+        "id": 35,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 35,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.253768"
+      },
+      {
+        "id": 36,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 36,
+        "type": "artifact.created",
+        "payload": {
+          "artifact_id": "1:2",
+          "kind": "match_report"
+        },
+        "created_at": "2026-10-30T03:08:49.255997"
+      },
+      {
+        "id": 37,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 37,
+        "type": "task.progress",
+        "payload": {
+          "stage": "save",
+          "status": "running",
+          "progress": 94,
+          "overall_progress": 94,
+          "message": "Saved candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": 2,
+          "total": 2,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:08:49.256573"
+      },
+      {
+        "id": 38,
+        "run_id": "8cd5efa1-4ac9-45b7-836b-27fa953e2387",
+        "seq": 38,
+        "type": "run.status",
+        "payload": {
+          "status": "succeeded",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:49.259292"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:08:49.108777",
+        "updated_at": "2026-10-30T03:08:49.108777"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:08:49.108778",
+        "updated_at": "2026-10-30T03:08:49.108778"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:08:49.108384",
+        "updated_at": "2026-10-30T03:08:49.108385"
+      }
+    ],
+    "analysis_jobs": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "completed",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-30T03:08:49.117234",
+        "updated_at": "2026-10-30T03:08:49.117237"
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "resume_id": 1,
+        "status": "completed",
+        "note": "",
+        "created_at": "2026-10-30T03:08:49.117689",
+        "updated_at": "2026-10-30T03:08:49.117689"
+      },
+      {
+        "id": 2,
+        "job_id": 1,
+        "resume_id": 2,
+        "status": "completed",
+        "note": "",
+        "created_at": "2026-10-30T03:08:49.117690",
+        "updated_at": "2026-10-30T03:08:49.117690"
+      }
+    ],
+    "match_results": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "candidate_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "overall_score": 0.0,
+        "recommendation": "reject",
+        "reason": "First matched API Engineer with score 0 and recommendation reject.",
+        "dimension_scores": {
+          "API": 0
+        },
+        "matched_skills": [],
+        "missing_skills": [],
+        "strengths": [
+          "API"
+        ],
+        "gaps": [
+          "API evidence"
+        ],
+        "report_json": {
+          "run_id": 1,
+          "candidate_id": 1,
+          "candidate_name": "First",
+          "filename": "first.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "First",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+          ],
+          "summary": "First matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [],
+          "ambiguity_followups": []
+        },
+        "created_at": "2026-10-30T03:08:49.217105",
+        "updated_at": "2026-10-30T03:08:49.217106"
+      },
+      {
+        "id": 2,
+        "job_id": 1,
+        "candidate_id": 2,
+        "resume_id": 2,
+        "jd_id": 1,
+        "overall_score": 0.0,
+        "recommendation": "reject",
+        "reason": "Second matched API Engineer with score 0 and recommendation reject.",
+        "dimension_scores": {
+          "API": 0
+        },
+        "matched_skills": [],
+        "missing_skills": [],
+        "strengths": [
+          "API"
+        ],
+        "gaps": [
+          "API evidence"
+        ],
+        "report_json": {
+          "run_id": 1,
+          "candidate_id": 2,
+          "candidate_name": "Second",
+          "filename": "second.txt",
+          "job_profile": {
+            "job_title": "API Engineer",
+            "summary": "Build APIs",
+            "responsibilities": [],
+            "criteria": [
+              {
+                "criterion_id": "api",
+                "name": "API",
+                "description": "Build APIs",
+                "importance": "must",
+                "weight": 100.0,
+                "evidence_query": "API"
+              }
+            ],
+            "interview_focus": []
+          },
+          "resume_profile": {
+            "candidate_name": "Second",
+            "contact": {},
+            "education": [],
+            "work_experience": [],
+            "projects": [],
+            "skills": [],
+            "achievements": [],
+            "ambiguities": [],
+            "self_summary": "",
+            "certifications": [],
+            "languages": [],
+            "quality": {},
+            "structured_ambiguities": [],
+            "source_refs": []
+          },
+          "evaluations": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "weight": 100.0,
+              "score": 0,
+              "status": "no_evidence",
+              "reason": "Need concrete citation",
+              "evidence_chunk_ids": [],
+              "missing_evidence": [
+                "API evidence"
+              ],
+              "risk": "",
+              "evidence": []
+            }
+          ],
+          "total_score": 0.0,
+          "recommendation": "reject",
+          "top_strengths": [
+            "API"
+          ],
+          "warnings": [
+            "未找到可用于引用的简历证据，匹配结果已保存，但证据展示和题目依据可能不完整。"
+          ],
+          "summary": "Second matched API Engineer with score 0 and recommendation reject.",
+          "formal_questions": [],
+          "ambiguity_followups": []
+        },
+        "created_at": "2026-10-30T03:08:49.255661",
+        "updated_at": "2026-10-30T03:08:49.255662"
+      }
+    ],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as succeeded under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "immutable_result_present",
+        "passed": true,
+        "reason": "Successful task responses are stored on their own Run",
+        "evidence_refs": [
+          "runs.result_json"
+        ]
+      },
+      {
+        "name": "partial_recovery_unit",
+        "passed": true,
+        "reason": "Only the unfinished candidate repeats after partial commit",
+        "evidence_refs": [
+          "output.coverage"
+        ]
+      },
+      {
+        "name": "fixed_analysis_group",
+        "passed": true,
+        "reason": "The same job and candidate identities own both reports",
+        "evidence_refs": [
+          "analysis_jobs",
+          "candidates",
+          "match_results",
+          "operations"
+        ]
+      }
+    ],
+    "limitations": [
+      "Live generation uses deterministic embedding; semantic quality still needs explicit review.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 3,
+    "observed_cost": "0.00064800",
+    "reserved_cost": "0",
+    "committed_cost": "0.00064800",
+    "unknown_usage_calls": 0,
+    "max_total_cost": "10",
+    "stop_reason": null,
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}

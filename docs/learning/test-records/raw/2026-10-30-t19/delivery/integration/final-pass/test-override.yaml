@@ -1,0 +1,8 @@
+services:
+  api:
+    volumes: ["/tmp/task-19-build-5cd2b8fd52/source/backend/tests:/app/backend/tests:ro"]
+  api2:
+    volumes: ["/tmp/task-19-build-5cd2b8fd52/source/backend/tests:/app/backend/tests:ro"]
+  worker:
+    volumes: ["/tmp/task-19-build-5cd2b8fd52/source/backend/tests:/app/backend/tests:ro"]
+    command: [celery, -A, 'backend.tests.fixtures.delivery:app', worker, --loglevel=INFO, --concurrency=1]

@@ -33,7 +33,7 @@ def build_engine(database_url: str) -> Engine:
         url = url.set(drivername="mysql+pymysql")
     if url.get_backend_name() == "mysql" and "charset" not in url.query:
         url = url.update_query_dict({"charset": "utf8mb4"})
-    return create_engine(url, pool_pre_ping=True)
+    return create_engine(url, pool_pre_ping=True, pool_size=5, max_overflow=5, pool_timeout=5)
 
 
 engine = build_engine(DATABASE_URL)

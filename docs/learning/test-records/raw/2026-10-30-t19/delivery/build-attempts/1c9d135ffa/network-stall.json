@@ -1,0 +1,6 @@
+{
+  "reason": "apt update produced no output for over 8 minutes; independent host/container fresh requests to identical source returned HTTP 200",
+  "stopped_at": "2026-10-30T03:19:47.170673+00:00",
+  "host_probe": "HTTP 200",
+  "container_probe": "HTTP 200, 0.23s, 151075 bytes"
+}

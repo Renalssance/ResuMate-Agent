@@ -1,0 +1,5 @@
+ERROR: not found: /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/tests/test_agent_events.py::test_internal_model_usage_is_counted_without_publishing_its_text
+(no match in any of [<Module test_agent_events.py>])
+
+
+no tests ran in 0.23s

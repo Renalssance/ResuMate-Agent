@@ -1,0 +1,13 @@
+2026-10-30T03:03:54.845398Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-10-30T03:03:54.982496Z 0 [System] [MY-010116] [Server] /opt/homebrew/opt/mysql/bin/mysqld (mysqld 9.6.0) starting as process 89066
+2026-10-30T03:03:54.982504Z 0 [System] [MY-015590] [Server] MySQL Server has access to 10 logical CPUs.
+2026-10-30T03:03:54.982510Z 0 [System] [MY-015590] [Server] MySQL Server has access to 17179869184 bytes of physical memory.
+2026-10-30T03:03:54.988163Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /tmp/resumate-mysql-t02/data/ is case insensitive
+2026-10-30T03:03:54.999550Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-10-30T03:03:55.350341Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-10-30T03:03:56.060042Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-10-30T03:03:56.061712Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-10-30T03:03:56.379850Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-10-30T03:03:56.379871Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-10-30T03:03:56.381646Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/tmp' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-10-30T03:03:56.391351Z 0 [System] [MY-010931] [Server] /opt/homebrew/opt/mysql/bin/mysqld: ready for connections. Version: '9.6.0'  socket: '/tmp/resumate-mysql-t02/mysql.sock'  port: 0  Homebrew.

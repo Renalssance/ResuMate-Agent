@@ -1,0 +1,15 @@
+{
+  "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+  "initialChunks": [
+    "/assets/AgentTaskView-D-wivA-P.js"
+  ],
+  "afterJobsChunks": [
+    "/assets/ResumeEditorView-C6l-2enE.js",
+    "/assets/AgentTaskView-D-wivA-P.js",
+    "/assets/JobsView-DCo-urPI.js"
+  ],
+  "uploadId": "eba174fd-a31c-461a-a548-8883f799f7fb",
+  "pdfBytes": 81495,
+  "pageErrors": [],
+  "cspViolations": []
+}

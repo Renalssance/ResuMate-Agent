@@ -62,6 +62,22 @@ def verify_interview(case, output, data):
           and all(call.get('run_id') in run_ids and isinstance(call.get('required'), dict) for call in calls)
           and all(any(call.get('run_id') == row['id'] for call in calls) for row in successes),
           'The case reached real generation calls and persisted their Run identities', ['output.model_calls', 'runs'])
+    if output.get('evidence_source') == 'sdk_model_inputs':
+        by_id = {row['id']: row for row in runs}
+        actual_calls = [*calls, *(output.get('summary_calls') or [])]
+        identities = bool(actual_calls)
+        for call in actual_calls:
+            row, required = by_id.get(call.get('run_id'), {}), call.get('required', {})
+            identities = identities and bool(row) and call.get('required_block_count') == 1
+            identities = identities and required.get('runId') == row.get('id')
+            identities = identities and required.get('sessionId') == row.get('session_id')
+            identities = identities and required.get('interviewId') == iid
+            identities = identities and required.get('expectedTurn') == row.get('input_json', {}).get('expectedTurn')
+            identities = identities and call.get('execution_epoch') == row.get('execution_epoch')
+            identities = identities and call.get('attempt') == row.get('attempt')
+        check('sdk_input_identity', identities,
+              'Every main/summary input contains one current required block bound to its Run and execution epoch',
+              ['output.model_calls', 'output.summary_calls', 'runs'])
     check('owned_frozen_session', len(interviews) == 1 and interview.get('user_id') == 1 and bool(source)
           and all(row['user_id'] == 1 and row['kind'] == 'interview_generation' for row in runs),
           'An owned interview keeps the accepted frozen source', ['interviews', 'runs'])
@@ -141,10 +157,10 @@ def verify_interview(case, output, data):
             no_late = no_late and stopped.get('cancel_requested_at') is not None and stopped.get('result_json') is None
             no_late = no_late and before.get('turns') == after.get('turns') and before_business == after_business
             no_late = no_late and not any(row['run_id'] == stop.get('run_id') for row in after.get('operations', []))
-            no_late = no_late and stop.get('model_calls_at_stop', 0) > 0 and stop.get('model_calls_after', 0) >= stop['model_calls_at_stop']
+            no_late = no_late and stop.get('model_calls_at_stop', 0) > 0 and stop.get('model_calls_after', 0) == stop['model_calls_at_stop']
         retried = next((row for row in runs if row['id'] == observations.get('retry_run_id')), {})
         check('cancel_and_finish_fence_inflight_results', no_late and interview.get('status') == 'finished',
-              'Both commands commit while an actual model call is blocked; late output adds no business result',
+              'Both commands commit after a model response and before delivery; late output adds no business result',
               ['output.observations.stops', 'interviews'])
         check('retry_keeps_original_answer', retried.get('status') == 'succeeded'
               and retried.get('input_json', {}).get('expectedTurn') == 1 and len(answered) == 2
@@ -196,6 +212,6 @@ def verify_interview(case, output, data):
     else:
         check('scenario_oracle', False, 'Unknown case IDs have no accepted scenario oracle', ['input.id'])
     return {'passed': all(item['passed'] for item in checks), 'checks': checks, 'limitations': [
-        'The external model is deterministic; quoted text existing is not proof of semantic quality.',
+        'Quoted text existing is not proof of semantic quality; live output requires human review.',
         'This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.',
-        'No live interview model calls are implemented or authorized by this runner.']}
+        'Live mode uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model.']}

@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 from sqlalchemy import create_engine, text
-from sqlalchemy.engine import URL
+from sqlalchemy.engine import URL, make_url
 from sqlalchemy.orm import Session
 
 from backend.db.database import Base, build_engine
@@ -20,10 +20,12 @@ def career_engine(request, tmp_path):
         engine.dispose()
         return
     socket = os.getenv('RESUMATE_TEST_MYSQL_SOCKET')
-    if not socket:
-        pytest.skip('Set RESUMATE_TEST_MYSQL_SOCKET for disposable MySQL tests')
+    test_url = os.getenv('RESUMATE_TEST_MYSQL_URL')
+    if not socket and not test_url:
+        pytest.skip('Set RESUMATE_TEST_MYSQL_SOCKET or RESUMATE_TEST_MYSQL_URL for disposable MySQL tests')
     name = 'resumate_test_' + uuid4().hex
-    url = URL.create('mysql+pymysql', username='root', query={'unix_socket': socket, 'charset': 'utf8mb4'})
+    url = (make_url(test_url).set(database=None) if test_url else
+           URL.create('mysql+pymysql', username='root', query={'unix_socket': socket, 'charset': 'utf8mb4'}))
     admin = create_engine(url)
     with admin.begin() as connection:
         connection.execute(text(f'CREATE DATABASE `{name}` CHARACTER SET utf8mb4'))

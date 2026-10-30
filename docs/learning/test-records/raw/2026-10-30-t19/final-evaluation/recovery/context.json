@@ -1,0 +1,80 @@
+{
+  "invocation_id": "9ce4a722-d79a-42ee-b637-cef24946d6a5",
+  "cases": [
+    {
+      "id": "recovery-model-before-return",
+      "input": {
+        "kind": "tailoring",
+        "resume": {
+          "filename": "synthetic.txt",
+          "raw_text": "Built an API",
+          "structured_data": {
+            "self_summary": "Built an API"
+          }
+        },
+        "job": {
+          "title": "Engineer",
+          "raw_text": "API development"
+        },
+        "breakpoint": "recovery-model-before-return"
+      }
+    },
+    {
+      "id": "recovery-draft-after-commit",
+      "input": {
+        "kind": "tailoring",
+        "resume": {
+          "filename": "synthetic.txt",
+          "raw_text": "Built an API",
+          "structured_data": {
+            "self_summary": "Built an API"
+          }
+        },
+        "job": {
+          "title": "Engineer",
+          "raw_text": "API development"
+        },
+        "breakpoint": "recovery-draft-after-commit"
+      }
+    },
+    {
+      "id": "recovery-checkpoint-before-terminal",
+      "input": {
+        "kind": "tailoring",
+        "resume": {
+          "filename": "synthetic.txt",
+          "raw_text": "Built an API",
+          "structured_data": {
+            "self_summary": "Built an API"
+          }
+        },
+        "job": {
+          "title": "Engineer",
+          "raw_text": "API development"
+        },
+        "breakpoint": "recovery-checkpoint-before-terminal"
+      }
+    },
+    {
+      "id": "recovery-answer-before-delivery",
+      "input": {
+        "kind": "tailoring",
+        "resume": {
+          "filename": "synthetic.txt",
+          "raw_text": "Built an API",
+          "structured_data": {
+            "self_summary": "Built an API"
+          }
+        },
+        "job": {
+          "title": "Engineer",
+          "raw_text": "API development"
+        },
+        "breakpoint": "recovery-answer-before-delivery",
+        "answer": {
+          "experience": "负责 API 和数据库设计。"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "status": "pass",
+  "container_name": "resumate-t19-frontend-probe-d4cbbe972e",
+  "api_dependencies": "test-only local host mappings; no API request",
+  "index_status": 200,
+  "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+  "content_type_options": "nosniff",
+  "assets": [
+    {
+      "path": "/assets/index-wOfqe4Ah.js",
+      "status": 200,
+      "bytes": 243490
+    },
+    {
+      "path": "/assets/index-CYzSPSXg.css",
+      "status": 200,
+      "bytes": 93322
+    }
+  ],
+  "cleanup_exit_code": 0
+}

@@ -1,0 +1,16 @@
+{
+  "source_project": "resumate-t19-source-3ac10193",
+  "created_at": "2026-10-30T03:34:51.634464+00:00",
+  "writers_stopped": [
+    "web",
+    "api",
+    "api2",
+    "scheduler",
+    "worker"
+  ],
+  "archives": [
+    "mysql.sql",
+    "backend-data.tar.gz",
+    "agent-state.tar.gz"
+  ]
+}

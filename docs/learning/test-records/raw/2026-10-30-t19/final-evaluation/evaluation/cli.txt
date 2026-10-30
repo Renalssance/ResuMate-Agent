@@ -1,0 +1,4 @@
+/private/tmp/task-19-final-evals/20261030T034423Z-3feb4818
+real 28.93
+user 24.47
+sys 3.34

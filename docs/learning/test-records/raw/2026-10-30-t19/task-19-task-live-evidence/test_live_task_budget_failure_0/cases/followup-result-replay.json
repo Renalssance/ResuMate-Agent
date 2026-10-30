@@ -1,0 +1,442 @@
+{
+  "case_id": "followup-result-replay",
+  "category": "durable_task",
+  "mode": "live",
+  "status": "incomplete",
+  "input": {
+    "id": "followup-result-replay",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "same-run-twice",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "bc55ef92-7db1-4c8e-8587-cb5db8afeea4"
+    ],
+    "coverage": {},
+    "model_calls": [
+      {
+        "task": "followup.analyze_answer",
+        "candidate": null,
+        "call_id": "2bfba840-71bb-480a-a170-7ae69a1ae190",
+        "reflection_attempt": 1,
+        "request": {
+          "model": "qwen3.7-flash-2026-07-15",
+          "messages": [
+            {
+              "role": "system",
+              "content": "Return strict JSON only. No markdown, no commentary. The response must match this JSON Schema exactly:\n{\"properties\": {\"follow_up\": {\"title\": \"Follow Up\", \"type\": \"string\"}, \"reason\": {\"title\": \"Reason\", \"type\": \"string\"}, \"evidence\": {\"items\": {\"type\": \"string\"}, \"title\": \"Evidence\", \"type\": \"array\"}, \"risks\": {\"items\": {\"type\": \"string\"}, \"title\": \"Risks\", \"type\": \"array\"}, \"current_ability\": {\"title\": \"Current Ability\", \"type\": \"string\"}, \"next_suggestion\": {\"title\": \"Next Suggestion\", \"type\": \"string\"}}, \"required\": [\"follow_up\", \"reason\", \"current_ability\", \"next_suggestion\"], \"title\": \"FollowUpAnalysisResponse\", \"type\": \"object\"}\n\nExample JSON output shape:\n{\n  \"follow_up\": \"\",\n  \"reason\": \"\",\n  \"evidence\": [\n    \"\"\n  ],\n  \"risks\": [\n    \"\"\n  ],\n  \"current_ability\": \"\",\n  \"next_suggestion\": \"\"\n}"
+            },
+            {
+              "role": "user",
+              "content": "You are a senior interviewer. Analyze the candidate answer and generate the next follow-up question.\n\nRules:\n- Return only JSON matching the provided FollowUpAnalysisResponse schema.\n- The follow-up must be specific to the current question, candidate answer, JD context, and resume context.\n- Do not invent resume facts. Use the provided contexts only.\n- Evidence items should be short text references from the resume or prior question context when available.\n- Risks should identify unclear ownership, missing metrics, weak technical depth, contradictions, or gaps.\n\nJD context:\n{}\n\nResume context:\n{}\n\nQuestion context:\n{}\n\nConversation history:\n[]\n\nCurrent question:\nHow?\n\nCandidate answer:\nValidated API fields in a test environment.\n"
+            }
+          ],
+          "temperature": 0.1,
+          "max_completion_tokens": 4096,
+          "enable_thinking": false,
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "FollowUpAnalysisResponse",
+              "schema": {
+                "properties": {
+                  "follow_up": {
+                    "title": "Follow Up",
+                    "type": "string"
+                  },
+                  "reason": {
+                    "title": "Reason",
+                    "type": "string"
+                  },
+                  "evidence": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Evidence",
+                    "type": "array"
+                  },
+                  "risks": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "title": "Risks",
+                    "type": "array"
+                  },
+                  "current_ability": {
+                    "title": "Current Ability",
+                    "type": "string"
+                  },
+                  "next_suggestion": {
+                    "title": "Next Suggestion",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "follow_up",
+                  "reason",
+                  "current_ability",
+                  "next_suggestion"
+                ],
+                "title": "FollowUpAnalysisResponse",
+                "type": "object"
+              },
+              "strict": true
+            }
+          }
+        }
+      }
+    ],
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "database": "isolated SQLite",
+    "source_directory": "/private/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/pytest-of-bono/pytest-260/test_live_task_budget_failure_0/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately",
+    "public_model_output": [],
+    "business_calls": [
+      {
+        "task": "followup.analyze_answer",
+        "candidate": null
+      }
+    ],
+    "retrieval": "deterministic four-dimensional embedding; generation uses live provider boundary"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "user_id": 1,
+        "session_id": "eb56780b-a07b-41e0-baaa-bf54a099042b",
+        "request_id": "88314fb4-2f6c-4cf8-b888-93370012c22c",
+        "kind": "answer_followup",
+        "status": "failed",
+        "input_json": {
+          "followup": {
+            "question": "How?",
+            "answer": "Validated API fields in a test environment.",
+            "jd_context": {},
+            "resume_context": {},
+            "question_context": {},
+            "history": []
+          }
+        },
+        "input_versions": {},
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:08:55.761575",
+        "cancel_requested_at": null,
+        "error_code": "budget_exhausted",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:08:55.681064",
+        "updated_at": "2026-10-30T03:08:55.762556"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "eb56780b-a07b-41e0-baaa-bf54a099042b",
+        "user_id": 1,
+        "purpose": "answer_followup",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:08:55.680762"
+      }
+    ],
+    "operations": [],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:55.682380"
+      },
+      {
+        "id": 2,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:08:55.684114"
+      },
+      {
+        "id": 3,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Uploading prompt",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "prompt_uploading",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Uploading prompt",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:55.686198+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:55.687043"
+      },
+      {
+        "id": 4,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Waiting for LLM response, attempt 1",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "Waiting for LLM response, attempt 1",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:55.687274+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:55.687808"
+      },
+      {
+        "id": 5,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "LLM call failed, retrying attempt 2",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "reflecting",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 1,
+              "message": "LLM call failed, retrying attempt 2",
+              "level": "warning",
+              "timestamp": "2026-10-30T03:08:55.758524+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:55.759611"
+      },
+      {
+        "id": 6,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "analyze_answer",
+          "status": "running",
+          "progress": 50,
+          "overall_progress": 50,
+          "message": "Waiting for LLM response, attempt 2",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "agent": {
+              "phase": "waiting_response",
+              "task": "followup.analyze_answer",
+              "schema": "FollowUpAnalysisResponse",
+              "attempt": 2,
+              "message": "Waiting for LLM response, attempt 2",
+              "level": "info",
+              "timestamp": "2026-10-30T03:08:55.759912+00:00"
+            }
+          }
+        },
+        "created_at": "2026-10-30T03:08:55.760502"
+      },
+      {
+        "id": 7,
+        "run_id": "bc55ef92-7db1-4c8e-8587-cb5db8afeea4",
+        "seq": 7,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "budget_exhausted"
+        },
+        "created_at": "2026-10-30T03:08:55.762839"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:08:55.673834",
+        "updated_at": "2026-10-30T03:08:55.673834"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:08:55.673835",
+        "updated_at": "2026-10-30T03:08:55.673835"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:08:55.673441",
+        "updated_at": "2026-10-30T03:08:55.673442"
+      }
+    ],
+    "analysis_jobs": [],
+    "candidates": [],
+    "match_results": [],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "scenario_execution",
+        "passed": false,
+        "reason": "budget_exhausted",
+        "evidence_refs": [
+          "runs",
+          "output.model_calls"
+        ]
+      }
+    ],
+    "limitations": []
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 1,
+    "observed_cost": "0",
+    "reserved_cost": "1.21970880",
+    "committed_cost": "1.21970880",
+    "unknown_usage_calls": 1,
+    "max_total_cost": "1.3",
+    "stop_reason": "budget_exhausted",
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  },
+  "error_code": "budget_exhausted"
+}

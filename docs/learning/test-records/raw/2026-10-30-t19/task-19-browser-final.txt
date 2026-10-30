@@ -1,0 +1,109 @@
+
+> test:e2e
+> playwright test --output=/tmp/task-19-browser-final-results
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /tmp/task-19-browser-final-state
+
+Running 31 tests using 1 worker
+
+(node:98199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓   1 [chromium] › tests/e2e/agent-run.spec.ts:22:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (6.7s)
+
+  ✓   2 [chromium] › tests/e2e/agent-run.spec.ts:70:1 › 测试入口准备的真实暂停任务可从新页面继续 (3.2s)
+
+  ✓   3 [chromium] › tests/e2e/agent-run.spec.ts:80:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 (5.3s)
+
+  ✓   4 [chromium] › tests/e2e/agent-run.spec.ts:109:1 › 提交后离开页面不会隐式取消 worker，返回可读取产物 (5.3s)
+
+  ✓   5 [chromium] › tests/e2e/agent-run.spec.ts:125:1 › 等待补问时可明确取消任务 (2.3s)
+
+  ✓   6 [chromium] › tests/e2e/agent-run.spec.ts:135:1 › worker 正在执行时明确取消，最终停止且不生成材料 (1.2s)
+
+  ✓   7 [chromium] › tests/e2e/agent-run.spec.ts:147:1 › 事件网络断线显示重连，任务保持等待并在恢复后继续 (6.5s)
+
+  ✓   8 [chromium] › tests/e2e/context-memory.spec.ts:32:1 › 真实设置保存区分容量与输出，缺配置和超预算给出可行动说明 (2.1s)
+
+  ✓   9 [chromium] › tests/e2e/context-memory.spec.ts:66:1 › 确认保存长记忆、刷新保留、删除清理和旧任务隔离 (6.1s)
+
+  ✓  10 [chromium] › tests/e2e/context-memory.spec.ts:135:1 › 历史失败任务撤回记忆后，过期重试转到干净任务入口 (3.1s)
+
+  ✓  11 [chromium] › tests/e2e/extension.spec.ts:108:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 (3.9s)
+
+  ✓  12 [chromium] › tests/e2e/extension.spec.ts:144:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 (6.4s)
+
+  ✓  13 [chromium] › tests/e2e/extension.spec.ts:186:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 (1.3s)
+
+  ✓  14 [chromium] › tests/e2e/extension.spec.ts:208:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 (345ms)
+
+  ✓  15 [chromium] › tests/e2e/interview.spec.ts:81:1 › 从固定投递材料开始、两次追问与刷新恢复，确认结束保留问答 (10.2s)
+
+  ✓  16 [chromium] › tests/e2e/interview.spec.ts:111:1 › 生成中停止、迟到结果不出现，失败后只重试原轮生成 (11.5s)
+
+  ✓  17 [chromium] › tests/e2e/interview.spec.ts:143:1 › 丢弃真实成功响应后重发原命令，确认记忆后删除使旧练习失效 (9.7s)
+
+  ✓  18 [chromium] › tests/e2e/interview.spec.ts:196:1 › 缺失会话显示返回入口，源材料变化不替换已经冻结的练习 (5.6s)
+
+  ✓  19 [chromium] › tests/e2e/jobs.spec.ts:25:1 › 岗位收藏解析关联后进入材料准备并由独立 worker 完成 (8.0s)
+
+  ✓  20 [chromium] › tests/e2e/jobs.spec.ts:66:1 › 用户确认经历后编辑保留历史，删除后可追溯 (948ms)
+
+  ✘  21 [chromium] › tests/e2e/jobs.spec.ts:103:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 (16.6s)
+(node:98628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓  22 [chromium] › tests/e2e/recovery.spec.ts:36:1 › 上传、匹配和出题离开重开后读取同一持久任务及结果 (8.8s)
+
+  ✓  23 [chromium] › tests/e2e/recovery.spec.ts:124:1 › 保存岗位解析在刷新及网络断开后恢复进度 (3.0s)
+
+  ✓  24 [chromium] › tests/e2e/recovery.spec.ts:147:1 › 解析失败和取消保留原件，回答分析显示保存的结果 (2.9s)
+
+  ✓  25 [chromium] › tests/e2e/resume-export.spec.ts:61:1 › 确认版本真实导出PDF，关联新投递后主简历修改不改变提交快照 (7.4s)
+
+  ✓  26 [chromium] › tests/e2e/resume-export.spec.ts:122:1 › 真实渲染失败后可重试并下载，已有旧投递可关联确认版本 (6.8s)
+
+  ✓  27 [chromium] › tests/e2e/resume-review.spec.ts:36:1 › 逐项接受撤销和本人编辑，离开保留输入，保存确认不改主简历 (5.9s)
+
+  ✓  28 [chromium] › tests/e2e/resume-review.spec.ts:78:1 › 两个页面冲突后保留本地输入，只重放本人改过的条目 (5.6s)
+
+  ✓  29 [chromium] › tests/e2e/resume-review.spec.ts:104:1 › 不存在的简历版本显示可恢复加载错误 (540ms)
+
+  ✓  30 [chromium] › tests/e2e/tailoring.spec.ts:21:1 › 任务固定旧资料，草稿逐项展示来源、补问与缺失信息 (5.5s)
+(node:98782) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  31 [chromium] › tests/e2e/auth.spec.ts:3:1 › 注册密码不一致时保留输入并在浏览器阻止提交 (237ms)
+
+
+  1) [chromium] › tests/e2e/jobs.spec.ts:103:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 ───────────────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "success"
+    Received: "failed"
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      112 |   await capture(page, 'jobs-parse-error-mobile', true)
+      113 |   await detail.getByRole('button', { name: '重试解析', exact: true }).click()
+    > 114 |   await expect.poll(async () => (await (await api.get(`/api/jobs/${job.id}`)).json()).parseStatus).toBe('success')
+          |                                                                                                    ^
+      115 |   await page.getByLabel('搜索岗位', { exact: true }).fill('没有匹配的岗位名称')
+      116 |   await page.getByLabel('搜索岗位', { exact: true }).press('Enter')
+      117 |   await expect(page.getByText('没有符合筛选条件的岗位。试试其他关键词或状态。', { exact: true })).toBeVisible()
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/jobs.spec.ts:114:100
+
+    Error Context: ../../../../../../tmp/task-19-browser-final-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../../tmp/task-19-browser-final-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../../../tmp/task-19-browser-final-results/jobs-岗位解析错误保留原文可重试，筛选无结果有空状态-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/e2e/jobs.spec.ts:103:1 › 岗位解析错误保留原文可重试，筛选无结果有空状态 ────────────────────────────
+  30 passed (2.9m)

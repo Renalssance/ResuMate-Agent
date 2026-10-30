@@ -1,0 +1,1 @@
+PASS: real Harness constructs with synthetic transport; replaced pool closed; timeout/retries/no-redirect preserved

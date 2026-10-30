@@ -1,0 +1,92 @@
+[
+  {
+    "CreatedAt": "2026-10-30 01:33:10.433387718 +0000 UTC",
+    "Description": "[2/4] WORKDIR /app",
+    "ID": "ig6sfinasj64imig1lwgq4uus",
+    "LastUsedAt": "2 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "slatgrqs9v6bb6jqq20a5hxtb"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "4.128kB",
+    "Type": "regular",
+    "UsageCount": 1
+  },
+  {
+    "CreatedAt": "2026-10-29 17:05:56.94771218 +0000 UTC",
+    "Description": "mount / from exec /bin/sh -c mkdir -p /app/data/agent /app/data/exports",
+    "ID": "slatgrqs9v6bb6jqq20a5hxtb",
+    "LastUsedAt": "2 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "wo4kpf6r69kz1kbhs1f2mro07"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "24.73kB",
+    "Type": "regular",
+    "UsageCount": 2
+  },
+  {
+    "CreatedAt": "2026-10-29 17:05:56.814617221 +0000 UTC",
+    "Description": "[7/8] COPY backend/ ./backend/",
+    "ID": "wo4kpf6r69kz1kbhs1f2mro07",
+    "LastUsedAt": "10 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "1v21zrrukxuwef9zkcp9g1qlx"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "829kB",
+    "Type": "regular",
+    "UsageCount": 1
+  },
+  {
+    "CreatedAt": "2026-10-30 01:33:10.44602701 +0000 UTC",
+    "Description": "[3/4] COPY pyproject.toml uv.lock README.md ./",
+    "ID": "6w3xtzqh53flin7qavaxy5wyj",
+    "LastUsedAt": "2 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "ig6sfinasj64imig1lwgq4uus"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "1.162MB",
+    "Type": "regular",
+    "UsageCount": 1
+  },
+  {
+    "CreatedAt": "2026-10-30 01:33:12.618315344 +0000 UTC",
+    "Description": "mount / from exec /bin/sh -c uv sync --locked --no-dev --no-install-project --no-cache",
+    "ID": "poragacu2z1smglt8c9kgvpky",
+    "LastUsedAt": "2 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "6w3xtzqh53flin7qavaxy5wyj"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "4.869MB",
+    "Type": "regular",
+    "UsageCount": 1
+  },
+  {
+    "CreatedAt": "2026-10-29 17:00:20.07892826 +0000 UTC",
+    "Description": "mount / from exec /bin/sh -c uv sync --locked --no-dev --no-install-project     && python -m playwright install --with-deps chromium     && apt-get install -y --no-install-recommends fonts-noto-cjk=1:20220127+repack1-1     && rm -rf /var/lib/apt/lists/*",
+    "ID": "1v21zrrukxuwef9zkcp9g1qlx",
+    "LastUsedAt": "10 hours ago",
+    "Mutable": false,
+    "Parents": [
+      "4cb5lw64jyngdvca1yatnxo2g"
+    ],
+    "Reclaimable": true,
+    "Shared": true,
+    "Size": "3.333GB",
+    "Type": "regular",
+    "UsageCount": 3
+  }
+]

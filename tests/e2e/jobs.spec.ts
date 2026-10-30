@@ -108,6 +108,8 @@ test('岗位解析错误保留原文可重试，筛选无结果有空状态', as
   const detail = page.getByRole('region', { name: '岗位详情', exact: true })
   await detail.getByRole('button', { name: '解析岗位', exact: true }).click()
   await expect(detail.getByRole('button', { name: '重试解析', exact: true })).toBeVisible()
+  await expect(detail.locator('.parse-step-item.failed')).toHaveCount(1)
+  await expect(detail.locator('.parse-step-item.running')).toHaveCount(0)
   expect((await (await api.get(`/api/jobs/${job.id}`)).json()).text).toContain('E2E_RETRY_PARSE')
   await capture(page, 'jobs-parse-error-mobile', true)
   await detail.getByRole('button', { name: '重试解析', exact: true }).click()

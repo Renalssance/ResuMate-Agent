@@ -1,0 +1,96 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-eval] _
+
+chat_model = ChatOpenAI(callbacks=[<langchain_core.callbacks.base.BaseCallbackHandler object at 0x10e305fd0>], metadata={'lc_versio...ple/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024, extra_body={'enable_thinking': False})
+asynchronous = False, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10da20110>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool', 'eval'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:83: AssertionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-eval] _
+
+chat_model = ChatOpenAI(callbacks=[<langchain_core.callbacks.base.BaseCallbackHandler object at 0x10e7bbe00>], metadata={'lc_versio...ple/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024, extra_body={'enable_thinking': False})
+asynchronous = True, status = 307, location = 'https://model.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e1849e0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool', 'eval'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://model.example/sink')>])
+
+backend/tests/test_model_transport_security.py:83: AssertionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-eval] _
+
+chat_model = ChatOpenAI(callbacks=[<langchain_core.callbacks.base.BaseCallbackHandler object at 0x10f4d7c20>], metadata={'lc_versio...ple/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024, extra_body={'enable_thinking': False})
+asynchronous = False, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f4d7e30>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool', 'eval'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://other.example/sink')>])
+
+backend/tests/test_model_transport_security.py:83: AssertionError
+_ test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-eval] _
+
+chat_model = ChatOpenAI(callbacks=[<langchain_core.callbacks.base.BaseCallbackHandler object at 0x10f58b8f0>], metadata={'lc_versio...ple/v1', request_timeout=7.0, stream_usage=True, max_retries=0, max_tokens=1024, extra_body={'enable_thinking': False})
+asynchronous = True, status = 308, location = 'https://other.example/sink'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10e14e6c0>
+
+    @pytest.mark.parametrize('chat_model', ['graph', 'chat', 'tool', 'eval'], indirect=True)
+    @pytest.mark.parametrize('asynchronous', [False, True])
+    @pytest.mark.parametrize('status,location', [(307, 'https://model.example/sink'), (308, 'https://other.example/sink')])
+    def test_chat_sdk_stops_redirect_and_applies_account_timeout(chat_model, asynchronous, status, location, monkeypatch):
+        calls = intercept_redirect(monkeypatch, location, status)
+        with pytest.raises(APIStatusError):
+            if asynchronous:
+                asyncio.run(chat_model.ainvoke('synthetic input'))
+            else:
+                chat_model.invoke('synthetic input')
+>       assert len(calls) == 1, 'a redirected request must never be sent'
+E       AssertionError: a redirected request must never be sent
+E       assert 2 == 1
+E        +  where 2 = len([<Request('POST', 'https://model.example/v1/chat/completions')>, <Request('POST', 'https://other.example/sink')>])
+
+backend/tests/test_model_transport_security.py:83: AssertionError
+=========================== short test summary info ============================
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-False-eval]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[307-https://model.example/sink-True-eval]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-False-eval]
+FAILED backend/tests/test_model_transport_security.py::test_chat_sdk_stops_redirect_and_applies_account_timeout[308-https://other.example/sink-True-eval]
+4 failed, 16 deselected in 1.04s

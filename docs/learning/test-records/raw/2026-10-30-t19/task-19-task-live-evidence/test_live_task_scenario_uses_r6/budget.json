@@ -1,0 +1,24 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "bd46a14f-cccf-406c-81ca-5376b5abcbfd": {
+      "case_id": "source-deleted-or-reassigned",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    },
+    "c93ecd73-0364-4e19-8f1f-f31ae36667ea": {
+      "case_id": "source-deleted-or-reassigned",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00021600",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+      }
+    }
+  },
+  "stop_reason": null
+}

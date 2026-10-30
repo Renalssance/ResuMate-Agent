@@ -47,27 +47,17 @@ const terminalStatuses = new Set(['succeeded', 'failed', 'cancelled'])
 const resetStream = Symbol('reset stream')
 const terminalStream = Symbol('terminal stream')
 
-function waitForRetry(delay: number, signal: AbortSignal): Promise<void> {
-  if (signal.aborted) return Promise.resolve()
-  return new Promise((resolve) => {
-    const finish = () => {
-      clearTimeout(timer)
-      signal.removeEventListener('abort', finish)
-      resolve()
-    }
-    const timer = setTimeout(finish, delay)
-    signal.addEventListener('abort', finish, { once: true })
-  })
-}
-
 /** Read the snapshot, then replay from `after`. `close` only disconnects the viewer. */
 export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   const controller = new AbortController()
   const { signal } = controller
   let transport: AbortController | undefined
+  let onlineRevision = 0, wakeRetry: (() => void) | undefined
   const close = () => { controller.abort(); transport?.abort() }
   const offline = () => transport?.abort()
+  const online = () => { onlineRevision++; wakeRetry?.() }
   window.addEventListener('offline', offline)
+  window.addEventListener('online', online)
   if (options.signal?.aborted) close()
   else options.signal?.addEventListener('abort', close, { once: true })
 
@@ -76,6 +66,20 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   let snapshot: RunSnapshot | undefined
   let resetting = false
   let retry = 0
+
+  function waitForRetry(delay: number, wakeOnOnline: boolean): Promise<void> {
+    if (signal.aborted) return Promise.resolve()
+    return new Promise(resolve => {
+      const finish = () => {
+        clearTimeout(timer); signal.removeEventListener('abort', finish)
+        if (wakeRetry === finish) wakeRetry = undefined
+        resolve()
+      }
+      const timer = setTimeout(finish, delay)
+      if (wakeOnOnline) wakeRetry = finish
+      signal.addEventListener('abort', finish, { once: true })
+    })
+  }
 
   async function get(endpoint: string, accept: string): Promise<Response> {
     const response = await fetch(endpoint, { signal: transport!.signal, headers: { ...buildAuthHeaders(), Accept: accept } })
@@ -93,6 +97,7 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
 
   async function consume(): Promise<void> {
     while (!signal.aborted) {
+      const onlineAtStart = onlineRevision
       let retryAfterMs: number | undefined
       transport = new AbortController()
       try {
@@ -139,7 +144,11 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
           retryAfterMs = error.retryAfterMs
         }
       }
-      await waitForRetry(retryAfterMs ?? retryDelays[Math.min(retry, retryDelays.length - 1)], signal)
+      // Online can arrive while the offline reader is still closing. Remember it
+      // here so the one consume loop reconnects without starting a second loop.
+      if (retryAfterMs !== undefined || onlineRevision === onlineAtStart) {
+        await waitForRetry(retryAfterMs ?? retryDelays[Math.min(retry, retryDelays.length - 1)], retryAfterMs === undefined)
+      }
       retry += 1
     }
   }
@@ -147,6 +156,7 @@ export function subscribeRun(options: RunSubscriptionOptions): RunSubscription {
   const done = consume().finally(() => {
     options.signal?.removeEventListener('abort', close)
     window.removeEventListener('offline', offline)
+    window.removeEventListener('online', online)
   })
   return { close, done }
 }

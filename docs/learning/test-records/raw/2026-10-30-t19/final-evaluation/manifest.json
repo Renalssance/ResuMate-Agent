@@ -1,0 +1,33 @@
+{
+  "invocation_id": "9ce4a722-d79a-42ee-b637-cef24946d6a5",
+  "recovery": {
+    "executed": 4,
+    "passed": 4,
+    "duration_seconds": 452.92,
+    "image": "resumate-t19-backend:5cd2b8fd52",
+    "image_id": "sha256:83629f6b72ea003153d037cb314228ab268dc6f04f05360d05555fa544dd9455",
+    "actual_source": "recovery/source-as-run.tar.gz"
+  },
+  "evaluation": {
+    "mode": "stub",
+    "executed_count": 30,
+    "pass": 30,
+    "fail": 0,
+    "incomplete": 0,
+    "not_run": 0,
+    "cli_seconds": 28.93,
+    "scope": "26 cases executed in CLI plus strict adjudication of these four real recovery experiments"
+  },
+  "excluded": [
+    "runtime SQLite databases",
+    "raw checkpoints",
+    "environment files",
+    "credentials",
+    "JWTs"
+  ],
+  "paid_provider_requests_this_unit": 0,
+  "provider_semantic_quality": "unreviewed",
+  "remote_github_actions": "not_executed_by_this_review",
+  "original_recovery_root": "/tmp/task-14-recovery-artifacts-9ce4a722-3paycpej",
+  "original_evaluation_root": "/tmp/task-19-final-evals/20261030T034423Z-3feb4818"
+}

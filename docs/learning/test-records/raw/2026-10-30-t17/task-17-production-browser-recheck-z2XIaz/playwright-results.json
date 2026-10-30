@@ -1,0 +1,187 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/24.10.0/bin/node",
+      "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/node_modules/.bin/playwright",
+      "test",
+      "--config",
+      "playwright.production.config.ts",
+      "--grep",
+      "production lazy routes"
+    ],
+    "configFile": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/playwright.production.config.ts",
+    "rootDir": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "production-chromium",
+        "name": "production-chromium",
+        "testDir": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "production-performance.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "production-chromium",
+        "testDir": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e",
+        "snapshotDir": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e",
+        "testIgnore": [],
+        "testMatch": "production-performance.spec.ts",
+        "timeout": 120000,
+        "use": {
+          "baseURL": "http://127.0.0.1:4373",
+          "trace": "on",
+          "video": "on",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "production-chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/tmp/task-17-production-browser-recheck-z2XIaz/playwright-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": ".venv/bin/python tests/e2e/support/production_server.py",
+      "url": "http://127.0.0.1:4373",
+      "timeout": 120000,
+      "reuseExistingServer": false,
+      "stdout": "pipe",
+      "gracefulShutdown": {
+        "signal": "SIGTERM",
+        "timeout": 40000
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "production-performance.spec.ts",
+      "file": "production-performance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production lazy routes, local input frames, long layouts, upload and PDF under CSP",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "production-chromium",
+              "projectName": "production-chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10286,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-10-30T02:52:09.352Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/video.webm"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/task-17-production-browser-recheck-z2XIaz/browser-results/production-performance-pro-a1140-ts-upload-and-PDF-under-CSP-production-chromium/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "950e5b612bd63811d8ba-4306c7b9d5cf3e6c807e",
+          "file": "production-performance.spec.ts",
+          "line": 65,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-30T02:52:04.070Z",
+    "duration": 17723.701,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

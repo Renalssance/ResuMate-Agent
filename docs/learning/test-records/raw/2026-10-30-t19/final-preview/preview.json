@@ -1,0 +1,35 @@
+{
+  "created_at": "2026-10-30T12:13:29.814524+08:00",
+  "root": "/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent",
+  "state": "/var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/task-19-final-preview-wlvk8n49",
+  "launcher_pid": 1327,
+  "baseline": "cdde2c53c6a80e271c2d185bef80b179d8e2fcb7",
+  "source_status": "current frozen working tree with uncommitted T17/T18/T19 changes",
+  "frontend_url": "http://127.0.0.1:4175",
+  "jobs_url": "http://127.0.0.1:4175/jobs",
+  "api_url": "http://127.0.0.1:4176",
+  "fixture_url": "http://127.0.0.1:8898",
+  "username": "browser-fixture",
+  "password": "synthetic-browser-password",
+  "models": "deterministic synthetic model; no paid calls",
+  "preservation": "copy of existing test launcher with explicit source root and shutdown cleanup of SQL/checkpoints/documents disabled; application code unchanged",
+  "paused_run_id": "1c38996d-f673-428d-a16f-9e042257fb79",
+  "paused_run_url": "http://127.0.0.1:4175/agent/tasks/1c38996d-f673-428d-a16f-9e042257fb79",
+  "worker_pid": 1336,
+  "pids": {
+    "launcher": 1327,
+    "api": 1335,
+    "worker": 1336,
+    "frontend_vite": 1356,
+    "extension_fixture": 1340,
+    "untouched_old_frontend": 75022
+  },
+  "redis_container": "d8463a1153b5 public.ecr.aws/docker/library/redis:7.4-alpine 127.0.0.1:55195->6379/tcp",
+  "screenshots_actually_viewed": [
+    "jobs-1440.png",
+    "jobs-390.png",
+    "jobs-320.png",
+    "waiting-input-390.png"
+  ],
+  "observed_page_errors": 0
+}

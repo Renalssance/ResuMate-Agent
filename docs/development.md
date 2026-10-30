@@ -5,7 +5,7 @@
 ## 从哪里开始
 
 1. [总体范围](superpowers/specs/2026-10-29-ai-fullstack-agent-scope.md)：产品目标、四层能力、明确不做的事情。
-2. [完整开发计划](superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)：21 个任务及依赖顺序。
+2. [完整开发计划](superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)：保留原21个编号以追溯历史；当前范围为T01–T19共19项。T20后续要求、T21及教学演示录制已取消，T20已有代码与历史记录保留。
 3. [学习导航与进度](learning/README.md)：每个已开发单元的知识点、代码入口、实际验证结果。
 4. [T01：开发基线与 Agent 恢复契约](learning/01-development-baseline.md)：当前第一课。
 
@@ -46,36 +46,15 @@ Vitest 只收集 `src/**/*.spec.ts`；已有 `*.test.ts` / `*.test.mjs` 保留�
 
 本次开发使用独立工作区 `resumate-fullstack-learning/ResuMate-Agent`，从提交 `e993b27` 建立。原工作区已有的资料模板复制等未提交修改未带入；集成回原目录时需要保留并合并这些改动。测试日志会明确属于哪个工作区。
 
-## T04/T05：本地 API 与 worker
+## 当前运行方式与历史实验
 
-Docker Desktop 已在本机安装。当前终端若找不到命令，macOS 可先执行：
+当前部署拓扑已在T20改为共享MySQL、两个API、Redis、一个worker和调度器，T19生产前端代理及备份恢复已完成。以[README](../README.md)的当前启动方式与[总计划](superpowers/plans/2026-10-29-ai-fullstack-agent-development.md)为准。MySQL/Redis不发布宿主端口；API/worker共享原文件与PDF卷，只有worker挂载checkpoint卷。
 
-```sh
-export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
-```
+原T04的单API/SQLite Compose已迁入`backend/tests/fixtures/compose.sqlite.yaml`，仅用于特定故障实验，不应当作生产部署命令。macOS原生进程与Docker进程不可共享SQLite WAL；跨虚拟机数据用MySQL。MySQL8.4双API七场景已在T20实际执行，早期原生MySQL9.6单元测试单独留证。
 
-本机 Compose 提供 API、一个 worker、一个调度器与 Redis，API 和 worker 共享 Docker 内的 `backend-data` 持久卷。它是独立数据环境，不会自动载入原开发目录的账号或简历。前端继续使用现有 Vite 开发方式；本镜像未包含前端打包页面、可选 OCR 或完整发布代理。
+MySQL双库测试支持`RESUMATE_TEST_MYSQL_SOCKET`或CI专用`RESUMATE_TEST_MYSQL_URL`。它会创建、销毁随机临时数据库，不连接应用业务库。两者未配置时明确skip，不能宣称MySQL通过。
 
-准备自己的 `.env`（不提交），设置现有认证所需的 JWT_SECRET_KEY；可以用 `python -c 'import secrets; print(secrets.token_urlsafe(32))'` 生成。需要注册管理员时还需设置 ADMIN_INVITE_CODE。然后在仓库根目录运行：
-
-```sh
-docker compose --env-file .env -f deploy/compose.yaml up -d --build
-# 停止容器并保留业务数据库、checkpoint 和 Redis 持久卷：
-docker compose --env-file .env -f deploy/compose.yaml down
-```
-
-API 默认 `http://127.0.0.1:8000`，Redis 只发布到本机 6379。可通过 RESUMATE_API_PORT / RESUMATE_REDIS_PORT 避免端口冲突。不要对真实项目使用 `down -v`，它会删除命名数据卷。真实模型仍使用应用内个人模型设置，不把 API Key 放在队列中。
-
-**SQLite 运行边界：** API 与 worker 必须都在宿主机运行，或都在 Docker Linux 内访问同一卷。已实测 macOS 原生连接与 Docker worker 共享 SQLite WAL 会观察到旧数据；不要混用。跨主机/虚拟机数据访问使用 MySQL。当前 MySQL 行为测试来自临时 9.6.0 实例，不表示完整 MySQL Compose 部署或 MySQL 8.x 已验收。
-
-单元测试与独立故障实验分别执行：
-
-```sh
-uv run pytest backend/tests/test_worker_delivery.py backend/tests/test_agent_runtime.py backend/tests/test_tool_idempotency.py -q
-RESUMATE_COMPOSE_TEST=1 uv run pytest backend/tests/test_worker_compose.py -q -s
-```
-
-未提供 RESUMATE_TEST_MYSQL_SOCKET 时，MySQL 参数会显式跳过；应在记录中说明。Compose 测试自行创建随机项目、合成资料、测试模型和端口，完成后清理该测试的容器与卷。它会终止自己的 worker，不终止已有开发服务。常规后端套件默认跳过此项耗时故障实验；启用参数仅是测试入口，不是产品功能开关。
+浏览器默认使用4173/4174/8899；保留用户预览时，指定前端4273、API4274和扩展示例8999。生产浏览器独立配置使用另一个nginx端口，不复用来源不明的服务。真实模型、普通stub、进程恢复与页面截图分别记录。
 
 ## T06：事件订阅与教学
 
@@ -86,7 +65,7 @@ uv run pytest backend/tests/test_run_events.py backend/tests/test_agent_events.p
 npm --prefix frontend run test:unit
 ```
 
-详见[第六课：持久事件与 SSE](learning/06-durable-events-and-sse.md)及[T06 测试记录](learning/test-records/2026-10-29-t06.md)。Compose 故障实验现在同时验证实际网络 SSE：断线、worker 崩溃、按游标补齐、唯一产物事件。新任务界面与实际操作闭环仍在 T07 验收。
+详见[第六课：持久事件与 SSE](learning/06-durable-events-and-sse.md)及[T06 测试记录](learning/test-records/2026-10-29-t06.md)。Compose 故障实验现在同时验证实际网络 SSE：断线、worker 崩溃、按游标补齐、唯一产物事件。新任务界面、后续补问与文字面试已分别在T07–T16验收。
 
 ## T11：中文 PDF 与投递快照
 

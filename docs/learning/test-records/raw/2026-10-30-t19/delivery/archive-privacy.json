@@ -1,0 +1,28 @@
+{
+  "scanned_files": 493,
+  "known_secret_matches": 0,
+  "jwt_log_matches": 0,
+  "excluded_private_config_files": 8,
+  "backup_source": "only synthetic delivery fixture/model data",
+  "backup_archive_members": {
+    "agent-state.tar.gz": [
+      ".",
+      "./execution.lock",
+      "./checkpoints.sqlite"
+    ],
+    "backend-data.tar.gz": [
+      ".",
+      "./documents",
+      "./documents/delivery-original.txt",
+      "./chroma",
+      "./chroma/chroma.sqlite3",
+      "./chroma/6b77c450-3e22-48fb-a67f-736eca98780d",
+      "./chroma/6b77c450-3e22-48fb-a67f-736eca98780d/header.bin",
+      "./chroma/6b77c450-3e22-48fb-a67f-736eca98780d/length.bin",
+      "./chroma/6b77c450-3e22-48fb-a67f-736eca98780d/link_lists.bin",
+      "./chroma/6b77c450-3e22-48fb-a67f-736eca98780d/data_level0.bin",
+      "./exports",
+      "./exports/b045bf75-e2f2-4bb8-8683-f043a1aecb56.pdf"
+    ]
+  }
+}

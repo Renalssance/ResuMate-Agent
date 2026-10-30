@@ -1,0 +1,729 @@
+{
+  "case_id": "source-deleted-or-reassigned",
+  "category": "durable_task",
+  "mode": "stub",
+  "status": "pass",
+  "input": {
+    "id": "source-deleted-or-reassigned",
+    "category": "durable_task",
+    "runner": "durable",
+    "input": {
+      "scenario": "delete-jd-and-reassign-resume-after-model",
+      "resume_text": "Synthetic Candidate: built API input validation and checked test cases.",
+      "job_text": "Build API services and validate request fields.",
+      "question_count": 1
+    }
+  },
+  "output": {
+    "subject_run_ids": [
+      "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+      "7a6c934c-2edb-48c8-b331-e6b1e0e05b85"
+    ],
+    "coverage": {
+      "mutations": [
+        "delete_jd",
+        "reassign_resume"
+      ]
+    },
+    "model_calls": [
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      },
+      {
+        "task": "evaluate_match",
+        "candidate": "First"
+      }
+    ],
+    "model": "synthetic-durable-task-fixture",
+    "mode": "stub",
+    "database": "isolated SQLite",
+    "source_directory": "/private/tmp/task-19-final-evals/20261030T034423Z-3feb4818/state/source-deleted-or-reassigned/originals",
+    "admission": "controlled fixture; real Redis limiting is verified separately"
+  },
+  "db_snapshot": {
+    "runs": [
+      {
+        "id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "user_id": 1,
+        "session_id": "4c55d59b-608c-4922-823c-7dbabfcfea7d",
+        "request_id": "15863570-337d-493c-be68-fad43530fd2e",
+        "kind": "match_analysis",
+        "status": "failed",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1
+          ],
+          "analysisJobId": 1,
+          "candidateIds": [
+            1
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-30T03:44:44.522356",
+          "resumes": {
+            "1": "2026-10-30T03:44:44.522762"
+          }
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:44.553658",
+        "cancel_requested_at": null,
+        "error_code": "not_found",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:44:44.532779",
+        "updated_at": "2026-10-30T03:44:44.554400"
+      },
+      {
+        "id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "user_id": 1,
+        "session_id": "de7a1e84-f249-4699-8bb6-268a210f041f",
+        "request_id": "cf7219e9-2095-46e8-8874-6e82c2960a9d",
+        "kind": "match_analysis",
+        "status": "failed",
+        "input_json": {
+          "jdId": 1,
+          "resumeIds": [
+            1
+          ],
+          "analysisJobId": 2,
+          "candidateIds": [
+            2
+          ]
+        },
+        "input_versions": {
+          "jd": "2026-10-30T03:44:44.555105",
+          "resumes": {
+            "1": "2026-10-30T03:44:44.522762"
+          }
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:44:44.570248",
+        "cancel_requested_at": null,
+        "error_code": "not_found",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:44:44.556154",
+        "updated_at": "2026-10-30T03:44:44.570587"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "4c55d59b-608c-4922-823c-7dbabfcfea7d",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:44:44.532494"
+      },
+      {
+        "id": "de7a1e84-f249-4699-8bb6-268a210f041f",
+        "user_id": 1,
+        "purpose": "match_analysis",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:44:44.556083"
+      }
+    ],
+    "operations": [],
+    "events": [
+      {
+        "id": 1,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:44.533965"
+      },
+      {
+        "id": 2,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:44.536341"
+      },
+      {
+        "id": 3,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.544229"
+      },
+      {
+        "id": 4,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.545066"
+      },
+      {
+        "id": 5,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.546060"
+      },
+      {
+        "id": 6,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.548803"
+      },
+      {
+        "id": 7,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.551353"
+      },
+      {
+        "id": 8,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.552183"
+      },
+      {
+        "id": 9,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 1,
+            "candidate_id": 1
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.552862"
+      },
+      {
+        "id": 10,
+        "run_id": "2fcc595e-64af-432b-9bd3-dbf9aa7a6c87",
+        "seq": 10,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "not_found"
+        },
+        "created_at": "2026-10-30T03:44:44.554640"
+      },
+      {
+        "id": 11,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:44.556522"
+      },
+      {
+        "id": 12,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:44:44.557375"
+      },
+      {
+        "id": 13,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 3,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_jd",
+          "status": "running",
+          "progress": 10,
+          "overall_progress": 10,
+          "message": "Loading structured JD profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.561820"
+      },
+      {
+        "id": 14,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 4,
+        "type": "task.progress",
+        "payload": {
+          "stage": "load_resume",
+          "status": "running",
+          "progress": 20,
+          "overall_progress": 20,
+          "message": "Loading structured resume profile",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.562576"
+      },
+      {
+        "id": 15,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 5,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_search",
+          "status": "running",
+          "progress": 35,
+          "overall_progress": 35,
+          "message": "Searching resume evidence",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.563433"
+      },
+      {
+        "id": 16,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 6,
+        "type": "task.progress",
+        "payload": {
+          "stage": "llm_match",
+          "status": "running",
+          "progress": 58,
+          "overall_progress": 58,
+          "message": "Evaluating JD-resume match with LLM",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.565433"
+      },
+      {
+        "id": 17,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 7,
+        "type": "task.progress",
+        "payload": {
+          "stage": "score",
+          "status": "running",
+          "progress": 72,
+          "overall_progress": 72,
+          "message": "Calculating weighted match score",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.567657"
+      },
+      {
+        "id": 18,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 8,
+        "type": "task.progress",
+        "payload": {
+          "stage": "local_save",
+          "status": "running",
+          "progress": 84,
+          "overall_progress": 84,
+          "message": "Preparing candidate report",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.568485"
+      },
+      {
+        "id": 19,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 9,
+        "type": "task.progress",
+        "payload": {
+          "stage": "chroma_save",
+          "status": "running",
+          "progress": 92,
+          "overall_progress": 92,
+          "message": "Candidate report ready",
+          "document_id": null,
+          "filename": null,
+          "stage_progress": null,
+          "current": null,
+          "total": null,
+          "data": {
+            "run_id": 2,
+            "candidate_id": 2
+          }
+        },
+        "created_at": "2026-10-30T03:44:44.569166"
+      },
+      {
+        "id": 20,
+        "run_id": "7a6c934c-2edb-48c8-b331-e6b1e0e05b85",
+        "seq": 10,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "not_found"
+        },
+        "created_at": "2026-10-30T03:44:44.570789"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 2,
+        "filename": "first.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "First"
+        },
+        "created_at": "2026-10-30T03:44:44.522761",
+        "updated_at": "2026-10-30T03:44:44.522762"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "filename": "second.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Synthetic Candidate: built API input validation and checked test cases.",
+        "structured_data": {
+          "candidate_name": "Second"
+        },
+        "created_at": "2026-10-30T03:44:44.522763",
+        "updated_at": "2026-10-30T03:44:44.522763"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build API services and validate request fields.",
+        "structured_data": {
+          "job_title": "API Engineer",
+          "summary": "Build APIs",
+          "criteria": [
+            {
+              "criterion_id": "api",
+              "name": "API",
+              "description": "Build APIs",
+              "importance": "must",
+              "weight": 100,
+              "evidence_query": "API"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:44:44.555104",
+        "updated_at": "2026-10-30T03:44:44.555105"
+      }
+    ],
+    "analysis_jobs": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "jd_id": null,
+        "title": "API Engineer",
+        "status": "running",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-30T03:44:44.530702",
+        "updated_at": "2026-10-30T03:44:44.530704"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "jd_id": 1,
+        "title": "API Engineer",
+        "status": "running",
+        "summary": "",
+        "config_json": {},
+        "created_at": "2026-10-30T03:44:44.555642",
+        "updated_at": "2026-10-30T03:44:44.555642"
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "job_id": 1,
+        "resume_id": 1,
+        "status": "pending",
+        "note": "",
+        "created_at": "2026-10-30T03:44:44.531080",
+        "updated_at": "2026-10-30T03:44:44.531080"
+      },
+      {
+        "id": 2,
+        "job_id": 2,
+        "resume_id": 1,
+        "status": "pending",
+        "note": "",
+        "created_at": "2026-10-30T03:44:44.555759",
+        "updated_at": "2026-10-30T03:44:44.555760"
+      }
+    ],
+    "match_results": [],
+    "question_sets": [],
+    "followup_sets": [],
+    "embedding_chunks": []
+  },
+  "verdict": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "owned_terminal_runs",
+        "passed": true,
+        "reason": "Every scenario Run terminates as failed under its accepting owner",
+        "evidence_refs": [
+          "runs"
+        ]
+      },
+      {
+        "name": "released_sessions",
+        "passed": true,
+        "reason": "Terminal task sessions are released",
+        "evidence_refs": [
+          "sessions"
+        ]
+      },
+      {
+        "name": "operation_artifact_atomicity",
+        "passed": true,
+        "reason": "Successful business operations and artifact events have equal counts",
+        "evidence_refs": [
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "no_success_after_stop",
+        "passed": true,
+        "reason": "Stopped units publish neither operation nor final result",
+        "evidence_refs": [
+          "runs",
+          "operations",
+          "events"
+        ]
+      },
+      {
+        "name": "source_checks_exercised",
+        "passed": true,
+        "reason": "Both supported source changes occur after a model call and prevent a report",
+        "evidence_refs": [
+          "match_results",
+          "output.coverage",
+          "output.model_calls"
+        ]
+      }
+    ],
+    "limitations": [
+      "Deterministic service execution is not a real worker process kill or real-model quality measurement.",
+      "Legacy model telemetry remains user-level; interrupted provider usage is unknown, never assumed zero.",
+      "This invocation uses isolated SQLite; focused integration tests separately cover disposable MySQL."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "not_applicable",
+        "evidence": [],
+        "reason": "确定性 stub 不评价真实模型语义。"
+      }
+    ]
+  }
+}

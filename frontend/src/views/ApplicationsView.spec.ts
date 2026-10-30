@@ -99,3 +99,13 @@ it('does not navigate from a late create response after leaving the applications
  expect(router.currentRoute.value.path).toBe('/resume-versions/v1')
  expect(Object.keys(sessionStorage).some(key => key.startsWith('resumate:interview:start:') && sessionStorage.getItem(key) === requestId)).toBe(true)
 })
+
+
+it.each(['javascript:alert(1)', 'data:text/html,synthetic', 'https://jobs.example/position/1', 'http://jobs.example/position/2'])(
+ 'only renders supported external job URLs: %s', async jobUrl => {
+  request.defaults.adapter = async config => ({ data: [{ ...record, job_url: jobUrl }], status: 200, statusText: 'OK', headers: {}, config })
+  const { wrapper } = await setup('')
+  const link = wrapper.findAll('a').find(link => link.attributes('href') === jobUrl)
+  expect(Boolean(link)).toBe(/^https?:\/\//i.test(jobUrl))
+  wrapper.unmount()
+ })

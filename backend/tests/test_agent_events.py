@@ -201,7 +201,7 @@ def test_action_waiting_status_and_event_rollback_together(runtime, career_db, m
 
 
 def test_custom_model_endpoint_requests_stream_usage(monkeypatch):
-    from functools import partial
+    import asyncio
     from types import SimpleNamespace
     import httpx
     from langchain_core.messages import HumanMessage
@@ -221,9 +221,14 @@ def test_custom_model_endpoint_requests_stream_usage(monkeypatch):
         api_key='synthetic-key', base_url='https://model.invalid/v1', model='compatible-model',
         max_tokens=100, request_timeout_seconds=30, context_window_tokens=32000,
     ))
-    with httpx.Client(transport=httpx.MockTransport(respond)) as client:
-        monkeypatch.setattr(factory, 'ChatOpenAI', partial(factory.ChatOpenAI, http_client=client))
-        chunks = list(factory.model_for_user(1).stream([HumanMessage(content='Hello')]))
+    async_client = httpx.AsyncClient(transport=httpx.MockTransport(respond), follow_redirects=False)
+    try:
+        with httpx.Client(transport=httpx.MockTransport(respond), follow_redirects=False) as client:
+            monkeypatch.setattr(factory, 'DefaultHttpxClient', lambda **kwargs: client)
+            monkeypatch.setattr(factory, 'DefaultAsyncHttpxClient', lambda **kwargs: async_client)
+            chunks = list(factory.model_for_user(1).stream([HumanMessage(content='Hello')]))
+    finally:
+        asyncio.run(async_client.aclose())
     assert requested[0].get('stream_options') == {'include_usage': True}
     usage = [chunk.usage_metadata for chunk in chunks if chunk.usage_metadata is not None]
     assert sum(item['input_tokens'] for item in usage) == 4

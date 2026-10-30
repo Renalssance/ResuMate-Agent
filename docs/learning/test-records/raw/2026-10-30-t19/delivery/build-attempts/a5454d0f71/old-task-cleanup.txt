@@ -1,0 +1,49 @@
+['/Applications/Docker.app/Contents/Resources/bin/docker', 'image', 'rm', 'resumate-agent-worker:latest']
+Untagged: resumate-agent-worker:latest
+Deleted: sha256:7a4d53789989ed359a367ce180bf4ba9cec82b2ef0cd92d79d4980456e6afc65
+['/Applications/Docker.app/Contents/Resources/bin/docker', 'buildx', 'prune', '--force', '--filter', 'id~=^(t9jfbypno04r6cu2d6p72owyy|rwrk9xz74db509zfy1h1q06kx|ebln732aovfbvvgifz6xv4lan|b4bbkyaoynvljxfcag91p6an2)$', '--verbose']
+ID:		b4bbkyaoynvljxfcag91p6an2
+Parent:		ebln732aovfbvvgifz6xv4lan
+Created at:	2026-10-29 14:39:35.821512167 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		20.61kB
+Description:	mount / from exec /bin/sh -c mkdir -p /app/data/agent
+Usage count:	1
+Last used:	12 hours ago
+
+ID:		ebln732aovfbvvgifz6xv4lan
+Parent:		t9jfbypno04r6cu2d6p72owyy
+Created at:	2026-10-29 14:39:35.717854626 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		693.6kB
+Description:	[6/7] COPY backend/ ./backend/
+Usage count:	2
+Last used:	Less than a second ago
+
+ID:		t9jfbypno04r6cu2d6p72owyy
+Parent:		rwrk9xz74db509zfy1h1q06kx
+Created at:	2026-10-29 14:39:35.5262115 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		1.323GB
+Description:	mount / from exec /bin/sh -c uv sync --locked --no-dev --no-install-project
+Usage count:	2
+Last used:	Less than a second ago
+
+ID:		rwrk9xz74db509zfy1h1q06kx
+Parent:		pyvey9dyo65nh2gw4xzc84vm3
+Created at:	2026-10-29 14:39:18.09876134 +0000 UTC
+Mutable:	false
+Reclaimable:	true
+Shared:		false
+Size:		1.115MB
+Description:	[4/7] COPY pyproject.toml uv.lock README.md ./
+Usage count:	2
+Last used:	Less than a second ago
+
+Total:	1.325GB

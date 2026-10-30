@@ -1,0 +1,47 @@
+Load project resumate-t17-cc9a382585 artifact /private/tmp/task-17-baseline driver 2efeebd107dee8628e13318b58c121b65ca887546ac57f5c920a636a2e961e46
+api_only {"samples": 18097, "p50_ms": 54.03725, "p95_ms": 160.869625, "max_ms": 448.037, "errors": 0, "statuses": {"200": 18097}}
+api_with_30_sse {"samples": 13679, "p50_ms": 84.458875, "p95_ms": 206.242209, "max_ms": 675.057542, "errors": 0, "statuses": {"200": 13679}}
+{
+  "sse": {
+    "commits": 300,
+    "expected": 900,
+    "received": 900,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 271.805292,
+    "p95_ms": 498.170417,
+    "max_ms": 701.551917,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "reconnect": {
+    "commits": 10,
+    "expected": 6,
+    "received": 6,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 27.286625,
+    "p95_ms": 37.790334,
+    "max_ms": 37.790334,
+    "negative_clock_samples": 0,
+    "passed": true,
+    "visible_after_reconnect_ms": 15.131334
+  },
+  "slow_consumer_other_29": {
+    "commits": 50,
+    "expected": 145,
+    "received": 145,
+    "missing": 0,
+    "duplicates": 0,
+    "unexpected": 0,
+    "p50_ms": 393.059501,
+    "p95_ms": 491.353334,
+    "max_ms": 507.762375,
+    "negative_clock_samples": 0,
+    "passed": true
+  },
+  "passed": true
+}
+

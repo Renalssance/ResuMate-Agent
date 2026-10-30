@@ -1,0 +1,141 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-37a2-7761-80df-3d0ad10ba752": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37ba-73b0-90dd-220d0380a50f": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37c3-7e13-9663-f690960d528f": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37ca-73e2-b85d-e0e030ca93df": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37d2-7972-b667-d9c1d2e9827f": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37f1-7652-9384-33f64ce0539d": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-37f9-7783-8116-7bbe41aaf50c": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3801-7dc1-bf47-9c76c351dbc0": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3808-7632-a537-b3e9480da134": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3810-7271-8d06-04d2a200fdf4": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3856-76a0-8d5c-ed50cc344343": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-385f-7393-b7c3-ec0ec6c3a1af": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3867-7ca0-939e-4457cb61d075": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-386e-7203-8938-32719d81cf24": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3876-7660-8616-db5c95da15ca": {
+      "case_id": "interview-followup",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": null
+}

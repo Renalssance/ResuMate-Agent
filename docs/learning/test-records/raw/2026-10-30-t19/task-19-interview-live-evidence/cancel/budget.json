@@ -1,0 +1,78 @@
+{
+  "currency": "CNY",
+  "calls": {
+    "01a18acd-3d08-7481-b20b-a9e7dd70d880": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3d20-7cc2-9753-1ab62362dc69": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3d3e-7060-ac7e-481ac71a4f74": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3d45-7911-8c08-05abe9c4be1c": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3d63-78b0-bca9-d4831c03a4cb": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3d92-7980-9ccc-14f70e8048b8": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3dad-7991-a430-d21c43f7af4b": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    },
+    "01a18acd-3db5-7b32-ae2f-5a4f3bdd4fd5": {
+      "case_id": "interview-cancel-late-result",
+      "reserved_cost": "1.21970880",
+      "observed_cost": "0.00036000",
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 50
+      }
+    }
+  },
+  "stop_reason": null
+}

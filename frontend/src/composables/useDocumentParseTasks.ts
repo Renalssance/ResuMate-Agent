@@ -158,7 +158,7 @@ export function createDocumentUploadQueue(deps: UploadQueueDeps = {}) {
             void refreshDocumentsSilently()
           }
         },
-        onReconnect: () => { task.message = '实时进度连接已中断，正在重新连接，任务会继续运行' },
+        onReconnect: () => { if (task.status === 'running') task.message = '实时进度连接已中断，正在重新连接，任务会继续运行' },
         onError: error => { failTask(task, error.message); forget(task.taskId) },
       }),
     )
@@ -246,6 +246,8 @@ function updateUploadProgress(task: DocumentParseTask, event: UploadProgressLike
 }
 
 function updateFromSse(task: DocumentParseTask, event: SseProgressEvent) {
+  // The result waiter can finish before this independent progress stream catches up.
+  if ((task.status === 'failed' || task.status === 'success') && (event.status === 'running' || event.status === 'pending')) return
   task.status = event.status
   task.stage = (event.stage || 'pending') as ParseStage
   task.stageProgress = event.stageProgress
@@ -262,6 +264,12 @@ function updateFromSse(task: DocumentParseTask, event: SseProgressEvent) {
     task.overallProgress = 100
     return
   }
+  if (event.status === 'failed' && (event.stage === 'failed' || event.stage === 'cancelled')) {
+    task.steps = task.steps.map((step) => step.status === 'running'
+      ? { ...step, status: 'failed', progress: event.stageProgress ?? event.progress, message: event.message }
+      : step)
+    return
+  }
   const status = event.status === 'success' ? 'success' : event.status === 'failed' ? 'failed' : 'running'
   updateStep(task, event.stage, status, event.stageProgress ?? event.progress, event.message)
 }
@@ -273,12 +281,14 @@ function readAgentProgress(event: SseProgressEvent): AgentProgressEvent | null {
 }
 
 function failTask(task: DocumentParseTask, reason: string) {
-  if (task.status === 'success') return
+  if (task.status === 'success' || task.status === 'failed') return
   task.status = 'failed'
   task.stage = 'failed'
   task.errorReason = reason
   task.message = reason
-  updateStep(task, task.steps.find((step) => step.status === 'running')?.key || 'upload_client', 'failed', 100, reason)
+  task.steps = task.steps.map((step) => step.status === 'running'
+    ? { ...step, status: 'failed', progress: 100, message: reason }
+    : step)
 }
 
 function updateStep(task: DocumentParseTask, key: string, status: TaskStatus, progress: number, message: string) {

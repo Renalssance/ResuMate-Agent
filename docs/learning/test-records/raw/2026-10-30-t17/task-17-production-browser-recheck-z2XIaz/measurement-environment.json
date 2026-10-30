@@ -1,0 +1,7 @@
+{
+  "platform": "darwin",
+  "host_cpu_count": 10,
+  "measured_environment": "host macOS API/worker/Chromium + Docker nginx/Redis; SQLite; no 4vCPU/8GB limit imposed",
+  "browserName": "",
+  "playwrightVersion": "1.64.1"
+}

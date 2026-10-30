@@ -25,7 +25,7 @@ pytestmark = pytest.mark.skipif(os.getenv('RESUMATE_COMPOSE_TEST') != '1',
                                reason='Requires explicit local Docker integration run')
 CASE_IDS = ['recovery-model-before-return', 'recovery-draft-after-commit',
             'recovery-checkpoint-before-terminal', 'recovery-answer-before-delivery']
-DOCKER = '/Applications/Docker.app/Contents/Resources/bin/docker'
+DOCKER = shutil.which('docker') or '/Applications/Docker.app/Contents/Resources/bin/docker'
 
 
 def now():
@@ -61,10 +61,12 @@ def recovery_context():
     shutil.copytree(root / 'backend', snapshot / 'backend',
                     ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.pytest_cache'))
     evidence_path = Path(os.getenv('RESUMATE_RECOVERY_EVIDENCE', '/tmp/task-14-recovery-evidence.json'))
+    image = os.getenv('RESUMATE_RECOVERY_IMAGE') or 'resumate-t11-worker:latest'
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
     evidence = {'invocation_id': context['invocation_id'], 'started_at': now(),
                 'artifact_archive_root': str(artifacts),
-                'source': {'base_commit': '26d1a35', 'backend_snapshot_path': str(snapshot / 'backend'),
-                           'mount': '/app/backend', 'image': 'resumate-t11-worker:latest',
+                'source': {'base_commit': head, 'backend_snapshot_path': str(snapshot / 'backend'),
+                           'mount': '/app/backend', 'image': image,
                            'description': 'Current backend source copied once before all four cases; image supplies dependencies only'},
                 'results': []}
     evidence_path.write_text(json.dumps(evidence, ensure_ascii=False, indent=2))
@@ -93,7 +95,7 @@ def test_real_process_kill_recovers_durable_state(recovery_context, case_id):
     override = case_dir / 'compose.yaml'
     services = {}
     for service in ('api', 'worker', 'scheduler'):
-        services[service] = {'image': 'resumate-t11-worker:latest',
+        services[service] = {'image': evidence['source']['image'],
                              'volumes': [f'{case_dir / "data"}:/app/data',
                                          f'{snapshot_root / "backend"}:/app/backend:ro'],
                              'environment': {'AGENT_STATE_DIR': '/app/data/agent',

@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from anyio import to_thread
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
@@ -11,7 +14,7 @@ import time
 
 from backend.logging_config import setup_logging
 from backend.routes import api as api_module
-from backend.db.database import init_db
+from backend.db.database import engine, init_db
 from backend.infrastructure import redis_client
 from backend.middleware.rate_limit import RedisRateLimiter
 from backend.services import realtime_bus
@@ -23,9 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 FRONTEND_STATIC_DIR = FRONTEND_DIR / "dist" if (FRONTEND_DIR / "dist").exists() else FRONTEND_DIR
 
-# CORS 配置：从环境变量读取允许的源列表
-# 开发环境使用 "*"，生产环境必须指定具体域名
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+# Bearer-token clients do not require credentialed cookies.
+DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
 
 
 class SPAStaticFiles(StaticFiles):
@@ -70,10 +72,25 @@ def create_app() -> FastAPI:
     async def health():
         return {"status": "ok"}
 
+    @app.get("/readyz", include_in_schema=False)
+    async def ready():
+        def check_sql():
+            with engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
+        try:
+            await to_thread.run_sync(check_sql)
+            await app.state.redis.commands.ping()
+        except Exception:
+            return JSONResponse({"status": "not_ready"}, status_code=503)
+        return {"status": "ready"}
+
+    origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS).split(",") if origin.strip()]
+    if "*" in origins:
+        raise ValueError("CORS_ORIGINS must list explicit origins, not *")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=CORS_ORIGINS,
-        allow_credentials=True,
+        allow_origins=origins,
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )

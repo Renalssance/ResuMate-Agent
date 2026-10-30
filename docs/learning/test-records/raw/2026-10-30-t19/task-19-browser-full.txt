@@ -1,0 +1,37 @@
+
+> test:e2e
+> playwright test
+
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-TQP0WJ
+
+Running 31 tests using 1 worker
+
+(node:87617) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✓   1 [chromium] › tests/e2e/agent-run.spec.ts:22:1 › 页面发起、刷新补问并读取真实 worker 生成的材料 (15.4s)
+
+  ✓   2 [chromium] › tests/e2e/agent-run.spec.ts:70:1 › 测试入口准备的真实暂停任务可从新页面继续 (3.7s)
+
+  ✓   3 [chromium] › tests/e2e/agent-run.spec.ts:80:1 › 另一个标签页先回答时旧提交收到 409 并保留输入 (5.6s)
+
+  ✘   4 [chromium] › tests/e2e/agent-run.spec.ts:109:1 › 提交后离开页面不会隐式取消 worker，返回可读取产物 (5.5s)
+(node:87732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ✘   5 [chromium] › tests/e2e/agent-run.spec.ts:125:1 › 等待补问时可明确取消任务 (24.3s)
+node:internal/fs/promises:861
+  return await PromisePrototypeThen(
+         ^
+
+Error: ENOSPC: no space left on device, mkdir '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/test-results/.playwright-artifacts-2'
+    at Object.mkdir (node:internal/fs/promises:861:10)
+    at WorkerHost.start (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/node_modules/playwright/lib/runner/index.js:5659:5)
+    at Dispatcher._runJobInWorker (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/node_modules/playwright/lib/runner/index.js:5787:20) {
+  errno: -28,
+  code: 'ENOSPC',
+  syscall: 'mkdir',
+  path: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/test-results/.playwright-artifacts-2'
+}
+
+Node.js v24.10.0

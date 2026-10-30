@@ -114,11 +114,11 @@ def test_catalogue_keeps_original_inputs_and_adds_six_interview_trajectories():
     assert all(case['input']['resume']['structured_data'] and case['input']['job']['raw_text'] for case in added)
 
 
-def test_interview_live_is_not_run_without_provider_or_budget_side_effects(tmp_path):
+def test_interview_live_requires_configuration_without_provider_or_budget_side_effects(tmp_path):
     process, report, invocation = launch(tmp_path, '--mode', 'live', '--cases', ','.join(INTERVIEW_IDS))
     assert process.returncode == 2
     assert report['counts'] == {'pass': 0, 'fail': 0, 'incomplete': 0, 'not_run': 6}
-    assert {row['error_code'] for row in report['results']} == {'interview_live_not_implemented'}
+    assert {row['error_code'] for row in report['results']} == {'configuration_error'}
     assert not list(invocation.rglob('*.sqlite'))
     assert not (invocation / 'budget.json').exists()
     assert (invocation / 'calls.jsonl').read_text() == ''

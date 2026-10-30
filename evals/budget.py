@@ -119,7 +119,8 @@ class BudgetCallback(CallRecorder):
                     max_total_cost=str(self.config.max_total_cost), stop_reason=self.ledger['stop_reason'],
                     condition='Verified provider prices and all billed output limit; observed usage is not a settled invoice')
 
-    def on_chat_model_start(self, serialized, messages, *, run_id, **kwargs):
+    def reserve_call(self, run_id):
+        """Persist one reservation before a real SDK request, including legacy calls."""
         if self.ledger['stop_reason']:
             raise BudgetExceeded(self.ledger['stop_reason'])
         entries = list(self.ledger['calls'].values())
@@ -135,11 +136,13 @@ class BudgetCallback(CallRecorder):
         self.ledger['calls'][str(run_id)] = dict(case_id=self.case_id, reserved_cost=str(self.config.reserve),
                                                 observed_cost=None, usage=None)
         self._save()  # Durable reserve precedes the actual provider request.
-        super().on_chat_model_start(serialized, messages, run_id=run_id,
-                                    reserved_cost=str(self.config.reserve), **kwargs)
+        return str(self.config.reserve)
 
-    def on_llm_end(self, response, *, run_id, **kwargs):
-        usage = response_usage(response)
+    def on_chat_model_start(self, serialized, messages, *, run_id, **kwargs):
+        reserve = self.reserve_call(run_id)
+        super().on_chat_model_start(serialized, messages, run_id=run_id, reserved_cost=reserve, **kwargs)
+
+    def settle_call(self, run_id, usage):
         entry = self.ledger['calls'].get(str(run_id))
         if entry is not None and usage is not None:
             entry['usage'] = usage
@@ -149,4 +152,7 @@ class BudgetCallback(CallRecorder):
                     or usage['output_tokens'] > self.config.max_output_tokens + self.config.output_token_tolerance):
                 self.ledger['stop_reason'] = 'budget_config_mismatch'
             self._save()
+
+    def on_llm_end(self, response, *, run_id, **kwargs):
+        self.settle_call(run_id, response_usage(response))
         super().on_llm_end(response, run_id=run_id, **kwargs)

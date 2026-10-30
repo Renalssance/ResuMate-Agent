@@ -1,0 +1,10 @@
+recovery-model-before-return: PASS, attempt=2, epoch=2, model starts=1->4, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-model-before-return
+.recovery-draft-after-commit: PASS, attempt=2, epoch=2, model starts=2->3, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-draft-after-commit
+.recovery-checkpoint-before-terminal: PASS, attempt=2, epoch=2, model starts=3->3, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-checkpoint-before-terminal
+.recovery-answer-before-delivery: PASS, attempt=1, epoch=2, model starts=2->5, one operation/version/artifact
+Recovery evidence: /tmp/task-14-recovery-artifacts-9ce4a722-3paycpej/recovery-answer-before-delivery
+.
+4 passed in 452.92s (0:07:32)

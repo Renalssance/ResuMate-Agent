@@ -1,0 +1,428 @@
+{
+  "case_id": "interview-followup",
+  "category": "interview",
+  "mode": "live",
+  "status": "incomplete",
+  "error_code": "budget_exhausted",
+  "input": {
+    "id": "interview-followup",
+    "category": "interview",
+    "runner": "interview",
+    "input": {
+      "resume": {
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        }
+      },
+      "job": {
+        "title": "API Engineer",
+        "raw_text": "Build APIs and explain SQL transactions."
+      },
+      "answers": [
+        "I validated fields inside one SQL transaction.",
+        "I checked rollback using a failed insert."
+      ]
+    }
+  },
+  "output": {
+    "executed": false,
+    "interview_id": "c81594c4-1c94-4605-9543-181390ce5df5",
+    "model": "qwen3.7-flash-2026-07-15",
+    "mode": "live",
+    "evidence_source": "sdk_model_inputs",
+    "error_code": "budget_exhausted",
+    "model_calls": [],
+    "public_model_output": [],
+    "summary_calls": [],
+    "observations": {},
+    "trajectory": [
+      {
+        "action": "created",
+        "interviewId": "c81594c4-1c94-4605-9543-181390ce5df5",
+        "runId": "b7cf250a-4c62-423a-a4d3-80f335f6bb76"
+      },
+      {
+        "action": "claimed",
+        "run_id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "epoch": 1
+      },
+      {
+        "action": "handler.returned",
+        "run_id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "epoch": 1,
+        "status": "failed",
+        "error_code": "budget_exhausted"
+      }
+    ],
+    "baseline_facts": [],
+    "checkpoint_files": [
+      "checkpoints.sqlite"
+    ]
+  },
+  "db_snapshot": {
+    "interviews": [
+      {
+        "id": "c81594c4-1c94-4605-9543-181390ce5df5",
+        "user_id": 1,
+        "agent_session_id": "bc0c90c5-e670-445c-88c5-5bed4d2487d7",
+        "source_snapshot": {
+          "resumeVersionId": "9ed2b4ff-8c5a-47cd-8c90-8d0356850688",
+          "revision": 3,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:36.469413Z",
+          "applicationId": 1,
+          "job": {
+            "jdId": 1,
+            "title": "API Engineer",
+            "company": "Synthetic",
+            "rawText": "Build APIs and explain SQL transactions.",
+            "structuredData": {},
+            "capturedAt": "2026-10-30T03:14:36.550538+00:00"
+          }
+        },
+        "application_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "9ed2b4ff-8c5a-47cd-8c90-8d0356850688",
+        "status": "active",
+        "created_at": "2026-10-30T03:14:36.551117"
+      }
+    ],
+    "turns": [],
+    "commands": [],
+    "events": [],
+    "runs": [
+      {
+        "id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "user_id": 1,
+        "session_id": "bc0c90c5-e670-445c-88c5-5bed4d2487d7",
+        "request_id": "interview-eval-start",
+        "kind": "interview_generation",
+        "status": "failed",
+        "input_json": {
+          "interviewId": "c81594c4-1c94-4605-9543-181390ce5df5",
+          "expectedTurn": 0,
+          "applicationId": 1
+        },
+        "input_versions": {
+          "memories": []
+        },
+        "result_json": null,
+        "attempt": 1,
+        "execution_epoch": 1,
+        "heartbeat_at": "2026-10-30T03:14:36.626081",
+        "cancel_requested_at": null,
+        "error_code": "budget_exhausted",
+        "output_refs": [],
+        "created_at": "2026-10-30T03:14:36.552587",
+        "updated_at": "2026-10-30T03:14:36.626939"
+      }
+    ],
+    "sessions": [
+      {
+        "id": "bc0c90c5-e670-445c-88c5-5bed4d2487d7",
+        "user_id": 1,
+        "purpose": "interview_generation",
+        "context_invalidated_at": null,
+        "checkpoint_deleted_at": null,
+        "active_run_id": null,
+        "created_at": "2026-10-30T03:14:36.550836"
+      }
+    ],
+    "operations": [],
+    "run_events": [
+      {
+        "id": 1,
+        "run_id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "seq": 1,
+        "type": "run.status",
+        "payload": {
+          "status": "queued",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:36.553464"
+      },
+      {
+        "id": 2,
+        "run_id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "seq": 2,
+        "type": "run.status",
+        "payload": {
+          "status": "running",
+          "error_code": null
+        },
+        "created_at": "2026-10-30T03:14:36.555416"
+      },
+      {
+        "id": 3,
+        "run_id": "b7cf250a-4c62-423a-a4d3-80f335f6bb76",
+        "seq": 3,
+        "type": "run.status",
+        "payload": {
+          "status": "failed",
+          "error_code": "budget_exhausted"
+        },
+        "created_at": "2026-10-30T03:14:36.627233"
+      }
+    ],
+    "facts": [],
+    "memories": [],
+    "applications": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "resume_id": 1,
+        "jd_id": 1,
+        "resume_version_id": "9ed2b4ff-8c5a-47cd-8c90-8d0356850688",
+        "submitted_snapshot": {
+          "resumeVersionId": "9ed2b4ff-8c5a-47cd-8c90-8d0356850688",
+          "revision": 3,
+          "jdId": 1,
+          "structuredContent": {
+            "resume": {
+              "self_summary": "Built an API",
+              "work_experience": [
+                {
+                  "description": "Designed SQL transactions"
+                }
+              ]
+            },
+            "changes": []
+          },
+          "factRefs": [],
+          "submittedAt": "2026-10-30T03:14:36.469413Z"
+        },
+        "company": "Synthetic",
+        "position": "API Engineer",
+        "applied_date": "2026-10-30",
+        "status": "applied",
+        "job_url": "",
+        "source": "",
+        "notes": "",
+        "created_at": "2026-10-30T03:14:36.467675",
+        "updated_at": "2026-10-30T03:14:36.469413"
+      }
+    ],
+    "versions": [
+      {
+        "id": "9ed2b4ff-8c5a-47cd-8c90-8d0356850688",
+        "user_id": 1,
+        "run_id": null,
+        "resume_id": 1,
+        "jd_id": 1,
+        "parent_version_id": null,
+        "revision": 3,
+        "structured_content": {
+          "resume": {
+            "self_summary": "Built an API",
+            "work_experience": [
+              {
+                "description": "Designed SQL transactions"
+              }
+            ]
+          },
+          "changes": []
+        },
+        "fact_refs": [],
+        "status": "confirmed",
+        "created_at": "2026-10-30T03:14:36.467294"
+      }
+    ],
+    "resumes": [
+      {
+        "id": 1,
+        "user_id": 1,
+        "filename": "synthetic-resume.txt",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Built an API and designed SQL transactions in a test environment.",
+        "structured_data": {
+          "self_summary": "Built an API",
+          "work_experience": [
+            {
+              "description": "Designed SQL transactions"
+            }
+          ]
+        },
+        "created_at": "2026-10-30T03:14:36.466911",
+        "updated_at": "2026-10-30T03:14:36.466912"
+      }
+    ],
+    "jobs": [
+      {
+        "primary_resume_id": null,
+        "source_url": null,
+        "source_site": null,
+        "source_job_id": null,
+        "captured_at": null,
+        "status": "saved",
+        "id": 1,
+        "user_id": 1,
+        "title": "API Engineer",
+        "company": "Synthetic",
+        "filename": "",
+        "file_path": "",
+        "content_hash": "",
+        "document_size": 0,
+        "parse_status": "pending",
+        "raw_text": "Build APIs and explain SQL transactions.",
+        "structured_data": {},
+        "created_at": "2026-10-30T03:14:36.466545",
+        "updated_at": "2026-10-30T03:14:36.466546"
+      }
+    ]
+  },
+  "verdict": {
+    "passed": false,
+    "checks": [
+      {
+        "name": "actual_execution",
+        "passed": false,
+        "reason": "The case reached real generation calls and persisted their Run identities",
+        "evidence_refs": [
+          "output.model_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "sdk_input_identity",
+        "passed": false,
+        "reason": "Every main/summary input contains one current required block bound to its Run and execution epoch",
+        "evidence_refs": [
+          "output.model_calls",
+          "output.summary_calls",
+          "runs"
+        ]
+      },
+      {
+        "name": "owned_frozen_session",
+        "passed": true,
+        "reason": "An owned interview keeps the accepted frozen source",
+        "evidence_refs": [
+          "interviews",
+          "runs"
+        ]
+      },
+      {
+        "name": "bounded_unique_rounds",
+        "passed": false,
+        "reason": "Persisted rounds are contiguous, unique, and bounded by eight",
+        "evidence_refs": [
+          "turns"
+        ]
+      },
+      {
+        "name": "frozen_reference_integrity",
+        "passed": false,
+        "reason": "Question and feedback quotes resolve to the exact snapshot or accepted answer",
+        "evidence_refs": [
+          "turns",
+          "interviews.source_snapshot"
+        ]
+      },
+      {
+        "name": "durable_question_feedback_events",
+        "passed": true,
+        "reason": "Each committed question/feedback has exactly one ordered SQL event",
+        "evidence_refs": [
+          "turns",
+          "events"
+        ]
+      },
+      {
+        "name": "run_result_operation_atomicity",
+        "passed": false,
+        "reason": "Successful steps own one immutable result and operation; stopped steps own neither",
+        "evidence_refs": [
+          "runs",
+          "operations"
+        ]
+      },
+      {
+        "name": "practice_does_not_create_facts",
+        "passed": true,
+        "reason": "Practice answers do not become ProfileFact records",
+        "evidence_refs": [
+          "facts",
+          "output.baseline_facts"
+        ]
+      },
+      {
+        "name": "two_answer_based_followups",
+        "passed": false,
+        "reason": "Two accepted answers reach actual model input and each leads to a persisted follow-up",
+        "evidence_refs": [
+          "turns",
+          "output.model_calls"
+        ]
+      }
+    ],
+    "limitations": [
+      "Quoted text existing is not proof of semantic quality; live output requires human review.",
+      "This case uses isolated SQLite with real services and Deep Agents, not a process-kill experiment.",
+      "Live mode uses the configured SDK model and shared invocation budget; stub mode uses a deterministic model."
+    ]
+  },
+  "semantic": {
+    "rubric_version": "t13-v1",
+    "items": [
+      {
+        "id": "factual_grounding",
+        "title": "事实依据",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "task_usefulness",
+        "title": "岗位任务有效性",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "missing_information",
+        "title": "缺信息处理",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      },
+      {
+        "id": "expression_and_review",
+        "title": "表达与审阅",
+        "status": "unreviewed",
+        "evidence": [],
+        "reason": "等待人工逐项审阅实际输入与输出。"
+      }
+    ]
+  },
+  "cost": {
+    "currency": "CNY",
+    "model_calls": 0,
+    "observed_cost": "0",
+    "reserved_cost": "0",
+    "committed_cost": "0",
+    "unknown_usage_calls": 0,
+    "max_total_cost": "0.1",
+    "stop_reason": "budget_exhausted",
+    "condition": "Verified provider prices and all billed output limit; observed usage is not a settled invoice"
+  }
+}
