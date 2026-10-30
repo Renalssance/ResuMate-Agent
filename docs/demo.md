@@ -53,4 +53,4 @@ live 接线已经使用真实 SDK 与本地合成 HTTP 响应验证；真实供�
 
 ## 当前可操作预览
 
-[岗位中心](http://127.0.0.1:4175/jobs)；[待补问任务](http://127.0.0.1:4175/agent/tasks/1c38996d-f673-428d-a16f-9e042257fb79)。合成账号`browser-fixture`，密码`synthetic-browser-password`。真实API/worker/SQL/Redis与模拟模型组成独立教学环境，不读取旧4173资料。录屏已取消。
+2026-10-30按用户要求停止预览，以下为历史运行地址，当前不可访问：[岗位中心](http://127.0.0.1:4175/jobs)；[待补问任务](http://127.0.0.1:4175/agent/tasks/1c38996d-f673-428d-a16f-9e042257fb79)。合成账号`browser-fixture`，密码`synthetic-browser-password`。真实API/worker/SQL/Redis与模拟模型组成独立教学环境，不读取旧4173资料。录屏已取消。

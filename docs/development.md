@@ -44,7 +44,7 @@ Vitest 只收集 `src/**/*.spec.ts`；已有 `*.test.ts` / `*.test.mjs` 保留�
 
 ## 工作区说明
 
-本次开发使用独立工作区 `resumate-fullstack-learning/ResuMate-Agent`，从提交 `e993b27` 建立。原工作区已有的资料模板复制等未提交修改未带入；集成回原目录时需要保留并合并这些改动。测试日志会明确属于哪个工作区。
+本次开发使用独立工作区 `/Users/bono/Desktop/code/ResuMate-Agent/.worktrees/resumate-fullstack-learning`，从提交 `e993b27` 建立。2026-10-30按用户要求迁入项目目录；Python环境位于该工作区的 `.venv`，启动及激活脚本已更新，旧位置链接已删除。项目本地Git排除规则忽略 `.worktrees/`，不改动main的已有文件。原工作区已有的资料模板复制等未提交修改未带入；集成回原目录时需要保留并合并这些改动。测试日志会明确属于哪个工作区。
 
 ## 当前运行方式与历史实验
 
