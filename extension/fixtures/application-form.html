@@ -18,6 +18,7 @@
       <label>手机 <input type="tel" name="mobile" /></label>
       <label>学校 <input name="school" /></label>
       <label>专业 <input name="major" /></label>
+      <label>工作职责 <textarea name="work_description"></textarea></label>
       <label>技能 <textarea name="skills"></textarea></label>
       <label>城市
         <select name="city">
@@ -28,7 +29,17 @@
         </select>
       </label>
       <label>验证码 <input name="captcha" /></label>
-      <button type="button">Submit button stays manual</button>
+      <button type="submit" id="submitApplication">Submit button stays manual</button>
     </form>
+    <p id="submissionStatus" aria-live="polite">尚未提交 · 0</p>
+    <script>
+      window.fixtureSubmissions = 0;
+      window.fixtureSubmitClicks = 0;
+      document.querySelector('#submitApplication').addEventListener('click', () => window.fixtureSubmitClicks++);
+      document.querySelector('form').addEventListener('submit', event => {
+        event.preventDefault();
+        document.querySelector('#submissionStatus').textContent = `手动提交 · ${++window.fixtureSubmissions}`;
+      });
+    </script>
   </body>
 </html>

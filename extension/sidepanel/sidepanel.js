@@ -1,23 +1,17 @@
 import { DEFAULT_API_BASE } from '../lib/constants.js';
 import { normalizeLanguage, t } from '../lib/i18n.js';
-import { getProfile, listProfiles, login as loginAccount, matchFields, recordEvent } from '../lib/api-client.js';
 import { diagnoseMatches, matchLocally } from '../lib/field-matcher.js';
 import {
-  cacheProfiles,
-  clearAuthSession,
   getActiveProfileId,
   getCachedProfiles,
   getLanguage,
-  getSettings,
   setLanguage,
-  saveSettings,
-  saveAuthSession,
   setActiveProfileId
 } from '../lib/storage.js';
 
 const state = {
   apiBase: DEFAULT_API_BASE,
-  token: '',
+  authenticated: false,
   username: '',
   profileSummaries: [],
   activeProfile: null,
@@ -36,6 +30,12 @@ const state = {
   statusKindName: 'neutral',
   statusParams: {},
   language: 'en',
+  captureTabId: null,
+  captureUrl: '',
+  jobBusy: false,
+  jobStatusKey: '',
+  jobStatusKind: '',
+  jobStatusParams: {},
   debug: {
     lastAction: 'init',
     lastError: '',
@@ -47,11 +47,33 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 
-function settings() {
-  return {
-    apiBase: state.apiBase,
-    token: state.token
-  };
+function accountKey() { return `${state.apiBase}\n${state.username}\n${state.authenticated}`; }
+
+async function backgroundRequest(type, payload) {
+  const owner = accountKey();
+  const response = await chrome.runtime.sendMessage({ type, payload });
+  if (!response?.ok) {
+    const error = new Error(response?.error?.message || 'Background request failed');
+    error.status = response?.error?.status;
+    if (error.status === 401 && owner === accountKey()) {
+      state.authenticated = false;
+      state.username = '';
+      state.activeProfile = null;
+      state.profileSummaries = [];
+      state.offline = false;
+      clearScanForProfileChange();
+      render();
+      setStatusKey('auth.loginRequired', 'danger');
+    }
+    throw error;
+  }
+  return response.data;
+}
+
+function applySession(session) {
+  state.apiBase = session.apiBase;
+  state.authenticated = session.authenticated;
+  state.username = session.username;
 }
 
 function activeProfileId() {
@@ -146,11 +168,18 @@ function formatUpdatedAt(value) {
 function renderSettings() {
   $('apiBaseInput').value = state.apiBase;
   $('usernameInput').value = state.username;
-  if (state.token) $('passwordInput').value = '';
-  $('logoutBtn').disabled = !state.token;
+  if (state.authenticated) $('passwordInput').value = '';
+  $('logoutBtn').disabled = !state.authenticated;
   $('loginBtn').disabled = false;
   const authStatus = $('authStatus');
-  authStatus.textContent = state.token ? tr('auth.signedInAs', { username: state.username || tr('auth.account') }) : tr('auth.signedOut');
+  authStatus.textContent = state.authenticated ? tr('auth.signedInAs', { username: state.username || tr('auth.account') }) : tr('auth.signedOut');
+}
+
+function profileOrigin(profile) {
+  if (profile.sourceKind === 'resume_version') {
+    return tr('resume.confirmedVersion', { revision: profile.revision, createdAt: formatUpdatedAt(profile.updatedAt), id: profile.resumeVersionId || profile.id });
+  }
+  return tr('resume.original');
 }
 
 function renderProfiles() {
@@ -160,7 +189,7 @@ function renderProfiles() {
     option.value = profile.id;
     const fieldCount = Number(profile.fieldCount ?? profile.field_count ?? 0);
     const updatedAt = formatUpdatedAt(profile.updatedAt || profile.updated_at);
-    const meta = tr('resume.optionMeta', { count: fieldCount, updatedAt });
+    const meta = profile.sourceKind === 'resume_version' ? profileOrigin(profile) : `${profileOrigin(profile)} · ${tr('resume.optionMeta', { count: fieldCount, updatedAt })}`;
     option.textContent = `${profile.name || profile.id} - ${meta}`;
     return option;
   });
@@ -174,9 +203,9 @@ function renderProfiles() {
   if (!state.activeProfile) {
     profileSummary.textContent = state.profileSummaries.length ? tr('empty.noProfileLoaded') : tr('resume.noResumes');
   } else if (state.offline) {
-    profileSummary.textContent = tr('resume.summaryOffline', { count: fieldCount });
+    profileSummary.textContent = `${profileOrigin(state.activeProfile)} · ${tr('resume.summaryOffline', { count: fieldCount })}`;
   } else {
-    profileSummary.textContent = tr('resume.summary', { count: fieldCount });
+    profileSummary.textContent = `${profileOrigin(state.activeProfile)} · ${tr('resume.summary', { count: fieldCount })}`;
   }
 }
 
@@ -463,7 +492,7 @@ function renderDebug() {
     lastScanAt: state.debug.lastScanAt,
     mode: state.offline ? 'offline-local-match' : 'online-api-match',
     apiBase: state.apiBase,
-    authenticated: Boolean(state.token),
+    authenticated: Boolean(state.authenticated),
     activeProfileId: activeProfileId(),
     page: state.page,
     counts: {
@@ -534,6 +563,7 @@ function render() {
   renderPageInfo();
   renderMatches();
   renderDebug();
+  renderJobStatus();
 }
 
 async function changeLanguage(language) {
@@ -549,7 +579,75 @@ async function activeTab() {
   return tabs[0] || null;
 }
 
+function renderJobStatus() {
+  $('jobCaptureStatus').textContent = state.jobStatusKey ? tr(state.jobStatusKey, state.jobStatusParams) : '';
+  $('jobCaptureStatus').dataset.kind = state.jobStatusKind;
+  $('captureJobBtn').disabled = state.jobBusy;
+  $('saveJobBtn').disabled = state.jobBusy || !state.authenticated;
+}
+
+function setJobStatus(key, kind = '', params = {}) {
+  state.jobStatusKey = key;
+  state.jobStatusKind = kind;
+  state.jobStatusParams = params;
+  renderJobStatus();
+}
+
+function clearJobPreview() {
+  for (const id of ['jobTitleInput', 'jobCompanyInput', 'jobUrlInput', 'jobTextInput']) $(id).value = '';
+  state.captureTabId = null;
+  state.captureUrl = '';
+}
+
+async function captureJobPage() {
+  clearJobPreview();
+  state.jobBusy = true;
+  setJobStatus('job.reading');
+  try {
+    const tab = await activeTab();
+    const snapshot = await backgroundRequest('CAPTURE_JOB_PAGE');
+    $('jobTitleInput').value = snapshot.title;
+    $('jobCompanyInput').value = snapshot.company;
+    $('jobUrlInput').value = snapshot.sourceUrl;
+    $('jobTextInput').value = snapshot.text;
+    state.captureTabId = tab?.id ?? null;
+    state.captureUrl = snapshot.sourceUrl;
+    setJobStatus('job.ready');
+  } catch (_error) {
+    setJobStatus('job.fallback', 'danger');
+  } finally {
+    state.jobBusy = false;
+    renderJobStatus();
+  }
+}
+
+async function saveJob() {
+  if (!state.authenticated) { setJobStatus('job.loginRequired', 'danger'); return; }
+  const payload = {
+    title: $('jobTitleInput').value.trim(),
+    company: $('jobCompanyInput').value.trim(),
+    text: $('jobTextInput').value.trim(),
+    sourceUrl: $('jobUrlInput').value.trim()
+  };
+  if (!payload.title || !payload.text) { setJobStatus('job.required', 'danger'); return; }
+  if (payload.title.length > 255 || payload.company.length > 255 || payload.sourceUrl.length > 1024) { setJobStatus('job.tooLong', 'danger'); return; }
+  const resumeId = Number(state.activeProfile?.sourceResumeId?.match(/^resume:(\d+)$/)?.[1]);
+  if (Number.isInteger(resumeId) && resumeId > 0) payload.primaryResumeId = resumeId;
+  state.jobBusy = true;
+  setJobStatus('job.saving');
+  try {
+    const result = await backgroundRequest('SAVE_JOB', payload);
+    setJobStatus(result.created ? 'job.saved' : 'job.exists', 'success', { title: result.job.title });
+  } catch (error) {
+    setJobStatus('job.failed', 'danger', { message: error.message });
+  } finally {
+    state.jobBusy = false;
+    renderJobStatus();
+  }
+}
+
 async function loadProfile(profileId, options = {}) {
+  const owner = accountKey();
   if (options.invalidateExistingScan) {
     clearScanForProfileChange(options.reasonKey || 'status.profileRefreshed');
   }
@@ -563,7 +661,8 @@ async function loadProfile(profileId, options = {}) {
   }
 
   const previousProfileId = activeProfileId();
-  const profile = await getProfile(settings(), profileId);
+  const profile = await backgroundRequest('GET_PROFILE', { profileId });
+  if (owner !== accountKey()) return;
   state.activeProfile = profile;
   await setActiveProfileId(profile.id || profileId);
   if (previousProfileId && previousProfileId !== activeProfileId()) clearScanForProfileChange();
@@ -573,7 +672,14 @@ async function loadProfile(profileId, options = {}) {
 function summarizeProfile(profile) {
   return {
     id: profile.id,
-    name: profile.name || profile.id
+    name: profile.name || profile.id,
+    sourceKind: profile.sourceKind,
+    sourceResumeId: profile.sourceResumeId,
+    resumeVersionId: profile.resumeVersionId,
+    revision: profile.revision,
+    jdId: profile.jdId,
+    updatedAt: profile.updatedAt,
+    fieldCount: allFields(profile).filter(field => field.value).length
   };
 }
 
@@ -601,13 +707,15 @@ function pageFromTab(tab) {
 async function recordSafely(payload) {
   if (state.offline) return;
   try {
-    await recordEvent(settings(), payload);
+    await backgroundRequest('RECORD_EVENT', payload);
   } catch (_error) {
     // Telemetry must not block user-controlled filling.
   }
 }
 
 async function scanPage() {
+  const owner = accountKey();
+  const profileId = activeProfileId();
   if (!state.activeProfile) {
     setStatusKey('status.loadProfileBeforeScanning');
     return;
@@ -651,12 +759,12 @@ async function scanPage() {
       confidence: scraped && scraped.confidence ? scraped.confidence : tabPage.confidence
     };
     const payload = {
-      profile: state.activeProfile,
       profileId: state.activeProfile.id || '',
       page,
       elements
     };
-    const response = state.offline ? matchLocally(state.activeProfile, elements) : await matchFields(settings(), payload);
+    const response = state.offline ? matchLocally(state.activeProfile, elements) : await backgroundRequest('MATCH_FIELDS', payload);
+    if (owner !== accountKey() || profileId !== activeProfileId()) return;
     state.debug.matchResponse = response;
 
     state.page = page;
@@ -685,6 +793,7 @@ async function scanPage() {
     state.debug.lastAction = 'scan-complete';
     renderDebug();
   } catch (error) {
+    if (owner !== accountKey() || profileId !== activeProfileId()) return;
     state.debug.lastAction = 'scan-error';
     state.debug.lastError = error.message;
     state.matches = [];
@@ -776,7 +885,8 @@ async function fillSelected() {
 }
 
 async function refreshProfiles(options = {}) {
-  if (!state.token) {
+  const owner = accountKey();
+  if (!state.authenticated) {
     state.debug.lastAction = 'refresh-without-login';
     state.offline = false;
     state.profileSummaries = [];
@@ -796,14 +906,14 @@ async function refreshProfiles(options = {}) {
   }
 
   try {
-    const summaries = await listProfiles(settings());
+    const summaries = await backgroundRequest('LIST_PROFILES');
+    if (owner !== accountKey()) return;
     state.offline = false;
     state.profileSummaries = Array.isArray(summaries) ? summaries : [];
 
     if (state.profileSummaries.length === 0) {
       state.activeProfile = null;
       clearScanForProfileChange();
-      await cacheProfiles([]);
       await setActiveProfileId('');
       setStatusKey('status.noProfiles');
       render();
@@ -816,18 +926,18 @@ async function refreshProfiles(options = {}) {
       : state.profileSummaries[0].id;
 
     await loadProfile(selectedProfileId);
-    await cacheProfiles(state.activeProfile ? [state.activeProfile] : []);
+    if (owner !== accountKey()) return;
     restoreStatus('Connected');
   } catch (error) {
+    if (owner !== accountKey()) return;
     if (error.status === 401) {
       state.debug.lastAction = 'refresh-unauthorized';
       state.debug.lastError = error.message;
-      state.token = '';
+      state.authenticated = false;
       state.username = '';
       state.offline = false;
       state.profileSummaries = [];
       state.activeProfile = null;
-      await clearAuthSession();
       await setActiveProfileId('');
       setStatusKey('auth.loginRequired', 'danger');
       render();
@@ -835,12 +945,14 @@ async function refreshProfiles(options = {}) {
     }
 
     const cachedProfiles = await getCachedProfiles();
+    const savedProfileId = await getActiveProfileId();
+    if (owner !== accountKey()) return;
     state.debug.lastAction = 'refresh-offline-fallback';
     state.debug.lastError = error.message;
     const previousProfileId = activeProfileId();
     state.offline = true;
     state.profileSummaries = cachedProfiles.map(summarizeProfile).filter((profile) => profile.id);
-    state.activeProfile = cachedProfiles[0] || null;
+    state.activeProfile = cachedProfiles.find(profile => profile.id === savedProfileId) || cachedProfiles[0] || null;
     if (previousProfileId && previousProfileId !== activeProfileId()) {
       clearScanForProfileChange();
     }
@@ -855,7 +967,7 @@ async function logIn() {
   const password = $('passwordInput').value;
   state.apiBase = $('apiBaseInput').value || DEFAULT_API_BASE;
   state.username = username;
-  await saveSettings(settings());
+  applySession(await backgroundRequest('SAVE_SETTINGS', { apiBase: state.apiBase }));
 
   if (!username || !password) {
     setStatusKey('auth.credentialsRequired');
@@ -865,15 +977,19 @@ async function logIn() {
   $('loginBtn').disabled = true;
   setStatusKey('auth.loggingIn', 'busy');
   try {
-    const session = await loginAccount({ apiBase: state.apiBase }, { username, password });
-    if (!session.accessToken) throw new Error('Missing access token');
-    state.token = session.accessToken;
-    state.username = session.username || username;
-    await saveAuthSession({ token: state.token, username: state.username });
+    applySession(await backgroundRequest('AUTH_LOGIN', { username, password }));
+    state.activeProfile = null;
+    state.profileSummaries = [];
+    clearScanForProfileChange('auth.loggedIn');
     $('passwordInput').value = '';
     render();
     await refreshProfiles({ invalidateExistingScan: true, reasonKey: 'auth.loggedIn' });
   } catch (error) {
+    applySession(await backgroundRequest('GET_SESSION'));
+    state.activeProfile = null;
+    state.profileSummaries = [];
+    clearScanForProfileChange();
+    render();
     setStatusKey('auth.loginFailed', 'danger', { message: error.message });
     renderSettings();
   } finally {
@@ -882,7 +998,7 @@ async function logIn() {
 }
 
 async function logOut() {
-  state.token = '';
+  applySession(await backgroundRequest('AUTH_LOGOUT'));
   state.username = '';
   state.profileSummaries = [];
   state.activeProfile = null;
@@ -896,7 +1012,6 @@ async function logOut() {
   state.scannedProfileId = '';
   state.scanStaleKey = '';
   state.scanStaleReason = '';
-  await clearAuthSession();
   await setActiveProfileId('');
   render();
   setStatusKey('auth.signedOut');
@@ -906,12 +1021,15 @@ function bind() {
   $('saveSettingsBtn').addEventListener('click', async () => {
     clearScanForProfileChange('settings.changed');
     state.apiBase = $('apiBaseInput').value || DEFAULT_API_BASE;
-    await saveSettings(settings());
+    applySession(await backgroundRequest('SAVE_SETTINGS', { apiBase: state.apiBase }));
+    if (!state.authenticated) { state.activeProfile = null; state.profileSummaries = []; state.offline = false; }
     render();
-    if (state.token) await refreshProfiles({ invalidateExistingScan: true, reasonKey: 'settings.changed' });
+    if (state.authenticated) await refreshProfiles({ invalidateExistingScan: true, reasonKey: 'settings.changed' });
     else setStatusKey('auth.loginRequired');
   });
 
+  $('captureJobBtn').addEventListener('click', captureJobPage);
+  $('saveJobBtn').addEventListener('click', saveJob);
   $('loginBtn').addEventListener('click', logIn);
   $('logoutBtn').addEventListener('click', logOut);
   $('refreshProfilesBtn').addEventListener('click', () => refreshProfiles({ invalidateExistingScan: true }));
@@ -919,6 +1037,7 @@ function bind() {
     button.addEventListener('click', () => changeLanguage(button.dataset.language));
   });
   $('profileSelect').addEventListener('change', async (event) => {
+    const owner = accountKey();
     try {
       const selectedProfileId = event.target.value;
       if (selectedProfileId && selectedProfileId !== activeProfileId()) {
@@ -940,9 +1059,10 @@ function bind() {
       }
 
       await loadProfile(selectedProfileId);
-      await cacheProfiles(state.activeProfile ? [state.activeProfile] : []);
+      if (owner !== accountKey()) return;
       restoreStatus('Connected');
     } catch (error) {
+      if (owner !== accountKey()) return;
       setStatusKey('status.profileLoadFailed', 'danger', { message: error.message });
     }
   });
@@ -950,6 +1070,7 @@ function bind() {
   $('fillBtn').addEventListener('click', fillSelected);
   if (chrome.tabs && chrome.tabs.onUpdated) {
     chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+      if (tabId === state.captureTabId && changeInfo.url && changeInfo.url !== state.captureUrl) { clearJobPreview(); setJobStatus('job.pageChanged'); }
       if (state.scannedTabId !== null && tabId === state.scannedTabId && changeInfo.url && changeInfo.url !== state.scannedTabUrl) {
         markScanStale('status.pageChanged');
       }
@@ -957,6 +1078,7 @@ function bind() {
   }
   if (chrome.tabs && chrome.tabs.onActivated) {
     chrome.tabs.onActivated.addListener(({ tabId }) => {
+      if (state.captureTabId !== null && tabId !== state.captureTabId) { clearJobPreview(); setJobStatus('job.pageChanged'); }
       if (state.scannedTabId !== null && tabId !== state.scannedTabId) {
         markScanStale('status.activeTabChanged');
       }
@@ -965,10 +1087,10 @@ function bind() {
 }
 
 async function init() {
-  const storedSettings = await getSettings();
+  const storedSettings = await backgroundRequest('GET_SESSION');
   state.language = await getLanguage();
   state.apiBase = storedSettings.apiBase;
-  state.token = storedSettings.token;
+  state.authenticated = storedSettings.authenticated;
   state.username = storedSettings.username;
   bind();
   render();

@@ -4,7 +4,7 @@
       <div class="section-head compact">
         <div>
           <h2>插件工具</h2>
-          <p>下载、连接后端，并在招聘表单页打开侧边栏完成填充。</p>
+          <p>收藏岗位、选择已确认的简历版本，在侧边栏核对后填表。</p>
         </div>
         <a class="button-primary download-button" :href="extensionDownload.href" :download="extensionDownload.filename">
           <FileText class="app-icon" aria-hidden="true" />
@@ -21,11 +21,11 @@
         <article>
           <span>后端地址</span>
           <strong>{{ extensionMeta.backend }}</strong>
-          <small>{{ extensionMeta.profilesApi }}</small>
+          <small>在插件设置中填写你的后端地址</small>
         </article>
         <article>
-          <span>侧边栏入口</span>
-          <strong>{{ extensionMeta.sidePanel }}</strong>
+          <span>打开方式</span>
+          <strong>浏览器侧边栏</strong>
           <small>点击浏览器插件图标打开</small>
         </article>
       </div>
@@ -50,7 +50,7 @@
       <div class="card">
         <div class="section-head compact">
           <div>
-            <h2>填表工作台</h2>
+            <h2>收藏与填表</h2>
             <p>插件内的关键动作保持手动确认。</p>
           </div>
         </div>

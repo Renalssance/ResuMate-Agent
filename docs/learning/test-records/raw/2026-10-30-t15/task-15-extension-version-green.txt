@@ -1,0 +1,21 @@
+✔ only the exact own side panel can log in; UI session never contains a token (12.241041ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.873042ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (0.968459ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.151375ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (1.24025ms)
+✔ late A 401 does not clear B session or B cache (3.184208ms)
+✔ late A list result is not delivered as B data (0.841458ms)
+✔ online matching forwards only the chosen server profile ID, never cached profile data (0.512834ms)
+✔ same-name confirmed versions show source, revision, creation date and distinct existing IDs (73.001584ms)
+✔ switching original to two versions clears review; fill sends only selected preview values (26.651ms)
+✔ offline refresh retains selected loaded version and its metadata (12.98325ms)
+✔ late A LIST_PROFILES response cannot overwrite B after logout/login (12.641667ms)
+✔ late A GET_PROFILE response cannot overwrite B after logout/login (19.663458ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 632.911834

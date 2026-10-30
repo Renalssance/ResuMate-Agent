@@ -121,6 +121,7 @@ label {
 
 input,
 select,
+textarea,
 button {
   width: 100%;
   min-height: 44px;
@@ -131,7 +132,8 @@ button {
 }
 
 input,
-select {
+select,
+textarea {
   min-width: 0;
   background: #fff;
   color: var(--ink);
@@ -158,6 +160,7 @@ button:disabled {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+textarea:focus-visible,
 summary:focus-visible,
 .match:focus-within {
   outline: 2px solid var(--focus);
@@ -517,3 +520,9 @@ summary {
     transition: none;
   }
 }
+
+textarea { resize: vertical; line-height: 1.5; overflow-wrap: anywhere; }
+.job-capture-card .section-head button { flex: 0 1 auto; white-space: normal; }
+.job-capture-status { margin-top: 12px; }
+.job-capture-status[data-kind="danger"] { color: var(--rose); }
+.job-capture-status[data-kind="success"] { color: var(--green); }

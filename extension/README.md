@@ -1,117 +1,59 @@
-# ResuMate Autofill Extension
+# ResuMate 浏览器扩展
 
-## 中文使用说明
+扩展用于主动收藏岗位与辅助填表。浏览器中的每次收藏、字段选择和填入都由你发起，招聘网站上的最终提交仍需你手动完成。
 
-### 安装插件
+## 安装与连接
 
-1. 打开 Chrome 或 Edge。
-2. 进入 `chrome://extensions`。
-3. 打开右上角的 Developer mode。
-4. 点击 Load unpacked。
-5. 选择本仓库里的 `extension/` 目录。
-6. 打开任意招聘申请页面，点击 ResuMate 插件图标。
+1. 从主应用“浏览器插件”页下载 ZIP 并解压，或使用仓库中的 `extension/` 目录。
+2. 打开 Chrome 的 `chrome://extensions` 或 Edge 的扩展管理页，开启开发者模式，选择“加载已解压的扩展”。
+3. 点击浏览器工具栏中的 ResuMate 图标，打开侧边栏。
+4. 展开设置，填写自己的后端地址（本地通常为 `http://127.0.0.1:8000`），用已有 ResuMate 账号登录。密码不会保存。
+5. 可在顶部切换中文/EN，选择会保留。
 
-### 切换语言
+## 收藏当前岗位
 
-侧边栏顶部有 `中文 / EN` 切换按钮。选择会自动保存，下次打开插件会继续使用上一次的语言。
+1. 打开一个岗位详情页，点击“读取当前岗位”。采集仅在你点击时发生，不会后台抓取网页。
+2. 核对标题、公司、来源 URL 和正文，必要时编辑；随后点击“收藏岗位”。收藏本身不启动模型解析。
+3. 同一账号再次收藏相同完整 URL 时，会返回已收藏岗位，并保留你在主应用中的整理。URL 的查询参数、片段与大小写仍属于来源，不自动合并不同网址。
+4. 页面受限、无法读取或正文为空时，可以直接在侧栏粘贴文本，补标题后收藏；不需要绕过网站限制。
+5. 回到主应用“岗位中心”查看、关联简历或主动解析。
 
-### 首次配置
+收藏使用 `/api/jobs/capture`；原有 `/api/jobs` 导入的 URL+正文规则保持不变。通用采集不伪造站点岗位 ID，也不承诺适配所有招聘站。
 
-1. 展开侧边栏里的 Settings。
-2. Backend 填写后端地址，例如 `http://127.0.0.1:8000`。
-3. 输入已有 ResuMate 账号的用户名和密码。
-4. 点击 Log in / 登录。插件会保存登录返回的 JWT，但不会保存密码。
-5. 点击 Refresh，插件会从 ResuMate 数据库读取当前用户已存储的简历。
+## 选择简历版本并填表
 
-### 切换简历
+1. 点击刷新，在下拉框选择“原简历”或“已确认版本”。草稿须先在主应用完成逐条审阅和确认，才能出现在这里。
+2. 已确认版本使用确认时冻结的内容；主简历之后改变不会悄悄替换所选版本。标签显示版本修订号与创建时间。
+3. 打开申请表单，点击“扫描页面”，查看匹配字段和值。
+4. 取消不想填入的字段，再点击“填充选中项”。密码、验证码与文件上传不会被自动填写。
+5. 回到网站检查结果，自行提交。扩展不会点击提交、自动创建投递记录或把“已填表”当成“已投递”。
 
-1. 在 `简历 / Stored resume` 下拉框中选择要用于填表的简历。
-2. 下拉框中的数据来自 ResuMate 后端 `/api/autofill/profiles`，也就是数据库里的 `Resume` 记录。
-3. 每个选项会显示简历名称、可填字段数和更新时间。
-4. 切换简历后，旧扫描结果会立即失效，需要重新点击 Scan page / 扫描页面。
-5. 如果没有简历，请先在 ResuMate 主应用中上传并解析简历，再回到插件点击 Refresh。
+页面、标签页、简历版本或连接设置改变后，需要重新扫描。暂时断网时可使用本账号已加载的缓存档案进行本地匹配；界面会提示缓存/离线。退出、换后端或登录失效会清除旧档案缓存。
 
-### 自动填充流程
+## 本地示例与开发
 
-1. 打开招聘网站的申请表单页面。
-2. 在插件侧边栏选择要使用的已存储简历。
-3. 点击 Scan page / 扫描页面。
-4. 检查 Matched fields / 匹配字段列表。
-5. 取消勾选你不想填写的字段。
-6. 点击 Fill selected / 填充选中项。
-7. 回到网页确认填写结果，再由你手动提交。
+```sh
+# 根目录启动静态示例，使用已运行的真实后端登录：
+node extension/fixtures/static-server.js
+# 打开 http://127.0.0.1:8899/extension/fixtures/job-detail.html
+# 表单 http://127.0.0.1:8899/extension/fixtures/application-form.html
+```
 
-### 安全边界
+表单示例显示手动提交次数，便于确认填入没有触发提交。原 `mock-autofill-api.js` 仍作为原始简历填表演示，不能代替收藏/确认版本的真实后端验收。
 
-- 插件只填充你勾选的字段。
-- 插件不会自动点击提交按钮。
-- 密码、验证码、文件上传等敏感字段会被跳过。
-- 页面 URL、活动标签页、简历或 Settings 变化后，需要重新扫描再填充。
-- 离线时会尽量使用缓存档案做本地匹配。
+```sh
+node --test extension/tests/*.test.mjs
+npx playwright test tests/e2e/extension.spec.ts --project=chromium --trace off
+```
 
-### 本地示例
+浏览器测试自动使用临时 Chromium 配置、真实 MV3 worker/content script、独立 API/SQL 和合成数据，不使用你的日常浏览器账号。真实模型响应由测试入口替换，相关版本生成不产生付费调用。详细结果以仓库 `docs/learning/test-records/` 为准。
 
-1. 启动 ResuMate 后端，或使用 fixture mock API。
-2. 加载 unpacked extension。
-3. 打开 `extension/fixtures/application-form.html`。
-4. 在插件中设置 Backend，并使用已有 ResuMate 账号登录。
-5. 点击 Refresh、Scan page、Fill selected。
-6. 确认普通字段被填写，验证码字段未被填写，提交按钮未被点击。
+## English quick guide
 
-## English Guide
+Load the unpacked extension in Chrome/Edge developer mode, open ResuMate from the toolbar, set your backend URL and sign in. The password is not stored.
 
-### Install The Extension
+On a job detail page, choose **Read current job**, review/edit the visible text and source URL, then explicitly save it. Restricted pages can use pasted text. Repeated capture of the same complete URL returns the existing job without replacing your edits. Saving does not start model parsing.
 
-1. Open Chrome or Edge.
-2. Go to `chrome://extensions`.
-3. Enable Developer mode.
-4. Click Load unpacked.
-5. Select the `extension/` directory in this repository.
-6. Open a recruiting application page and click the ResuMate extension icon.
+Refresh profiles and choose an original resume or a **confirmed version**. Confirmed versions use their frozen content. Scan the application page, review the matched values, uncheck unwanted fields, and fill the selection. The extension never clicks Submit or creates an application record. Review the page and submit yourself.
 
-### Switch Language
-
-Use the `中文 / EN` toggle at the top of the side panel. Your choice is saved automatically and reused next time.
-
-### First-Time Setup
-
-1. Expand Settings in the side panel.
-2. Set Backend, for example `http://127.0.0.1:8000`.
-3. Enter the username and password for an existing ResuMate account.
-4. Click Log in. The extension stores the returned JWT, but never stores the password.
-5. Click Refresh. The extension will load the current user's stored resumes from the ResuMate database.
-
-### Switch Resume
-
-1. Choose a resume from the `Stored resume / 简历` dropdown.
-2. The dropdown is loaded from the ResuMate backend `/api/autofill/profiles`, backed by the database `Resume` records.
-3. Each option shows the resume name, fillable field count, and update date.
-4. After switching resumes, previous scan results are invalidated. Scan the page again before filling.
-5. If there are no resumes, upload and parse a resume in the main ResuMate app, then click Refresh in the extension.
-
-### Autofill Flow
-
-1. Open a job application form.
-2. Choose the stored resume in the side panel.
-3. Click Scan page.
-4. Review the Matched fields list.
-5. Uncheck any field you do not want to fill.
-6. Click Fill selected.
-7. Review the page yourself and submit manually.
-
-### Safety Boundary
-
-- The extension fills selected fields only.
-- The extension never submits applications.
-- Password, captcha, file upload, and other sensitive fields are skipped.
-- If the page URL, active tab, Profile, or Settings changes, scan again before filling.
-- When offline, the extension can use cached profiles for local matching.
-
-### Local Demo
-
-1. Start the ResuMate backend, or use the fixture mock API.
-2. Load the unpacked extension.
-3. Open `extension/fixtures/application-form.html`.
-4. Set Backend in the extension and log in with an existing ResuMate account.
-5. Click Refresh, Scan page, and Fill selected.
-6. Confirm normal fields are filled, captcha remains unchanged, and the submit button is not clicked.
+Changing the page, selected version or connection invalidates the previous scan. Temporary offline matching uses only the loaded account's cached profile; logout, backend changes and expired authentication clear the cache.

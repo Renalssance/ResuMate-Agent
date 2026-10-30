@@ -1,0 +1,129 @@
+✔ only the exact own side panel can log in; UI session never contains a token (13.333542ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.984375ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (1.285959ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.75175ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.785042ms)
+✖ late A 401 does not clear B session or B cache (2.844292ms)
+✖ late A list result is not delivered as B data (1.215875ms)
+✔ online matching forwards only the chosen server profile ID, never cached profile data (0.551ms)
+✖ same-name confirmed versions show source, revision, creation date and distinct existing IDs (78.047667ms)
+✔ switching original to two versions clears review; fill sends only selected preview values (28.14125ms)
+✖ offline refresh retains selected loaded version and its metadata (13.131875ms)
+✖ late A LIST_PROFILES response cannot overwrite B after logout/login (14.118083ms)
+✖ late A GET_PROFILE response cannot overwrite B after logout/login (22.699875ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 7
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 652.609
+
+✖ failing tests:
+
+test at extension/tests/background.test.mjs:135:1
+✖ late A 401 does not clear B session or B cache (2.844292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + undefined
+  - 'token-B'
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:149:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'token-B',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/background.test.mjs:153:1
+✖ late A list result is not delivered as B data (1.215875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:164:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/version-selection.test.mjs:18:1
+✖ same-name confirmed versions show source, revision, creation date and distinct existing IDs (78.047667ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /原简历/. Input:
+
+  'Ada - 2 个字段 / 更新于 2026年10月30日'
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/version-selection.test.mjs:21:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Ada - 2 个字段 / 更新于 2026年10月30日',
+    expected: /原简历/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at extension/tests/version-selection.test.mjs:48:1
+✖ offline refresh retains selected loaded version and its metadata (13.131875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'resume:1'
+  - 'version:second-id'
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/version-selection.test.mjs:57:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'resume:1',
+    expected: 'version:second-id',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/version-selection.test.mjs:64:3
+✖ late A LIST_PROFILES response cannot overwrite B after logout/login (14.118083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '' !== 'resume:B'
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/version-selection.test.mjs:82:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'resume:B',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/version-selection.test.mjs:64:3
+✖ late A GET_PROFILE response cannot overwrite B after logout/login (22.699875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '' !== 'resume:B'
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/version-selection.test.mjs:82:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'resume:B',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

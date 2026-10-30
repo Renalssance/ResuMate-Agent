@@ -1,0 +1,158 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_ test_page_capture_reuses_url_without_overwriting_edits_or_changing_import[sqlite] _
+
+client = <starlette.testclient.TestClient object at 0x10fe65430>
+career_db = <sqlalchemy.orm.session.Session object at 0x10f2dc7a0>
+
+    def test_page_capture_reuses_url_without_overwriting_edits_or_changing_import(client, career_db):
+        source_url = 'https://example/jobs/123?department=engineering#description'
+        first = page_capture(client, sourceUrl=source_url)
+>       assert first.status_code == 200, first.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:243: AssertionError
+_ test_page_capture_reuses_url_without_overwriting_edits_or_changing_import[mysql] _
+
+client = <starlette.testclient.TestClient object at 0x10fe66f30>
+career_db = <sqlalchemy.orm.session.Session object at 0x10fd9f6b0>
+
+    def test_page_capture_reuses_url_without_overwriting_edits_or_changing_import(client, career_db):
+        source_url = 'https://example/jobs/123?department=engineering#description'
+        first = page_capture(client, sourceUrl=source_url)
+>       assert first.status_code == 200, first.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:243: AssertionError
+______ test_page_capture_keeps_complete_case_sensitive_source_url[sqlite] ______
+
+client = <starlette.testclient.TestClient object at 0x112d13bf0>
+
+    def test_page_capture_keeps_complete_case_sensitive_source_url(client):
+        urls = [
+            'https://example/jobs/Engineer?job=1#description',
+            'https://example/jobs/engineer?job=1#description',
+            'https://example/jobs/Engineer?job=2#description',
+            'https://example/jobs/Engineer?job=1#another-job',
+        ]
+        ids = []
+        for url in urls:
+            response = page_capture(client, sourceUrl=url)
+>           assert response.status_code == 200, response.text
+E           AssertionError: {"detail":"Method Not Allowed"}
+E           assert 405 == 200
+E            +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:272: AssertionError
+______ test_page_capture_keeps_complete_case_sensitive_source_url[mysql] _______
+
+client = <starlette.testclient.TestClient object at 0x112dc6600>
+
+    def test_page_capture_keeps_complete_case_sensitive_source_url(client):
+        urls = [
+            'https://example/jobs/Engineer?job=1#description',
+            'https://example/jobs/engineer?job=1#description',
+            'https://example/jobs/Engineer?job=2#description',
+            'https://example/jobs/Engineer?job=1#another-job',
+        ]
+        ids = []
+        for url in urls:
+            response = page_capture(client, sourceUrl=url)
+>           assert response.status_code == 200, response.text
+E           AssertionError: {"detail":"Method Not Allowed"}
+E           assert 405 == 200
+E            +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:272: AssertionError
+___ test_page_capture_checks_owner_and_selected_resume_even_on_reuse[sqlite] ___
+
+client = <starlette.testclient.TestClient object at 0x113037e90>
+career_db = <sqlalchemy.orm.session.Session object at 0x112e9b4a0>
+
+    def test_page_capture_checks_owner_and_selected_resume_even_on_reuse(client, career_db):
+        career_db.add_all([
+            JobDescription(user_id=2, title='Private', raw_text='Private body', source_url='https://example/private'),
+            Resume(id=2, user_id=2, filename='private.txt'),
+        ])
+        career_db.commit()
+        response = page_capture(client, sourceUrl='https://example/private')
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:287: AssertionError
+___ test_page_capture_checks_owner_and_selected_resume_even_on_reuse[mysql] ____
+
+client = <starlette.testclient.TestClient object at 0x1130a9700>
+career_db = <sqlalchemy.orm.session.Session object at 0x112c25310>
+
+    def test_page_capture_checks_owner_and_selected_resume_even_on_reuse(client, career_db):
+        career_db.add_all([
+            JobDescription(user_id=2, title='Private', raw_text='Private body', source_url='https://example/private'),
+            Resume(id=2, user_id=2, filename='private.txt'),
+        ])
+        career_db.commit()
+        response = page_capture(client, sourceUrl='https://example/private')
+>       assert response.status_code == 200, response.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:287: AssertionError
+_ test_page_capture_reuses_existing_source_pair_and_pasted_text_rules[sqlite] __
+
+client = <starlette.testclient.TestClient object at 0x113278260>
+
+    def test_page_capture_reuses_existing_source_pair_and_pasted_text_rules(client):
+        original = capture(client, sourceSite='example', sourceJobId='123').json()
+        repeated = page_capture(client, sourceSite='example', sourceJobId='123',
+                                sourceUrl='https://example/updated-link', text='Changed')
+>       assert repeated.status_code == 200, repeated.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:300: AssertionError
+__ test_page_capture_reuses_existing_source_pair_and_pasted_text_rules[mysql] __
+
+client = <starlette.testclient.TestClient object at 0x113078920>
+
+    def test_page_capture_reuses_existing_source_pair_and_pasted_text_rules(client):
+        original = capture(client, sourceSite='example', sourceJobId='123').json()
+        repeated = page_capture(client, sourceSite='example', sourceJobId='123',
+                                sourceUrl='https://example/updated-link', text='Changed')
+>       assert repeated.status_code == 200, repeated.text
+E       AssertionError: {"detail":"Method Not Allowed"}
+E       assert 405 == 200
+E        +  where 405 = <Response [405 Method Not Allowed]>.status_code
+
+backend/tests/test_jobs.py:300: AssertionError
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED backend/tests/test_jobs.py::test_page_capture_reuses_url_without_overwriting_edits_or_changing_import[sqlite]
+FAILED backend/tests/test_jobs.py::test_page_capture_reuses_url_without_overwriting_edits_or_changing_import[mysql]
+FAILED backend/tests/test_jobs.py::test_page_capture_keeps_complete_case_sensitive_source_url[sqlite]
+FAILED backend/tests/test_jobs.py::test_page_capture_keeps_complete_case_sensitive_source_url[mysql]
+FAILED backend/tests/test_jobs.py::test_page_capture_checks_owner_and_selected_resume_even_on_reuse[sqlite]
+FAILED backend/tests/test_jobs.py::test_page_capture_checks_owner_and_selected_resume_even_on_reuse[mysql]
+FAILED backend/tests/test_jobs.py::test_page_capture_reuses_existing_source_pair_and_pasted_text_rules[sqlite]
+FAILED backend/tests/test_jobs.py::test_page_capture_reuses_existing_source_pair_and_pasted_text_rules[mysql]
+8 failed, 30 deselected, 5 warnings in 2.52s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

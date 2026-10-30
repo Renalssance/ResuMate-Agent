@@ -1,0 +1,47 @@
+✖ save associates resume with source resume:1 using the actual profile contract (70.881417ms)
+✖ save associates resume_version with source resume:7 using the actual profile contract (14.338083ms)
+✔ save associates resume_version with source deleted source using the actual profile contract (23.111209ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 697.03075
+
+✖ failing tests:
+
+test at extension/tests/job-capture.test.mjs:79:3
+✖ save associates resume with source resume:1 using the actual profile contract (70.881417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  undefined !== 1
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:86:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/job-capture.test.mjs:79:3
+✖ save associates resume_version with source resume:7 using the actual profile contract (14.338083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  undefined !== 7
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:86:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 7,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

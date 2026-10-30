@@ -1,0 +1,111 @@
+✔ extension/tests/auth.test.mjs (41.98775ms)
+✖ only the exact own side panel can log in; UI session never contains a token (1.766208ms)
+✖ unknown, content-script, foreign and malformed messages never fetch (0.280292ms)
+✖ A loaded cache is removed on logout; B offline refresh cannot recover A (0.231875ms)
+✖ login, backend changes and 401 clear old cache, while network loss preserves it (0.212625ms)
+file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/fill-engine-combobox.test.mjs:77
+assert.equal(rejected.error.message, 'Untrusted message sender');
+                            ^
+
+TypeError: Cannot read properties of undefined (reading 'message')
+    at file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/fill-engine-combobox.test.mjs:77:29
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.10.0
+✖ extension/tests/fill-engine-combobox.test.mjs (27.956583ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 1
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 46.174041
+
+✖ failing tests:
+
+test at extension/tests/background.test.mjs:49:1
+✖ only the exact own side panel can log in; UI session never contains a token (1.766208ms)
+  AssertionError [ERR_ASSERTION]: worker registers a real runtime message listener
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at Object.message (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:40:14)
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:51:31)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/background.test.mjs:60:1
+✖ unknown, content-script, foreign and malformed messages never fetch (0.280292ms)
+  AssertionError [ERR_ASSERTION]: worker registers a real runtime message listener
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at Object.message (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:40:14)
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:71:32)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/background.test.mjs:78:1
+✖ A loaded cache is removed on logout; B offline refresh cannot recover A (0.231875ms)
+  AssertionError [ERR_ASSERTION]: worker registers a real runtime message listener
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at Object.message (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:40:14)
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:80:16)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/background.test.mjs:93:1
+✖ login, backend changes and 401 clear old cache, while network loss preserves it (0.212625ms)
+  AssertionError [ERR_ASSERTION]: worker registers a real runtime message listener
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at Object.message (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:40:14)
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:95:16)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/fill-engine-combobox.test.mjs:1:1
+✖ extension/tests/fill-engine-combobox.test.mjs (27.956583ms)
+  'test failed'

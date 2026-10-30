@@ -28,7 +28,7 @@ npm run test:e2e
 node --test extension/tests/*.test.mjs
 ```
 
-浏览器用例自动启动独立的 4173 前端、4174 API、原生 worker 与专属 Redis 容器，使用临时 SQL/checkpoint/exports 目录和合成账户；只替换模型，真实执行任务、审阅、PDF 和投递流程。运行前需 Docker 已启动、Python/Node 依赖与 Chromium 已安装。端口占用会失败，不复用来源不明的开发服务。真实模型质量仍须单独评测。
+浏览器用例自动启动独立的 4173 前端、4174 API、8899 扩展示例、原生 worker 与专属 Redis 容器，使用临时 SQL/checkpoint/exports 目录和合成账户；只替换模型，真实执行任务、审阅、PDF 和投递流程。运行前需 Docker 已启动、Python/Node 依赖与 Chromium 已安装。端口占用会失败，不复用来源不明的开发服务。真实模型质量仍须单独评测。
 
 Vitest 只收集 `src/**/*.spec.ts`；已有 `*.test.ts` / `*.test.mjs` 保留在原 `npm test` 入口，避免把 Node 自执行测试误当作 Vitest 套件。
 
@@ -79,7 +79,7 @@ RESUMATE_COMPOSE_TEST=1 uv run pytest backend/tests/test_worker_compose.py -q -s
 
 ## T06：事件订阅与教学
 
-新 Run 的事件记录在 SQL 中，接口 `/api/agent/runs/{run_id}/events?after=N` 使用 Bearer 请求头。前端入口是 `frontend/src/services/agentStream.ts`；关闭订阅不取消任务。旧任务进度也必须登录，提交成功后再订阅；旧内存任务的持久化迁移仍待 T14。
+新 Run 的事件记录在 SQL 中，接口 `/api/agent/runs/{run_id}/events?after=N` 使用 Bearer 请求头。前端入口是 `frontend/src/services/agentStream.ts`；关闭订阅不取消任务。旧任务进度也必须登录，提交成功后再订阅；旧内存任务已在 T14 迁入相同持久任务链，详见[第十四课](learning/14-durable-long-tasks.md)。
 
 ```sh
 uv run pytest backend/tests/test_run_events.py backend/tests/test_agent_events.py backend/tests/test_legacy_task_auth.py -q

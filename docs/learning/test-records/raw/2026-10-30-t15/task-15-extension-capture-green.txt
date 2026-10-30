@@ -1,0 +1,18 @@
+✔ only the exact own side panel can log in; UI session never contains a token (12.112667ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.76125ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (0.97625ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.142208ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.63025ms)
+✔ extension/tests/i18n.test.mjs (29.14225ms)
+✔ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (83.642292ms)
+✔ capture falls back to visible article/body and does not read hidden main ancestors (14.235ms)
+✔ click reads editable snapshot; save uses edits and repeat save reports existing source (19.137083ms)
+✔ injection failure leaves paste fallback and missing title/body cannot save (10.0525ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 581.014625

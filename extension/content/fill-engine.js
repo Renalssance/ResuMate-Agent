@@ -163,7 +163,18 @@
     return { success: false, error: `Unsupported element ${tag}` };
   }
 
-  chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (sender?.id !== chrome.runtime.id || sender?.url !== chrome.runtime.getURL('sidepanel/sidepanel.html')) {
+      sendResponse({ error: { message: 'Untrusted message sender' } });
+      return false;
+    }
+    const validItem = item => item && Number.isInteger(item.elementIndex) && item.elementIndex >= 0 && typeof item.value === 'string';
+    if (!request || !['SCAN_FORM', 'FILL_SELECTED', 'FILL_FOCUSED'].includes(request.type) ||
+        (request.type === 'FILL_SELECTED' && (!Array.isArray(request.items) || !request.items.every(validItem))) ||
+        (request.type === 'FILL_FOCUSED' && typeof request.value !== 'string')) {
+      sendResponse({ error: { message: 'Invalid content message' } });
+      return false;
+    }
     if (request.type === 'SCAN_FORM') {
       sendResponse(scanForm());
       return true;

@@ -1,0 +1,29 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-qgXrkf
+
+Running 4 tests using 1 worker
+
+(node:38669) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/extension.spec.ts:104:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 (2.8s)
+  ✓  2 [chromium] › tests/e2e/extension.spec.ts:140:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 (6.2s)
+  ✘  3 [chromium] › tests/e2e/extension.spec.ts:182:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 (799ms)
+(node:38780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [chromium] › tests/e2e/extension.spec.ts:204:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 (464ms)
+
+
+  1) [chromium] › tests/e2e/extension.spec.ts:182:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 ───────────────────
+
+    Error: worker.evaluate: Error: Target fixture tab is missing
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at async <anonymous>:396:30
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at async <anonymous>:396:30
+        at activate (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:38:22)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:186:9
+
+    Error Context: test-results/extension-受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/e2e/extension.spec.ts:182:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 ────────────────────
+  3 passed (18.2s)

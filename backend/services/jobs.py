@@ -82,6 +82,22 @@ def capture_job(db: Session, user_id: int, source: JobCreate) -> tuple[JobDescri
     return row, True
 
 
+def capture_page_job(db: Session, user_id: int, source: JobCreate) -> tuple[JobDescription, bool]:
+    """A page capture keeps the first saved posting when its visible text changes."""
+    if source.source_site or not source.source_url:
+        return capture_job(db, user_id, source)
+    find_resume(db, user_id, source.primary_resume_id)
+    source_url = JobDescription.source_url
+    if db.get_bind().dialect.name == 'mysql':
+        source_url = source_url.collate('utf8mb4_bin')
+    existing = (db.query(JobDescription)
+                .filter(JobDescription.user_id == user_id, source_url == source.source_url)
+                .order_by(JobDescription.id).first())
+    if existing:
+        return existing, False
+    return capture_job(db, user_id, source)
+
+
 def list_jobs(db: Session, user_id: int, *, query: str, status: str | None, limit: int, offset: int):
     rows = db.query(JobDescription).filter(JobDescription.user_id == user_id)
     if query.strip():

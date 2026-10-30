@@ -1,0 +1,102 @@
+✔ only the exact own side panel can log in; UI session never contains a token (13.413958ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.768625ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (0.878125ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (0.972125ms)
+✖ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.902791ms)
+✔ extension/tests/i18n.test.mjs (35.575667ms)
+✖ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (45.773333ms)
+✖ capture falls back to visible article/body and does not read hidden main ancestors (4.192167ms)
+✖ click reads editable snapshot; save uses edits and repeat save reports existing source (21.238667ms)
+✖ injection failure leaves paste fallback and missing title/body cannot save (9.958167ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 5
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 565.538625
+
+✖ failing tests:
+
+test at extension/tests/background.test.mjs:114:1
+✖ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.902791ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + undefined
+  - {
+  -   company: 'Company',
+  -   sourceUrl: 'https://jobs.example/Job?ref=1#detail',
+  -   text: 'Visible body',
+  -   title: 'Visible title'
+  - }
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/background.test.mjs:123:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { title: 'Visible title', company: 'Company', text: 'Visible body', sourceUrl: 'https://jobs.example/Job?ref=1#detail' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at extension/tests/job-capture.test.mjs:18:1
+✖ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (45.773333ms)
+  Error: ENOENT: no such file or directory, open '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/content/job-capture.js'
+      at async open (node:internal/fs/promises:642:25)
+      at async readFile (node:internal/fs/promises:1279:14)
+      at async capture (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:12:18)
+      at async TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:19:18)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/content/job-capture.js'
+  }
+
+test at extension/tests/job-capture.test.mjs:27:1
+✖ capture falls back to visible article/body and does not read hidden main ancestors (4.192167ms)
+  Error: ENOENT: no such file or directory, open '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/content/job-capture.js'
+      at async open (node:internal/fs/promises:642:25)
+      at async readFile (node:internal/fs/promises:1279:14)
+      at async capture (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:12:18)
+      at async TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:28:19)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/content/job-capture.js'
+  }
+
+test at extension/tests/job-capture.test.mjs:34:1
+✖ click reads editable snapshot; save uses edits and repeat save reports existing source (21.238667ms)
+  AssertionError [ERR_ASSERTION]: capture action is available
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:40:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at extension/tests/job-capture.test.mjs:57:1
+✖ injection failure leaves paste fallback and missing title/body cannot save (9.958167ms)
+  AssertionError [ERR_ASSERTION]: capture action is available
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/job-capture.test.mjs:62:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,925 @@
+R
+ResuMate
+
+先确认，再只填你选中的字段。
+
+中文
+EN
+
+可以确认
+
+刷新
+
+收藏待看
+
+当前岗位
+读取当前岗位
+
+读取页面后先编辑确认，再单独收藏。读取和收藏不会填表或提交申请。
+
+岗位标题
+公司
+来源链接（可选）
+岗位正文
+收藏岗位
+
+当前页面
+
+页面扫描
+不会自动提交
+
+Backend Engineer - Example Careers
+
+Example / Backend Engineer
+
+9
+检测到
+0
+可填充
+9
+已跳过
+
+简历
+
+已存储简历
+
+已确认版本 · 第 3 版 · 创建 2026年10月30日 · 224951a0-e903-49a3-8595-599d31bddf60 · 5 个可填字段
+
+已存储简历
+示例求职者 - 原简历 · 4 个字段 / 更新于 2026年10月30日
+示例求职者 - 已确认版本 · 第 3 版 · 创建 2026年10月30日 · 224951a0-e903-49a3-8595-599d31bddf60
+Name
+示例求职者
+Company 1
+示例团队
+Title 1
+API 开发
+Work Description 1
+已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。
+Self Introduction
+API development
+
+确认
+
+匹配字段
+
+敏感字段不会被填写。
+
+还没有匹配项。打开招聘申请页面后先扫描。
+!
+已跳过 姓名
+sensitive field
+!
+已跳过 邮箱
+sensitive field
+!
+已跳过 手机
+sensitive field
+!
+已跳过 学校
+sensitive field
+!
+已跳过 专业
+sensitive field
+!
+已跳过 工作职责
+sensitive field
+!
+已跳过 技能
+sensitive field
+!
+已跳过 城市 Select Shanghai Beijing Shenzhen
+sensitive field
+!
+已跳过 验证码
+sensitive field
+设置
+开发诊断 / Diagnostics
+扫描页面
+填充选中项
+
+暂未发现可填充字段。
+DIAGNOSTICS
+{
+  "lastAction": "scan-complete",
+  "lastError": "",
+  "lastScanAt": "2026-10-29T19:29:02.372Z",
+  "mode": "online-api-match",
+  "apiBase": "http://127.0.0.1:4174",
+  "authenticated": true,
+  "activeProfileId": "version:224951a0-e903-49a3-8595-599d31bddf60",
+  "page": {
+    "url": "http://127.0.0.1:8899/extension/fixtures/application-form.html",
+    "title": "Backend Engineer - Example Careers",
+    "company": "Example",
+    "position": "Backend Engineer",
+    "confidence": {
+      "company": "fallback",
+      "position": "fallback"
+    }
+  },
+  "counts": {
+    "profileFields": 35,
+    "profileFieldsWithValue": 5,
+    "detectedElements": 9,
+    "backendMatches": 0,
+    "blocked": 9,
+    "localDiagnosticCandidates": 0
+  },
+  "detectedElements": [
+    {
+      "index": 0,
+      "tag": "input",
+      "type": "text",
+      "id": "",
+      "name": "candidate_name",
+      "placeholder": "",
+      "labelText": "姓名",
+      "ariaLabel": "",
+      "nearbyText": "姓名 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 1,
+      "tag": "input",
+      "type": "email",
+      "id": "",
+      "name": "email",
+      "placeholder": "",
+      "labelText": "邮箱",
+      "ariaLabel": "",
+      "nearbyText": "邮箱 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 2,
+      "tag": "input",
+      "type": "tel",
+      "id": "",
+      "name": "mobile",
+      "placeholder": "",
+      "labelText": "手机",
+      "ariaLabel": "",
+      "nearbyText": "手机 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 3,
+      "tag": "input",
+      "type": "text",
+      "id": "",
+      "name": "school",
+      "placeholder": "",
+      "labelText": "学校",
+      "ariaLabel": "",
+      "nearbyText": "学校 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 4,
+      "tag": "input",
+      "type": "text",
+      "id": "",
+      "name": "major",
+      "placeholder": "",
+      "labelText": "专业",
+      "ariaLabel": "",
+      "nearbyText": "专业 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 5,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "",
+      "name": "work_description",
+      "placeholder": "",
+      "labelText": "工作职责",
+      "ariaLabel": "",
+      "nearbyText": "工作职责 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 6,
+      "tag": "textarea",
+      "type": "textarea",
+      "id": "",
+      "name": "skills",
+      "placeholder": "",
+      "labelText": "技能",
+      "ariaLabel": "",
+      "nearbyText": "技能 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 7,
+      "tag": "select",
+      "type": "select-one",
+      "id": "",
+      "name": "city",
+      "placeholder": "",
+      "labelText": "城市 Select Shanghai Beijing Shenzhen",
+      "ariaLabel": "",
+      "nearbyText": "城市 Select Shanghai Beijing Shenzhen 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    },
+    {
+      "index": 8,
+      "tag": "input",
+      "type": "text",
+      "id": "",
+      "name": "captcha",
+      "placeholder": "",
+      "labelText": "验证码",
+      "ariaLabel": "",
+      "nearbyText": "验证码 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码",
+      "valuePresent": false
+    }
+  ],
+  "profileFields": [
+    {
+      "key": "candidate_name",
+      "label": "Name",
+      "hasValue": true,
+      "valuePreview": "示例求职者",
+      "aliases": [
+        "name",
+        "full name",
+        "姓名"
+      ]
+    },
+    {
+      "key": "contact.email",
+      "label": "Email",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "email",
+        "邮箱"
+      ]
+    },
+    {
+      "key": "contact.phone",
+      "label": "Phone",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "phone",
+        "mobile",
+        "手机"
+      ]
+    },
+    {
+      "key": "contact.location",
+      "label": "City",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "city",
+        "location",
+        "城市"
+      ]
+    },
+    {
+      "key": "contact.wechat",
+      "label": "WeChat",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "wechat",
+        "微信"
+      ]
+    },
+    {
+      "key": "application.referral_code",
+      "label": "Referral Code",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "referral code",
+        "referral",
+        "内推码"
+      ]
+    },
+    {
+      "key": "application.gender",
+      "label": "Gender",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "gender",
+        "sex",
+        "性别"
+      ]
+    },
+    {
+      "key": "application.birth_date",
+      "label": "Birth Date",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "birth date",
+        "birthday",
+        "出生日期"
+      ]
+    },
+    {
+      "key": "application.ethnicity",
+      "label": "Ethnicity",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "ethnicity",
+        "民族"
+      ]
+    },
+    {
+      "key": "application.nationality",
+      "label": "Nationality",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "nationality",
+        "国籍"
+      ]
+    },
+    {
+      "key": "application.id_document_type",
+      "label": "ID Document Type",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "id document type",
+        "证件类型"
+      ]
+    },
+    {
+      "key": "application.id_number",
+      "label": "ID Number",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "id number",
+        "id card number",
+        "identity number",
+        "document number",
+        "证件号码",
+        "证件号",
+        "身份证号",
+        "身份证号码"
+      ]
+    },
+    {
+      "key": "application.expected_city",
+      "label": "Expected City",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "expected city",
+        "preferred city",
+        "意向城市",
+        "期望城市",
+        "期望工作城市",
+        "工作城市"
+      ]
+    },
+    {
+      "key": "application.expected_position",
+      "label": "Expected Position",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "expected position",
+        "意向岗位",
+        "期望职位"
+      ]
+    },
+    {
+      "key": "application.expected_salary",
+      "label": "Expected Salary",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "expected salary",
+        "期望薪资",
+        "薪资要求"
+      ]
+    },
+    {
+      "key": "application.earliest_start_date",
+      "label": "Earliest Start Date",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "earliest start",
+        "到岗时间",
+        "入职时间"
+      ]
+    },
+    {
+      "key": "application.current_address",
+      "label": "Current Address",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "current address",
+        "现居地址",
+        "通讯地址"
+      ]
+    },
+    {
+      "key": "application.portfolio_url",
+      "label": "Portfolio URL",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "portfolio",
+        "作品集",
+        "个人主页"
+      ]
+    },
+    {
+      "key": "application.github_url",
+      "label": "GitHub URL",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "github",
+        "代码仓库"
+      ]
+    },
+    {
+      "key": "application.linkedin_url",
+      "label": "LinkedIn URL",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "linkedin",
+        "领英"
+      ]
+    },
+    {
+      "key": "application.political_status",
+      "label": "Political Status",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "political status",
+        "政治面貌"
+      ]
+    },
+    {
+      "key": "application.native_place",
+      "label": "Native Place",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "native place",
+        "籍贯"
+      ]
+    },
+    {
+      "key": "application.hukou_location",
+      "label": "Hukou Location",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "hukou",
+        "户口所在地"
+      ]
+    },
+    {
+      "key": "application.emergency_contact_name",
+      "label": "Emergency Contact",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "emergency contact",
+        "紧急联系人"
+      ]
+    },
+    {
+      "key": "application.emergency_contact_phone",
+      "label": "Emergency Phone",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "emergency phone",
+        "emergency contact phone",
+        "紧急联系电话",
+        "紧急联系人电话"
+      ]
+    },
+    {
+      "key": "work_experience.0.company",
+      "label": "Company 1",
+      "hasValue": true,
+      "valuePreview": "示例团队",
+      "aliases": [
+        "company",
+        "employer",
+        "公司"
+      ]
+    },
+    {
+      "key": "work_experience.0.title",
+      "label": "Title 1",
+      "hasValue": true,
+      "valuePreview": "API 开发",
+      "aliases": [
+        "title",
+        "role",
+        "position",
+        "岗位"
+      ]
+    },
+    {
+      "key": "work_experience.0.start_date",
+      "label": "Work Start 1",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "work start",
+        "开始时间",
+        "起始时间"
+      ]
+    },
+    {
+      "key": "work_experience.0.end_date",
+      "label": "Work End 1",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "work end",
+        "结束时间"
+      ]
+    },
+    {
+      "key": "work_experience.0.duration",
+      "label": "Work Dates 1",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "work date",
+        "employment period",
+        "时间"
+      ]
+    },
+    {
+      "key": "work_experience.0.description",
+      "label": "Work Description 1",
+      "hasValue": true,
+      "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+      "aliases": [
+        "work description",
+        "experience",
+        "职责"
+      ]
+    },
+    {
+      "key": "skills",
+      "label": "Skills",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "skills",
+        "technical skills",
+        "技能"
+      ]
+    },
+    {
+      "key": "languages",
+      "label": "Languages",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "languages",
+        "语言"
+      ]
+    },
+    {
+      "key": "certifications",
+      "label": "Certifications",
+      "hasValue": false,
+      "valuePreview": "",
+      "aliases": [
+        "certifications",
+        "certificates",
+        "证书"
+      ]
+    },
+    {
+      "key": "self_summary",
+      "label": "Self Introduction",
+      "hasValue": true,
+      "valuePreview": "API development",
+      "aliases": [
+        "self introduction",
+        "summary",
+        "自我介绍"
+      ]
+    }
+  ],
+  "backendMatches": [],
+  "backendBlocked": [
+    {
+      "elementIndex": 0,
+      "reason": "sensitive field",
+      "elementLabel": "姓名"
+    },
+    {
+      "elementIndex": 1,
+      "reason": "sensitive field",
+      "elementLabel": "邮箱"
+    },
+    {
+      "elementIndex": 2,
+      "reason": "sensitive field",
+      "elementLabel": "手机"
+    },
+    {
+      "elementIndex": 3,
+      "reason": "sensitive field",
+      "elementLabel": "学校"
+    },
+    {
+      "elementIndex": 4,
+      "reason": "sensitive field",
+      "elementLabel": "专业"
+    },
+    {
+      "elementIndex": 5,
+      "reason": "sensitive field",
+      "elementLabel": "工作职责"
+    },
+    {
+      "elementIndex": 6,
+      "reason": "sensitive field",
+      "elementLabel": "技能"
+    },
+    {
+      "elementIndex": 7,
+      "reason": "sensitive field",
+      "elementLabel": "城市 Select Shanghai Beijing Shenzhen"
+    },
+    {
+      "elementIndex": 8,
+      "reason": "sensitive field",
+      "elementLabel": "验证码"
+    }
+  ],
+  "localDiagnostics": [
+    {
+      "index": 0,
+      "status": "sensitive",
+      "elementText": "text candidate_name 姓名 姓名 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 14,
+        "reason": "label contains \"candidate_name\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 14,
+          "reason": "label contains \"candidate_name\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "status": "sensitive",
+      "elementText": "email email 邮箱 邮箱 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "status": "sensitive",
+      "elementText": "tel mobile 手机 手机 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "status": "sensitive",
+      "elementText": "text school 学校 学校 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "status": "sensitive",
+      "elementText": "text major 专业 专业 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "status": "sensitive",
+      "elementText": "textarea work_description 工作职责 工作职责 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "work_experience.0.description",
+        "fieldLabel": "Work Description 1",
+        "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+        "score": 11,
+        "reason": "label contains \"description\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 11,
+          "reason": "label contains \"description\""
+        },
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "status": "sensitive",
+      "elementText": "textarea skills 技能 技能 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "status": "sensitive",
+      "elementText": "select-one city 城市 select shanghai beijing shenzhen 城市 select shanghai beijing shenzhen 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "status": "sensitive",
+      "elementText": "text captcha 验证码 验证码 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 select shanghai beijing shenzhen 验证码",
+      "bestCandidate": {
+        "fieldKey": "candidate_name",
+        "fieldLabel": "Name",
+        "valuePreview": "示例求职者",
+        "score": 2,
+        "reason": "label contains \"姓名\""
+      },
+      "candidates": [
+        {
+          "fieldKey": "candidate_name",
+          "fieldLabel": "Name",
+          "valuePreview": "示例求职者",
+          "score": 2,
+          "reason": "label contains \"姓名\""
+        },
+        {
+          "fieldKey": "work_experience.0.description",
+          "fieldLabel": "Work Description 1",
+          "valuePreview": "已确认版本：负责 API 设计、数据库模型与接口联调，核对实际接口需求并维护说明。",
+          "score": 2,
+          "reason": "label contains \"职责\""
+        }
+      ]
+    }
+  ]
+}

@@ -141,6 +141,7 @@ def main():
     (STATE / 'fixture.json').write_text(json.dumps({'pausedRunId': paused_id, 'workerPid': worker.pid, 'redisUrl': env['REDIS_URL']}))
     start(['npm', '--prefix', 'frontend', 'run', 'dev', '--', '--host', '127.0.0.1',
            '--port', '4173', '--strictPort'], env, 'frontend')
+    start(['node', 'extension/fixtures/static-server.js'], env, 'extension-fixtures')
     print(f'E2E services ready; isolated SQL/checkpoints/logs: {STATE}', flush=True)
     while not stopping:
         if any(child.poll() is not None for child in children):

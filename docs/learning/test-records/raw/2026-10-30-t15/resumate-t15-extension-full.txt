@@ -1,0 +1,66 @@
+✔ extension/tests/auth.test.mjs (92.677166ms)
+✔ extension/tests/autofill-problem-fields.test.mjs (72.818458ms)
+✔ only the exact own side panel can log in; UI session never contains a token (16.912417ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.977209ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (1.195292ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (2.288542ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.859083ms)
+✔ late A 401 does not clear B session or B cache (2.991333ms)
+✔ late A list result is not delivered as B data (0.9395ms)
+✔ online matching forwards only the chosen server profile ID, never cached profile data (0.5215ms)
+✔ extension/tests/field-matcher.test.mjs (67.742125ms)
+✔ extension/tests/fill-engine-combobox.test.mjs (68.668833ms)
+✔ extension/tests/i18n.test.mjs (71.129708ms)
+✔ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (91.57025ms)
+✔ capture falls back to visible article/body and does not read hidden main ancestors (16.43875ms)
+✔ click reads editable snapshot; save uses edits and repeat save reports existing source (21.13675ms)
+✔ injection failure leaves paste fallback and missing title/body cannot save (11.955209ms)
+file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/label-utils.test.mjs:71
+  assert.equal(findElementLabel(field), '项目名称');
+               ^
+
+TypeError: findElementLabel is not a function
+    at file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/label-utils.test.mjs:71:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.10.0
+✖ extension/tests/label-utils.test.mjs (73.529917ms)
+✔ extension/tests/match-diagnostics.test.mjs (77.5495ms)
+✔ same-name confirmed versions show source, revision, creation date and distinct existing IDs (76.063083ms)
+✔ switching original to two versions clears review; fill sends only selected preview values (29.586708ms)
+✔ offline refresh retains selected loaded version and its metadata (14.116125ms)
+✔ late A LIST_PROFILES response cannot overwrite B after logout/login (12.77075ms)
+✔ late A GET_PROFILE response cannot overwrite B after logout/login (18.728375ms)
+✔ current account 401 clears displayed fields and requests login instead of staying busy (16.697125ms)
+file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/visibility-utils.test.mjs:40
+assert.equal(isRenderableFillTarget(offscreen, { requireViewport: false }), true);
+             ^
+
+TypeError: isRenderableFillTarget is not a function
+    at file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/visibility-utils.test.mjs:40:14
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:691:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.10.0
+✖ extension/tests/visibility-utils.test.mjs (36.327ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 24
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 709.577292
+
+✖ failing tests:
+
+test at extension/tests/label-utils.test.mjs:1:1
+✖ extension/tests/label-utils.test.mjs (73.529917ms)
+  'test failed'
+
+test at extension/tests/visibility-utils.test.mjs:1:1
+✖ extension/tests/visibility-utils.test.mjs (36.327ms)
+  'test failed'

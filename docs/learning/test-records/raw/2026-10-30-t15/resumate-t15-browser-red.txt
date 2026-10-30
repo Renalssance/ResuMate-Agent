@@ -1,0 +1,65 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-3dZxfL
+
+Running 2 tests using 1 worker
+
+(node:34178) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/extension.spec.ts:84:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 (20.7s)
+(node:34344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 (15.3s)
+
+
+  1) [chromium] › tests/e2e/extension.spec.ts:84:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 ────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('#captureJobBtn')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('#captureJobBtn') with timeout 15000ms
+      - waiting for locator('#captureJobBtn')
+
+
+      85 |   const { panel, target, activate } = extension
+      86 |   await login(panel)
+    > 87 |   await expect(panel.locator('#captureJobBtn')).toBeVisible()
+         |                                                 ^
+      88 |   await activate()
+      89 |   await panel.locator('#captureJobBtn').click()
+      90 |   await expect(panel.locator('#jobTextInput')).toHaveValue(/负责 Python API 与数据库设计/)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:87:49
+
+    Error Context: test-results/extension-真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位-chromium/error-context.md
+
+  2) [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 ──────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('收藏当前岗位', { exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('收藏当前岗位', { exact: true }) with timeout 15000ms
+      - waiting for getByText('收藏当前岗位', { exact: true })
+
+
+      183 |   void api
+      184 |   await page.goto('/extension')
+    > 185 |   await expect(page.getByText('收藏当前岗位', { exact: true })).toBeVisible()
+          |                                                           ^
+      186 |   await expect(page.getByText('选择简历版本', { exact: true })).toBeVisible()
+      187 |   await shot(page, 'extension-guide-desktop', 1440)
+      188 |   await shot(page, 'extension-guide-mobile', 390)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:185:59
+
+    Error Context: test-results/extension-主应用插件下载说明展示收藏和确认版本，桌面手机布局一致-chromium/error-context.md
+
+  2 failed
+    [chromium] › tests/e2e/extension.spec.ts:84:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 ─────────────────
+    [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 ───────────────────

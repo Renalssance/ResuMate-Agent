@@ -1,6 +1,8 @@
-const fs = require('fs');
-const http = require('http');
-const path = require('path');
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const root = path.resolve(__dirname, '..', '..');
 const types = {

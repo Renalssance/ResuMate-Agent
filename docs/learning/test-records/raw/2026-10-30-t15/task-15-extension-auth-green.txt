@@ -1,0 +1,14 @@
+✔ extension/tests/auth.test.mjs (43.994917ms)
+✔ only the exact own side panel can log in; UI session never contains a token (12.569542ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (0.908542ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (0.921291ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.034292ms)
+✔ extension/tests/fill-engine-combobox.test.mjs (31.08725ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 55.394209

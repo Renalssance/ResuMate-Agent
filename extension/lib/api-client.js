@@ -69,3 +69,12 @@ export async function login(settings, credentials) {
     role: data.role || ''
   };
 }
+
+export async function captureJob(settings, payload) {
+  const response = await fetch(endpoint(settings.apiBase, '/api/jobs/capture'), {
+    method: 'POST',
+    headers: headers(settings.token),
+    body: JSON.stringify(payload)
+  });
+  return parseJsonResponse(response);
+}

@@ -1,0 +1,98 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-NFOGpC
+
+Running 4 tests using 1 worker
+
+(node:36275) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/extension.spec.ts:84:1 › 真实扩展采集可见岗位、预览后收藏，正文变化重采集仍保留原岗位 (3.2s)
+  ✘  2 [chromium] › tests/e2e/extension.spec.ts:119:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 (20.8s)
+(node:36418) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › tests/e2e/extension.spec.ts:160:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 (16.3s)
+(node:36495) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 (210ms)
+
+
+  1) [chromium] › tests/e2e/extension.spec.ts:119:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ────────────
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator:  locator('#fillBtn')
+    Expected: enabled
+    Received: disabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeEnabled" locator('#fillBtn') with timeout 15000ms
+      - waiting for locator('#fillBtn')
+        34 × locator resolved to <button disabled id="fillBtn" type="button" aria-label="填充选中项" class="primary-btn" data-i18n="actions.fillSelected" data-i18n-aria-label="actions.fillSelected">填充选中项</button>
+           - unexpected value "disabled"
+
+
+      128 |   await target.goto(`${SITE}/application-form.html`)
+      129 |   await activate(); await panel.locator('#scanBtn').click()
+    > 130 |   await expect(panel.locator('#fillBtn')).toBeEnabled()
+          |                                           ^
+      131 |   await panel.locator('#profileSelect').selectOption('resume:1')
+      132 |   await expect(panel.locator('#fillBtn')).toBeDisabled()
+      133 |   await panel.locator('#profileSelect').selectOption(`version:${version.id}`)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:130:43
+
+    Error Context: test-results/extension-真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案-chromium/error-context.md
+
+  2) [chromium] › tests/e2e/extension.spec.ts:160:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 ───────────────────
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#authStatus')
+    Expected substring: "browser-fixture"
+    Received string:    "未登录"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" locator('#authStatus') with timeout 15000ms
+      - waiting for locator('#authStatus')
+        34 × locator resolved to <span id="authStatus" class="auth-status" data-i18n="auth.signedOut">未登录</span>
+           - unexpected value "未登录"
+
+
+      50 |   await panel.locator('#passwordInput').fill('synthetic-browser-password')
+      51 |   await panel.locator('#loginBtn').click()
+    > 52 |   await expect(panel.locator('#authStatus')).toContainText('browser-fixture')
+         |                                              ^
+      53 |   await expect(panel.locator('#profileSelect option')).not.toHaveCount(0)
+      54 |   await panel.locator('.settings-card').evaluate((node: HTMLDetailsElement) => { node.open = false })
+      55 | }
+        at login (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:52:46)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:162:3
+
+    Error Context: test-results/extension-受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局-chromium/error-context.md
+
+  3) [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 ──────────────────
+
+    Error: {"detail":"Too many requests, please try again later"}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 429
+
+       at support/fixtures.ts:23
+
+      21 |       data: { username: 'browser-fixture', password: 'synthetic-browser-password' },
+      22 |     })
+    > 23 |     expect(response.status(), await response.text()).toBe(200)
+         |                                                      ^
+      24 |     await use(await response.json())
+      25 |     await auth.dispose()
+      26 |   }, { scope: 'worker' }],
+        at Object.base.extend.login.scope (/Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/support/fixtures.ts:23:54)
+
+    Error Context: test-results/extension-主应用插件下载说明展示收藏和确认版本，桌面手机布局一致-chromium/error-context.md
+
+  3 failed
+    [chromium] › tests/e2e/extension.spec.ts:119:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ─────────────
+    [chromium] › tests/e2e/extension.spec.ts:160:1 › 受限页面可粘贴收藏，空输入显示提示并保持米棕侧栏布局 ────────────────────
+    [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 ───────────────────
+  1 passed (50.2s)

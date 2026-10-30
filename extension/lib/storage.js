@@ -24,7 +24,7 @@ export async function saveAuthSession(session) {
 }
 
 export async function clearAuthSession() {
-  await chrome.storage.local.remove([STORAGE_KEYS.authToken, STORAGE_KEYS.username]);
+  await chrome.storage.local.remove([STORAGE_KEYS.authToken, STORAGE_KEYS.username, STORAGE_KEYS.profiles, STORAGE_KEYS.activeProfileId, STORAGE_KEYS.lastMatches]);
 }
 
 export async function getCachedProfiles() {

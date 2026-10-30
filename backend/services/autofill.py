@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from datetime import timezone
 import re
 
+from backend.db.career_models import ResumeVersion
 from backend.db.models import Resume
 from backend.schemas.autofill import (
     ApplicationField,
@@ -71,9 +72,37 @@ def flatten_application_fields(profile: ApplicationProfile) -> list[ApplicationF
 
 def build_application_profile(resume: Resume) -> ApplicationProfile:
     data = resume.structured_data if isinstance(resume.structured_data, dict) else {}
+    name = _text(data.get("candidate_name") or data.get("name") or resume.filename)
+    return ApplicationProfile(
+        id=f"resume:{resume.id}", name=name, source_resume_id=f"resume:{resume.id}",
+        updated_at=_utc_isoformat(resume.updated_at), sections=_profile_sections(data, name=name),
+    )
+
+
+def build_version_profile(version: ResumeVersion) -> ApplicationProfile:
+    content = version.structured_content
+    # Read the frozen version; an explicit empty summary is an intentional edit.
+    data = dict(content['resume'])
+    data['self_summary'] = data.get('self_summary', data.get('summary', ''))
+    name = _text(data.get('candidate_name') or data.get('name'))
+    reviewed = {change['section'] for change in content.get('changes', [])
+                if change.get('status') in ('accepted', 'edited')}
+    sections = _profile_sections(data, name=name, reviewed_descriptions=reviewed)
+    for section in sections:
+        for field in section.fields:
+            field.source = 'resume_version'
+    return ApplicationProfile(
+        id=f'version:{version.id}', name=name or '已确认版本',
+        source_resume_id=f'resume:{version.resume_id}' if version.resume_id is not None else '',
+        updated_at=_utc_isoformat(version.created_at), source_kind='resume_version',
+        resume_version_id=version.id, revision=version.revision, jd_id=version.jd_id, sections=sections,
+    )
+
+
+def _profile_sections(data: dict, *, name: str,
+                      reviewed_descriptions: set[str] | frozenset[str] = frozenset()) -> list[ApplicationSection]:
     contact = data.get("contact") if isinstance(data.get("contact"), dict) else {}
     application = data.get("application") if isinstance(data.get("application"), dict) else {}
-    name = _text(data.get("candidate_name") or data.get("name") or resume.filename)
     sections: list[ApplicationSection] = [
         ApplicationSection(
             id="basic",
@@ -154,7 +183,9 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
             continue
         number = index + 1
         prefix = f"work_experience.{index}"
-        description = _text(item.get("description")) or _bullet_text(item.get("bullets") or [])
+        description = _text(item.get("description"))
+        if not description and f"/work_experience/{index}/description" not in reviewed_descriptions:
+            description = _bullet_text(item.get("bullets") or [])
         work_fields.extend(
             [
                 _field(f"{prefix}.company", f"Company {number}", _text(item.get("company")), ["company", "employer", "公司"], "work"),
@@ -173,7 +204,9 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
             continue
         number = index + 1
         prefix = f"projects.{index}"
-        description = _text(item.get("description")) or _bullet_text(item.get("bullets") or [])
+        description = _text(item.get("description"))
+        if not description and f"/projects/{index}/description" not in reviewed_descriptions:
+            description = _bullet_text(item.get("bullets") or [])
         duration = _text(item.get("duration") or _date_range(_text(item.get("start_date")), _text(item.get("end_date"))))
         project_fields.extend(
             [
@@ -202,13 +235,7 @@ def build_application_profile(resume: Resume) -> ApplicationProfile:
         )
     )
 
-    return ApplicationProfile(
-        id=f"resume:{resume.id}",
-        name=name,
-        source_resume_id=f"resume:{resume.id}",
-        updated_at=_utc_isoformat(resume.updated_at),
-        sections=sections,
-    )
+    return sections
 
 
 SENSITIVE_PATTERNS = [

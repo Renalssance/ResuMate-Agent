@@ -1,0 +1,38 @@
+✔ extension/tests/auth.test.mjs (77.972ms)
+✔ extension/tests/autofill-problem-fields.test.mjs (69.556875ms)
+✔ only the exact own side panel can log in; UI session never contains a token (27.739958ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (1.165708ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (1.431ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.347416ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (0.727708ms)
+✔ late A 401 does not clear B session or B cache (2.416167ms)
+✔ late A list result is not delivered as B data (0.961708ms)
+✔ online matching forwards only the chosen server profile ID, never cached profile data (0.518333ms)
+✔ extension/tests/field-matcher.test.mjs (65.2245ms)
+✔ extension/tests/fill-engine-combobox.test.mjs (69.811708ms)
+✔ extension/tests/i18n.test.mjs (79.34ms)
+✔ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (96.025209ms)
+✔ capture falls back to visible article/body and does not read hidden main ancestors (15.761375ms)
+✔ click reads editable snapshot; save uses edits and repeat save reports existing source (22.503291ms)
+✔ injection failure leaves paste fallback and missing title/body cannot save (11.183375ms)
+✔ save associates resume with source resume:1 using the actual profile contract (21.184625ms)
+✔ save associates resume_version with source resume:7 using the actual profile contract (14.97875ms)
+✔ save associates resume_version with source deleted source using the actual profile contract (14.675333ms)
+✔ real application DOM keeps nearby text within each field and protects only the actual captcha (106.338834ms)
+✔ extension/tests/label-utils.test.mjs (68.0805ms)
+✔ extension/tests/match-diagnostics.test.mjs (37.436958ms)
+✔ same-name confirmed versions show source, revision, creation date and distinct existing IDs (79.614666ms)
+✔ switching original to two versions clears review; fill sends only selected preview values (30.450458ms)
+✔ offline refresh retains selected loaded version and its metadata (14.689583ms)
+✔ late A LIST_PROFILES response cannot overwrite B after logout/login (13.199ms)
+✔ late A GET_PROFILE response cannot overwrite B after logout/login (17.979417ms)
+✔ current account 401 clears displayed fields and requests login instead of staying busy (15.654208ms)
+✔ extension/tests/visibility-utils.test.mjs (36.997708ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 763.90225

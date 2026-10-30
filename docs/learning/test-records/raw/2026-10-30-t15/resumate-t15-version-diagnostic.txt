@@ -1,0 +1,17 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-x3ligO
+
+Running 1 test using 1 worker
+
+(node:37086) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/extension.spec.ts:138:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 (45.3s)
+
+
+  1) [chromium] › tests/e2e/extension.spec.ts:138:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ────────────
+
+    Test timeout of 45000ms exceeded.
+
+    Error Context: test-results/extension-真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/e2e/extension.spec.ts:138:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ─────────────

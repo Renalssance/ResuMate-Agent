@@ -1,0 +1,38 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-JcZZZX
+
+Running 1 test using 1 worker
+
+(node:37512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/extension.spec.ts:139:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 (21.7s)
+
+
+  1) [chromium] › tests/e2e/extension.spec.ts:139:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ────────────
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator:  locator('#fillBtn')
+    Expected: enabled
+    Received: disabled
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeEnabled" locator('#fillBtn') with timeout 15000ms
+      - waiting for locator('#fillBtn')
+        34 × locator resolved to <button disabled id="fillBtn" type="button" aria-label="填充选中项" class="primary-btn" data-i18n="actions.fillSelected" data-i18n-aria-label="actions.fillSelected">填充选中项</button>
+           - unexpected value "disabled"
+
+
+      148 |   await target.goto(`${SITE}/application-form.html`)
+      149 |   await activate(); await panel.locator('#scanBtn').click()
+    > 150 |   await expect(panel.locator('#fillBtn')).toBeEnabled()
+          |                                           ^
+      151 |   await panel.locator('#profileSelect').selectOption('resume:1')
+      152 |   await expect(panel.locator('#fillBtn')).toBeDisabled()
+      153 |   await panel.locator('#profileSelect').selectOption(`version:${version.id}`)
+        at /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/tests/e2e/extension.spec.ts:150:43
+
+    Error Context: test-results/extension-真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/e2e/extension.spec.ts:139:1 › 真实确认版本填入勾选字段，换版本失效旧扫描，退出后离线不回落旧档案 ─────────────

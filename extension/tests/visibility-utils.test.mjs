@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const { isRenderableFillTarget } = require('../content/visibility-utils.js');
+await import('../content/visibility-utils.js');
+const { isRenderableFillTarget } = globalThis.ResuMateVisibilityUtils;
 
 globalThis.window = {
   innerWidth: 1200,

@@ -35,6 +35,10 @@ class ApplicationProfile(AutofillModel):
     name: str
     source_resume_id: str = Field(alias="sourceResumeId")
     updated_at: str = Field(alias="updatedAt")
+    source_kind: Literal["resume", "resume_version"] = Field(default="resume", alias="sourceKind")
+    resume_version_id: str | None = Field(default=None, alias="resumeVersionId")
+    revision: int | None = None
+    jd_id: int | None = Field(default=None, alias="jdId")
     sections: list[ApplicationSection] = Field(default_factory=list)
 
 
@@ -43,6 +47,10 @@ class ApplicationProfileSummary(AutofillModel):
     name: str
     source_resume_id: str = Field(alias="sourceResumeId")
     updated_at: str = Field(alias="updatedAt")
+    source_kind: Literal["resume", "resume_version"] = Field(default="resume", alias="sourceKind")
+    resume_version_id: str | None = Field(default=None, alias="resumeVersionId")
+    revision: int | None = None
+    jd_id: int | None = Field(default=None, alias="jdId")
     field_count: int = Field(alias="fieldCount", ge=0)
 
 

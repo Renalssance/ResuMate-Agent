@@ -1,0 +1,9 @@
+[WebServer] E2E services ready; isolated SQL/checkpoints/logs: /var/folders/6p/f3_2rt7d7lzfyks3z418lmdr0000gn/T/resumate-e2e-1kaCUC
+
+Running 1 test using 1 worker
+
+(node:34734) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/extension.spec.ts:182:1 › 主应用插件下载说明展示收藏和确认版本，桌面手机布局一致 (481ms)
+
+  1 passed (8.5s)

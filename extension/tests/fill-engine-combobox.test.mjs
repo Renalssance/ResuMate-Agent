@@ -58,6 +58,8 @@ globalThis.document = {
 };
 globalThis.chrome = {
   runtime: {
+    id: 'resumate-test',
+    getURL: path => `chrome-extension://resumate-test/${path}`,
     onMessage: {
       addListener(listener) {
         listeners.message = listener;
@@ -69,8 +71,16 @@ globalThis.chrome = {
 const require = createRequire(import.meta.url);
 require('../content/fill-engine.js');
 
+const sender = { id: chrome.runtime.id, url: chrome.runtime.getURL('sidepanel/sidepanel.html'), tab: { id: 19 } };
+let rejected = null;
+listeners.message({ type: 'SCAN_FORM' }, { id: chrome.runtime.id, url: 'https://jobs.example' }, response => { rejected = response; });
+assert.equal(rejected.error.message, 'Untrusted message sender');
+listeners.message({ type: 'FILL_SELECTED', items: 'bad' }, sender, response => { rejected = response; });
+assert.equal(typeof rejected.error.message, 'string');
+assert.equal(element.value, '');
+
 let scan = null;
-listeners.message({ type: 'SCAN_FORM' }, null, (response) => {
+listeners.message({ type: 'SCAN_FORM' }, sender, (response) => {
   scan = response;
 });
 
@@ -78,7 +88,7 @@ assert.equal(scan.elements.length, 1);
 assert.equal(scan.elements[0].tag, 'input');
 
 let fill = null;
-listeners.message({ type: 'FILL_SELECTED', items: [{ elementIndex: 0, value: '上海' }] }, null, (response) => {
+listeners.message({ type: 'FILL_SELECTED', items: [{ elementIndex: 0, value: '上海' }] }, sender, (response) => {
   fill = response;
 });
 

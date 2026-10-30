@@ -1,0 +1,33 @@
+✔ extension/tests/fill-engine-combobox.test.mjs (30.974791ms)
+✖ real application DOM keeps nearby text within each field and protects only the actual captcha (91.554583ms)
+✔ extension/tests/label-utils.test.mjs (28.129916ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 571.447167
+
+✖ failing tests:
+
+test at extension/tests/label-utils-dom.test.mjs:9:1
+✖ real application DOM keeps nearby text within each field and protects only the actual captcha (91.554583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + '姓名 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码'
+  - '姓名'
+       ^
+
+      at TestContext.<anonymous> (file:///Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/extension/tests/label-utils-dom.test.mjs:27:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '姓名 姓名 邮箱 手机 学校 专业 工作职责 技能 城市 Select Shanghai Beijing Shenzhen 验证码',
+    expected: '姓名',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

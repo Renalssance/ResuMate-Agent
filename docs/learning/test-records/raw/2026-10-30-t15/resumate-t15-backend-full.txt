@@ -1,0 +1,49 @@
+........................................................................ [  7%]
+..ss...s................ssss.............................s.............. [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 39%]
+........................................................................ [ 47%]
+........................................................................ [ 55%]
+........................................................................ [ 63%]
+........................................................................ [ 71%]
+........................................................................ [ 79%]
+.....s.................................................................. [ 87%]
+........................................................................ [ 95%]
+..........................s..................                            [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+backend/app.py:44
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/app.py:44: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    @app.on_event("startup")
+
+.venv/lib/python3.12/site-packages/fastapi/applications.py:4599
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/.venv/lib/python3.12/site-packages/fastapi/applications.py:4599: DeprecationWarning:
+          on_event is deprecated, use lifespan event handlers instead.
+
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+
+    return self.router.on_event(event_type)
+
+backend/tests/test_conversation_storage.py::test_conversation_storage_round_trips_without_cache
+  /Users/bono/.codex/worktrees/resumate-fullstack-learning/ResuMate-Agent/backend/agent/agent.py:62: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+899 passed, 10 skipped, 8 warnings in 164.54s (0:02:44)

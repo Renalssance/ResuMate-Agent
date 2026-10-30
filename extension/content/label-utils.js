@@ -33,6 +33,8 @@
   function textFromContainer(element) {
     let current = element ? element.parentElement : null;
     for (let depth = 0; current && depth < 5; depth += 1) {
+      // Stop at a shared form/group instead of importing other fields' labels.
+      if (Array.from(current.querySelectorAll('input, textarea, select, [contenteditable]')).some(control => control !== element)) break;
       const childTexts = Array.from(current.children || [])
         .filter((child) => child !== element && !isControl(child))
         .map((child) => textOf(child, 80))

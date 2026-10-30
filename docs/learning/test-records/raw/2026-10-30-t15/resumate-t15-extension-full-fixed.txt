@@ -1,0 +1,34 @@
+✔ extension/tests/auth.test.mjs (64.098792ms)
+✔ extension/tests/autofill-problem-fields.test.mjs (40.814875ms)
+✔ only the exact own side panel can log in; UI session never contains a token (18.178083ms)
+✔ unknown, content-script, foreign and malformed messages never fetch (1.087666ms)
+✔ A loaded cache is removed on logout; B offline refresh cannot recover A (1.688ms)
+✔ login, backend changes and 401 clear old cache, while network loss preserves it (1.904542ms)
+✔ capture is click-only scripting and save uses the explicit jobs capture endpoint (1.119084ms)
+✔ late A 401 does not clear B session or B cache (2.772708ms)
+✔ late A list result is not delivered as B data (0.96975ms)
+✔ online matching forwards only the chosen server profile ID, never cached profile data (0.701417ms)
+✔ extension/tests/field-matcher.test.mjs (52.030542ms)
+✔ extension/tests/fill-engine-combobox.test.mjs (51.214958ms)
+✔ extension/tests/i18n.test.mjs (49.630417ms)
+✔ capture keeps visible main paragraphs and full URL, excludes hidden/control/navigation content (91.272708ms)
+✔ capture falls back to visible article/body and does not read hidden main ancestors (16.281833ms)
+✔ click reads editable snapshot; save uses edits and repeat save reports existing source (20.765208ms)
+✔ injection failure leaves paste fallback and missing title/body cannot save (11.461917ms)
+✔ extension/tests/label-utils.test.mjs (49.444708ms)
+✔ extension/tests/match-diagnostics.test.mjs (48.478167ms)
+✔ same-name confirmed versions show source, revision, creation date and distinct existing IDs (75.443125ms)
+✔ switching original to two versions clears review; fill sends only selected preview values (28.095625ms)
+✔ offline refresh retains selected loaded version and its metadata (15.026583ms)
+✔ late A LIST_PROFILES response cannot overwrite B after logout/login (12.718833ms)
+✔ late A GET_PROFILE response cannot overwrite B after logout/login (26.30525ms)
+✔ current account 401 clears displayed fields and requests login instead of staying busy (10.87525ms)
+✔ extension/tests/visibility-utils.test.mjs (32.422917ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 668.111

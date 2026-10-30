@@ -20,6 +20,12 @@ def capture_job(request: JobCreate, current_user: User = Depends(get_current_use
     return {'job': jobs.job_record(db, row, detail=True), 'created': created}
 
 
+@router.post('/capture')
+def capture_page_job(request: JobCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    row, created = jobs.capture_page_job(db, current_user.id, request)
+    return {'job': jobs.job_record(db, row, detail=True), 'created': created}
+
+
 @router.get('')
 def list_jobs(query: str = '', status: JobStatus | None = None, limit: int = Query(20, ge=1, le=100),
               offset: int = Query(0, ge=0), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

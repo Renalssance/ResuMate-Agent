@@ -1,0 +1,1 @@
+Native Chromium ready. Packaged extension loaded; fixture version prepared; no application submitted.

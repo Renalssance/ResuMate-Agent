@@ -1,8 +1,6 @@
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const { findElementLabel, nearbyTextFor } = require('../content/label-utils.js');
+await import('../content/label-utils.js');
+const { findElementLabel, nearbyTextFor } = globalThis.ResuMateLabelUtils;
 
 function node(text = '', children = []) {
   const element = {
@@ -11,6 +9,9 @@ function node(text = '', children = []) {
     parentElement: null,
     previousElementSibling: null,
     tagName: 'DIV',
+    querySelectorAll() {
+      return children.flatMap(child => child.tagName === 'INPUT' ? [child] : child.querySelectorAll());
+    },
     getAttribute() {
       return '';
     },

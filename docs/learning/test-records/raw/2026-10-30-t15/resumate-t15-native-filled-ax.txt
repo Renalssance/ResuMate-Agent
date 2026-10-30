@@ -1,0 +1,148 @@
+Window: "Backend Engineer - Example Careers", App: Google Chrome for Testing.
+0 标准窗口 Backend Engineer - Example Careers - Google Chrome for Testing, URL: 127.0.0.1:8899/extension/fixtures/application-form.html, Secondary Actions: Raise
+	1 container Backend Engineer - Example Careers - Google Chrome for Testing, URL: 127.0.0.1:8899/extension/fixtures/application-form.html
+		2 container
+			3 工具栏
+				4 按钮 返回
+				5 按钮 (disabled) 前进
+				6 按钮 重新加载
+				7 container
+					8 弹出式按钮 查看网站信息
+					9 文本栏 (settable) 地址和搜索栏, Value: 127.0.0.1:8899/extension/fixtures/application-form.html, Placeholder: 在 Google 中搜索，或输入网址
+					10 按钮 翻译
+					11 按钮 为此标签页添加书签
+				12 container
+					13 弹出式按钮 扩展程序
+					14 按钮 关闭侧边栏
+				15 按钮 您
+				16 弹出式按钮 Chromium
+			17 container
+				18 滚动区
+					19 HTML 内容 Backend Engineer - Example Careers, URL: 127.0.0.1:8899/extension/fixtures/application-form.html
+						20 标题 Backend Engineer, Value: 1
+							21 文本 Backend Engineer
+						22 container
+							23 文本 姓名
+							24 文本栏 (settable) 姓名
+							25 文本 邮箱
+							26 邮箱 (settable) 邮箱
+							27 文本 手机
+							28 电话号码 (settable) 手机
+							29 文本 学校
+							30 文本栏 (settable) 学校
+							31 文本 专业
+							32 文本栏 (settable) 专业
+							33 文本 工作职责
+							34 文本输入区 (settable) 工作职责, Value: 本人确认：负责 API 与数据库设计，核对接口需求并完成联调。
+							35 文本 技能
+							36 文本输入区 (settable) 技能
+							37 文本 城市
+							38 弹出式按钮 城市, Value: Select
+								39 (selected) Select
+							40 文本 验证码
+							41 文本栏 (settable) 验证码
+							42 按钮 Submit button stays manual
+						43 文本 尚未提交 · 0
+			44 滚动区
+				45 HTML 内容 ResuMate Autofill, URL: chrome-extension://cdmjhnijnggaoncgelndhfgfbdomldkk/sidepanel/sidepanel.html
+					46 container
+						47 标题 ResuMate, Value: 1
+							48 文本 ResuMate
+						49 文本 先确认，再只填你选中的字段。
+						50 container 语言
+							51 切换按钮 切换到中文, Value: 1
+							52 切换按钮 切换到英文, Value: 0
+						53 文本 已填充 1 个字段
+						54 按钮 刷新
+						55 container 当前岗位
+							56 文本 收藏待看
+							57 标题 当前岗位, Value: 2
+								58 文本 当前岗位
+							59 按钮 读取当前岗位
+							60 文本 读取页面后先编辑确认，再单独收藏。读取和收藏不会填表或提交申请。
+							61 文本 岗位标题
+							62 文本栏 (settable) 岗位标题
+							63 文本 公司
+							64 文本栏 (settable) 公司
+							65 文本 来源链接（可选）
+							66 文本输入区 (settable) 来源链接（可选）
+							67 文本 岗位正文
+							68 文本输入区 (settable) 岗位正文, Placeholder: 页面无法读取时，可在这里粘贴岗位正文。
+							69 按钮 收藏岗位
+							70 文本 页面已变化，请重新读取或粘贴新的岗位正文。
+						71 container 页面扫描
+							72 文本 当前页面
+							73 标题 页面扫描, Value: 2
+								74 文本 页面扫描
+							75 文本 不会自动提交
+							76 container
+								77 text Backend Engineer - Example Careers Example / Backend Engineer 9 检测到 2 可填充 1 已跳过
+						78 container 已存储简历
+							79 文本 简历
+							80 标题 已存储简历, Value: 2
+								81 文本 已存储简历
+							82 文本 已确认版本 · 第 3 版 · 创建 2026年10月30日 · eaa1687d-f0e1-4661-9558-bcbbed86c556 · 5 个可填字段
+							83 文本 已存储简历
+							84 弹出式按钮 已存储简历, Value: 示例求职者 - 已确认版本 · 第 3 版 · 创建 2026年10月30日 · eaa1687d-f0e1-4661-9558-bcbbed86c556
+								85 (selected) 示例求职者 - 已确认版本 · 第 3 版 · 创建 2026年10月30日 · eaa1687d-f0e1-4661-9558-bcbbed86c556
+							86 container
+								87 文本 Name
+								88 文本 示例求职者
+								89 文本 Company 1
+								90 文本 示例团队
+								91 文本 Title 1
+								92 文本 API 开发
+								93 文本 Work Description 1
+								94 文本 本人确认：负责 API 与数据库设计，核对接口需求并完成联调。
+								95 文本 Self Introduction
+								96 文本 API development
+						97 container 匹配字段
+							98 文本 确认
+							99 标题 匹配字段, Value: 2
+								100 文本 匹配字段
+							101 文本 敏感字段不会被填写。
+							102 container
+								103 复选框 姓名 -> Name 示例求职者 label contains "candidate_name", Value: 0
+								104 文本 姓名 -> Name
+								105 文本 示例求职者
+								106 文本 label contains "candidate_name"
+								107 复选框 工作职责 -> Work Description 1 本人确认：负责 API 与数据库设计，核对接口需求并完成联调。 label contains "description", Value: 1
+								108 文本 工作职责 -> Work Description 1
+								109 文本 本人确认：负责 API 与数据库设计，核对接口需求并完成联调。
+								110 文本 label contains "description"
+								111 text ! 已跳过 验证码 sensitive field
+						112 开合三角标记 设置
+							113 文本 设置
+						114 开合三角标记 开发诊断 / Diagnostics
+							115 文本 开发诊断 / Diagnostics
+						116 container Autofill actions
+							117 按钮 扫描页面
+							118 按钮 填充选中项
+							119 文本 已选择 1 个字段，可以填充。
+			120 滑块 侧边栏大小调整手柄（可拖动）, Secondary Actions: Decrement, Increment
+			121 container
+				122 文本 ResuMate Autofill
+				123 复选框 固定到工具栏, Value: 0
+				124 按钮 关闭侧边栏
+			125 弹出式按钮 标签页搜索
+			126 container
+				127 标签组
+					128 标签 (selected, settable, boolean) Backend Engineer - Example Careers - 内存用量 - 43.3 MB, Value: on
+						129 按钮 关闭
+			130 按钮 新标签页
+	131 关闭按钮
+	132 全屏幕按钮 Help: 此按钮也可以执行缩放窗口的操作, Secondary Actions: 缩放窗口
+	133 最小化按钮
+134 menu bar
+	135 Google Chrome for Testing
+	136 文件
+	137 编辑
+	138 显示
+	139 历史记录
+	140 书签
+	141 个人资料
+	142 标签页
+	143 窗口
+	144 帮助
+
+The focused UI element is 41 文本栏 (settable) 验证码

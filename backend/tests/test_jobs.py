@@ -230,3 +230,77 @@ def test_url_dedup_keeps_distinct_case_sensitive_source_paths(client):
     second = capture(client, sourceUrl='https://example/jobs/engineer').json()
     assert second['created'] is True
     assert second['job']['id'] != first['job']['id']
+
+
+def page_capture(client, **changes):
+    return client.post('/api/jobs/capture', json={
+        'title': 'API Engineer', 'company': 'Example', 'text': 'Develop Python APIs', **changes})
+
+
+def test_page_capture_reuses_url_without_overwriting_edits_or_changing_import(client, career_db):
+    source_url = 'https://example/jobs/123?department=engineering#description'
+    first = page_capture(client, sourceUrl=source_url)
+    assert first.status_code == 200, first.text
+    job_id = first.json()['job']['id']
+    assert first.json()['created'] is True
+    assert client.patch(f'/api/jobs/{job_id}', json={
+        'title': 'My saved title', 'status': 'archived', 'primaryResumeId': 1,
+    }).status_code == 200
+
+    repeated = page_capture(client, sourceUrl=source_url, text='Updated visible posting').json()
+    assert repeated['created'] is False
+    assert repeated['job']['id'] == job_id
+    assert (repeated['job']['title'], repeated['job']['text'], repeated['job']['status'],
+            repeated['job']['primaryResumeId']) == ('My saved title', 'Develop Python APIs', 'archived', 1)
+    # The original import endpoint deliberately retains URL + body semantics.
+    imported = capture(client, sourceUrl=source_url, text='Updated visible posting').json()
+    assert imported['created'] is True and imported['job']['id'] != job_id
+    career_db.rollback()
+    assert career_db.query(JobDescription).filter_by(source_url=source_url).count() == 2
+
+
+def test_page_capture_keeps_complete_case_sensitive_source_url(client):
+    urls = [
+        'https://example/jobs/Engineer?job=1#description',
+        'https://example/jobs/engineer?job=1#description',
+        'https://example/jobs/Engineer?job=2#description',
+        'https://example/jobs/Engineer?job=1#another-job',
+    ]
+    ids = []
+    for url in urls:
+        response = page_capture(client, sourceUrl=url)
+        assert response.status_code == 200, response.text
+        assert response.json()['created'] is True
+        ids.append(response.json()['job']['id'])
+    assert len(set(ids)) == len(urls)
+    repeated = page_capture(client, sourceUrl=urls[0], text='Changed').json()
+    assert repeated['created'] is False and repeated['job']['id'] == ids[0]
+
+
+def test_page_capture_checks_owner_and_selected_resume_even_on_reuse(client, career_db):
+    career_db.add_all([
+        JobDescription(user_id=2, title='Private', raw_text='Private body', source_url='https://example/private'),
+        Resume(id=2, user_id=2, filename='private.txt'),
+    ])
+    career_db.commit()
+    response = page_capture(client, sourceUrl='https://example/private')
+    assert response.status_code == 200, response.text
+    assert response.json()['created'] is True
+    assert response.json()['job']['text'] == 'Develop Python APIs'
+    rejected = page_capture(client, sourceUrl='https://example/private', primaryResumeId=2)
+    assert rejected.status_code == 404
+    career_db.rollback()
+    assert career_db.query(JobDescription).filter_by(user_id=1, source_url='https://example/private').count() == 1
+
+
+def test_page_capture_reuses_existing_source_pair_and_pasted_text_rules(client):
+    original = capture(client, sourceSite='example', sourceJobId='123').json()
+    repeated = page_capture(client, sourceSite='example', sourceJobId='123',
+                            sourceUrl='https://example/updated-link', text='Changed')
+    assert repeated.status_code == 200, repeated.text
+    assert repeated.json()['created'] is False
+    assert repeated.json()['job']['id'] == original['job']['id']
+    pasted = page_capture(client, text='Pasted body').json()
+    assert pasted['created'] is True
+    assert page_capture(client, text=' Pasted body ').json()['job']['id'] == pasted['job']['id']
+    assert page_capture(client, text='Different pasted body').json()['created'] is True

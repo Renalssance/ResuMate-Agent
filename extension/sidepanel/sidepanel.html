@@ -26,6 +26,29 @@
         </div>
       </header>
 
+      <section class="panel job-capture-card" aria-labelledby="jobCaptureHeading">
+        <div class="section-head compact">
+          <div>
+            <p class="kicker" data-i18n="job.kicker">Save for later</p>
+            <h2 id="jobCaptureHeading" data-i18n="job.heading">Current job</h2>
+          </div>
+          <button id="captureJobBtn" class="ghost-btn" type="button" data-i18n="job.read">Read current job</button>
+        </div>
+        <p class="panel-note" data-i18n="job.reviewHint">Read this page, review the details, then save separately.</p>
+        <label for="jobTitleInput" data-i18n="job.title">Job title</label>
+        <input id="jobTitleInput" type="text" maxlength="255" />
+        <label for="jobCompanyInput" data-i18n="job.company">Company</label>
+        <input id="jobCompanyInput" type="text" maxlength="255" />
+        <label for="jobUrlInput" data-i18n="job.url">Source URL (optional)</label>
+        <textarea id="jobUrlInput" rows="2" maxlength="1024" spellcheck="false"></textarea>
+        <label for="jobTextInput" data-i18n="job.text">Job description</label>
+        <textarea id="jobTextInput" rows="7" data-i18n-placeholder="job.pastePlaceholder" placeholder="Paste the job description here if the page cannot be read."></textarea>
+        <div class="form-actions">
+          <button id="saveJobBtn" class="primary-btn" type="button" data-i18n="job.save">Save job</button>
+        </div>
+        <p id="jobCaptureStatus" class="job-capture-status" role="status" aria-live="polite"></p>
+      </section>
+
       <section class="panel page-card" aria-labelledby="pageHeading">
         <div class="section-head">
           <div>
@@ -82,7 +105,7 @@
         </div>
       </details>
 
-      <details class="panel debug-card" open>
+      <details class="panel debug-card">
         <summary>开发诊断 / Diagnostics</summary>
         <div id="debugSummary" class="debug-summary">尚未扫描。</div>
         <pre id="debugOutput" class="debug-output" aria-live="polite"></pre>

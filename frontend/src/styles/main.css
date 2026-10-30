@@ -2250,8 +2250,7 @@ textarea:focus {
 }
 
 .extension-summary-grid span,
-.extension-summary-grid small,
-.extension-workflow small {
+.extension-summary-grid small {
   overflow: hidden;
   color: var(--color-text-secondary);
   font-size: 0.75rem;
@@ -2320,6 +2319,13 @@ textarea:focus {
   display: grid;
   gap: 2px;
   min-width: 0;
+}
+
+.extension-workflow small {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .extension-workflow strong {
