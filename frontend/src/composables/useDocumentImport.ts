@@ -15,7 +15,7 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   const error = ref('')
   const savedRunKey = computed(() => `resumate:document-import:${toValue(storageScope)}`)
   let subscription: RunSubscription | undefined
-  let runId = '', generation = 0, lastSeq = -1
+  let runId = '', generation = 0, uploadGeneration = 0, lastSeq = -1
 
   function closeSubscription() {
     subscription?.close()
@@ -85,10 +85,11 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
 
   async function startImport(file: File) {
     resetImport()
-    const version = generation, key = savedRunKey.value
+    const version = generation, uploadVersion = uploadGeneration, key = savedRunKey.value
     state.value = 'uploading'
     try {
       const accepted = await importLocalDocument(file, crypto.randomUUID())
+      if (uploadVersion !== uploadGeneration) return
       sessionStorage.setItem(key, accepted.runId)
       if (version !== generation) return
       runId = accepted.runId
@@ -116,6 +117,7 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   }
 
   function resetImport() {
+    uploadGeneration++
     sessionStorage.removeItem(savedRunKey.value)
     clearState()
   }

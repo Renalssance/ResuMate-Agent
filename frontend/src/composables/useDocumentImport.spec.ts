@@ -95,8 +95,18 @@ it('exposes document type choices and answers the existing run action', async ()
 it('retains recovery on close and restores the active import for its reactive chat scope', async () => {
   const scope = ref('chat:session-1')
   const first = openChat(scope)
+  let acceptUpload!: (response: Response) => void
+  vi.mocked(fetch).mockImplementationOnce(() => new Promise(resolve => { acceptUpload = resolve }))
+  const superseded = first.startImport(new File(['old'], 'old.txt'))
   await first.startImport(new File(['content'], 'neutral.txt'))
+  acceptUpload(Response.json({ runId: 'superseded-import', status: 'queued' }))
+  await superseded
+  expect(sessionStorage.getItem(key)).toBe('import-1')
+  vi.mocked(fetch).mockImplementationOnce(() => new Promise(resolve => { acceptUpload = resolve }))
+  const leaving = first.startImport(new File(['content'], 'neutral.txt'))
   scope.value = 'chat:session-2'
+  acceptUpload(Response.json({ runId: 'import-1', status: 'queued' }))
+  await leaving
   await flushPromises()
   expect(streams[0]!.close).toHaveBeenCalledOnce()
   expect(first.state.value).toBe('idle')
