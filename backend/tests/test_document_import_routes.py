@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from backend.db.agent_models import AgentRun, AgentRunEvent, AgentSession
@@ -68,6 +69,18 @@ def test_import_rejects_multiple_files(parse_app):
     ])
     assert response.status_code == 422
     assert not originals.exists()
+
+
+def test_import_rejects_empty_file_without_run_or_original(parse_app):
+    client, factory, originals = parse_app
+    with TestClient(client.app, raise_server_exceptions=False) as request_client:
+        response = request_client.post('/api/documents/import',
+            files={'file': ('empty.txt', b'', 'text/plain')})
+    assert response.status_code == 400
+    assert 'empty' in response.json()['detail']
+    with factory() as db:
+        assert db.query(AgentRun).count() == db.query(AgentSession).count() == 0
+    assert list(originals.iterdir()) == []
 
 
 def test_import_request_id_conflict_does_not_store_an_original(parse_app):

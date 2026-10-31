@@ -21,7 +21,7 @@ from backend.services.analysis import parse_document_id
 from backend.services.agent_runs import RunError, find_upload_run
 from backend.services.background_tasks import submit_task
 from backend.services.document_imports import create_document_import_run, find_document_import_run
-from backend.services.documents import (cleanup_upload_cache, delete_stored_file,
+from backend.services.documents import (UnsupportedDocumentError, cleanup_upload_cache, delete_stored_file,
     document_record as _record, profile_parse_status as _parse_status, persisted_upload_path, store_upload)
 from backend.services.run_delivery import publish_run
 
@@ -108,6 +108,8 @@ def import_document(file: list[UploadFile] = File(...), request_id: str = Form("
             delete_stored_file(persisted_upload_path(stored))
         if isinstance(exc, RunError):
             raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+        if isinstance(exc, UnsupportedDocumentError):
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         raise
     finally:
         if stored is not None:
