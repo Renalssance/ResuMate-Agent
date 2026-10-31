@@ -1,4 +1,6 @@
 """Classified imports keep one original and use the existing guarded parser."""
+from datetime import timedelta
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -6,9 +8,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from backend.db.agent_models import AgentAction, AgentRun, AgentRunEvent, ToolOperation
-from backend.db.models import JobDescription, Resume
+from backend.db.models import JobDescription, Resume, utcnow
 from backend.rag.mysql import DocumentEmbeddingChunk, MySQLRagStore
-from backend.schemas.agent_runs import RunStatus
+from backend.schemas.agent_runs import ActionResponse, RunStatus
 from backend.schemas.document_import import DocumentClassification
 from backend.services import agent_runs, document_imports, document_tasks
 from backend.services.documents import StoredUpload
@@ -90,6 +92,104 @@ def test_uncertain_import_waits_without_adopting(career_db, import_run, monkeypa
     assert career_db.query(Resume).count() == career_db.query(JobDescription).count() == 1
 
 
+def test_answered_import_resumes_same_original_without_reclassification(career_db, import_run, monkeypatch):
+    source = Path(import_run.input_json['sourcePath'])
+    document_imports.pause_for_document_type(career_db, import_run, import_run.execution_epoch,
+        DocumentClassification(document_type='ambiguous', confidence='low', reason='正文类别不明确'))
+    action = career_db.query(AgentAction).filter_by(run_id=import_run.id).one()
+    agent_runs.answer_action(career_db, 1, import_run.id, action.id,
+        ActionResponse(decision='submit', answers={'documentType': 'jd'}, expectedRevision=1))
+    epoch = agent_runs.claim_run(career_db, import_run.id)
+    monkeypatch.setattr(document_imports, 'extract_stored_pages',
+        lambda *a, **kw: pytest.fail('Confirmed imports go directly to the shared parser'))
+    monkeypatch.setattr(document_imports, 'classify_document',
+        lambda *a, **kw: pytest.fail('A user-confirmed type must not be classified again'))
+    monkeypatch.setattr(document_tasks, '_parse_profile', lambda *a, **kw: {'job_title': 'Engineer'})
+
+    document_imports.run_document_import(import_run.id, epoch)
+
+    career_db.expire_all()
+    run = career_db.get(AgentRun, import_run.id)
+    assert run.status == RunStatus.SUCCEEDED
+    document_id = run.input_json['documentId']
+    assert document_id.startswith('jd:')
+    row = career_db.get(JobDescription, int(document_id.split(':')[1]))
+    assert row.file_path == str(source) and source.exists()
+    assert row.raw_text == source.read_text(encoding='utf-8')
+    assert run.result_json['documents'][0]['id'] == document_id
+    assert career_db.query(AgentRun).count() == career_db.query(AgentAction).count() == 1
+
+
+@pytest.mark.parametrize(('status', 'adopted'), [
+    (RunStatus.QUEUED, False), (RunStatus.WAITING_INPUT, False), (RunStatus.QUEUED, True),
+])
+def test_cancelling_import_deletes_only_unadopted_original(career_db, import_run, status, adopted):
+    source = Path(import_run.input_json['sourcePath'])
+    if adopted:
+        document_imports.adopt_import(career_db, import_run, 'resume')
+    import_run.status = status
+    career_db.commit()
+
+    agent_runs.cancel_run(career_db, 1, import_run.id)
+
+    assert import_run.status == RunStatus.CANCELLED
+    assert source.exists() == adopted
+
+
+def test_import_extraction_failure_deletes_unadopted_original(career_db, import_run):
+    source = Path(import_run.input_json['sourcePath'])
+    source.write_text('', encoding='utf-8')
+
+    document_imports.run_document_import(import_run.id, import_run.execution_epoch)
+
+    career_db.expire_all()
+    assert career_db.get(AgentRun, import_run.id).status == RunStatus.FAILED
+    assert not source.exists()
+
+
+def test_cancel_during_classification_stops_adoption_and_cleans_original(career_db, import_run, monkeypatch):
+    source = Path(import_run.input_json['sourcePath'])
+    def classify_then_cancel(*a, **kw):
+        with document_imports.SessionLocal() as db:
+            agent_runs.cancel_run(db, 1, import_run.id)
+        return DocumentClassification(document_type='resume', confidence='high', reason='简历正文')
+    monkeypatch.setattr(document_imports, 'classify_document', classify_then_cancel)
+
+    document_imports.run_document_import(import_run.id, import_run.execution_epoch)
+
+    career_db.expire_all()
+    run = career_db.get(AgentRun, import_run.id)
+    assert run.status == RunStatus.CANCELLED and 'documentId' not in run.input_json
+    assert career_db.query(Resume).count() == 1
+    assert not source.exists()
+
+
+@pytest.mark.parametrize('cancel', [False, True])
+def test_recovery_retains_retry_source_and_cleans_terminal_import(career_db, import_run, cancel):
+    source = Path(import_run.input_json['sourcePath'])
+    epoch = import_run.execution_epoch
+    with document_imports.SessionLocal() as db:
+        agent_runs.recover_stale_runs(db, now=utcnow() + timedelta(seconds=91))
+    career_db.expire_all()
+    assert import_run.status == RunStatus.QUEUED and source.exists()
+    # A stale delivery has lost its fence, but the next attempt still needs the source.
+    document_imports.run_document_import(import_run.id, epoch)
+    assert source.exists()
+    agent_runs.claim_run(career_db, import_run.id)
+    if cancel:
+        agent_runs.cancel_run(career_db, 1, import_run.id)
+    else:
+        import_run.attempt = 3
+        career_db.commit()
+
+    with document_imports.SessionLocal() as db:
+        agent_runs.recover_stale_runs(db, now=utcnow() + timedelta(seconds=91))
+    career_db.expire_all()
+
+    assert import_run.status == (RunStatus.CANCELLED if cancel else RunStatus.FAILED)
+    assert not source.exists()
+
+
 def test_failed_import_retries_same_adopted_document(career_db, import_run, monkeypatch):
     def fail_parse(*a, **kw):
         raise ValueError('Model unavailable')
@@ -157,5 +257,6 @@ def test_worker_import_uses_bounded_child_and_reports_failure(career_db, import_
     assert commands and commands[0][-3:] == [run.id, str(run.execution_epoch), 'document_import']
     assert run.status == RunStatus.FAILED
     assert run.error_code == ('document_import_timeout' if failure == 'timeout' else 'document_import_failed')
+    assert not Path(run.input_json['sourcePath']).exists()
     assert lifecycle[-2:] == ['reaped', 'closed']
     assert ('killed' in lifecycle) == (failure == 'timeout')

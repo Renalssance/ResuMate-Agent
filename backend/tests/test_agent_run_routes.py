@@ -261,3 +261,38 @@ def test_input_action_requires_an_answer(run_client, career_db):
     response = run_client.post('/api/agent/runs/' + run_id + '/actions/action-1',headers=headers(),
                                json={'decision':'submit','answers':{},'expectedRevision':1})
     assert response.status_code == 422
+
+
+def test_document_type_answer_validates_then_requeues_same_import(run_client, career_db, tmp_path):
+    from backend.db.agent_models import AgentAction
+    from backend.schemas.document_import import DocumentClassification
+    from backend.services import agent_runs, document_imports
+    from backend.services.documents import StoredUpload
+    source = tmp_path / 'neutral.txt'
+    source.write_text('待确认正文', encoding='utf-8')
+    run = document_imports.create_document_import_run(career_db, 1,
+        StoredUpload(filename='neutral.txt', path=source, size=source.stat().st_size, content_hash=''),
+        'import-one')
+    career_db.commit()
+    epoch = agent_runs.claim_run(career_db, run.id)
+    document_imports.pause_for_document_type(career_db, run, epoch,
+        DocumentClassification(document_type='ambiguous', confidence='low', reason='正文类别不明确'))
+    action = career_db.query(AgentAction).filter_by(run_id=run.id).one()
+    url = f'/api/agent/runs/{run.id}/actions/{action.id}'
+
+    for answers in ({'documentType': 'ambiguous'}, {}):
+        response = run_client.post(url, headers=headers(),
+            json={'decision': 'submit', 'answers': answers, 'expectedRevision': 1})
+        assert response.status_code == 422
+        assert response.json()['code'] == 'invalid_action_answer'
+        career_db.expire_all()
+        assert action.status == 'pending' and run.status == 'waiting_input'
+    response = run_client.post(url, headers=headers(),
+        json={'decision': 'submit', 'answers': {'documentType': 'resume'}, 'expectedRevision': 1})
+
+    assert response.status_code == 202
+    assert response.json() == {'runId': run.id, 'status': 'queued'}
+    career_db.expire_all()
+    assert action.response['answers'] == {'documentType': 'resume'}
+    assert run.input_json['sourcePath'] == str(source) and source.exists()
+    assert career_db.query(AgentRun).count() == 1

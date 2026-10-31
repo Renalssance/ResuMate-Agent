@@ -340,6 +340,8 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         raise RunError(409, 'interview_command_required', '请通过面试命令取消生成')
     run = cancel_run_in_transaction(db, user_id, run_id)
     db.commit()
+    from backend.services.document_imports import cleanup_unadopted_import
+    cleanup_unadopted_import(run)
     return run
 
 
@@ -417,6 +419,10 @@ def answer_action(db: Session, user_id: int, run_id: str, action_id: str, respon
         raise RunError(409, 'invalid_state', '任务当前不在等待该动作')
     if (action.kind == 'input' and response.decision != 'submit') or (action.kind == 'approval' and response.decision not in ('approve', 'reject')):
         raise RunError(409, 'invalid_decision', '回答类型与动作不匹配')
+    if run.kind == 'document_import':
+        from backend.services.document_imports import DOCUMENT_TYPE_INTERRUPT_ID
+        if action.interrupt_id == DOCUMENT_TYPE_INTERRUPT_ID and response.answers.get('documentType') not in ('resume', 'jd'):
+            raise RunError(422, 'invalid_action_answer', '请选择简历或岗位')
     if action.kind == 'input' and not response.answers:
         raise RunError(422, 'invalid_request', '请填写补充信息')
     changed = db.execute(update(AgentAction).where(
@@ -520,6 +526,8 @@ def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
     _mark_stopped_document(db, run, run.status)
     append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
     db.commit()
+    from backend.services.document_imports import cleanup_unadopted_import
+    cleanup_unadopted_import(run)
 
 
 def recover_stale_runs(db: Session, now=None) -> int:
@@ -528,7 +536,7 @@ def recover_stale_runs(db: Session, now=None) -> int:
     cutoff = (now or utcnow()) - timedelta(seconds=90)
     ids = list(db.scalars(select(AgentRun.id).where(
         AgentRun.status == RunStatus.RUNNING, AgentRun.heartbeat_at < cutoff)))
-    recovered = 0
+    recovered = []
     for run_id in ids:
         changed = db.execute(update(AgentRun).where(
             AgentRun.id == run_id, AgentRun.status == RunStatus.RUNNING,
@@ -549,6 +557,9 @@ def recover_stale_runs(db: Session, now=None) -> int:
             run.heartbeat_at = None
         _mark_stopped_document(db, run, run.status)
         append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
-        recovered += 1
+        recovered.append(run)
     db.commit()
-    return recovered
+    from backend.services.document_imports import cleanup_unadopted_import
+    for run in recovered:
+        cleanup_unadopted_import(run)
+    return len(recovered)

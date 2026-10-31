@@ -13,7 +13,7 @@ from backend.schemas.document_import import DocumentClassification
 from backend.services.agent_runs import RunError, claim_session, finish_run, guard_execution, require_task_sources
 from backend.services.document_classifier import classify_document
 from backend.services.document_tasks import parse_document_record
-from backend.services.documents import StoredUpload, extract_stored_pages, persisted_upload_path
+from backend.services.documents import StoredUpload, delete_stored_file, extract_stored_pages, persisted_upload_path
 from backend.services.run_events import append_event
 
 DOCUMENT_TYPE_INTERRUPT_ID = 'document-type'
@@ -94,6 +94,20 @@ def pause_for_document_type(db: Session, run: AgentRun, epoch: int,
     finish_run(db, run.id, epoch, RunStatus.WAITING_INPUT)
 
 
+def answered_document_type(db: Session, run: AgentRun) -> Literal['resume', 'jd'] | None:
+    action = db.scalar(select(AgentAction).where(
+        AgentAction.run_id == run.id, AgentAction.interrupt_id == DOCUMENT_TYPE_INTERRUPT_ID,
+        AgentAction.status == 'answered'))
+    value = (action.response or {}).get('answers', {}).get('documentType') if action else None
+    return value if value in ('resume', 'jd') else None
+
+
+def cleanup_unadopted_import(run: AgentRun) -> None:
+    if (run.kind == 'document_import' and run.status in (RunStatus.FAILED, RunStatus.CANCELLED)
+            and not run.input_json.get('documentId')):
+        delete_stored_file(run.input_json.get('sourcePath'))
+
+
 def run_document_import(run_id: str, epoch: int) -> None:
     try:
         with SessionLocal() as db:
@@ -103,9 +117,15 @@ def run_document_import(run_id: str, epoch: int) -> None:
             run = guarded_import_run(db, run_id, epoch)
             source_path, filename, user_id = run.input_json['sourcePath'], run.input_json['filename'], run.user_id
             document_id = run.input_json.get('documentId')
+            if not document_id:
+                confirmed_type = answered_document_type(db, run)
+                if confirmed_type:
+                    adopt_import(db, run, confirmed_type)
+                    document_id = run.input_json['documentId']
             db.commit()
-        pages = extract_stored_pages(source_path, filename)
+        pages = None
         if not document_id:
+            pages = extract_stored_pages(source_path, filename)
             classification = classify_document('\n'.join(page.text for page in pages).strip(),
                 user_id=user_id, guard=lambda: guard_import(run_id, epoch))
             with SessionLocal() as db:
@@ -122,3 +142,5 @@ def run_document_import(run_id: str, epoch: int) -> None:
             if run is not None and run.status == RunStatus.RUNNING and run.execution_epoch == epoch:
                 finish_run(db, run_id, epoch, RunStatus.FAILED,
                     error_code=exc.code if isinstance(exc, RunError) else 'document_import_failed')
+            elif run is not None:
+                cleanup_unadopted_import(run)
