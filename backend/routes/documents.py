@@ -14,13 +14,16 @@ from backend.db.database import get_db
 from backend.db.models import JobDescription, Resume, User
 from backend.rag import get_rag_store
 from backend.schemas.agent_runs import RunCreate
+from backend.schemas.document_import import DocumentImportAccepted
 from backend.schemas.workflow import (DocumentParseResponse, DocumentParseResult, DocumentType,
     FollowUpAnalysisRequest, FollowUpAnalysisResponse, StructuredDataUpdate)
 from backend.services.analysis import parse_document_id
 from backend.services.agent_runs import RunError, find_upload_run
 from backend.services.background_tasks import submit_task
+from backend.services.document_imports import create_document_import_run, find_document_import_run
 from backend.services.documents import (cleanup_upload_cache, delete_stored_file,
     document_record as _record, profile_parse_status as _parse_status, persisted_upload_path, store_upload)
+from backend.services.run_delivery import publish_run
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
@@ -78,6 +81,39 @@ def upload_documents(
     finally:
         if stored is not None:
             cleanup_upload_cache(stored)
+
+
+@router.post("/import", response_model=DocumentImportAccepted, status_code=202,
+    dependencies=[Depends(require_run_capacity)])
+def import_document(file: list[UploadFile] = File(...), request_id: str = Form("", alias="requestId"),
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db),
+):
+    if len(file) != 1:
+        raise HTTPException(status_code=422, detail="exactly one file is required")
+    key = request_id or str(uuid4())
+    try:
+        existing = find_document_import_run(db, current_user.id, key)
+    except RunError as exc:
+        raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+    if existing is not None:
+        return DocumentImportAccepted(runId=existing.id, status=existing.status)
+    stored = None
+    try:
+        stored = anyio.from_thread.run(store_upload, file[0])
+        run = create_document_import_run(db, current_user.id, stored, key)
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        if stored is not None:
+            delete_stored_file(persisted_upload_path(stored))
+        if isinstance(exc, RunError):
+            raise HTTPException(status_code=exc.status, detail=str(exc)) from exc
+        raise
+    finally:
+        if stored is not None:
+            cleanup_upload_cache(stored)
+    publish_run(run.id)
+    return DocumentImportAccepted(runId=run.id, status=run.status)
 
 
 @router.get("", response_model=list[DocumentParseResult])

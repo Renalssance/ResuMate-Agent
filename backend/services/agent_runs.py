@@ -51,7 +51,7 @@ def run_artifacts(db: Session, user_id: int, run_id: str) -> list[dict]:
         from backend.services.resume_export import pdf_artifact
         artifact = pdf_artifact(run)
         return [artifact] if artifact else []
-    if run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation'):
+    if run.kind in ('document_import', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation'):
         return []
     if run.kind != 'tailoring':
         raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
@@ -70,6 +70,7 @@ def _public_input(run: AgentRun) -> dict:
         'tailoring': ('jdId', 'resumeId'),
         'resume_export': ('resumeVersionId',),
         'document_parse': ('documentId', 'parseMode'),
+        'document_import': ('filename',),
         'match_analysis': ('jdId', 'resumeIds', 'analysisJobId'),
         'question_generation': ('analysisJobId', 'candidateId', 'questionCount'),
         'answer_followup': ('followup',),
@@ -210,7 +211,7 @@ def require_valid_session(db: Session, run: AgentRun) -> None:
         raise RunError(409, 'session_context_invalidated', '记忆已删除，请新建会话继续任务')
 
 
-def _claim_session(db: Session, user_id: int, session_id: str, run_id: str, *, kind: str) -> None:
+def claim_session(db: Session, user_id: int, session_id: str, run_id: str, *, kind: str) -> None:
     result = db.execute(update(AgentSession).where(
         AgentSession.id == session_id, AgentSession.user_id == user_id,
         AgentSession.active_run_id.is_(None),
@@ -268,7 +269,7 @@ def create_run_in_transaction(db: Session, user_id: int, request: RunCreate) -> 
     db.flush()
     db.add(run)
     db.flush()
-    _claim_session(db, user_id, session.id, run.id, kind=run.kind)
+    claim_session(db, user_id, session.id, run.id, kind=run.kind)
     append_event(db, run.id, 'run.status', {'status': run.status})
     return run
 
@@ -355,7 +356,7 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
         require_task_sources(db, run)
     else:
         raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
-    _claim_session(db, user_id, run.session_id, run.id, kind=run.kind)
+    claim_session(db, user_id, run.session_id, run.id, kind=run.kind)
     run.status = RunStatus.QUEUED
     run.attempt += 1
     run.error_code = None
