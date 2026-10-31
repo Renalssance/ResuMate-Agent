@@ -73,33 +73,35 @@ test('聊天创建真实材料任务、刷新后补问并读取草稿', async ({
   expect(desktopComposerLayout.overlap).toBeGreaterThan(desktopComposerLayout.composerHeight * 0.35)
   expect(desktopComposerLayout.overlap).toBeLessThan(desktopComposerLayout.composerHeight * 0.7)
   await page.screenshot({ path: test.info().outputPath('chat-desktop.png'), fullPage: true, animations: 'disabled' })
-  await page.setViewportSize({ width: 390, height: 844 })
-  await expect(page.getByRole('button', { name: '打开导航', exact: true })).toBeVisible()
-  await expect(page.getByRole('dialog', { name: '主导航', exact: true })).toBeHidden()
-  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
-  await materialTrigger.click()
-  await expect(materialPanel).toBeVisible()
-  await expect(materialPanel).toHaveCSS('opacity', '1')
-  const mobilePickerLayout = await page.evaluate(() => {
-    const trigger = document.querySelector('.material-trigger')!.getBoundingClientRect()
-    const panel = document.querySelector('.material-panel')!.getBoundingClientRect()
-    const conversation = document.querySelector('.chat-conversation')!.getBoundingClientRect()
-    const composer = document.querySelector('.chat-composer')!.getBoundingClientRect()
-    return {
-      centerDelta: Math.abs(trigger.left + trigger.width / 2 - panel.left - panel.width / 2),
-      gap: trigger.top - panel.bottom,
-      insideViewport: panel.left >= 0 && panel.right <= window.innerWidth && panel.top >= 0 && panel.bottom <= window.innerHeight,
-      overlap: conversation.bottom - composer.top,
-      composerHeight: composer.height,
-    }
-  })
-  expect(mobilePickerLayout.centerDelta).toBeLessThan(2)
-  expect(mobilePickerLayout.gap).toBeGreaterThanOrEqual(7)
-  expect(mobilePickerLayout.gap).toBeLessThanOrEqual(9)
-  expect(mobilePickerLayout.insideViewport).toBe(true)
-  expect(mobilePickerLayout.overlap).toBeGreaterThan(0)
-  expect(mobilePickerLayout.overlap).toBeLessThan(mobilePickerLayout.composerHeight)
-  await page.keyboard.press('Escape')
-  await expect(materialPanel).toBeHidden()
-  await page.screenshot({ path: test.info().outputPath('chat-mobile.png'), fullPage: true, animations: 'disabled' })
+  for (const width of [900, 390]) {
+    await page.setViewportSize({ width, height: 844 })
+    await expect(page.getByRole('button', { name: '打开导航', exact: true })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: '主导航', exact: true })).toBeHidden()
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width)
+    await materialTrigger.click()
+    await expect(materialPanel).toBeVisible()
+    await expect(materialPanel).toHaveCSS('opacity', '1')
+    const pickerLayout = await page.evaluate(() => {
+      const trigger = document.querySelector('.material-trigger')!.getBoundingClientRect()
+      const panel = document.querySelector('.material-panel')!.getBoundingClientRect()
+      const conversation = document.querySelector('.chat-conversation')!.getBoundingClientRect()
+      const composer = document.querySelector('.chat-composer')!.getBoundingClientRect()
+      return {
+        centerDelta: Math.abs(trigger.left + trigger.width / 2 - panel.left - panel.width / 2),
+        gap: trigger.top - panel.bottom,
+        insideViewport: panel.left >= 0 && panel.right <= window.innerWidth && panel.top >= 0 && panel.bottom <= window.innerHeight,
+        overlap: conversation.bottom - composer.top,
+        composerHeight: composer.height,
+      }
+    })
+    expect(pickerLayout.centerDelta).toBeLessThan(2)
+    expect(pickerLayout.gap).toBeGreaterThanOrEqual(7)
+    expect(pickerLayout.gap).toBeLessThanOrEqual(9)
+    expect(pickerLayout.insideViewport, `${width}px picker stays inside viewport`).toBe(true)
+    expect(pickerLayout.overlap).toBeGreaterThan(0)
+    expect(pickerLayout.overlap).toBeLessThan(pickerLayout.composerHeight)
+    await page.keyboard.press('Escape')
+    await expect(materialPanel).toBeHidden()
+    await page.screenshot({ path: test.info().outputPath(width === 390 ? 'chat-mobile.png' : 'chat-tablet.png'), fullPage: true, animations: 'disabled' })
+  }
 })
