@@ -1,0 +1,89 @@
+import { afterEach, describe, expect, it } from 'vitest'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
+import ChatMaterialPicker from './ChatMaterialPicker.vue'
+import type { RunAction } from '../../api/agentRuns'
+import type { DocumentRecord } from '../../types/document'
+
+enableAutoUnmount(afterEach)
+const resumes: DocumentRecord[] = [{ id: 'resume:3', type: 'resume', filename: '我的简历.pdf', size: 10, createdAt: '', parseStatus: 'success', vectorized: false, localStored: false }]
+const jobs: DocumentRecord[] = [{ ...resumes[0]!, id: 'jd:4', type: 'jd', filename: '产品经理.txt', parsedContent: { title: '产品经理' } }]
+const pendingAction: RunAction = { actionId: 'classify', kind: 'input', revision: 1, payload: { reason: '请确认材料类型', choices: ['resume', 'jd'] } }
+function mountPicker(props: Partial<InstanceType<typeof ChatMaterialPicker>['$props']> = {}) {
+  return mount(ChatMaterialPicker, { attachTo: document.body, props: { resumes, jobs, resumeId: '', jobId: '', importState: 'idle', pendingAction: null, importError: '', ...props } })
+}
+
+describe('chat material picker', () => {
+  it('opens an icon-only picker with three actions and emits saved selections', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.get('button[aria-label="添加材料"]')
+    expect(trigger.text()).toBe('')
+    await trigger.trigger('click')
+    expect(wrapper.get('[role="dialog"][aria-label="添加材料"]')).toBeTruthy()
+    expect(wrapper.findAll('[data-source-option]')).toHaveLength(3)
+    expect(wrapper.find('select').exists()).toBe(false)
+    await wrapper.get('[data-source="resume"]').trigger('click')
+    await wrapper.get('[data-resume-id="resume:3"]').trigger('click')
+    expect(wrapper.emitted('update:resumeId')).toEqual([['resume:3']])
+    await trigger.trigger('click')
+    await wrapper.get('[data-source="job"]').trigger('click')
+    await wrapper.get('[data-job-id="jd:4"]').trigger('click')
+    expect(wrapper.emitted('update:jobId')).toEqual([['jd:4']])
+  })
+
+  it('shows filename chips with type icons and removes each selection', async () => {
+    const wrapper = mountPicker({ resumeId: 'resume:3', jobId: 'jd:4' })
+    expect(wrapper.get('[title="我的简历.pdf"]').text()).toContain('我的简历.pdf')
+    expect(wrapper.find('[title="我的简历.pdf"] svg').exists()).toBe(true)
+    expect(wrapper.get('[title="产品经理.txt"]').text()).toContain('产品经理.txt')
+    expect(wrapper.find('[title="产品经理.txt"] svg').exists()).toBe(true)
+    await wrapper.get('[aria-label="移除简历 我的简历.pdf"]').trigger('click')
+    await wrapper.get('[aria-label="移除岗位 产品经理.txt"]').trigger('click')
+    expect(wrapper.emitted('update:resumeId')).toEqual([['']])
+    expect(wrapper.emitted('update:jobId')).toEqual([['']])
+  })
+
+  it('emits a local file once, resets the input, and handles import confirmation and outcomes', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.get('button[aria-label="添加材料"]')
+    await trigger.trigger('click')
+    const input = wrapper.get<HTMLInputElement>('input[type="file"]')
+    const file = new File(['body'], 'neutral.txt')
+    Object.defineProperty(input.element, 'files', { value: [file] })
+    Object.defineProperty(input.element, 'value', { value: 'neutral.txt', writable: true })
+    await input.trigger('change')
+    expect(wrapper.emitted('local-file')).toEqual([[file]])
+    expect(input.element.value).toBe('')
+    await wrapper.setProps({ importState: 'waiting_input', pendingAction })
+    expect(wrapper.text()).toContain('请确认材料类型')
+    await wrapper.get('[data-document-type="resume"]').trigger('click')
+    await wrapper.get('[data-document-type="jd"]').trigger('click')
+    expect(wrapper.emitted('confirm-type')).toEqual([['resume'], ['jd']])
+    await wrapper.setProps({ importState: 'processing', pendingAction: null })
+    expect(wrapper.get('[data-source="local"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-source="resume"]').attributes('disabled')).toBeUndefined()
+    expect(wrapper.get('[data-source="job"]').attributes('disabled')).toBeUndefined()
+    expect(wrapper.get('[role="status"]').text()).toContain('正在识别')
+    await wrapper.get('[data-source="resume"]').trigger('click')
+    await wrapper.setProps({ importState: 'failed', importError: '文件导入失败' })
+    expect(wrapper.find('[data-resume-id]').exists()).toBe(false)
+    expect(wrapper.get('[role="alert"]').text()).toBe('文件导入失败')
+    await wrapper.setProps({ importState: 'succeeded', importError: '' })
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+  })
+
+  it('keeps inside pointer interactions open and closes on outside pointerdown or Escape', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.get('button[aria-label="添加材料"]')
+    await trigger.trigger('click')
+    await wrapper.get('[role="dialog"]').trigger('pointerdown')
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    await nextTick()
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    await trigger.trigger('click')
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await nextTick()
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+  })
+})
