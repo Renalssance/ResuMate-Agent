@@ -84,7 +84,7 @@ const {
   state: importState, pendingAction: pendingImportAction, resultDocument: importedDocument,
   error: importError, startImport, confirmDocumentType,
 } = useDocumentImport(importScope)
-const importBusy = computed(() => ['uploading', 'processing'].includes(importState.value))
+const importBusy = computed(() => ['uploading', 'processing', 'waiting_input'].includes(importState.value))
 const conversation = ref<HTMLElement | null>(null), messageField = ref<HTMLTextAreaElement | null>(null)
 const historyMenu = ref<HTMLDetailsElement | null>(null)
 const suggestions = [
@@ -211,8 +211,8 @@ function processSummary(turn: ChatTurn) {
   return turn.tools.length > 1 ? `${toolLabel(first.name)}等 ${turn.tools.length} 项` : toolLabel(first.name)
 }
 
-watch([importedDocument, loading], ([document, readingHistory]) => {
-  if (!document || readingHistory) return
+watch([importedDocument, loading, () => documents.listLoading], ([document, readingHistory, readingDocuments]) => {
+  if (!document || readingHistory || readingDocuments) return
   documents.upsertDocuments([document])
   if (document.type === 'resume') resumeId.value = document.id
   else jdId.value = document.id

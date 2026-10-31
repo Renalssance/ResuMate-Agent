@@ -147,6 +147,29 @@ def test_import_extraction_failure_deletes_unadopted_original(career_db, import_
     assert not source.exists()
 
 
+def test_classification_model_failure_retains_original_for_retry(career_db, import_run, monkeypatch):
+    source = Path(import_run.input_json['sourcePath'])
+    def unavailable(*args, **kwargs):
+        raise RuntimeError('model temporarily unavailable')
+    monkeypatch.setattr(document_imports, 'classify_document', unavailable)
+
+    document_imports.run_document_import(import_run.id, import_run.execution_epoch)
+
+    career_db.expire_all()
+    assert import_run.status == RunStatus.FAILED
+    assert source.exists() and import_run.input_json['sourcePath'] == str(source)
+    assert 'documentId' not in import_run.input_json
+    agent_runs.retry_run(career_db, 1, import_run.id)
+    epoch = agent_runs.claim_run(career_db, import_run.id)
+    monkeypatch.setattr(document_imports, 'classify_document', lambda *a, **kw: DocumentClassification(
+        document_type='resume', confidence='high', reason='简历正文'))
+    document_imports.run_document_import(import_run.id, epoch)
+
+    career_db.expire_all()
+    assert import_run.status == RunStatus.SUCCEEDED
+    assert import_run.result_json['documents'][0]['filename'] == 'neutral.txt'
+
+
 def test_cleaned_unadopted_import_cannot_retry(career_db, import_run):
     source = Path(import_run.input_json['sourcePath'])
     run_id = import_run.id

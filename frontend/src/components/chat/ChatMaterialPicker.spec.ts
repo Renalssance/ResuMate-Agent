@@ -8,7 +8,7 @@ import type { DocumentRecord } from '../../types/document'
 enableAutoUnmount(afterEach)
 const resumes: DocumentRecord[] = [{ id: 'resume:3', type: 'resume', filename: '我的简历.pdf', size: 10, createdAt: '', parseStatus: 'success', vectorized: false, localStored: false }]
 const jobs: DocumentRecord[] = [{ ...resumes[0]!, id: 'jd:4', type: 'jd', filename: '产品经理.txt', parsedContent: { title: '产品经理' } }]
-const pendingAction: RunAction = { actionId: 'classify', kind: 'input', revision: 1, payload: { reason: '请确认材料类型', choices: ['resume', 'jd'] } }
+const pendingAction: RunAction = { actionId: 'classify', kind: 'input', revision: 1, payload: { filename: 'neutral.txt', question: '这份文件属于哪一类？', reason: '请确认材料类型', choices: ['resume', 'jd'] } }
 function mountPicker(props: Partial<InstanceType<typeof ChatMaterialPicker>['$props']> = {}) {
   return mount(ChatMaterialPicker, { attachTo: document.body, props: { resumes, jobs, resumeId: '', jobId: '', importState: 'idle', pendingAction: null, importError: '', ...props } })
 }
@@ -56,6 +56,9 @@ describe('chat material picker', () => {
     expect(input.element.value).toBe('')
     await wrapper.setProps({ importState: 'waiting_input', pendingAction })
     expect(wrapper.text()).toContain('请确认材料类型')
+    expect(wrapper.get('.type-confirmation [title="neutral.txt"]').text()).toBe('neutral.txt')
+    expect(wrapper.text()).toContain('这份文件属于哪一类？')
+    expect(wrapper.get('[data-source="local"]').attributes('disabled')).toBeDefined()
     await wrapper.get('[data-document-type="resume"]').trigger('click')
     await wrapper.get('[data-document-type="jd"]').trigger('click')
     expect(wrapper.emitted('confirm-type')).toEqual([['resume'], ['jd']])
@@ -85,5 +88,33 @@ describe('chat material picker', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
     await nextTick()
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+  })
+
+  it('moves keyboard focus into the picker and returns it on selection or Escape', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.get<HTMLButtonElement>('button[aria-label="添加材料"]')
+    trigger.element.focus()
+    await trigger.trigger('click')
+    await nextTick()
+    expect(document.activeElement).toBe(wrapper.get('[data-source="resume"]').element)
+    await wrapper.get('[data-source="resume"]').trigger('click')
+    const option = wrapper.get<HTMLButtonElement>('[data-resume-id="resume:3"]')
+    option.element.focus()
+    await option.trigger('click')
+    expect(document.activeElement).toBe(trigger.element)
+    await trigger.trigger('click')
+    await nextTick()
+    document.activeElement?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    await nextTick()
+    expect(document.activeElement).toBe(trigger.element)
+    await trigger.trigger('click')
+    await nextTick()
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    outside.focus()
+    await nextTick()
+    expect(document.activeElement).toBe(outside)
+    outside.remove()
   })
 })

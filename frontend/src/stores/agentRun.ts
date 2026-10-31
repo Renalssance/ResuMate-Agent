@@ -152,7 +152,8 @@ export const useAgentRunStore = defineStore('agentRun', () => {
     const epoch = generation, id = selectedId
     busy.value = true; actionErrors.value[action.actionId] = ''; notice.value = ''
     try {
-      await answerRunAction(id, action.actionId, { decision, answers: decision === 'submit' ? { answer: drafts.value[action.actionId].trim() } : {}, expectedRevision: action.revision })
+      const answers = decision === 'submit' ? { [snapshot.value?.kind === 'document_import' ? 'documentType' : 'answer']: drafts.value[action.actionId].trim() } : {}
+      await answerRunAction(id, action.actionId, { decision, answers, expectedRevision: action.revision })
       if (epoch !== generation) return
       delete drafts.value[action.actionId]; conflictedActions.value = conflictedActions.value.filter(item => item.actionId !== action.actionId)
       notice.value = '回答已提交'; await refresh(); if (epoch === generation) connect(epoch)

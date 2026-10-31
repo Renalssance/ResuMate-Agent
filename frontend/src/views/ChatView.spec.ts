@@ -6,10 +6,11 @@ import ChatView from './ChatView.vue'
 import { useAuthStore } from '../stores/auth'
 import { useDocumentStore } from '../stores/document'
 import type { RunSnapshot, RunSubscriptionOptions } from '../services/agentStream'
+import type { BackendDocumentParseResult } from '../api/documents'
 
 const streams = vi.hoisted(() => [] as RunSubscriptionOptions[])
 vi.mock('../services/agentStream', () => ({ subscribeRun: (options: RunSubscriptionOptions) => { streams.push(options); return { close: vi.fn(), done: new Promise(() => {}) } } }))
-vi.mock('../api/documents', () => ({ fetchDocumentsApi: async () => [
+vi.mock('../api/documents', () => ({ fetchDocumentsApi: async () => documentResponse || [
   { id: 'resume:3', type: 'resume', filename: '我的简历.pdf', size: 10, raw_text: '', parsed_content: {}, vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-30' },
   { id: 'jd:4', type: 'jd', filename: '产品经理.txt', size: 10, raw_text: '', parsed_content: {}, vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-30' },
 ] }))
@@ -22,8 +23,9 @@ let nextDetailResponse: Promise<Response> | undefined
 let detail: Record<string, unknown>
 let importResponse: Promise<Response> | undefined
 let importSnapshot: RunSnapshot
+let documentResponse: Promise<BackendDocumentParseResult[]> | undefined
 beforeEach(() => {
-  sessionStorage.clear(); importResponse = undefined
+  sessionStorage.clear(); importResponse = undefined; documentResponse = undefined
   importSnapshot = { runId: 'import-1', sessionId: 'internal-session', sessionInvalidated: false,
     kind: 'document_import', status: 'queued', input: { filename: '新材料.txt' }, inputVersions: {},
     attempt: 1, lastSeq: 1, errorCode: null, cancelRequested: false, outputRefs: [], actions: [] }
@@ -169,6 +171,11 @@ describe('chat workspace', () => {
       stream.onSnapshot?.({ ...importSnapshot, status: 'waiting_input', actions: [{ actionId: 'type-1', kind: 'input', revision: 1,
         payload: { reason: '请确认这份材料的类型', choices: [{ value: 'resume', label: '简历' }, { value: 'jd', label: '岗位' }] } }] })
       await flushPromises()
+      expect(wrapper.get('[aria-label="发送消息"]').attributes('disabled')).toBeDefined()
+      await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
+      expect(router.currentRoute.value.path).toBe('/chat')
+      expect(requests).toHaveLength(0)
+      expect(sessionStorage.getItem('resumate:document-import:chat:new')).toBe('import-1')
       await wrapper.get('[data-document-type="jd"]').trigger('click'); await flushPromises()
       expect(requests.find(item => item.url.endsWith('/actions/type-1'))!.body).toMatchObject({ answers: { documentType: 'jd' } })
     }
@@ -181,6 +188,20 @@ describe('chat workspace', () => {
     expect(useDocumentStore().documents.find(item => item.id === id)).toMatchObject({ parseStatus: 'success', parsedContent: { title: 'API 工程师' } })
     await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
     expect(requests.find(item => item.url.endsWith('/messages'))!.body).toMatchObject(context)
+    wrapper.unmount()
+  })
+  it('adopts a recovered import after the older document list has finished loading', async () => {
+    sessionStorage.setItem('resumate:document-import:chat:session-1', 'import-1')
+    importSnapshot = { ...importSnapshot, status: 'succeeded', lastSeq: 4, result: { documents: [{
+      id: 'resume:8', type: 'resume', filename: '新材料.txt', size: 10, raw_text: 'content', parsed_content: {},
+      vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-31',
+    }] } }
+    let finishList!: (documents: BackendDocumentParseResult[]) => void
+    documentResponse = new Promise(resolve => { finishList = resolve })
+    const { wrapper } = await open('/chat/session-1')
+    finishList([]); await flushPromises()
+    expect(wrapper.get('.material-chip[title="新材料.txt"]').text()).toContain('新材料.txt')
+    expect(useDocumentStore().parsedResumes.map(doc => doc.id)).toEqual(['resume:8'])
     wrapper.unmount()
   })
   it('resumes from the saved sequence and reloads canonical text after completion', async () => {

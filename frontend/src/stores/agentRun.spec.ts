@@ -34,6 +34,14 @@ describe('persistent task workspace', () => {
     await store.submitAction(action)
     expect(store.drafts.a1).toBeUndefined(); expect(store.notice).toBe('回答已提交'); expect(api.answerRunAction).toHaveBeenCalledWith('r1', 'a1', { decision: 'submit', answers: { answer: '职责' }, expectedRevision: 1 })
   })
+  it('submits the document type contract for import actions', async () => {
+    const store = useAgentRunStore(); store.openRun('r1'); options.onSnapshot?.(snapshot({ kind: 'document_import' }))
+    store.drafts.a1 = 'jd'
+    vi.mocked(api.answerRunAction).mockResolvedValue({ runId: 'r1', status: 'queued' })
+    await store.submitAction(action)
+    expect(api.answerRunAction).toHaveBeenCalledWith('r1', 'a1', { decision: 'submit', answers: { documentType: 'jd' }, expectedRevision: 1 })
+    expect(store.drafts.a1).toBeUndefined()
+  })
   it('discards async detail responses after navigation and user logout clears all account data', async () => {
     const store = useAgentRunStore(); store.openRun('r1'); options.onSnapshot?.(snapshot()); store.drafts.a1 = '未提交';
     let resolve!: (value: RunSnapshot) => void; vi.mocked(api.fetchAgentRun).mockImplementationOnce(() => new Promise(done => { resolve = done }));

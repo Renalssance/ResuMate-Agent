@@ -1,7 +1,7 @@
 <template>
   <section class="saved-task-result" aria-label="本次任务结果">
     <h3>本次任务结果</h3>
-    <template v-if="kind === 'document_parse'">
+    <template v-if="kind === 'document_parse' || kind === 'document_import'">
       <article v-for="document in parsedDocuments" :key="document.id">
         <strong>{{ document.filename }}</strong>
         <p>解析结果已保存，可以在文档管理查看和核对。</p>

@@ -69,7 +69,7 @@ export async function downloadResumePdf(runId: string): Promise<Blob> {
   return response.blob()
 }
 export function taskStatusLabel(status: RunStatus, kind?: string) {
-  const title = ({ document_parse: '解析', match_analysis: '匹配', question_generation: '出题', answer_followup: '回答分析' } as Record<string, string>)[kind || '']
+  const title = ({ document_parse: '解析', document_import: '导入', match_analysis: '匹配', question_generation: '出题', answer_followup: '回答分析' } as Record<string, string>)[kind || '']
   if (title) return ({ queued: `等待${title}`, running: `正在${title}`, succeeded: `${title}已完成`, failed: `${title}未完成`, cancelled: `${title}已取消` } as Partial<Record<RunStatus, string>>)[status] || runStatusLabel[status]
   if (kind !== 'resume_export') return runStatusLabel[status]
   return ({ queued: '等待导出', running: '正在导出 PDF', succeeded: 'PDF 已导出', failed: 'PDF 导出失败', cancelled: '导出已取消' } as Partial<Record<RunStatus, string>>)[status] || runStatusLabel[status]

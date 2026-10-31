@@ -16,7 +16,7 @@
           <div class="source-actions">
             <button type="button" data-source-option data-source="resume" @click="section = 'resume'"><FileUser :size="18" aria-hidden="true" />选择数据库中的简历</button>
             <button type="button" data-source-option data-source="job" @click="section = 'job'"><BriefcaseBusiness :size="18" aria-hidden="true" />选择数据库中的岗位</button>
-            <button type="button" data-source-option data-source="local" :disabled="busy" @click="localInput?.click()"><FileUp :size="18" aria-hidden="true" />选择本地文件</button>
+            <button type="button" data-source-option data-source="local" :disabled="importActive" @click="localInput?.click()"><FileUp :size="18" aria-hidden="true" />选择本地文件</button>
           </div>
           <div v-if="section === 'resume'" class="saved-materials">
             <button v-for="item in resumes" :key="item.id" type="button" :data-resume-id="item.id" :title="item.filename"
@@ -29,6 +29,8 @@
             <p v-if="!jobs.length">暂无已解析的岗位，可选择本地文件。</p>
           </div>
           <div v-if="pendingAction" class="type-confirmation">
+            <p class="confirmation-filename" :title="String(pendingAction.payload.filename || '')">{{ pendingAction.payload.filename }}</p>
+            <p>{{ pendingAction.payload.question }}</p>
             <p>{{ pendingAction.payload.reason }}</p>
             <button type="button" data-document-type="resume" @click="emit('confirm-type', 'resume')">这是简历</button>
             <button type="button" data-document-type="jd" @click="emit('confirm-type', 'jd')">这是岗位</button>
@@ -37,8 +39,8 @@
           <p v-if="importError" role="alert">{{ importError }}</p>
         </section>
       </Transition>
-      <input ref="localInput" hidden type="file" accept=".pdf,.docx,.txt,.md" :disabled="busy" @change="pickLocalFile">
-      <button type="button" class="material-trigger" aria-label="添加材料" aria-haspopup="dialog" :aria-expanded="open" @click="open = !open">
+      <input ref="localInput" hidden type="file" accept=".pdf,.docx,.txt,.md" :disabled="importActive" @change="pickLocalFile">
+      <button ref="trigger" type="button" class="material-trigger" aria-label="添加材料" aria-haspopup="dialog" :aria-expanded="open" @click="open = !open">
         <Paperclip :size="18" aria-hidden="true" />
       </button>
     </div>
@@ -46,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { BriefcaseBusiness, FileUp, FileUser, Paperclip, X } from '@lucide/vue'
 import type { RunAction } from '../../api/agentRuns'
 import type { ImportState } from '../../composables/useDocumentImport'
@@ -61,13 +63,16 @@ const emit = defineEmits<{
   'local-file': [file: File]; 'confirm-type': [type: DocumentType]
 }>()
 const root = ref<HTMLElement | null>(null), localInput = ref<HTMLInputElement | null>(null)
+const trigger = ref<HTMLButtonElement | null>(null)
 const open = ref(false), section = ref<'root' | 'resume' | 'job'>('root')
 const selectedResume = computed(() => props.resumes.find(item => item.id === props.resumeId))
 const selectedJob = computed(() => props.jobs.find(item => item.id === props.jobId))
 const busy = computed(() => props.importState === 'uploading' || props.importState === 'processing')
+const importActive = computed(() => busy.value || props.importState === 'waiting_input')
 
-function chooseResume(id: string) { emit('update:resumeId', id); open.value = false }
-function chooseJob(id: string) { emit('update:jobId', id); open.value = false }
+function closePicker() { open.value = false; trigger.value?.focus() }
+function chooseResume(id: string) { emit('update:resumeId', id); closePicker() }
+function chooseJob(id: string) { emit('update:jobId', id); closePicker() }
 function pickLocalFile(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -78,7 +83,8 @@ watch(open, (value, _, onCleanup) => {
   if (!value) return
   section.value = 'root'
   const outside = (event: PointerEvent) => { if (root.value && !event.composedPath().includes(root.value)) open.value = false }
-  const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') open.value = false }
+  const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') closePicker() }
+  void nextTick(() => { if (open.value) root.value?.querySelector<HTMLButtonElement>('[data-source-option]')?.focus() })
   document.addEventListener('pointerdown', outside)
   document.addEventListener('keydown', escape)
   onCleanup(() => {
@@ -109,6 +115,7 @@ button:disabled { cursor: wait; opacity: .5; }
 .saved-materials, .type-confirmation { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--brand-line, #ded0c2); }
 .saved-materials button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .material-panel p { margin: 8px 10px; color: var(--brand-muted, #786b63); line-height: 1.6; overflow-wrap: anywhere; }
+.material-panel .confirmation-filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .material-panel [role="alert"] { color: var(--color-danger, #b84a4a); }
 .type-confirmation button { min-height: 34px; margin: 2px 6px 2px 0; padding: 6px 12px; border: 1px solid var(--brand-line, #ded0c2); border-radius: 999px; color: inherit; background: var(--color-primary-light, #f3ece4); }
 .type-confirmation button:hover { background: var(--color-bg-muted, #eee6dc); }

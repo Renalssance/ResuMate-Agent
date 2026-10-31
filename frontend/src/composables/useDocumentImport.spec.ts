@@ -83,6 +83,10 @@ it('exposes document type choices and answers the existing run action', async ()
   expect(flow.pendingAction.value?.payload.choices).toEqual([
     { value: 'resume', label: '简历' }, { value: 'jd', label: '岗位' },
   ])
+  await flow.startImport(new File(['replacement'], 'replacement.txt'))
+  expect(flow.pendingAction.value?.actionId).toBe('action-1')
+  expect(sessionStorage.getItem(key)).toBe('import-1')
+  expect(vi.mocked(fetch).mock.calls).toHaveLength(1)
   vi.mocked(answerRunAction).mockResolvedValue({ runId: 'import-1', status: 'queued' })
   await flow.confirmDocumentType('jd')
   expect(answerRunAction).toHaveBeenCalledWith('import-1', 'action-1', {
@@ -90,6 +94,21 @@ it('exposes document type choices and answers the existing run action', async ()
   })
   expect(flow.pendingAction.value).toBeNull()
   expect(flow.state.value).toBe('processing')
+})
+
+it('reconnects for the canonical result if the terminal event snapshot request fails', async () => {
+  const flow = openChat()
+  await flow.startImport(new File(['content'], 'neutral.txt'))
+  streams[0]!.onSnapshot?.(queued)
+  vi.mocked(fetchAgentRun).mockRejectedValueOnce(new TypeError('offline'))
+  streams[0]!.onEvent({ runId: 'import-1', seq: 4, createdAt: '', type: 'run.status', payload: { status: 'succeeded' } })
+  await flushPromises()
+  expect(streams).toHaveLength(2)
+  expect(sessionStorage.getItem(key)).toBe('import-1')
+  streams[1]!.onSnapshot?.({ ...queued, status: 'succeeded', lastSeq: 4, result: { documents: [document] } })
+  expect(flow.state.value).toBe('succeeded')
+  expect(flow.resultDocument.value?.id).toBe('resume:7')
+  expect(flow.error.value).toBe('')
 })
 
 it('retains recovery on close and restores the active import for its reactive chat scope', async () => {

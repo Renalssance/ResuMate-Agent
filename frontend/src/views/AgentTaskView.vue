@@ -33,7 +33,7 @@
           </div>
           <p v-if="store.notice" class="notice" role="status">{{ store.notice }}</p>
           <RunTimeline :events="store.events" :status="store.snapshot.status" :kind="store.snapshot.kind" />
-          <ActionForm v-for="action in visibleActions" :key="action.actionId" :model-value="store.drafts[action.actionId] || ''" @update:model-value="value => updateAnswer(action.actionId, value)" :action="action" :busy="store.busy" :error="store.actionErrors[action.actionId] || ''" :inactive="!acceptsAnswers || !store.snapshot.actions.some(item => item.actionId === action.actionId)" @submit="decision => store.submitAction(action, decision)" />
+          <ActionForm v-for="action in visibleActions" :key="action.actionId" :model-value="store.drafts[action.actionId] || ''" @update:model-value="value => updateAnswer(action.actionId, value)" :action="action" :document-type="store.snapshot.kind === 'document_import'" :busy="store.busy" :error="store.actionErrors[action.actionId] || ''" :inactive="!acceptsAnswers || !store.snapshot.actions.some(item => item.actionId === action.actionId)" @submit="decision => store.submitAction(action, decision)" />
           <template v-for="artifact in store.artifacts" :key="artifact.id"><PdfArtifactCard v-if="artifact.kind === 'resume_pdf'" :artifact="artifact" /><ArtifactCard v-else :artifact="artifact" /></template>
           <LongTaskResult v-if="longTask && store.snapshot.result" :kind="store.snapshot.kind" :result="store.snapshot.result" />
           <p v-if="store.snapshot.status === 'succeeded' && !store.artifacts.length && !longTask" class="muted-note">{{ store.snapshot.kind === 'resume_export' ? 'PDF 已完成，正在读取下载信息。' : '材料已完成，正在读取草稿。' }}<button class="button-secondary" type="button" @click="store.refresh()">重新读取材料</button></p>
@@ -61,7 +61,7 @@ import ArtifactCard from '../components/agent/ArtifactCard.vue'
 const route = useRoute(), router = useRouter(), auth = useAuthStore(), documents = useDocumentStore(), store = useAgentRunStore()
 const jdId = ref(''), resumeId = ref(''), statusHeading = ref<HTMLElement | null>(null), announcement = ref('')
 const selectedRunId = computed(() => String(route.params.runId || ''))
-const longTaskTitles: Record<string, string> = { document_parse: '文档解析', match_analysis: '岗位匹配', question_generation: '面试出题', answer_followup: '回答分析' }
+const longTaskTitles: Record<string, string> = { document_parse: '文档解析', document_import: '文档导入', match_analysis: '岗位匹配', question_generation: '面试出题', answer_followup: '回答分析' }
 const longTask = computed(() => Boolean(longTaskTitles[store.snapshot?.kind || '']))
 const terminal = computed(() => ['succeeded', 'failed', 'cancelled'].includes(store.snapshot?.status || ''))
 const acceptsAnswers = computed(() => ['waiting_input', 'waiting_approval'].includes(store.snapshot?.status || ''))

@@ -70,6 +70,7 @@ it('keeps a completed historical artifact visible after its session is invalidat
 
 it.each([
  ['document_parse', { documentId: 'resume:7', parseMode: 'upload' }, { documents: [{ id: 'resume:7', filename: '恢复后的简历.txt', parse_status: 'success' }] }, '恢复后的简历.txt'],
+ ['document_import', { filename: '导入材料.txt' }, { documents: [{ id: 'jd:9', filename: '导入材料.txt', parse_status: 'success' }] }, '导入材料.txt'],
  ['match_analysis', { jdId: 1, resumeIds: [7] }, { run_id: 8, job_title: 'API工程师', candidates: [{ candidate_id: 2, candidate_name: '示例求职者', total_score: 76 }] }, '示例求职者'],
  ['question_generation', { analysisJobId: 8, candidateId: 2 }, { candidate_name: '示例求职者', formal_questions: [{ question_id: 'q1', question: '请说明一次接口故障的定位过程', assessment_points: ['定位'], scoring_rubric: ['真实证据'], reference_answer_direction: '解释观察和判断', suggested_followups: [] }], ambiguity_followups: [] }, '请说明一次接口故障的定位过程'],
  ['answer_followup', {}, { follow_up: '当时如何确认恢复？', reason: '核对观察依据', evidence: ['服务日志'], risks: ['尚无测量记录'], current_ability: '能解释处理步骤', next_suggestion: '补充验证依据' }, '当时如何确认恢复？'],
@@ -81,5 +82,22 @@ it.each([
  expect(wrapper.text()).toContain(visible)
  expect(wrapper.text()).not.toContain('正在读取草稿')
  expect(wrapper.text()).not.toContain('材料已生成')
+ wrapper.unmount()
+})
+
+it('offers resume and job choices for a document import in the existing task workspace', async () => {
+ const action = { actionId: 'type-1', kind: 'input', revision: 1, payload: { filename: '待确认.txt', question: '这份文件属于哪一类？', choices: [{ value: 'resume', label: '简历' }, { value: 'jd', label: '岗位' }] } }
+ fixtures.store = reactive({ snapshot: { runId: 'import-1', kind: 'document_import', status: 'waiting_input', input: {}, actions: [action] }, runs: [], drafts: {}, actionErrors: {}, conflictedActions: [], events: [], artifacts: [], busy: false, openRun: vi.fn(), loadRuns: vi.fn(), disconnect: vi.fn(), submitAction: vi.fn() })
+ const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/agent/tasks/:runId', component: AgentTaskView }, { path: '/documents', component: { template: '<p>文档</p>' } }] })
+ await router.push('/agent/tasks/import-1'); await router.isReady()
+ const wrapper = mount(AgentTaskView, { global: { plugins: [router] } })
+ expect(wrapper.find('textarea').exists()).toBe(false)
+ expect(wrapper.text()).toContain('待确认.txt')
+ await wrapper.get('input[value="resume"]').setValue()
+ expect(fixtures.store.drafts).toEqual({ 'type-1': 'resume' })
+ await wrapper.get('input[value="jd"]').setValue()
+ await wrapper.get('form.action-form').trigger('submit')
+ expect(fixtures.store.drafts).toEqual({ 'type-1': 'jd' })
+ expect(fixtures.store.submitAction).toHaveBeenCalledWith(action, 'submit')
  wrapper.unmount()
 })

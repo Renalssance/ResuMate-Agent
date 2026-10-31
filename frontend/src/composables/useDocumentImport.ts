@@ -52,22 +52,27 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
     }
   }
 
-  async function refresh(version: number) {
+  async function refresh(version: number, terminalEvent = false) {
     try {
       const snapshot = await fetchAgentRun(runId)
       if (version === generation) applySnapshot(snapshot)
     } catch (value) {
-      if (version === generation) error.value = value instanceof Error ? value.message : '文件导入失败'
+      if (version === generation) {
+        error.value = value instanceof Error ? value.message : '文件导入失败'
+        // The stream stops after its terminal event; reconnect to recover its snapshot.
+        if (terminalEvent) connect(version)
+      }
     }
   }
 
   function connect(version: number) {
+    closeSubscription()
     const receive = (snapshot: RunSnapshot) => { if (version === generation) applySnapshot(snapshot) }
     subscription = subscribeRun({
       runId, onSnapshot: receive, onReset: receive,
       onEvent: event => {
         if (version === generation && (event.type === 'run.status' || event.type === 'action.required')) {
-          void refresh(version)
+          void refresh(version, event.type === 'run.status' && ['succeeded', 'failed', 'cancelled'].includes(String(event.payload.status)))
         }
       },
       onError: value => { if (version === generation) error.value = value.message },
@@ -85,6 +90,7 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   }
 
   async function startImport(file: File) {
+    if (state.value === 'waiting_input') return
     resetImport()
     const version = generation, key = savedRunKey.value, uploadVersion = uploadGenerations.get(key)
     state.value = 'uploading'

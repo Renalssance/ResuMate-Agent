@@ -104,6 +104,7 @@ def answered_document_type(db: Session, run: AgentRun) -> Literal['resume', 'jd'
 
 def cleanup_unadopted_import(db: Session, run: AgentRun) -> None:
     if (run.kind == 'document_import' and run.status in (RunStatus.FAILED, RunStatus.CANCELLED)
+            and (run.status == RunStatus.CANCELLED or run.error_code != 'document_classification_failed')
             and not run.input_json.get('documentId') and run.input_json.get('sourcePath')):
         delete_stored_file(run.input_json['sourcePath'])
         run.input_json = {**run.input_json, 'sourcePath': ''}
@@ -128,8 +129,13 @@ def run_document_import(run_id: str, epoch: int) -> None:
         pages = None
         if not document_id:
             pages = extract_stored_pages(source_path, filename)
-            classification = classify_document('\n'.join(page.text for page in pages).strip(),
-                user_id=user_id, guard=lambda: guard_import(run_id, epoch))
+            try:
+                classification = classify_document('\n'.join(page.text for page in pages).strip(),
+                    user_id=user_id, guard=lambda: guard_import(run_id, epoch))
+            except RunError:
+                raise
+            except Exception as exc:
+                raise RunError(502, 'document_classification_failed', '文件分类未完成，请检查模型设置后重试') from exc
             with SessionLocal() as db:
                 run = guarded_import_run(db, run_id, epoch)
                 if classification.document_type == 'ambiguous' or classification.confidence != 'high':
