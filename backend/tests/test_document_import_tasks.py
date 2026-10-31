@@ -147,6 +147,21 @@ def test_import_extraction_failure_deletes_unadopted_original(career_db, import_
     assert not source.exists()
 
 
+def test_cleaned_unadopted_import_cannot_retry(career_db, import_run):
+    source = Path(import_run.input_json['sourcePath'])
+    run_id = import_run.id
+    agent_runs.finish_run(career_db, run_id, import_run.execution_epoch, RunStatus.FAILED,
+        error_code='document_import_failed')
+    assert not source.exists()
+
+    with document_imports.SessionLocal() as db:
+        with pytest.raises(agent_runs.RunError) as error:
+            agent_runs.retry_run(db, 1, run_id)
+        assert error.value.status == 404 and error.value.code == 'source_missing'
+    career_db.expire_all()
+    assert career_db.get(AgentRun, run_id).status == RunStatus.FAILED
+
+
 def test_cancel_during_classification_stops_adoption_and_cleans_original(career_db, import_run, monkeypatch):
     source = Path(import_run.input_json['sourcePath'])
     def classify_then_cancel(*a, **kw):
@@ -222,6 +237,7 @@ def test_worker_import_uses_bounded_child_and_reports_failure(career_db, import_
     from backend import worker_tasks
     from backend.services import document_process
 
+    source = Path(import_run.input_json['sourcePath'])
     import_run.status = RunStatus.QUEUED
     career_db.commit()
     factory = document_imports.SessionLocal
@@ -257,6 +273,6 @@ def test_worker_import_uses_bounded_child_and_reports_failure(career_db, import_
     assert commands and commands[0][-3:] == [run.id, str(run.execution_epoch), 'document_import']
     assert run.status == RunStatus.FAILED
     assert run.error_code == ('document_import_timeout' if failure == 'timeout' else 'document_import_failed')
-    assert not Path(run.input_json['sourcePath']).exists()
+    assert not source.exists()
     assert lifecycle[-2:] == ['reaped', 'closed']
     assert ('killed' in lifecycle) == (failure == 'timeout')

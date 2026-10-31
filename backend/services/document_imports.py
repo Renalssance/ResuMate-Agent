@@ -102,10 +102,12 @@ def answered_document_type(db: Session, run: AgentRun) -> Literal['resume', 'jd'
     return value if value in ('resume', 'jd') else None
 
 
-def cleanup_unadopted_import(run: AgentRun) -> None:
+def cleanup_unadopted_import(db: Session, run: AgentRun) -> None:
     if (run.kind == 'document_import' and run.status in (RunStatus.FAILED, RunStatus.CANCELLED)
-            and not run.input_json.get('documentId')):
-        delete_stored_file(run.input_json.get('sourcePath'))
+            and not run.input_json.get('documentId') and run.input_json.get('sourcePath')):
+        delete_stored_file(run.input_json['sourcePath'])
+        run.input_json = {**run.input_json, 'sourcePath': ''}
+        db.commit()
 
 
 def run_document_import(run_id: str, epoch: int) -> None:
@@ -143,4 +145,4 @@ def run_document_import(run_id: str, epoch: int) -> None:
                 finish_run(db, run_id, epoch, RunStatus.FAILED,
                     error_code=exc.code if isinstance(exc, RunError) else 'document_import_failed')
             elif run is not None:
-                cleanup_unadopted_import(run)
+                cleanup_unadopted_import(db, run)

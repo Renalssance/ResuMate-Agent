@@ -341,7 +341,7 @@ def cancel_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     run = cancel_run_in_transaction(db, user_id, run_id)
     db.commit()
     from backend.services.document_imports import cleanup_unadopted_import
-    cleanup_unadopted_import(run)
+    cleanup_unadopted_import(db, run)
     return run
 
 
@@ -527,7 +527,7 @@ def finish_run(db: Session, run_id: str, epoch: int, status: RunStatus,
     append_event(db, run.id, 'run.status', {'status': run.status, 'error_code': run.error_code})
     db.commit()
     from backend.services.document_imports import cleanup_unadopted_import
-    cleanup_unadopted_import(run)
+    cleanup_unadopted_import(db, run)
 
 
 def recover_stale_runs(db: Session, now=None) -> int:
@@ -561,5 +561,5 @@ def recover_stale_runs(db: Session, now=None) -> int:
     db.commit()
     from backend.services.document_imports import cleanup_unadopted_import
     for run in recovered:
-        cleanup_unadopted_import(run)
+        cleanup_unadopted_import(db, run)
     return len(recovered)
