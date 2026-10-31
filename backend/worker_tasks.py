@@ -109,6 +109,9 @@ def execute_run(run_id: str) -> None:
                 elif kind == 'document_parse':
                     from backend.services.document_process import run_document_parse_process
                     run_document_parse_process(run_id, epoch)
+                elif kind == 'document_import':
+                    from backend.services.document_process import run_document_import_process
+                    run_document_import_process(run_id, epoch)
                 elif kind == 'match_analysis':
                     from backend.services.analysis_tasks import run_match_analysis
                     run_match_analysis(run_id, epoch)

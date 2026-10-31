@@ -140,7 +140,10 @@ def _owned_source(db: Session, model, identifier: int, user_id: int):
 def require_task_sources(db: Session, run: AgentRun) -> None:
     """Refresh the fixed business identities inside the worker's guarded transaction."""
     inputs = run.input_json
-    if run.kind == 'document_parse':
+    if run.kind == 'document_import' and not inputs.get('documentId'):
+        if not inputs.get('sourcePath'):
+            raise RunError(404, 'source_missing', '待导入原件不存在')
+    elif run.kind in ('document_parse', 'document_import'):
         kind, identifier = inputs['documentId'].split(':')
         _owned_source(db, Resume if kind == 'resume' else JobDescription, int(identifier), run.user_id)
     elif run.kind == 'match_analysis':
@@ -295,7 +298,9 @@ def create_run(db: Session, user_id: int, request: RunCreate) -> AgentRun:
 
 def _mark_stopped_document(db: Session, run: AgentRun, status: RunStatus) -> None:
     # Queued cancellation and exhausted recovery never enter the parse handler.
-    if run.kind != 'document_parse' or status not in (RunStatus.FAILED, RunStatus.CANCELLED):
+    if run.kind not in ('document_parse', 'document_import') or status not in (RunStatus.FAILED, RunStatus.CANCELLED):
+        return
+    if not run.input_json.get('documentId'):
         return
     kind, identifier = run.input_json['documentId'].split(':')
     model = Resume if kind == 'resume' else JobDescription
@@ -352,7 +357,7 @@ def retry_run(db: Session, user_id: int, run_id: str) -> AgentRun:
     elif run.kind == 'tailoring':
         from backend.agent_runtime.context import read_context
         read_context(db, run)
-    elif run.kind in ('document_parse', 'match_analysis', 'question_generation', 'answer_followup'):
+    elif run.kind in ('document_parse', 'document_import', 'match_analysis', 'question_generation', 'answer_followup'):
         require_task_sources(db, run)
     else:
         raise RunError(400, 'unsupported_run_kind', '不支持的任务类型')
