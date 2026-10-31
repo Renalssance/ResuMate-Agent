@@ -7,6 +7,7 @@ import { toDocumentRecord } from '../stores/document'
 import type { DocumentRecord, DocumentType } from '../types/document'
 
 export type ImportState = 'idle' | 'uploading' | 'processing' | 'waiting_input' | 'succeeded' | 'failed'
+const uploadGenerations = new Map<string, number>()
 
 export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   const state = ref<ImportState>('idle')
@@ -15,7 +16,7 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   const error = ref('')
   const savedRunKey = computed(() => `resumate:document-import:${toValue(storageScope)}`)
   let subscription: RunSubscription | undefined
-  let runId = '', generation = 0, uploadGeneration = 0, lastSeq = -1
+  let runId = '', generation = 0, lastSeq = -1
 
   function closeSubscription() {
     subscription?.close()
@@ -85,11 +86,11 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
 
   async function startImport(file: File) {
     resetImport()
-    const version = generation, uploadVersion = uploadGeneration, key = savedRunKey.value
+    const version = generation, key = savedRunKey.value, uploadVersion = uploadGenerations.get(key)
     state.value = 'uploading'
     try {
       const accepted = await importLocalDocument(file, crypto.randomUUID())
-      if (uploadVersion !== uploadGeneration) return
+      if (uploadVersion !== uploadGenerations.get(key)) return
       sessionStorage.setItem(key, accepted.runId)
       if (version !== generation) return
       runId = accepted.runId
@@ -117,8 +118,9 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
   }
 
   function resetImport() {
-    uploadGeneration++
-    sessionStorage.removeItem(savedRunKey.value)
+    const key = savedRunKey.value
+    uploadGenerations.set(key, (uploadGenerations.get(key) || 0) + 1)
+    sessionStorage.removeItem(key)
     clearState()
   }
 
