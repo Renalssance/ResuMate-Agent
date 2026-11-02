@@ -37,6 +37,9 @@ def _parse_profile(kind: DocumentType, filename: str, raw_text: str, chunks, tas
                for chunk in chunks]
     profile = harness.run_schema(task='document.parse_resume', prompt_name='parse_resume', schema=ResumeProfile,
         variables={'filename': filename, 'chunks_json': payload}, task_id=task_id, progress_stage='llm_analyze', progress=45)
+    if progress_callback:
+        progress_callback(stage='validate', progress=55,
+            message='正在整理经历与技能，并核对提取信息在原文中的来源。')
     profile = postprocess_resume_profile(profile, chunks)
     validate_resume_source_refs(profile, chunks)
     content = profile.model_dump(mode='json')
@@ -117,6 +120,7 @@ def parse_document_record(run_id: str, epoch: int, *, document_id: str,
         run = db.get(AgentRun, run_id)
         require_task_sources(db, run)
         kind, row = _owned_document(db, run, document_id)
+        content.pop('_vectorized', None)
         row.raw_text, row.structured_data = raw_text, content
         row.parse_status = profile_parse_status(kind, content)
         row.updated_at = datetime.now(timezone.utc)

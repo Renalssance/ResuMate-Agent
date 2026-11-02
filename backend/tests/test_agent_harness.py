@@ -26,6 +26,14 @@ VALID_JOB_PROFILE = """
 """
 
 
+def completion_response(content, kwargs, finish_reason="stop"):
+    if not kwargs.get('stream'):
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content), finish_reason=finish_reason)])
+    from contextlib import nullcontext
+    return nullcontext(iter([SimpleNamespace(usage=None, choices=[SimpleNamespace(
+        index=0, delta=SimpleNamespace(content=content), finish_reason=finish_reason)])]))
+
+
 class FakeCompletions:
     def __init__(self) -> None:
         self.calls = []
@@ -37,9 +45,7 @@ class FakeCompletions:
     def create(self, **kwargs):
         self.calls.append(kwargs)
         content = self.responses[len(self.calls) - 1]
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
-        )
+        return completion_response(content, kwargs)
 
 
 def test_run_schema_injects_schema_and_retries_validation_failure(monkeypatch):
@@ -115,16 +121,18 @@ def test_run_schema_publishes_agent_lifecycle_events(monkeypatch):
     assert [event["phase"] for event in agents] == [
         "prompt_uploading",
         "waiting_response",
+        "receiving_response",
         "validating_response",
         "reflecting",
         "waiting_response",
+        "receiving_response",
         "validating_response",
         "completed",
     ]
     assert agents[0]["task"] == "document.parse_jd"
     assert agents[0]["schema"] == "JobProfile"
-    assert agents[3]["attempt"] == 1
-    assert agents[3]["level"] == "warning"
+    assert agents[4]["attempt"] == 1
+    assert agents[4]["level"] == "warning"
 
 
 class FakeReflectionCompletions:
@@ -139,9 +147,7 @@ class FakeReflectionCompletions:
     def create(self, **kwargs):
         self.calls.append(kwargs)
         content = self.responses[len(self.calls) - 1]
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
-        )
+        return completion_response(content, kwargs)
 
 
 def test_run_schema_allows_two_reflections_with_validation_feedback(monkeypatch):
@@ -176,22 +182,9 @@ class FakeLengthLimitedCompletions:
     def create(self, **kwargs):
         self.calls.append(kwargs)
         if len(self.calls) == 1:
-            return SimpleNamespace(
-                choices=[
-                    SimpleNamespace(
-                        finish_reason="length",
-                        message=SimpleNamespace(content=self.truncated_content),
-                    )
-                ]
-            )
-        return SimpleNamespace(
-            choices=[
-                SimpleNamespace(
-                    finish_reason="stop",
-                    message=SimpleNamespace(content=VALID_JOB_PROFILE),
-                )
-            ]
-        )
+            return completion_response(self.truncated_content, kwargs, "length")
+        return completion_response(VALID_JOB_PROFILE, kwargs)
+
 
 
 def test_run_schema_retries_length_truncation_with_more_tokens(monkeypatch):
@@ -228,9 +221,7 @@ class FakeUnsupportedResponseFormatCompletions:
                 "Error code: 400 - {'error': {'message': 'This response_format type is unavailable now', "
                 "'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}"
             )
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=VALID_JOB_PROFILE))]
-        )
+        return completion_response(VALID_JOB_PROFILE, kwargs)
 
 
 def test_run_schema_falls_back_when_response_format_is_unavailable(monkeypatch):
@@ -328,9 +319,7 @@ class FakeJsonObjectUnsupportedCompletions:
                 "Error code: 400 - {'error': {'message': 'This response_format type is unavailable now', "
                 "'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}"
             )
-        return SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content=VALID_JOB_PROFILE))]
-        )
+        return completion_response(VALID_JOB_PROFILE, kwargs)
 
 
 def test_deepseek_parsing_falls_back_without_response_format(monkeypatch):
@@ -369,3 +358,96 @@ def test_cancelled_retry_or_fallback_never_starts_another_model_call(monkeypatch
         harness.run_schema(task="evaluate_match", prompt_name="parse_jd", schema=JobProfile,
                            variables={"jd_text": "Backend Engineer JD"})
     assert len(completions.calls) == 1
+
+
+@pytest.mark.parametrize('task', ['document.parse_resume', 'document.parse_jd', 'chat'])
+def test_only_resume_extraction_explicitly_disables_reasoning_in_http_request(task):
+    import json
+    import httpx
+    from openai import OpenAI
+
+    def respond(request):
+        body = json.loads(request.content)
+        if task == 'document.parse_resume':
+            assert body.get('reasoning_effort') == 'none'
+        else:
+            assert 'reasoning_effort' not in body
+        if body.get('stream'):
+            chunk = dict(id='parse', object='chat.completion.chunk', created=0, model='iq3_xxs',
+                         choices=[dict(index=0, delta={'content': '{}'}, finish_reason='stop')])
+            return httpx.Response(200, headers={'content-type': 'text/event-stream'},
+                                  text='data: ' + json.dumps(chunk) + '\n\ndata: [DONE]\n\n')
+        return httpx.Response(200, json=dict(id='chat', object='chat.completion', created=0,
+            model='iq3_xxs', choices=[dict(index=0, message={'role': 'assistant', 'content': '{}'}, finish_reason='stop')]))
+
+    harness = AgentHarness.__new__(AgentHarness)
+    harness.model = 'iq3_xxs'
+    with OpenAI(api_key='test', base_url='https://model.test/v1', max_retries=0,
+                http_client=httpx.Client(transport=httpx.MockTransport(respond))) as client:
+        harness.client = client
+        result = harness._create_chat_completion(task, [{'role': 'user', 'content': 'Extract fields'}], None, 0)
+    assert result.choices[0].message.content == '{}'
+
+
+@pytest.mark.parametrize('length_error', [False, True])
+def test_document_stream_assembles_json_and_usage_before_validation(monkeypatch, length_error):
+    import json
+    import httpx
+    from openai import OpenAI
+    requests, events, usages = [], [], []
+    def respond(request):
+        body = json.loads(request.content)
+        requests.append(body)
+        assert body.get('stream') is True
+        assert body['stream_options'] == {'include_usage': True}
+        if length_error and len(requests) == 1:
+            return httpx.Response(200, headers={'content-type': 'text/event-stream'}, text='data: '+json.dumps({
+                'error': {'message': 'structured output was incomplete (finish_reason=length); increase the output budget'}
+            })+'\n\n')
+        parts = [VALID_JOB_PROFILE[:100], VALID_JOB_PROFILE[100:]]
+        chunks = [dict(id='parse', object='chat.completion.chunk', created=0, model='test',
+            choices=[dict(index=0, delta={'content': part}, finish_reason=None)]) for part in parts]
+        chunks += [dict(id='parse', object='chat.completion.chunk', created=0, model='test',
+            choices=[dict(index=0, delta={}, finish_reason='stop')]),
+            dict(id='parse', object='chat.completion.chunk', created=0, model='test', choices=[],
+                usage={'prompt_tokens': 12, 'completion_tokens': 34, 'total_tokens': 46})]
+        return httpx.Response(200, headers={'content-type': 'text/event-stream'},
+            text=''.join('data: '+json.dumps(chunk)+'\n\n' for chunk in chunks)+'data: [DONE]\n\n')
+    harness = AgentHarness.__new__(AgentHarness)
+    harness.model = 'test'
+    harness.progress_callback = lambda **event: events.append(event)
+    monkeypatch.setattr(harness, '_record_usage_response', lambda task, response, elapsed: usages.append(response.usage))
+    with OpenAI(api_key='test', base_url='https://model.test/v1', max_retries=0, http_client=httpx.Client(transport=httpx.MockTransport(respond))) as client:
+        harness.client = client
+        result = harness.run_schema(task='document.parse_jd', prompt_name='parse_jd', schema=JobProfile, variables={'jd_text':'Build APIs'})
+    assert result.job_title == 'Backend Engineer'
+    assert len(requests) == (2 if length_error else 1)
+    if length_error:
+        assert [request['max_tokens'] for request in requests] == [8192, 16384]
+    assert usages[-1].total_tokens == 46
+    assert any(event['data']['agent']['phase'] == 'receiving_response' for event in events)
+
+
+@pytest.mark.parametrize('cancelled', [False, True])
+def test_document_stream_closes_on_cancel_or_missing_finish_marker(cancelled):
+    from contextlib import contextmanager
+    closed = []
+    @contextmanager
+    def stream(**kwargs):
+        try:
+            yield iter([SimpleNamespace(usage=None, choices=[SimpleNamespace(index=0,
+                delta=SimpleNamespace(content=VALID_JOB_PROFILE), finish_reason=None)])])
+        finally:
+            closed.append(True)
+    harness = AgentHarness.__new__(AgentHarness)
+    harness.model = 'test'
+    harness.client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=stream)))
+    checks = []
+    def guard():
+        checks.append(True)
+        if cancelled and len(checks) > 1:
+            raise RunError(409, 'execution_lost', 'cancelled')
+    harness.guard = guard
+    with pytest.raises(RunError if cancelled else RuntimeError, match='cancelled' if cancelled else '完成标记'):
+        harness._create_chat_completion('document.parse_resume', [], None, 1)
+    assert closed == [True]

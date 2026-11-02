@@ -575,6 +575,7 @@
 </template>
 
 <script setup lang="ts">
+import { createUuid } from '../utils/uuid'
 import { buildSearchIndex, matchesSearch } from '../utils/search'
 import { ArrowLeft, ArrowRight, CalendarDays, ChevronLeft, ChevronRight, CircleDot, ExternalLink, ListTree, Pencil, Plus, Save, Trash2, X } from '@lucide/vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
@@ -626,7 +627,7 @@ async function startInterview(applicationId: number) {
   const storageKey = `resumate:interview:start:${auth.username}:${applicationId}`
   let requestId = interviewRequests.get(applicationId)
   try { requestId ||= sessionStorage.getItem(storageKey) || undefined } catch { /* The in-memory request still prevents double clicks. */ }
-  requestId ||= crypto.randomUUID()
+  requestId ||= createUuid()
   interviewRequests.set(applicationId, requestId)
   try { sessionStorage.setItem(storageKey, requestId) } catch { /* A refresh cannot restore a request when storage is disabled. */ }
   startingInterview.value = applicationId; interviewError.value = ''

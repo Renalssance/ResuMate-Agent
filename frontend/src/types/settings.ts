@@ -1,4 +1,5 @@
 export interface LlmSettingsResponse {
+  api_key: string
   has_api_key: boolean
   api_key_hint: string
   base_url: string
@@ -10,7 +11,6 @@ export interface LlmSettingsResponse {
 
 export interface LlmSettingsPayload {
   api_key?: string
-  clear_api_key?: boolean
   base_url?: string
   model?: string
   max_tokens?: number
@@ -55,4 +55,20 @@ export interface LlmUsageDashboard {
   daily: LlmUsageDailyPoint[]
   by_task: LlmUsageTaskPoint[]
   recent_calls: LlmUsageCall[]
+}
+
+export interface EmbeddingSettingsResponse {
+  api_key: string
+  provider: 'openai' | 'qwen' | 'local'
+  has_api_key: boolean
+  api_key_hint: string
+  base_url: string
+  model: string
+  source: 'saved' | 'environment'
+}
+export interface EmbeddingSettingsPayload {
+  provider: 'openai' | 'qwen' | 'local'
+  api_key: string
+  base_url: string
+  model: string
 }

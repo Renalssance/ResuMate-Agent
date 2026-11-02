@@ -4,13 +4,13 @@
     type="button"
     :disabled="!text.trim()"
     :aria-label="accessibleLabel"
-    :title="status === '复制失败' ? '无法访问剪贴板，请手动选中文字复制' : accessibleLabel"
+    :title="status === '复制失败' ? '无法访问剪贴板，请手动选中文字复制' : `复制${label}`"
     aria-live="polite"
     @click.prevent="copy"
   >
     <component :is="status === '已复制' ? CopyCheck : status === '复制失败' ? CopyX : Copy" class="app-icon" aria-hidden="true" />
   </button>
-  <span v-if="status" class="copy-feedback" role="status">{{ status === '复制失败' ? '复制失败，请手动选中文字复制。' : status }}</span>
+  <span v-if="status === '复制失败'" class="copy-feedback" role="status">复制失败，请手动选中文字复制。</span>
 </template>
 
 <script setup lang="ts">

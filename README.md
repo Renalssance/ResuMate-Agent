@@ -6,6 +6,10 @@ ResuMate 把收藏岗位、整理简历、补问信息、审阅来源、导出�
 
 [学习目录](docs/learning/README.md) · [整体架构](docs/architecture.md) · [开发命令](docs/development.md) · [扩展使用](extension/README.md) · [评测说明](evals/README.md) · [部署恢复](docs/deployment.md) · [性能报告](docs/performance.md)
 
+## 聊天 Agent 工作台
+
+默认工作入口现为 `/chat`：基于现有 Deep Agents，参考 LibreChat 的会话列表、流式回复和工具结果卡片，通过对话调用文档解析、匹配打分、简历草稿、面试问答与投递管理。保留原有专业页面作为审阅与详情入口。会话、消息、任务进度可刷新恢复；耗时任务继续由原有 worker 处理。使用方式、架构与验证范围见[聊天 Agent 说明](docs/chat-agent.md)。
+
 ## 已实现的业务流程
 
 | 用户操作 | 保存与恢复方式 |

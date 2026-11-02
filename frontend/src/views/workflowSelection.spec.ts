@@ -34,6 +34,16 @@ it('restores an accepted matching task after returning to the page', async () =>
  w.unmount()
 })
 
+it('attaches a chat-created matching task from the matching page route', async () => {
+ fixtures.docs.parsedJds = [{ id: 'jd:3', filename: '岗位' }]
+ fixtures.docs.parsedResumes = [{ id: 'resume:4', filename: '简历' }]
+ const w = await render(MatchingView, '/matching?taskId=chat-match&jdId=3&resumeId=4&analysisJobId=5'); await flushPromises()
+ expect(fixtures.task.start).toHaveBeenCalledWith('chat-match')
+ expect(fixtures.match.createMatch).not.toHaveBeenCalled()
+ expect(w.findAll('select').map(select => (select.element as HTMLSelectElement).value)).toEqual(['jd:3', 'resume:4'])
+ w.unmount()
+})
+
 it('persists the server matching task ID only after acceptance', async () => {
  localStorage.setItem('username', 'owner')
  fixtures.docs.parsedJds = [{ id: 'jd:3', filename: '岗位' }]

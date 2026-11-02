@@ -7,7 +7,7 @@ from backend.agent_runtime.context import model_budget
 from backend.agent_runtime.context_middleware import BusinessContextMiddleware
 from deepagents.graph import DeepAgentState
 from deepagents.profiles import HarnessProfile, GeneralPurposeSubagentProfile, register_harness_profile
-from langchain_openai import ChatOpenAI
+from backend.agent_runtime.reasoning_model import ReasoningChatOpenAI as ChatOpenAI
 from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 from backend.agent_runtime.tools import business_tools
 from backend.agent_runtime.telemetry import attach_model_telemetry
@@ -19,7 +19,7 @@ class RunState(DeepAgentState):
     run_id: str
 
 
-def model_for_user(user_id: int):
+def model_for_user(user_id: int, *, inspection_task: str = 'agent'):
     settings = resolve_effective_llm_settings(user_id)
     if not all((settings.api_key, settings.base_url, settings.model)):
         raise RunError(422, 'model_not_configured', '请先完成个人模型设置')
@@ -27,7 +27,8 @@ def model_for_user(user_id: int):
         raise RunError(422, 'model_context_not_configured', '请在个人模型设置中填写已核实的上下文容量')
     if int(settings.context_window_tokens * .95) <= settings.max_tokens:
         raise RunError(422, 'context_budget_exceeded', '上下文容量不足以预留输出，请提高容量或降低输出上限')
-    return ChatOpenAI(profile={'max_input_tokens': settings.context_window_tokens}, model=settings.model, api_key=settings.api_key, base_url=settings.base_url,
+    from backend.agent_runtime.call_inspection import ModelCallInspection
+    return ChatOpenAI(callbacks=[ModelCallInspection(user_id, settings.base_url, inspection_task, settings.request_timeout_seconds)], profile={'max_input_tokens': settings.context_window_tokens}, model=settings.model, api_key=settings.api_key, base_url=settings.base_url,
                       max_tokens=settings.max_tokens, timeout=settings.request_timeout_seconds,
                       max_retries=0, stream_usage=True,
                       http_client=DefaultHttpxClient(follow_redirects=False),

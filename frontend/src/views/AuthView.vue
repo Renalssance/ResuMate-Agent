@@ -7,7 +7,7 @@
         <span class="rm-eyebrow">{{ isRegister ? 'HELLO, NEW FRIEND' : 'WELCOME BACK' }}</span>
         <h2 id="auth-title">{{ isRegister ? '和米洛成为伙伴' : '欢迎回到 ResuMate' }}</h2>
         <p>{{ isRegister ? '创建账号，开启你的招聘工作台。' : '登录账号，继续上一次的探索。' }}</p>
-        <template v-if="auth.isAuthenticated"><p>你已登录为 {{ auth.username }}。</p><RouterLink class="rm-button" to="/documents">进入工作台 <ArrowRight :size="18" /></RouterLink></template>
+        <template v-if="auth.isAuthenticated"><p>你已登录为 {{ auth.username }}。</p><RouterLink class="rm-button" to="/chat">进入工作台 <ArrowRight :size="18" /></RouterLink></template>
         <form v-else :aria-busy="auth.loading" @submit.prevent="submit">
           <label for="auth-username">用户名</label>
           <input id="auth-username" v-model.trim="username" name="username" autocomplete="username" required placeholder="输入你的用户名" :disabled="auth.loading">
@@ -47,7 +47,7 @@ async function submit() {
   try {
     await auth.submit(isRegister.value ? 'register' : 'login', { username: username.value, password: password.value })
     password.value = ''; confirmation.value = ''
-    await router.push(isRegister.value ? '/settings' : '/documents')
+    await router.push('/chat')
   } catch (err) {
     error.value = err instanceof Error ? err.message : '暂时无法登录，请稍后重试。'
   }

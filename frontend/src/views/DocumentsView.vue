@@ -174,7 +174,8 @@
 
 <script setup lang="ts">
 import { Eye, FileText, FileUser, RefreshCw, Text, Trash2, Upload, X } from '@lucide/vue'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import DocumentDetailDrawer from '../components/DocumentDetailDrawer.vue'
 import DocumentParseTaskList from '../components/DocumentParseTaskList.vue'
 import EmptyState from '../components/EmptyState.vue'
@@ -192,6 +193,7 @@ import { createTextUploadFile } from '../utils/textUpload'
 import { buildSearchIndex, matchesSearch } from '../utils/search'
 
 const store = useDocumentStore()
+const route = useRoute()
 const parseTasks = useDocumentParseTasks({
   refreshDocumentsSilently: store.refreshDocumentsSilently,
   reparse: store.reparseDocument,
@@ -237,6 +239,9 @@ const activeText = computed({
   },
 })
 
+watch([() => route.query.document, () => store.documents], ([id]) => {
+  if (typeof id === 'string') selectedDocument.value = store.documents.find(doc => doc.id === id) || null
+}, { immediate: true })
 onMounted(store.loadDocuments)
 onBeforeUnmount(parseTasks.closeAll)
 

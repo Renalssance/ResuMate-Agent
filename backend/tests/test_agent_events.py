@@ -273,3 +273,22 @@ def test_model_stream_failure_flushes_text_before_failed_status(runtime, career_
     assert recorded[-2].payload == {'text': 'partial answer'}
     assert recorded[-1].payload == {'status': 'failed', 'error_code': 'agent_failed'}
     assert 'private' not in json.dumps([e.payload for e in recorded])
+
+
+def test_reasoning_is_separate_from_answer_and_finishes_before_answer(runtime, career_db, career_engine):
+    from langchain_core.messages import AIMessageChunk
+    from sqlalchemy.orm import sessionmaker
+    from backend.agent_runtime.events import RuntimeEvents
+    run_id = new_run(career_db).id
+    epoch = agent_runs.claim_run(career_db, run_id)
+    sink = RuntimeEvents(run_id, epoch, sessionmaker(career_engine), include_reasoning=True)
+    sink.message(AIMessageChunk(content='', additional_kwargs={'reasoning_content': '先统计岗位'}), {'langgraph_node': 'model'})
+    sink.message(AIMessageChunk(content='', additional_kwargs={'reasoning_content': '内部摘要'}), {'langgraph_node': 'SummarizationMiddleware.before_model'})
+    sink.message(AIMessageChunk(content='你的投递偏向后端岗位'), {'langgraph_node': 'model'})
+    sink.flush()
+    recorded = [event for event in events(career_db, run_id) if event.type.startswith('assistant.')]
+    assert [(event.type, event.payload) for event in recorded] == [
+        ('assistant.reasoning', {'text': '先统计岗位'}),
+        ('assistant.reasoning.done', {}),
+        ('assistant.delta', {'text': '你的投递偏向后端岗位'}),
+    ]

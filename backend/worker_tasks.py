@@ -67,7 +67,7 @@ def cleanup_invalidated_sessions() -> None:
                         # Holding the OS lock proves any old executor has stopped,
                         # including a restart before the stale-heartbeat timeout.
                         running = list(db.scalars(select(AgentRun).where(
-                            AgentRun.session_id == session.id, AgentRun.kind.in_(['tailoring', 'interview_generation']),
+                            AgentRun.session_id == session.id, AgentRun.kind.in_(['tailoring', 'interview_generation', 'chat']),
                             AgentRun.status == RunStatus.RUNNING)))
                         for run in running:
                             agent_runs.finish_run(db, run.id, run.execution_epoch, RunStatus.CANCELLED)
@@ -97,7 +97,10 @@ def execute_run(run_id: str) -> None:
             heartbeat = Thread(target=_heartbeat, args=(run_id, epoch, stopped), daemon=True)
             heartbeat.start()
             try:
-                if kind == 'tailoring':
+                if kind == 'chat':
+                    from backend.agent_runtime.chat import run_chat
+                    run_chat(run_id, epoch)
+                elif kind == 'tailoring':
                     from backend.agent_runtime.runner import run_agent
                     run_agent(run_id, epoch)
                 elif kind == 'interview_generation':

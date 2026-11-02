@@ -53,3 +53,11 @@ RESUMATE_TEST_MYSQL_SOCKET=/tmp/resumate-mysql-t02/mysql.sock uv run pytest back
 既有问题、回答、命令和事件保留；新列为 NULL，不用当前简历或岗位伪造历史快照。旧骨架访问时返回 `interview_context_missing`，用户可以新建练习。新面试从投递时简历快照和开始练习时的岗位材料创建，二者采集时点分别保存。SQLite 启动可重复追加列和索引。
 
 `backend/tests/test_interviews.py::test_additive_upgrade_preserves_legacy_interview_without_inventing_context` 在独立 SQLite/MySQL 测试库模拟立即前一版四张面试表，运行真实升级并验证原行、NULL 字段、索引及旧上下文错误；不代表已执行 CloudBase 远程升级。
+
+## Embedding 设置
+
+新增 `006_embedding_settings.sql`，在 MySQL 部署执行以保存实例共享的向量模型配置。SQLite 启动时自动创建新表。未保存配置时仍使用原环境变量，保存后 API 与 worker 下次创建索引或检索客户端时读取数据库配置。不会自动更换已有索引的模型或删除文档。
+
+### 模型调用查看页
+
+`007_llm_calls.sql` 新增按用户隔离的 `llm_calls` 表，保存每次调用的实际参数、Prompt、输出、用量及状态。SQLite 启动时自动建表；MySQL 部署前手动执行此脚本。历史调用没有完整输入输出，无法回填。页面入口 `/model-calls`，不保存 API Key，也不把完整内容发送到外部遥测或普通日志。进程被强制终止时，尚未完成的记录会保留“进行中”及最后一次收到的内容。

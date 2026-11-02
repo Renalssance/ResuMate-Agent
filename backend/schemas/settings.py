@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -14,6 +15,7 @@ class LlmSettingsUpdate(BaseModel):
 
 
 class LlmSettingsResponse(BaseModel):
+    api_key: str
     has_api_key: bool
     api_key_hint: str
     base_url: str
@@ -65,3 +67,22 @@ class LlmUsageSummary(BaseModel):
 
 class LlmUsageDashboard(LlmUsageSummary):
     recent_calls: list[LlmUsageCall]
+
+
+class EmbeddingSettingsUpdate(BaseModel):
+    model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)
+    provider: Literal['openai', 'qwen', 'local'] | None = None
+    api_key: str | None = None
+    clear_api_key: bool = False
+    base_url: str | None = Field(default=None, max_length=1024)
+    model: str | None = Field(default=None, min_length=1, max_length=255)
+
+
+class EmbeddingSettingsResponse(BaseModel):
+    api_key: str
+    provider: str
+    has_api_key: bool
+    api_key_hint: str
+    base_url: str
+    model: str
+    source: Literal['saved', 'environment']

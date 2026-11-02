@@ -8,6 +8,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
+from backend.agent_runtime.call_inspection import ModelCallInspection
 from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
@@ -139,6 +140,7 @@ def create_agent_with_interview_tools(user_id: str):
     model = init_chat_model(
         model=settings.model,
         model_provider="openai",
+        callbacks=[ModelCallInspection(int_user_id, settings.base_url, "legacy_chat", settings.request_timeout_seconds)],
         api_key=settings.api_key,
         base_url=settings.base_url or None,
         timeout=settings.request_timeout_seconds,

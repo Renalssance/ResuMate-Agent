@@ -30,6 +30,17 @@
     </section>
 
     <template v-else>
+      <section class="card profile-template-card">
+        <label class="form-field">
+          <span>资料模板</span>
+          <select v-model="templateResumeId" class="input" :disabled="saving || !templateResumes.length">
+            <option value="">{{ templateResumes.length ? '选择一份已有简历作为模板' : '暂无其他已解析简历可作为模板' }}</option>
+            <option v-for="resume in templateResumes" :key="resume.id" :value="resume.id">{{ resume.filename }}</option>
+          </select>
+        </label>
+        <button class="button-secondary" type="button" :disabled="saving || !templateResumeId" @click="applyTemplate">一键补齐空白</button>
+        <p>只补齐空白，保留已有内容。经历按名称等信息匹配；整个栏目为空时复制模板栏目。填入后可编辑、保存或取消。</p>
+      </section>
       <section class="card profile-fields-editor">
         <div class="section-head compact">
           <div>
@@ -228,7 +239,7 @@ import EmptyState from '../components/EmptyState.vue'
 import CopyFieldButton from '../components/CopyFieldButton.vue'
 import ProfileFacts from '../components/ProfileFacts.vue'
 import BusinessMemory from '../components/BusinessMemory.vue'
-import { emptyProfile, emptyEducation, emptyWork, emptyProject, emptyPaper, emptyAward, normalizeProfile } from '../utils/profileDraft'
+import { emptyProfile, emptyEducation, emptyWork, emptyProject, emptyPaper, emptyAward, normalizeProfile, fillProfileFromTemplate } from '../utils/profileDraft'
 import { useDocumentStore } from '../stores/document'
 import { countFilledProfileFields, profileRequiredFields } from '../utils/profileFields'
 
@@ -236,6 +247,7 @@ type AnyRecord = Record<string, any>
 
 const store = useDocumentStore()
 const selectedResumeId = ref('')
+const templateResumeId = ref('')
 const draft = ref<AnyRecord>(emptyProfile())
 const isEditing = ref(false)
 const saving = ref(false)
@@ -245,6 +257,11 @@ const saveFailed = ref(false)
 
 const parsedResumes = computed(() => store.parsedResumes)
 const selectedResume = computed(() => parsedResumes.value.find((resume) => resume.id === selectedResumeId.value) || null)
+const templateResumes = computed(() => parsedResumes.value.filter((resume) => resume.id !== selectedResumeId.value))
+
+watch(selectedResumeId, () => {
+  templateResumeId.value = ''
+})
 
 const requiredFields = profileRequiredFields
 const filledRequiredCount = computed(() => countFilledProfileFields(draft.value))
@@ -292,6 +309,21 @@ function cancelEditing() {
 function startEditing() {
   message.value = ''
   isEditing.value = true
+}
+
+function applyTemplate() {
+  if (saving.value || !selectedResume.value) return
+  const template = templateResumes.value.find((resume) => resume.id === templateResumeId.value)
+  if (!template) return
+  const result = fillProfileFromTemplate(draft.value, template.parsedContent || {})
+  saveFailed.value = false
+  if (!result.changed) {
+    message.value = '没有可从该模板补齐的空白字段。'
+    return
+  }
+  draft.value = result.profile
+  isEditing.value = true
+  message.value = `已从「${template.filename}」补齐空白字段，请检查后保存；取消可撤销本次编辑。`
 }
 
 function addEducation() {

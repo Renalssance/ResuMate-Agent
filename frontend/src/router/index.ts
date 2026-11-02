@@ -18,6 +18,7 @@ const router = createRouter({
       component: () => import('../views/DocumentsView.vue'),
       meta: { title: '文档管理', description: '上传、解析、查看和删除 JD 与简历' },
     },
+    { path: '/chat/:sessionId?', name: 'chat', component: () => import('../views/ChatView.vue'), meta: { title: '求职对话', description: '和米洛一起分析岗位、准备材料与练习面试' } },
     { path: '/interviews/:id', name: 'interview', component: () => import('../views/InterviewView.vue'), meta: { title: '模拟面试', description: '基于本次投递材料，练习回答并回顾反馈' } },
     { path: '/jobs', name: 'jobs', component: () => import('../views/JobsView.vue'), meta: { title: '岗位中心', description: '收藏岗位原文、关联简历并准备投递材料' } },
     { path: '/resume-versions/:versionId', name: 'resume-editor', component: () => import('../views/ResumeEditorView.vue'), meta: { title: '审阅与编辑', description: '逐条核对建议，保存并确认属于你的简历版本' } },
@@ -52,6 +53,7 @@ const router = createRouter({
       component: () => import('../views/ExtensionView.vue'),
       meta: { title: '浏览器插件', description: '下载并安装 ResuMate Autofill，辅助填写招聘表单' },
     },
+    { path: '/model-calls', name: 'model-calls', component: () => import('../views/ModelCallsView.vue'), meta: { title: '模型调用', description: '查看模型配置、Prompt、输出与 Token 用量' } },
     {
       path: '/settings',
       name: 'settings',

@@ -10,11 +10,14 @@ from backend.services.run_events import append_event
 
 
 class RuntimeEvents:
-    def __init__(self, run_id, epoch, session_factory):
+    def __init__(self, run_id, epoch, session_factory, *, include_reasoning=False):
         self.run_id = run_id
         self.epoch = epoch
         self.session_factory = session_factory
         self.text = ''
+        self.include_reasoning = include_reasoning
+        self.reasoning = ''
+        self.reasoning_active = False
         self.last_flush = monotonic()
 
     def message(self, message, metadata):
@@ -25,6 +28,14 @@ class RuntimeEvents:
         text = content if isinstance(content, str) else ''.join(
             block if isinstance(block, str) else block.get('text', '')
             for block in content if isinstance(block, str) or block.get('type') == 'text')
+        reasoning = message.additional_kwargs.get('reasoning_content', '') if self.include_reasoning else ''
+        if reasoning:
+            self.reasoning += reasoning
+            self.reasoning_active = True
+            if len(self.reasoning) >= 512 or monotonic() - self.last_flush >= 0.1:
+                self.flush()
+        if text or message.tool_calls or message.response_metadata.get('finish_reason'):
+            self.finish_reasoning()
         if text:
             self.text += text
             # Time is checked on arrivals, not with a background timer or SQL session.
@@ -46,12 +57,26 @@ class RuntimeEvents:
                 })
                 db.commit()
 
+    def finish_reasoning(self):
+        if not self.reasoning_active:
+            return
+        self.flush()
+        with self.session_factory() as db:
+            guard_execution(db, self.run_id, self.epoch)
+            append_event(db, self.run_id, 'assistant.reasoning.done', {})
+            db.commit()
+        self.reasoning_active = False
+
     def flush(self):
-        if not self.text:
+        if not self.text and not self.reasoning:
             return
         with self.session_factory() as db:
             guard_execution(db, self.run_id, self.epoch)
-            append_event(db, self.run_id, 'assistant.delta', {'text': self.text})
+            if self.reasoning:
+                append_event(db, self.run_id, 'assistant.reasoning', {'text': self.reasoning})
+            if self.text:
+                append_event(db, self.run_id, 'assistant.delta', {'text': self.text})
             db.commit()
         self.text = ''
+        self.reasoning = ''
         self.last_flush = monotonic()

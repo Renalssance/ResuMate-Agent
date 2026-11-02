@@ -63,6 +63,7 @@ def resolve_effective_llm_settings(user_id: int | None, db: Session | None = Non
 def read_llm_settings(user_id: int, db: Session) -> LlmSettingsResponse:
     settings = resolve_effective_llm_settings(user_id, db)
     return LlmSettingsResponse(
+        api_key=settings.api_key,
         has_api_key=bool(settings.api_key),
         api_key_hint=settings.api_key[-4:] if settings.api_key else "",
         base_url=settings.base_url,

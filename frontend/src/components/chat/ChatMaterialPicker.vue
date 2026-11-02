@@ -12,21 +12,25 @@
     </div>
     <div class="material-anchor">
       <Transition name="material-pop">
-        <section v-if="open" class="material-panel" role="dialog" aria-label="添加材料">
-          <div class="source-actions">
-            <button type="button" data-source-option data-source="resume" @click="section = 'resume'"><FileUser :size="18" aria-hidden="true" />选择数据库中的简历</button>
-            <button type="button" data-source-option data-source="job" @click="section = 'job'"><BriefcaseBusiness :size="18" aria-hidden="true" />选择数据库中的岗位</button>
-            <button type="button" data-source-option data-source="local" :disabled="importActive" @click="localInput?.click()"><FileUp :size="18" aria-hidden="true" />选择本地文件</button>
-          </div>
-          <div v-if="section === 'resume'" class="saved-materials">
-            <button v-for="item in resumes" :key="item.id" type="button" :data-resume-id="item.id" :title="item.filename"
-                    @click="chooseResume(item.id)">{{ item.filename }}</button>
-            <p v-if="!resumes.length">暂无已解析的简历，可选择本地文件。</p>
-          </div>
-          <div v-if="section === 'job'" class="saved-materials">
-            <button v-for="item in jobs" :key="item.id" type="button" :data-job-id="item.id" :title="item.filename"
-                    @click="chooseJob(item.id)">{{ item.parsedContent?.title || item.filename }}</button>
-            <p v-if="!jobs.length">暂无已解析的岗位，可选择本地文件。</p>
+        <section v-if="open" :class="['material-panel', { 'has-section': section !== 'root' }]" role="dialog" aria-label="添加材料">
+          <div class="material-menu">
+            <div class="source-actions">
+              <button type="button" data-source-option data-source="resume" :aria-pressed="section === 'resume'" @click="section = 'resume'"><FileUser :size="18" aria-hidden="true" />资料库中简历</button>
+              <button type="button" data-source-option data-source="job" :aria-pressed="section === 'job'" @click="section = 'job'"><BriefcaseBusiness :size="18" aria-hidden="true" />资料库中岗位</button>
+              <button type="button" data-source-option data-source="local" :disabled="importActive" @click="localInput?.click()"><FileUp :size="18" aria-hidden="true" />选择本地文件</button>
+            </div>
+            <Transition name="material-list" mode="out-in">
+              <div v-if="section === 'resume'" key="resume" class="saved-materials" aria-label="资料库中简历">
+                <button v-for="item in resumes" :key="item.id" type="button" :data-resume-id="item.id" :title="item.filename"
+                        @click="chooseResume(item.id)">{{ item.filename }}</button>
+                <p v-if="!resumes.length">暂无已解析的简历，可选择本地文件。</p>
+              </div>
+              <div v-else-if="section === 'job'" key="job" class="saved-materials" aria-label="资料库中岗位">
+                <button v-for="item in jobs" :key="item.id" type="button" :data-job-id="item.id" :title="item.filename"
+                        @click="chooseJob(item.id)">{{ item.parsedContent?.title || item.filename }}</button>
+                <p v-if="!jobs.length">暂无已解析的岗位，可选择本地文件。</p>
+              </div>
+            </Transition>
           </div>
           <div v-if="pendingAction" class="type-confirmation">
             <p class="confirmation-filename" :title="String(pendingAction.payload.filename || '')">{{ pendingAction.payload.filename }}</p>
@@ -76,7 +80,7 @@ function chooseJob(id: string) { emit('update:jobId', id); closePicker() }
 function pickLocalFile(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (file) emit('local-file', file)
+  if (file) { emit('local-file', file); closePicker() }
   input.value = ''
 }
 watch(open, (value, _, onCleanup) => {
@@ -107,12 +111,15 @@ button:focus-visible { outline: 2px solid var(--brand-cocoa, #63483e); outline-o
 button:disabled { cursor: wait; opacity: .5; }
 .material-trigger { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 999px; color: var(--brand-muted, #786b63); background: transparent; display: grid; place-items: center; transition: color 160ms ease, background 160ms ease, transform 160ms ease; }
 .material-trigger:hover, .material-trigger:focus-visible { color: var(--brand-ink, #352b27); background: color-mix(in srgb, var(--brand-cream, #faf7f2) 72%, transparent); transform: translateY(-1px); }
-.material-panel { position: absolute; z-index: 20; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); transform-origin: bottom center; box-sizing: border-box; width: min(360px, calc(100vw - 32px)); max-height: min(480px, 65dvh); overflow-y: auto; padding: 12px; border: 1px solid var(--brand-line, #ded0c2); border-radius: 20px; background: color-mix(in srgb, var(--brand-cream, #faf7f2) 88%, transparent); box-shadow: 0 18px 48px rgba(91, 66, 43, .16); backdrop-filter: blur(22px) saturate(1.08); -webkit-backdrop-filter: blur(22px) saturate(1.08); font-size: 13px; }
-.source-actions { display: grid; gap: 3px; }
+.material-panel { position: absolute; z-index: 20; left: 50%; bottom: calc(100% + 14px); transform: translateX(-50%); transform-origin: bottom center; box-sizing: border-box; width: max-content; max-width: calc(100vw - 24px); padding: 8px; border: 1px solid var(--brand-line, #ded0c2); border-radius: 20px; background: color-mix(in srgb, var(--brand-cream, #faf7f2) 88%, transparent); box-shadow: 0 18px 48px rgba(91, 66, 43, .16); backdrop-filter: blur(22px) saturate(1.08); -webkit-backdrop-filter: blur(22px) saturate(1.08); font-size: 13px; }
+.material-menu { display: grid; grid-template-columns: 150px; align-items: stretch; }
+.material-panel.has-section .material-menu { grid-template-columns: 150px minmax(230px, 280px); }
+.source-actions { min-height: 144px; display: grid; align-content: stretch; gap: 3px; }
 .source-actions button, .saved-materials button { width: 100%; min-height: 40px; padding: 9px 11px; border: 0; border-radius: 11px; color: inherit; background: transparent; text-align: left; }
-.source-actions button { display: flex; align-items: center; gap: 10px; }
-.source-actions button:hover:not(:disabled), .saved-materials button:hover { background: var(--color-primary-light, #f3ece4); }
-.saved-materials, .type-confirmation { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--brand-line, #ded0c2); }
+.source-actions button { display: grid; grid-template-columns: 18px max-content; align-items: center; justify-content: center; gap: 10px; padding-inline: 7px; }
+.source-actions button:hover:not(:disabled), .source-actions button[aria-pressed="true"], .saved-materials button:hover { background: var(--color-primary-light, #f3ece4); }
+.saved-materials { height: 144px; margin-left: 7px; padding-left: 7px; overflow-y: auto; overscroll-behavior: contain; border-left: 1px solid var(--brand-line, #ded0c2); scrollbar-width: thin; scrollbar-color: rgba(120, 85, 55, .32) transparent; }
+.type-confirmation { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--brand-line, #ded0c2); }
 .saved-materials button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .material-panel p { margin: 8px 10px; color: var(--brand-muted, #786b63); line-height: 1.6; overflow-wrap: anywhere; }
 .material-panel .confirmation-filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -127,10 +134,20 @@ button:disabled { cursor: wait; opacity: .5; }
 .material-pop-enter-active { transition: opacity 180ms ease, transform 180ms cubic-bezier(.2,.8,.2,1); }
 .material-pop-leave-active { transition: opacity 140ms ease, transform 140ms ease; }
 .material-pop-enter-from, .material-pop-leave-to { opacity: 0; transform: translate(-50%, 6px) scale(.96); }
+.material-list-enter-active { transition: opacity 160ms ease, transform 180ms cubic-bezier(.2,.8,.2,1); }
+.material-list-leave-active { transition: opacity 100ms ease; }
+.material-list-enter-from { opacity: 0; transform: translateX(-6px); }
+.material-list-leave-to { opacity: 0; }
+@media (max-width: 560px) {
+  .material-panel.has-section .material-menu { grid-template-columns: minmax(0, 1fr); }
+  .material-menu { width: min(290px, calc(100vw - 42px)); }
+  .saved-materials { height: 150px; margin: 7px 0 0; padding: 7px 0 0; border-top: 1px solid var(--brand-line, #ded0c2); border-left: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .material-trigger { transition: none; }
   .material-trigger:hover, .material-trigger:focus-visible { transform: none; }
-  .material-pop-enter-active, .material-pop-leave-active { transition: opacity 100ms linear; }
+  .material-pop-enter-active, .material-pop-leave-active, .material-list-enter-active, .material-list-leave-active { transition: opacity 100ms linear; }
   .material-pop-enter-from, .material-pop-leave-to { transform: translateX(-50%); }
+  .material-list-enter-from { transform: none; }
 }
 </style>

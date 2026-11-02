@@ -1,3 +1,4 @@
+import { createUuid } from '../utils/uuid'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { useAuthStore } from './auth'
@@ -137,7 +138,7 @@ export const useAgentRunStore = defineStore('agentRun', () => {
   async function createRun(jd: string, resume: string) {
     if (busy.value) return
     const epoch = generation, key = `${jd}/${resume}`
-    if (createIntent?.key !== key) createIntent = { key, requestId: crypto.randomUUID() }
+    if (createIntent?.key !== key) createIntent = { key, requestId: createUuid() }
     busy.value = true; error.value = ''
     try {
       const result = await createAgentRun({ kind: 'tailoring', jdId: Number(jd.split(':').pop()), resumeId: Number(resume.split(':').pop()), requestId: createIntent.requestId })

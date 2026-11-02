@@ -52,6 +52,19 @@ beforeEach(() => {
 })
 afterEach(() => { wrapper?.unmount(); wrapper = undefined; vi.unstubAllGlobals(); sessionStorage.clear() })
 
+it('uploads with a UUID request ID when randomUUID is unavailable', async () => {
+  vi.stubGlobal('crypto', { getRandomValues: crypto.getRandomValues.bind(crypto) })
+  const flow = openChat()
+  await flow.startImport(new File(['content'], 'neutral.txt'))
+  expect(flow.error.value).toBe('')
+  expect(fetch).toHaveBeenCalledOnce()
+  const request = vi.mocked(fetch).mock.calls[0]![1]!
+  expect((request.body as FormData).get('requestId')).toMatch(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+  )
+  expect(flow.state.value).toBe('processing')
+})
+
 it('returns the parsed document when the import run succeeds', async () => {
   const flow = openChat()
   const file = new File(['content'], 'neutral.txt')

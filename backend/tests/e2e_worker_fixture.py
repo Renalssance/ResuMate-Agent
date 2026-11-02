@@ -23,6 +23,9 @@ class BrowserDraftModel(DraftModel):
 
     def bind_tools(self, tools, **kwargs):
         names = {getattr(tool, 'name', None) or tool['function']['name'] for tool in tools}
+        if 'start_task' in names:
+            from backend.tests.chat_browser_model import BrowserCareerModel
+            return BrowserCareerModel(profile=self.profile, max_tokens=self.max_tokens).bind_tools(tools, **kwargs)
         if 'get_interview_context' in names or 'InterviewStep' in names:
             if self._interview_model is None:
                 state = Path(os.environ['RESUMATE_E2E_ROOT'])

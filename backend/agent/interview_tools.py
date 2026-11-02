@@ -5,6 +5,7 @@ import time
 
 from langchain_core.tools import tool
 from langchain.chat_models import init_chat_model
+from backend.agent_runtime.call_inspection import ModelCallInspection
 from backend.model_transport import DefaultHttpxClient, DefaultAsyncHttpxClient
 
 from backend.db.database import SessionLocal
@@ -26,6 +27,7 @@ def _get_llm(temperature: float = 0.1, *, user_id: int | None = None):
     return init_chat_model(
         model=settings.model,
         model_provider="openai",
+        callbacks=[ModelCallInspection(user_id, settings.base_url, "interview_tool", settings.request_timeout_seconds)],
         api_key=settings.api_key,
         base_url=settings.base_url or None,
         timeout=settings.request_timeout_seconds,

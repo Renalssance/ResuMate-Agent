@@ -6,9 +6,10 @@ import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Callable, TypeVar
 
-from openai import OpenAI
+from openai import APIError, OpenAI
 from backend.model_transport import DefaultHttpxClient
 from pydantic import BaseModel, ValidationError
 
@@ -433,6 +434,8 @@ class AgentHarness:
             request_kwargs["response_format"] = response_format
         if self._should_disable_thinking(task):
             request_kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
+        elif task == "document.parse_resume":
+            request_kwargs["reasoning_effort"] = "none"
         log_llm_request(
             task,
             {
@@ -442,12 +445,68 @@ class AgentHarness:
                 "max_tokens": max_tokens,
                 "timeout_seconds": request_timeout,
                 "extra_body": request_kwargs.get("extra_body"),
+                "reasoning_effort": request_kwargs.get("reasoning_effort"),
             },
         )
         guard = getattr(self, "guard", None)
         if guard:
             guard()
-        return self.client.chat.completions.create(**request_kwargs)
+        from backend.services.llm_calls import CallTrace
+        streaming = task in {'document.parse_resume', 'document.parse_jd'}
+        trace = CallTrace(getattr(self, 'user_id', None), task, getattr(self, 'base_url', ''),
+                          {**request_kwargs, 'stream': streaming}, attempt=attempt)
+        try:
+            if task not in {'document.parse_resume', 'document.parse_jd'}:
+                response = self.client.chat.completions.create(**request_kwargs)
+                trace.finish(response=response)
+                return response
+
+            parts, usage, finish_reason = [], None, None
+            received_chars, last_update = 0, None
+            try:
+                with self.client.chat.completions.create(
+                    **request_kwargs, stream=True, stream_options={'include_usage': True},
+                ) as stream:
+                    for chunk in stream:
+                        trace.add_chunk(chunk)
+                        if chunk.usage is not None:
+                            usage = chunk.usage
+                        for choice in chunk.choices:
+                            if choice.index != 0:
+                                continue
+                            if choice.delta.content:
+                                parts.append(choice.delta.content)
+                                received_chars += len(choice.delta.content)
+                            if choice.finish_reason is not None:
+                                finish_reason = choice.finish_reason
+                        now = time.monotonic()
+                        if last_update is None or now - last_update >= 1:
+                            if guard:
+                                guard()
+                            self._publish_agent_progress(
+                                task_id=None, stage='llm_analyze', progress=45, task=task,
+                                schema_name='ResumeProfile' if task == 'document.parse_resume' else 'JobProfile',
+                                phase='receiving_response', attempt=attempt, level='info',
+                                message=f'正在接收解析结果，已接收 {received_chars} 字符。',
+                            )
+                            last_update = now
+            except APIError as exc:
+                # This provider reports structured-output truncation inside the SSE stream.
+                # Normalize it to the same finish reason handled by the token-budget retry.
+                if 'structured output was incomplete' not in exc.message or 'finish_reason=length' not in exc.message:
+                    raise
+                finish_reason = 'length'
+                trace.add_chunk({'choices': [{'index': 0, 'delta': {}, 'finish_reason': 'length'}]})
+            if guard:
+                guard()
+            if finish_reason is None:
+                raise RuntimeError('模型响应流提前结束，未收到完成标记')
+            trace.finish()
+            return SimpleNamespace(usage=usage, choices=[SimpleNamespace(
+                message=SimpleNamespace(content=''.join(parts)), finish_reason=finish_reason)])
+        except BaseException as exc:
+            trace.finish(error=exc)
+            raise
 
     def _record_usage_response(self, task: str, response, elapsed_ms: int) -> None:
         usage = usage_from_response(response)

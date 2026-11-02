@@ -56,6 +56,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { createUuid } from '../utils/uuid'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, RouterLink, useRoute, useRouter } from 'vue-router'
 import { exportResumeVersion } from '../api/resumeVersions'
@@ -72,7 +73,7 @@ let exportIntent: { versionId: string; requestId: string } | undefined
 async function exportPdf() {
   if (!confirmed.value || exporting.value) return
   const id = versionId.value
-  if (exportIntent?.versionId !== id) exportIntent = { versionId: id, requestId: crypto.randomUUID() }
+  if (exportIntent?.versionId !== id) exportIntent = { versionId: id, requestId: createUuid() }
   exporting.value = true; exportError.value = ''
   try {
     const run = await exportResumeVersion(id, exportIntent.requestId)

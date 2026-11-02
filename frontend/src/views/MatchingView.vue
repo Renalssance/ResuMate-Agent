@@ -171,7 +171,7 @@ const documentStore = useDocumentStore()
 const route = useRoute(), auth = useAuthStore()
 const matchStore = useMatchStore()
 const task = useTaskSse(MATCH_STEPS)
-interface ActiveMatch { taskId: string; jdId: string; resumeIds: string[] }
+interface ActiveMatch { taskId: string; jdId: string; resumeIds: string[]; analysisJobId?: string }
 let matchStorageKey = activeTaskKey('match-task')
 
 const selectedJdId = ref('')
@@ -202,6 +202,18 @@ watch([() => route.query.jdId, () => route.query.resumeId, () => documentStore.p
   if (jd) selectedJdId.value = documentStore.parsedJds.find(doc => doc.id === jd || doc.id === `jd:${jd}`)?.id || ''
   if (resume) { const found = documentStore.parsedResumes.find(doc => doc.id === resume || doc.id === `resume:${resume}`); selectedResumeIds.value = found ? [found.id] : [] }
 }, { immediate: true })
+watch([() => route.query.taskId, () => route.query.jdId, () => route.query.resumeId, () => auth.token], ([rawTaskId, rawJdId, rawResumeId, token]) => {
+  const taskId = String(rawTaskId || '')
+  if (!token || !taskId || task.taskId.value === taskId) return
+  const jdId = String(rawJdId || ''), resumeId = String(rawResumeId || '')
+  if (jdId && resumeId) saveActiveTask(matchStorageKey, {
+    taskId,
+    jdId: jdId.startsWith('jd:') ? jdId : `jd:${jdId}`,
+    resumeIds: [resumeId.startsWith('resume:') ? resumeId : `resume:${resumeId}`],
+    analysisJobId: String(route.query.analysisJobId || '') || undefined,
+  })
+  task.start(taskId)
+}, { immediate: true })
 watch([() => route.query.matchId, () => matchStore.results], () => {
   const id = String(route.query.matchId || '')
   if (id) selectedResult.value = matchStore.results.find(result => result.id === id) || null
@@ -213,7 +225,8 @@ watch(task.status, async (status) => {
   }
   if (status !== 'success') return
   await matchStore.loadMatches()
-  selectedResult.value = matchStore.results[0] || null
+  const analysisJobId = String(route.query.analysisJobId || '')
+  selectedResult.value = (analysisJobId && matchStore.results.find(result => result.id.startsWith(`${analysisJobId}:`))) || matchStore.results[0] || null
 })
 
 async function refreshMatches() {

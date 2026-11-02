@@ -1,5 +1,5 @@
 <template>
-  <section class="chat-workspace" :class="{ 'is-empty': auth.isAuthenticated && !detail?.turns.length && !loading }" aria-label="求职对话工作台">
+  <section class="chat-workspace" :class="{ 'is-empty': isWelcome }" aria-label="求职对话工作台">
     <details ref="historyMenu" class="chat-history">
       <summary><MessageCircle :size="16" /><span>我的对话</span><ChevronDown :size="14" class="history-chevron" /></summary>
       <div class="history-popover" aria-label="会话列表">
@@ -17,14 +17,23 @@
         <div v-else-if="!detail?.turns.length" class="chat-welcome"></div>
         <div v-else class="chat-turns">
           <article v-for="turn in detail.turns" :key="turn.runId" class="chat-turn">
-            <div class="user-message"><span class="message-author">你</span><p>{{ turn.message }}</p></div>
-            <div class="assistant-message"><div class="assistant-label"><Cat :size="19" /><strong>米洛</strong><span v-if="!terminal(turn.status)" role="status">{{ turnLabel(turn.status) }}</span></div>
-              <div v-if="turn.tools.length || turn.text || turn.result?.text || !terminal(turn.status)" :class="['assistant-response', { 'is-empty': !turn.tools.length && !turn.text && !turn.result?.text }]">
+            <div class="user-message"><span class="message-author">你</span><p>{{ turn.message }}</p><span v-if="turn.input?.attachment" class="sent-attachment"><Files :size="15" />{{ turn.input.attachment.filename }}</span></div>
+            <div class="assistant-message"><span class="milo-portrait assistant-avatar" aria-hidden="true"><img src="/images/milo-welcome.png" alt="" width="1312" height="1199" /></span><div class="assistant-label"><strong>米洛</strong><span v-if="!terminal(turn.status)" role="status"><ExecutionSpinner v-if="['queued', 'running'].includes(turn.status)" />{{ turnLabel(turn.status) }}</span></div>
+              <ReasoningPanel v-if="turn.reasoning" :content="turn.reasoning" :active="Boolean(turn.reasoningActive) && ['queued', 'running'].includes(turn.status)" />
+              <AttachmentProgressCard v-if="turn.input?.attachment && (turn.attachmentProgress?.length || !terminal(turn.status))" :events="turn.attachmentProgress || []" :status="turn.status" :filename="turn.input.attachment.filename" />
+              <div v-if="turn.tools.length || turn.text || turn.result?.text || (!terminal(turn.status) && !turn.input?.attachment)" :class="['assistant-response', { 'is-empty': !turn.tools.length && !turn.text && !turn.result?.text }]">
                 <details v-if="turn.tools.length" class="chat-process" :open="!turn.result?.text">
                   <summary><span>{{ processSummary(turn) }}</span><ChevronDown :size="13" class="process-chevron" /></summary>
-                  <ul class="chat-tools" aria-label="工具执行进度"><li v-for="tool in turn.tools" :key="tool.operationKey"><span :class="['tool-dot', tool.status]" aria-hidden="true"></span><span>{{ toolLabel(tool.name) }}</span><small>{{ tool.status === 'running' ? '正在执行' : tool.status === 'failed' ? '未完成' : '已执行' }}</small></li></ul>
+                  <ul class="chat-tools" aria-label="工具执行进度"><li v-for="tool in turn.tools" :key="tool.operationKey"><ExecutionSpinner v-if="tool.status === 'running' && ['queued', 'running'].includes(turn.status)" /><span v-else :class="['tool-dot', tool.status]" aria-hidden="true"></span><span>{{ toolLabel(tool.name) }}</span><small>{{ tool.status === 'running' ? '正在执行' : tool.status === 'failed' ? '未完成' : '已执行' }}</small></li></ul>
                 </details>
                 <MarkdownContent class="assistant-text" :content="turn.result?.text || turn.text" :streaming="!terminal(turn.status)" />
+              </div>
+              <div v-if="turn.status === 'succeeded' && (turn.result?.text || turn.text)" class="reply-actions">
+                <CopyFieldButton :value="turn.result?.text || turn.text" label="米洛的回复" />
+                <div v-if="turn === detail.turns.at(-1) && !activeTurn" class="chat-suggestions reply-suggestions">
+                  <button type="button" @click="usePrompt('请根据刚才的建议，帮我改写这段经历')">帮我改写这段经历<ArrowUpRight :size="14" /></button>
+                  <button type="button" @click="usePrompt('继续分析我与目标岗位的匹配度')">继续分析岗位匹配<ArrowUpRight :size="14" /></button>
+                </div>
               </div>
               <ChatTaskCard v-for="reference in runReferences(turn)" :key="reference" :reference="reference" @continue="usePrompt" />
               <div v-for="reference in businessReferences(turn)" :key="reference" class="business-reference"><RouterLink :to="referenceLink(reference)">{{ referenceLabel(reference) }} <ArrowUpRight :size="14" /></RouterLink></div>
@@ -35,11 +44,16 @@
           </article>
         </div>
       </div>
+      <div v-if="isWelcome" ref="welcomeGroup" class="welcome-group">
+        <span ref="welcomeMilo" class="milo-portrait welcome-milo" aria-hidden="true"><img src="/images/milo-welcome.png" alt="" width="1312" height="1199" fetchpriority="high" /></span>
+        <div class="welcome-copy"><h2>嗨，我是米洛</h2><p>陪你梳理经历，找到下一步。</p></div>
+      </div>
       <div v-if="auth.isAuthenticated" class="composer-wrap">
         <p v-if="error" class="chat-error" role="alert">{{ error }}<button v-if="currentId && !detail" type="button" @click="openSession(currentId)">重新读取</button></p>
         <p v-if="disconnected" class="chat-notice" role="status">连接已断开，正在重连。任务会继续运行。</p>
-        <form class="chat-composer" @submit.prevent="send">
-          <textarea ref="messageField" v-model="draft" aria-label="给米洛的消息" rows="1" placeholder="问点什么，和米洛一起梳理…" :disabled="sending" @keydown="composerKeydown"></textarea>
+        <form ref="composer" class="chat-composer" :class="{ 'has-attachment': pendingFile }" @submit.prevent="send">
+          <div v-if="pendingFile" class="pending-attachment"><Files :size="17" /><span :title="pendingFile.name">{{ pendingFile.name }}</span><small>{{ pendingFile.name.split('.').pop()?.toUpperCase() }}</small><button type="button" aria-label="移除附件" :disabled="sending" @click="pendingFile = null; intent = undefined">×</button></div>
+          <textarea ref="messageField" v-model="draft" aria-label="给米洛的消息" rows="1" :placeholder="isWelcome ? '问点什么，和米洛一起梳理…' : '继续聊聊，或上传岗位描述…'" :disabled="sending" @keydown="composerKeydown"></textarea>
           <div class="composer-footer">
             <div class="context-controls">
               <ChatMaterialPicker
@@ -47,46 +61,114 @@
                 v-model:job-id="jdId"
                 :resumes="documents.parsedResumes"
                 :jobs="documents.parsedJds"
-                :import-state="importState"
-                :pending-action="pendingImportAction"
-                :import-error="importError"
-                @local-file="startImport"
-                @confirm-type="confirmDocumentType"
+                :import-state="sending ? 'uploading' : 'idle'"
+                :pending-action="null"
+                :import-error="''"
+                @local-file="stageFile"
               />
             </div>
             <button v-if="activeTurn" class="stop-button" type="button" :disabled="sending" @click="changeRun(activeTurn.runId, 'cancel')"><Square :size="12" /> 停止</button>
-            <button v-else class="send-button" type="submit" :disabled="!draft.trim() || sending || loading || importBusy" aria-label="发送消息"><ArrowUp :size="19" /></button>
+            <button v-else class="send-button" type="submit" :disabled="!draft.trim() || sending || loading" aria-label="发送消息"><ArrowUp :size="19" /></button>
           </div>
         </form>
-        <div v-if="!detail?.turns.length && !loading" class="chat-suggestions"><button v-for="suggestion in suggestions" :key="suggestion.prompt" type="button" @click="usePrompt(suggestion.prompt)">{{ suggestion.label }}<ArrowUpRight :size="15" /></button></div>
+        <div v-if="isWelcome" ref="welcomeSuggestions" class="chat-suggestions"><button v-for="suggestion in suggestions" :key="suggestion.prompt" type="button" @click="usePrompt(suggestion.prompt)">{{ suggestion.label }}<ArrowUpRight :size="15" /></button></div>
       </div>
     </div>
   </section>
 </template>
 <script setup lang="ts">
+import { createUuid } from '../utils/uuid'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowUp, ArrowUpRight, Cat, ChevronDown, Files, MessageCircle, Plus, Square } from '@lucide/vue'
-import { createChatSession, fetchChatSession, fetchChatSessions, sendChatMessage, type ChatDetail, type ChatSession, type ChatTurn } from '../api/chat'
+import { ArrowUp, ArrowUpRight, ChevronDown, Files, MessageCircle, Plus, Square } from '@lucide/vue'
+import { createChatSession, fetchChatSession, fetchChatSessions, sendChatMessage, type AttachmentProgress, type ChatDetail, type ChatSession, type ChatTurn } from '../api/chat'
 import { cancelAgentRun, retryAgentRun } from '../api/agentRuns'
-import { useDocumentImport } from '../composables/useDocumentImport'
 import { subscribeRun, type RunSnapshot, type RunStatus, type RunSubscription } from '../services/agentStream'
 import { useAuthStore } from '../stores/auth'
 import { useDocumentStore } from '../stores/document'
 import MarkdownContent from '../components/chat/MarkdownContent.vue'
 import ChatTaskCard from '../components/chat/ChatTaskCard.vue'
 import ChatMaterialPicker from '../components/chat/ChatMaterialPicker.vue'
+import CopyFieldButton from '../components/CopyFieldButton.vue'
+import ExecutionSpinner from '../components/ExecutionSpinner.vue'
+import ReasoningPanel from '../components/chat/ReasoningPanel.vue'
+import AttachmentProgressCard from '../components/chat/AttachmentProgressCard.vue'
 const route = useRoute(), router = useRouter(), auth = useAuthStore(), documents = useDocumentStore()
 const sessions = ref<ChatSession[]>([]), detail = ref<ChatDetail | null>(null), currentId = ref('')
 const draft = ref(''), resumeId = ref(''), jdId = ref(''), loading = ref(false), sending = ref(false), error = ref(''), disconnected = ref(false)
-const importScope = computed(() => `chat:${String(route.params.sessionId || currentId.value || 'new')}`)
-const {
-  state: importState, pendingAction: pendingImportAction, resultDocument: importedDocument,
-  error: importError, startImport, confirmDocumentType,
-} = useDocumentImport(importScope)
-const importBusy = computed(() => ['uploading', 'processing', 'waiting_input'].includes(importState.value))
+const pendingFile = ref<File | null>(null)
+function stageFile(file: File) { pendingFile.value = file; intent = undefined }
 const conversation = ref<HTMLElement | null>(null), messageField = ref<HTMLTextAreaElement | null>(null)
 const historyMenu = ref<HTMLDetailsElement | null>(null)
+const welcomeGroup = ref<HTMLElement | null>(null), welcomeMilo = ref<HTMLElement | null>(null)
+const welcomeSuggestions = ref<HTMLElement | null>(null), composer = ref<HTMLFormElement | null>(null)
+const isWelcome = computed(() => auth.isAuthenticated && !detail.value?.turns.length && !loading.value)
+let finishHandoff: (() => void) | undefined
+
+// Capture before Vue removes the welcome state; animate only an accepted first message.
+function prepareMiloHandoff() {
+  finishHandoff?.()
+  const source = welcomeMilo.value, form = composer.value
+  if (!source || !form || !source.getBoundingClientRect().width) return
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const origin = source.getBoundingClientRect(), formOrigin = form.getBoundingClientRect()
+  const overlays: HTMLElement[] = [], animations: Animation[] = []
+  let destination: HTMLElement | null = null, finished = false
+  const cleanup = () => {
+    finished = true
+    animations.forEach(animation => animation.cancel())
+    overlays.forEach(element => element.remove())
+    if (destination) destination.style.visibility = ''
+    window.removeEventListener('resize', cleanup)
+    window.removeEventListener('scroll', cleanup, true)
+    reduceMotion.removeEventListener('change', cleanup)
+    if (finishHandoff === cleanup) finishHandoff = undefined
+  }
+  finishHandoff = cleanup
+  const floatingCopy = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect(), copy = element.cloneNode(true) as HTMLElement
+    copy.setAttribute('aria-hidden', 'true'); copy.inert = true
+    Object.assign(copy.style, { position: 'fixed', left: `${rect.left}px`, top: `${rect.top}px`, width: `${rect.width}px`, height: `${rect.height}px`, margin: '0', zIndex: '30', pointerEvents: 'none', transformOrigin: '0 0' })
+    document.body.append(copy); overlays.push(copy)
+    return copy
+  }
+  const mascot = reduceMotion.matches ? null : floatingCopy(source)
+  for (const element of [welcomeGroup.value?.querySelector<HTMLElement>('.welcome-copy'), welcomeSuggestions.value]) {
+    if (element) animations.push(floatingCopy(element).animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }))
+  }
+  return async () => {
+    await nextTick()
+    if (finished) return
+    destination = conversation.value?.querySelector<HTMLElement>('.assistant-avatar') || null
+    if (!destination) { cleanup(); return }
+    // Settle the scroll before measuring the destination, including tall attachments/messages.
+    if (nearBottom && conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight
+    const target = destination.getBoundingClientRect(), formTarget = form.getBoundingClientRect()
+    const styles = getComputedStyle(form)
+    const movement = { duration: 280, easing: styles.getPropertyValue('--ease-in-out').trim() || 'cubic-bezier(0.77, 0, 0.175, 1)', fill: 'both' as const }
+    if (mascot) {
+      destination.style.visibility = 'hidden'
+      animations.push(mascot.animate([
+        { transform: 'translate(0, 0) scale(1)', clipPath: 'inset(0 round 0%)' },
+        { transform: `translate(${target.left - origin.left}px, ${target.top - origin.top}px) scale(${target.width / origin.width})`, clipPath: 'inset(0 round 50%)' },
+      ], movement))
+      animations.push(mascot.querySelector('img')!.animate([{ transform: 'scale(1)' }, { transform: getComputedStyle(destination.querySelector('img')!).transform }], movement))
+      animations.push(form.animate([{ transform: `translateY(${formOrigin.top - formTarget.top}px)` }, { transform: 'translateY(0)' }], movement))
+    } else {
+      animations.push(destination.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120 }))
+    }
+    const messages = conversation.value?.querySelector<HTMLElement>('.chat-turns')
+    if (messages) animations.push(messages.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' }))
+    window.addEventListener('resize', cleanup)
+    reduceMotion.addEventListener('change', cleanup)
+    // Initial programmatic scrolling emits its event on the next frame; do not interrupt it.
+    requestAnimationFrame(() => { if (!finished) window.addEventListener('scroll', cleanup, true) })
+    await Promise.allSettled(animations.map(animation => animation.finished))
+    if (finished) return
+    cleanup()
+    void scrollDown()
+  }
+}
 const suggestions = [
   { label: '看看简历方向', prompt: '帮我看看简历适合什么岗位' },
   { label: '分析岗位匹配', prompt: '分析我和目标岗位的匹配度' },
@@ -97,10 +179,10 @@ const activeTurn = computed(() => [...(detail.value?.turns || [])].reverse().fin
 let subscription: RunSubscription | undefined, generation = 0, connectedRunId = '', nearBottom = true
 let intent: { key: string; requestId: string } | undefined
 function trackScroll() { const el = conversation.value; nearBottom = !el || el.scrollHeight - el.scrollTop - el.clientHeight < 100 }
-async function scrollDown() { await nextTick(); if (nearBottom && conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight }
+async function scrollDown() { await nextTick(); if (!finishHandoff && nearBottom && conversation.value) conversation.value.scrollTop = conversation.value.scrollHeight }
 function fail(cause: unknown) { error.value = cause instanceof Error ? cause.message : '请求失败，请重试' }
 async function loadSessions() { const token = auth.token; try { const value = await fetchChatSessions(); if (auth.token === token) sessions.value = value } catch (cause) { if (auth.token === token) fail(cause) } }
-function disconnect() { generation++; subscription?.close(); subscription = undefined; connectedRunId = ''; disconnected.value = false }
+function disconnect() { finishHandoff?.(); generation++; subscription?.close(); subscription = undefined; connectedRunId = ''; disconnected.value = false }
 async function reload(epoch = generation) {
   const id = currentId.value
   if (!id) return
@@ -111,10 +193,11 @@ async function reload(epoch = generation) {
   const receivedIds = new Set(value.turns.map(turn => turn.runId))
   value.turns.push(...currentTurns.filter(turn => !receivedIds.has(turn.runId)))
   detail.value = value; void loadSessions(); void scrollDown()
+
 }
 async function openSession(id: string) {
   disconnect(); currentId.value = id; detail.value = null; error.value = ''; nearBottom = true
-  resumeId.value = ''; jdId.value = ''
+  resumeId.value = ''; jdId.value = ''; pendingFile.value = null
   const epoch = generation; loading.value = Boolean(id)
   if (!id || !auth.isAuthenticated) { loading.value = false; return }
   try {
@@ -139,7 +222,7 @@ function connectTurn() {
     const row = detail.value?.turns.find(item => item.runId === snapshot.runId)
     if (!row) return
     row.status = snapshot.status
-    if (terminal(snapshot.status)) void reload(epoch).catch(fail)
+    if (terminal(snapshot.status)) { if (row.input?.attachment) void documents.loadDocuments(); void reload(epoch).catch(fail) }
   }
   subscription = subscribeRun({ runId: turn.runId, after: turn.lastSeq, onSnapshot: accept,
     onReset: () => { if (epoch === generation) void reload(epoch).catch(fail) },
@@ -149,13 +232,22 @@ function connectTurn() {
       const row = detail.value?.turns.find(item => item.runId === event.runId)
       if (!row || event.seq <= row.lastSeq) return
       row.lastSeq = event.seq; disconnected.value = false
-      if (event.type === 'assistant.delta') row.text += String(event.payload.text || '')
+      if (event.type === 'task.progress' && (event.payload.data as AttachmentProgress['data'])?.scope === 'attachment') {
+        const progress = { ...event.payload, createdAt: event.createdAt, seq: event.seq } as unknown as AttachmentProgress
+        row.attachmentProgress = [...(progress.data.reset ? [] : row.attachmentProgress || []), progress]
+      }
+      if (event.type === 'assistant.reasoning') {
+        row.reasoning = (row.reasoning || '') + (row.reasoning && !row.reasoningActive ? '\n\n' : '') + String(event.payload.text || '')
+        row.reasoningActive = true
+      }
+      if (event.type === 'assistant.reasoning.done') row.reasoningActive = false
+      if (event.type === 'assistant.delta') { row.reasoningActive = false; row.text += String(event.payload.text || '') }
       if (event.type.startsWith('tool.')) {
         const key = String(event.payload.operation_key || ''), tool = row.tools.find(item => item.operationKey === key)
         const value = { name: String(event.payload.tool_name || ''), operationKey: key, status: (event.type === 'tool.started' ? 'running' : event.type === 'tool.failed' ? 'failed' : 'succeeded') as 'running' | 'failed' | 'succeeded', resultRef: event.payload.result_ref ? String(event.payload.result_ref) : null }
         if (tool) Object.assign(tool, value); else row.tools.push(value)
       }
-      if (event.type === 'run.status') { row.status = event.payload.status as RunStatus; if (terminal(row.status)) void reload(epoch).catch(fail) }
+      if (event.type === 'run.status') { row.status = event.payload.status as RunStatus; if (terminal(row.status)) { if (row.input?.attachment) void documents.loadDocuments(); void reload(epoch).catch(fail) } }
       void scrollDown()
     }, onError: cause => { if (epoch === generation) { disconnected.value = true; if ('status' in cause && [401, 403, 404].includes(Number(cause.status))) fail(cause) } },
   })
@@ -163,10 +255,17 @@ function connectTurn() {
 function closeHistory() { historyMenu.value?.removeAttribute('open') }
 async function newChat() { if (sending.value) return; closeHistory(); draft.value = ''; intent = undefined; await router.push('/chat'); if (currentId.value) await openSession(''); await nextTick(); messageField.value?.focus() }
 async function usePrompt(message: string) { draft.value = message; await nextTick(); messageField.value?.focus() }
-function composerKeydown(event: KeyboardEvent) { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && !window.matchMedia('(pointer: coarse)').matches) { event.preventDefault(); void send() } }
+function composerKeydown(event: KeyboardEvent) {
+  // IME confirmation can arrive after compositionend, with isComposing already false.
+  if (event.isComposing || event.keyCode === 229) return
+  if (event.key === 'Enter' && !event.shiftKey && !window.matchMedia('(pointer: coarse)').matches) {
+    event.preventDefault()
+    void send()
+  }
+}
 async function send() {
-  if (!draft.value.trim() || sending.value || activeTurn.value || importBusy.value || loading.value) return
-  const message = draft.value.trim(), token = auth.token
+  if (!draft.value.trim() || sending.value || activeTurn.value || loading.value) return
+  const message = draft.value.trim(), token = auth.token, file = pendingFile.value
   sending.value = true; error.value = ''
   try {
     if (!currentId.value) {
@@ -175,13 +274,14 @@ async function send() {
       await router.replace(`/chat/${created.sessionId}`)
     }
     const id = currentId.value, epoch = generation
-    const key = JSON.stringify([id, message, resumeId.value, jdId.value])
-    if (intent?.key !== key) intent = { key, requestId: crypto.randomUUID() }
-    const result = await sendChatMessage(id, { message, requestId: intent.requestId, ...(resumeId.value ? { resumeId: Number(resumeId.value.split(':').pop()) } : {}), ...(jdId.value ? { jdId: Number(jdId.value.split(':').pop()) } : {}) })
+    const key = JSON.stringify([id, message, resumeId.value, jdId.value, file?.name, file?.size, file?.lastModified])
+    if (intent?.key !== key) intent = { key, requestId: createUuid() }
+    const result = await sendChatMessage(id, { message, requestId: intent.requestId, ...(resumeId.value ? { resumeId: Number(resumeId.value.split(':').pop()) } : {}), ...(jdId.value ? { jdId: Number(jdId.value.split(':').pop()) } : {}) }, file || undefined)
     if (epoch !== generation || token !== auth.token) return
-    intent = undefined; draft.value = ''; nearBottom = true
-    detail.value!.turns.push({ runId: result.runId, message, status: result.status, text: '', lastSeq: 0, tools: [], outputRefs: [], result: null, errorCode: null })
-    connectTurn(); void loadSessions(); void scrollDown()
+    const handoff = prepareMiloHandoff()
+    intent = undefined; draft.value = ''; pendingFile.value = null; nearBottom = true
+    detail.value!.turns.push({ runId: result.runId, message, input: file ? { attachment: { filename: file.name } } : {}, status: result.status, text: '', lastSeq: 0, tools: [], outputRefs: [], result: null, errorCode: null })
+    void handoff?.(); connectTurn(); void loadSessions(); void scrollDown()
   } catch (cause) { if (auth.token === token) fail(cause) }
   finally { sending.value = false }
 }
@@ -199,6 +299,8 @@ function referenceLink(ref: string) { const [kind, id] = ref.split(':'); return 
 function referenceLabel(ref: string) { return ref.startsWith('interview:') ? '进入模拟面试' : ref.startsWith('application:') ? '查看投递记录' : '查看收藏岗位' }
 function turnLabel(status: RunStatus) { return ({ queued: '等待回复', running: '正在思考', waiting_input: '等待补充信息', waiting_approval: '等待审阅', succeeded: '已回复', failed: '回复失败', cancelled: '已停止' })[status] }
 function failureText(code: string | null) {
+  if (code === 'empty_response') return '模型未生成有效回复，请重试；也可以缩小问题范围后再试。'
+  if (code === 'chat_attachment_failed') return '附件解析未完成，请检查文件内容或模型设置后重试。'
   if (code === 'model_context_not_configured') return '请先在模型设置中填写上下文容量，再重试回复。'
   if (code === 'context_budget_exceeded') return '本轮资料超出模型容量，请减少资料或核对模型设置后重试。'
   if (code === 'session_context_invalidated') return '本轮使用的记忆已删除，请开启新对话继续。'
@@ -211,28 +313,29 @@ function processSummary(turn: ChatTurn) {
   return turn.tools.length > 1 ? `${toolLabel(first.name)}等 ${turn.tools.length} 项` : toolLabel(first.name)
 }
 
-watch([importedDocument, loading, () => documents.listLoading], ([document, readingHistory, readingDocuments]) => {
-  if (!document || readingHistory || readingDocuments) return
-  documents.upsertDocuments([document])
-  if (document.type === 'resume') resumeId.value = document.id
-  else jdId.value = document.id
-})
 watch([() => route.params.sessionId, () => auth.token], ([id, token], previous) => {
   const sessionId = String(id || '')
-  if (previous && previous[1] !== token) { disconnect(); sessions.value = []; detail.value = null; currentId.value = ''; draft.value = ''; resumeId.value = ''; jdId.value = ''; intent = undefined }
+  if (previous && previous[1] !== token) { disconnect(); sessions.value = []; detail.value = null; currentId.value = ''; draft.value = ''; resumeId.value = ''; jdId.value = ''; pendingFile.value = null; intent = undefined }
   if (token) { if (!previous || previous[1] !== token) { void loadSessions(); void documents.loadDocuments() }; if (sessionId !== currentId.value || !detail.value) void openSession(sessionId) }
   else { disconnect(); currentId.value = ''; detail.value = null }
 }, { immediate: true })
 onBeforeUnmount(disconnect)
 </script>
 <style scoped>
+.pending-attachment, .sent-attachment { display: flex; align-items: center; gap: 8px; width: fit-content; max-width: 100%; padding: 8px 12px; border: 1px solid var(--brand-line, #ded0c2); border-radius: 12px; color: var(--brand-cocoa, #63483e); font-size: 13px; }
+.chat-composer.has-attachment { flex-wrap: wrap; border-radius: 24px; }
+.pending-attachment { flex: 0 1 100%; min-width: 0; margin: 4px 0 0; }
+.pending-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pending-attachment small { opacity: .65; }
+.pending-attachment button { border: 0; background: transparent; color: inherit; font-size: 20px; cursor: pointer; }
+.sent-attachment { margin-top: 8px; background: rgba(255, 253, 249, .8); }
+
 .chat-workspace {
   --composer-lift: 40px;
   --composer-clearance: 42px;
   position: relative;
-  min-height: 650px;
+  min-height: 480px;
   height: calc(100dvh - 164px);
-  max-height: 1100px;
   color: #594334;
   background: transparent;
 }
@@ -361,6 +464,23 @@ onBeforeUnmount(disconnect)
 .is-empty .chat-conversation {
   display: none;
 }
+.welcome-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 0 24px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.welcome-copy { color: #63483e; }
+.welcome-copy h2 { margin: 0 0 10px; font-size: clamp(24px, 2.2vw, 34px); line-height: 1.25; letter-spacing: -.035em; }
+.welcome-copy p { margin: 0; color: #8b7464; font-size: 16px; line-height: 1.7; }
+.milo-portrait { display: block; position: relative; overflow: hidden; flex-shrink: 0; }
+.milo-portrait img { display: block; width: 100%; height: auto; transform-origin: 50% 0; }
+.welcome-milo { width: clamp(150px, 17vw, 218px); aspect-ratio: 1; }
+.assistant-avatar { position: absolute; top: 0; left: 0; width: 46px; height: 46px; border-radius: 50%; background: rgba(255, 253, 249, .8); }
+.assistant-avatar img { transform: scale(1.55); }
 .chat-welcome {
   min-height: 100%;
   display: grid;
@@ -410,14 +530,16 @@ onBeforeUnmount(disconnect)
   margin: 0;
   padding: 14px 18px;
   color: #594334;
-  background: rgba(238, 225, 207, .88);
-  border-radius: 16px 16px 4px 16px;
+  background: rgba(255, 245, 233, .82);
+  border-radius: 16px;
   font-size: 14px;
   line-height: 1.8;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .assistant-message {
+  position: relative;
+  padding-left: 62px;
   min-width: 0;
   display: grid;
   gap: 12px;
@@ -427,9 +549,11 @@ onBeforeUnmount(disconnect)
   align-items: center;
   gap: 8px;
   color: #8d6747;
-  font-size: 12px;
+  min-height: 32px;
+  font-size: 13px;
 }
 .assistant-label > span {
+  display: inline-flex; align-items: center; gap: 6px;
   margin-left: 4px;
   color: #ad9178;
   font-size: 11px;
@@ -438,7 +562,7 @@ onBeforeUnmount(disconnect)
   padding: 17px 19px 18px;
   background: rgba(255, 253, 249, .68);
   border: 1px solid rgba(158, 126, 97, .16);
-  border-radius: 5px 19px 19px 19px;
+  border-radius: 19px;
   box-shadow:
     0 12px 34px rgba(85, 59, 40, .055),
     inset 0 1px 0 rgba(255, 255, 255, .7);
@@ -448,7 +572,7 @@ onBeforeUnmount(disconnect)
 .assistant-response.is-empty { display: none; }
 .assistant-text {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.95;
   overflow-wrap: anywhere;
 }
@@ -466,7 +590,7 @@ onBeforeUnmount(disconnect)
 }
 .assistant-text :deep(h1) { font-size: 20px; }
 .assistant-text :deep(h2) { font-size: 17px; }
-.assistant-text :deep(h3) { font-size: 15px; }
+.assistant-text :deep(h3) { font-size: 16px; }
 .assistant-text :deep(h4) { font-size: 14px; }
 .assistant-text :deep(ul),
 .assistant-text :deep(ol) {
@@ -597,7 +721,7 @@ onBeforeUnmount(disconnect)
 }
 .is-empty .composer-wrap {
   margin-top: 0;
-  padding-bottom: 8vh;
+  padding-bottom: 0;
 }
 .chat-composer {
   min-height: 58px;
@@ -713,6 +837,10 @@ onBeforeUnmount(disconnect)
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
+.reply-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.reply-actions :deep(.profile-copy-button) { position: static; opacity: 1; width: 32px; height: 32px; color: #8b715e; }
+.reply-suggestions { width: auto; margin: 0; justify-content: flex-start; flex-wrap: wrap; }
+.reply-suggestions button { min-height: 34px; padding: 6px 11px; }
 .chat-suggestions button:hover {
   color: #594334;
   background: rgba(255, 253, 249, .8);
@@ -804,7 +932,7 @@ summary:focus-visible {
     --composer-lift: 32px;
     --composer-clearance: 34px;
     height: calc(100dvh - 138px);
-    min-height: 560px;
+    min-height: 460px;
   }
   .chat-history { top: 10px; left: 10px; }
   .chat-history summary { min-height: 36px; padding: 7px 10px; }
@@ -814,7 +942,7 @@ summary:focus-visible {
   }
   .chat-conversation { padding: 62px 18px calc(18px + var(--composer-clearance)); }
   .composer-wrap { padding: 8px 12px 14px; }
-  .is-empty .composer-wrap { padding-bottom: 4vh; }
+  .is-empty .composer-wrap { padding-bottom: 0; }
   .chat-composer { min-height: 54px; padding: 9px 9px 8px 14px; }
   .chat-composer textarea { min-height: 32px; font-size: 14px; }
   .context-controls :deep(.material-chip) { max-width: min(100%, 132px); }
@@ -824,8 +952,16 @@ summary:focus-visible {
     padding: 0 2px;
   }
   .chat-suggestions button { flex: 0 0 auto; padding-inline: 12px; }
+  .welcome-group { gap: 12px; padding: 0 16px; margin-bottom: 12px; }
+  .welcome-milo { width: 130px; }
+  .welcome-copy h2 { font-size: 23px; }
+  .welcome-copy p { max-width: 170px; font-size: 13px; }
+  .assistant-message { padding-left: 43px; gap: 8px; }
+  .assistant-avatar { width: 34px; height: 34px; }
+  .assistant-label { min-height: 28px; }
   .chat-turn { gap: 24px; }
   .user-message { max-width: 92%; }
-  .assistant-response { padding: 15px 16px 16px; border-radius: 4px 17px 17px 17px; }
+  .assistant-response { padding: 15px 16px 16px; border-radius: 17px; }
+  .assistant-text { font-size: 14px; }
 }
 </style>

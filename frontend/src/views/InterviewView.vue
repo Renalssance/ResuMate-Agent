@@ -72,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import { createUuid } from '../utils/uuid'
 import { computed, defineComponent, h, onBeforeUnmount, ref, toRaw, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { fetchInterview, sendInterviewCommand, confirmInterviewMemory } from '../api/interviews'
@@ -153,11 +154,11 @@ async function deliverPending() {
 function queue(command: InterviewCommand) { if (pending.value || sending.value) return; pending.value = command; persist(); void deliverPending() }
 function submitAnswer() {
  if (!canAnswer.value || !draft.value.trim() || !snapshot.value) return
- queue({ clientMessageId: crypto.randomUUID(), type: 'answer.submit', expectedTurn: snapshot.value.currentTurn, payload: { text: draft.value.trim() } })
+ queue({ clientMessageId: createUuid(), type: 'answer.submit', expectedTurn: snapshot.value.currentTurn, payload: { text: draft.value.trim() } })
 }
 function issue(type: 'generation.cancel' | 'generation.retry' | 'session.finish') {
  if (!snapshot.value) return
- const base = { clientMessageId: crypto.randomUUID(), expectedTurn: snapshot.value.currentTurn }
+ const base = { clientMessageId: createUuid(), expectedTurn: snapshot.value.currentTurn }
  if (type === 'session.finish') queue({ ...base, type, payload: {} })
  else if (snapshot.value.generation) queue({ ...base, type, payload: { runId: snapshot.value.generation.runId } })
 }

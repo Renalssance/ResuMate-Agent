@@ -20,7 +20,7 @@
           <h1 id="hero-title">ResuMate：<br>你的招聘<span class="rm-underlined">好伙伴<svg viewBox="0 0 260 14" aria-hidden="true"><path d="M4 10 Q130 -3 256 7" /></svg></span></h1>
           <p class="rm-hero-description">和米洛一起，整理简历、发现匹配、准备面试。<br class="rm-desktop-break">让繁琐少一点，让每个闪光点被看见。</p>
           <div class="rm-hero-actions">
-            <RouterLink class="rm-button" :to="auth.isAuthenticated ? '/documents' : '/register'">
+            <RouterLink class="rm-button" :to="auth.isAuthenticated ? '/chat' : '/register'">
               {{ auth.isAuthenticated ? '进入工作台' : '注册并开始使用' }} <ArrowRight :size="19" />
             </RouterLink>
             <RouterLink v-if="!auth.isAuthenticated" class="rm-button rm-button-outline" to="/login">已有账号，去登录</RouterLink>
@@ -61,7 +61,7 @@
         <div class="rm-milo-copy"><span class="rm-eyebrow">A LITTLE FRIEND, A LITTLE HELP</span><h2 id="milo-title">认识米洛，<br>认真陪伴的好伙伴。</h2><p>有点好奇，有点呆萌，最喜欢发现简历里的闪光点。米洛会在这里，陪你把零散的资料整理成清晰的线索。</p><div class="rm-personality"><span>耐心整理</span><span>发现闪光点</span><span>陪你向前</span></div></div>
       </section>
 
-      <section class="rm-container rm-final-cta"><div><h2>下一段好故事，从这里开始。</h2><p>带上一份简历，剩下的和米洛一起梳理。</p></div><RouterLink class="rm-button" :to="auth.isAuthenticated ? '/documents' : '/register'">{{ auth.isAuthenticated ? '进入工作台' : '开始使用 ResuMate' }} <ArrowRight :size="18" /></RouterLink></section>
+      <section class="rm-container rm-final-cta"><div><h2>下一段好故事，从这里开始。</h2><p>带上一份简历，剩下的和米洛一起梳理。</p></div><RouterLink class="rm-button" :to="auth.isAuthenticated ? '/chat' : '/register'">{{ auth.isAuthenticated ? '进入工作台' : '开始使用 ResuMate' }} <ArrowRight :size="18" /></RouterLink></section>
     </main>
     <footer class="rm-footer rm-container"><BrandLogo /><span>你的招聘好伙伴</span><a href="#main">回到顶部 ↑</a></footer>
   </div>

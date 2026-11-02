@@ -1,3 +1,4 @@
+import { createUuid } from '../utils/uuid'
 import { computed, onUnmounted, readonly, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { answerRunAction, fetchAgentRun, type RunAction } from '../api/agentRuns'
 import { importLocalDocument } from '../api/documentImports'
@@ -95,7 +96,7 @@ export function useDocumentImport(storageScope: MaybeRefOrGetter<string>) {
     const version = generation, key = savedRunKey.value, uploadVersion = uploadGenerations.get(key)
     state.value = 'uploading'
     try {
-      const accepted = await importLocalDocument(file, crypto.randomUUID())
+      const accepted = await importLocalDocument(file, createUuid())
       if (uploadVersion !== uploadGenerations.get(key)) return
       sessionStorage.setItem(key, accepted.runId)
       if (version !== generation) return

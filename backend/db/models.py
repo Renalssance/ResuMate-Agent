@@ -349,3 +349,31 @@ class FollowUpQuestionSet(Base):
 
 # Register new tables on the shared Base for existing create_all consumers.
 from backend.db import agent_models, career_models  # noqa: E402,F401
+
+
+class EmbeddingSettings(Base):
+    """One configuration for the instance's shared vector index."""
+    __tablename__ = 'embedding_settings'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    provider: Mapped[str] = mapped_column(String(32), nullable=False, default='openai')
+    api_key: Mapped[str] = mapped_column(Text, nullable=False, default='')
+    base_url: Mapped[str] = mapped_column(String(1024), nullable=False, default='')
+    model: Mapped[str] = mapped_column(String(255), nullable=False, default='')
+
+
+class LlmCall(Base):
+    """Owner-scoped inspection of actual model requests; no credentials."""
+    __tablename__ = 'llm_calls'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    task: Mapped[str] = mapped_column(String(120))
+    model: Mapped[str] = mapped_column(String(255), default='')
+    base_url: Mapped[str] = mapped_column(String(1024), default='')
+    attempt: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(24), default='running')
+    request_json: Mapped[dict] = mapped_column(JSON)
+    output_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    usage_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    error: Mapped[str] = mapped_column(LARGE_TEXT, default='')
+    elapsed_ms: Mapped[int] = mapped_column(Integer, default=0)
+    called_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)

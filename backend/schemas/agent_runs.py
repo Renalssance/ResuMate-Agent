@@ -91,6 +91,16 @@ class DeltaEvent(EventEnvelope):
     payload: DeltaPayload
 
 
+class ReasoningEvent(EventEnvelope):
+    type: Literal['assistant.reasoning']
+    payload: DeltaPayload
+
+
+class ReasoningDoneEvent(EventEnvelope):
+    type: Literal['assistant.reasoning.done']
+    payload: Payload
+
+
 class ToolStartedEvent(EventEnvelope):
     type: Literal['tool.started']
     payload: ToolPayload
@@ -127,7 +137,7 @@ class TaskProgressEvent(EventEnvelope):
 
 
 RunEvent = Annotated[
-    StatusEvent | DeltaEvent | ToolStartedEvent | ToolCompletedEvent | ToolFailedEvent
+    StatusEvent | DeltaEvent | ReasoningEvent | ReasoningDoneEvent | ToolStartedEvent | ToolCompletedEvent | ToolFailedEvent
     | ActionEvent | ArtifactEvent | UsageEvent | TaskProgressEvent,
     Field(discriminator='type'),
 ]
@@ -137,7 +147,8 @@ RUN_EVENT_ADAPTER = TypeAdapter(RunEvent)
 class RunCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True, extra='forbid', str_strip_whitespace=True)
     session_id: str | None = Field(default=None, alias='sessionId', min_length=1, max_length=36)
-    kind: Literal['tailoring', 'resume_export', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation']
+    kind: Literal['chat', 'tailoring', 'resume_export', 'document_parse', 'match_analysis', 'question_generation', 'answer_followup', 'interview_generation']
+    message: str | None = Field(default=None, min_length=1, max_length=16000)
     jd_id: int | None = Field(default=None, alias='jdId', gt=0)
     resume_id: int | None = Field(default=None, alias='resumeId', gt=0)
     resume_version_id: str | None = Field(default=None, alias='resumeVersionId', min_length=1, max_length=36)
@@ -155,6 +166,7 @@ class RunCreate(BaseModel):
     @model_validator(mode='after')
     def validate_inputs(self):
         fields = {
+            'chat': {'message', 'resume_id', 'jd_id'},
             'tailoring': {'jd_id', 'resume_id'},
             'resume_export': {'resume_version_id'},
             'document_parse': {'document_id', 'parse_mode'},
@@ -165,7 +177,8 @@ class RunCreate(BaseModel):
         }[self.kind]
         if self.model_fields_set - fields - {'kind', 'session_id', 'request_id'}:
             raise ValueError('不能混用其他任务类型的字段')
-        if any(getattr(self, field) is None for field in fields):
+        required = {'message'} if self.kind == 'chat' else fields
+        if any(getattr(self, field) is None for field in required):
             raise ValueError('缺少任务需要的输入字段')
         if self.kind == 'interview_generation' and not self.session_id:
             raise ValueError('面试生成需要会话')

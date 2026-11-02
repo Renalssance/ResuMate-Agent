@@ -72,3 +72,9 @@ def test_account_calls_reject_missing_base_url(account, monkeypatch, caller):
     else:
         monkeypatch.setattr(interview_tools, 'resolve_effective_llm_settings', lambda *_: settings)
         assert interview_tools._get_llm(user_id=user_id) is None
+
+
+def test_saved_api_key_is_returned_for_inline_editing(account):
+    db, user_id = account
+    save_llm_settings(user_id, LlmSettingsUpdate(api_key='personal-key'), db)
+    assert read_llm_settings(user_id, db).api_key == 'personal-key'

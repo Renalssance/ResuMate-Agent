@@ -794,6 +794,8 @@ def _utc_isoformat(value) -> str:
 
 
 def document_record(document_type: str, row) -> DocumentParseResult:
+    content = dict(row.structured_data or {})
+    indexed = content.pop('_vectorized', True)
     succeeded = str(row.parse_status or "") in {"success", "success_with_warnings"}
     return DocumentParseResult(
         id=f"{document_type}:{row.id}",
@@ -801,10 +803,10 @@ def document_record(document_type: str, row) -> DocumentParseResult:
         filename=row.filename if document_type == "resume" else (row.filename or row.title),
         size=row.document_size,
         raw_text=row.raw_text,
-        parsed_content=row.structured_data or {},
+        parsed_content=content,
         parse_status=row.parse_status,
         created_at=_utc_isoformat(row.created_at),
-        vectorized=succeeded and (document_type == "resume" or bool(row.file_path)),
+        vectorized=succeeded and indexed and (document_type == "resume" or bool(row.file_path)),
         local_stored=bool(row.file_path),
     )
 

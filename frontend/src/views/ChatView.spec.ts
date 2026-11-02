@@ -33,12 +33,12 @@ beforeEach(() => {
   detail = { ...session, turns: [] }
   vi.stubGlobal('fetch', vi.fn(async (input: string, init?: RequestInit) => {
     if (String(input).endsWith('/documents/import')) return importResponse || Response.json({ runId: 'import-1', status: 'queued' })
-    const url = String(input), body = init?.body ? JSON.parse(String(init.body)) : undefined
+    const url = String(input), body = init?.body ? (init.body instanceof FormData ? Object.fromEntries(init.body.entries()) : JSON.parse(String(init.body))) : undefined
     if (body) requests.push({ url, body })
     if (url.endsWith('/actions/type-1')) return Response.json({ runId: 'import-1', status: 'queued' })
     if (url.endsWith('/runs/import-1')) return Response.json(importSnapshot)
     if (url.endsWith('/cancel')) return cancelResponse || Response.json({ runId: 'run-1', status: 'cancelled' })
-    if (url.endsWith('/messages')) return Response.json(failSend ? { message: '当前会话忙，请稍后重试' } : { runId: 'run-2', status: 'queued' }, { status: failSend ? 409 : 202 })
+    if ((url.endsWith('/messages') || url.endsWith('/messages/upload'))) return Response.json(failSend ? { message: '当前会话忙，请稍后重试' } : { runId: 'run-2', status: 'queued' }, { status: failSend ? 409 : 202 })
     if (url.endsWith('/sessions')) return Response.json(init?.method === 'POST' ? session : [session])
     if (nextDetailResponse) { const pending = nextDetailResponse; nextDetailResponse = undefined; return pending }
     return Response.json(detail)
@@ -52,6 +52,77 @@ async function open(path = '/chat') {
   return { wrapper, router }
 }
 describe('chat workspace', () => {
+  it('shows live attachment analysis, restores its history and folds only when parsing completes', async () => {
+    const first = { stage: 'extract', message: '已读取 1/3 页', current: 1, total: 3, createdAt: new Date().toISOString(), data: { scope: 'attachment', reset: true } }
+    detail = { ...session, turns: [{ ...activeTurn, input: { attachment: { filename: '简历.pdf' } }, attachmentProgress: [first] }] }
+    const { wrapper } = await open('/chat/session-1')
+    expect(wrapper.get('.attachment-progress').text()).toContain('1/3')
+    const stream = streams[0]!
+    stream.onEvent({ runId: 'run-1', seq: 8, type: 'task.progress', createdAt: first.createdAt,
+      payload: { stage: 'llm_analyze', message: '正在提取教育背景、经历和技能', data: { scope: 'attachment', kind: 'resume', agent: { phase: 'waiting_response', attempt: 1 } } } })
+    await flushPromises()
+    expect(wrapper.get('.attachment-progress').attributes('open')).toBeDefined()
+    expect(wrapper.get('.attachment-progress').text()).toContain('正在提取教育背景、经历和技能')
+    expect(wrapper.get('.attachment-progress').text()).toContain('分析过程')
+    stream.onEvent({ runId: 'run-1', seq: 9, type: 'task.progress', createdAt: first.createdAt,
+      payload: { stage: 'complete', message: '已保存到资料库', data: { scope: 'attachment', kind: 'resume' } } })
+    await flushPromises()
+    expect(wrapper.get('.attachment-progress').attributes('open')).toBeUndefined()
+    expect(wrapper.get('.attachment-progress summary').text()).toContain('解析完成')
+    expect(wrapper.get('.attachment-progress').find('.execution-spinner').exists()).toBe(false)
+    expect(wrapper.find('.stop-button').exists()).toBe(true) // the chat answer is still running
+    wrapper.unmount()
+  })
+
+  it.each(['failed', 'cancelled'])('stops attachment progress when the chat is %s', async status => {
+    const progress = { stage: 'llm_analyze', message: '正在提取经历和技能', createdAt: new Date().toISOString(), data: { scope: 'attachment' } }
+    detail = { ...session, turns: [{ ...activeTurn, status, input: { attachment: { filename: '简历.pdf' } }, attachmentProgress: [progress] }] }
+    const { wrapper } = await open('/chat/session-1')
+    expect(wrapper.get('.attachment-progress').find('.execution-spinner').exists()).toBe(false)
+    expect(wrapper.get('.attachment-progress summary').text()).toContain(status === 'failed' ? '解析未完成' : '解析已停止')
+    wrapper.unmount()
+  })
+
+  it('streams reasoning separately and folds it when the thinking phase ends', async () => {
+    detail = { ...session, turns: [activeTurn] }
+    const { wrapper } = await open('/chat/session-1')
+    const stream = streams[0]!
+    stream.onEvent({ runId: 'run-1', seq: 8, type: 'assistant.reasoning', createdAt: '', payload: { text: '先看岗位分布' } })
+    await flushPromises()
+    expect(wrapper.get('.reasoning-panel').attributes('open')).toBeDefined()
+    expect(wrapper.get('.reasoning-content').text()).toBe('先看岗位分布')
+    expect(wrapper.get('.assistant-text').text()).not.toContain('先看岗位分布')
+    stream.onEvent({ runId: 'run-1', seq: 9, type: 'assistant.reasoning.done', createdAt: '', payload: {} })
+    await flushPromises()
+    expect(wrapper.get('.reasoning-panel').attributes('open')).toBeUndefined()
+    stream.onEvent({ runId: 'run-1', seq: 10, type: 'assistant.reasoning', createdAt: '', payload: { text: '再看公司分布' } })
+    await flushPromises()
+    expect(wrapper.get('.reasoning-panel').attributes('open')).toBeDefined()
+    expect(wrapper.get('.reasoning-content').text()).toBe('先看岗位分布\n\n再看公司分布')
+    stream.onEvent({ runId: 'run-1', seq: 11, type: 'run.status', createdAt: '', payload: { status: 'failed' } })
+    await flushPromises()
+    expect(wrapper.get('.reasoning-panel').attributes('open')).toBeUndefined()
+    expect(wrapper.get('.reasoning-content').text()).toContain('再看公司分布')
+    wrapper.unmount()
+  })
+  it('keeps Milo welcoming after a rejected send and hands off to the reply only after acceptance', async () => {
+    const { wrapper, router } = await open()
+    const mascot = wrapper.get('.welcome-milo img').attributes('src')
+    await wrapper.get('textarea').setValue('帮我看看项目经历')
+    failSend = true
+    await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
+    expect(wrapper.find('.welcome-milo').exists()).toBe(true)
+    expect(wrapper.find('.assistant-avatar').exists()).toBe(false)
+    failSend = false
+    await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
+    expect(wrapper.find('.welcome-milo').exists()).toBe(false)
+    expect(wrapper.get('.assistant-avatar img').attributes('src')).toBe(mascot)
+    expect(wrapper.text()).toContain('等待回复')
+    await router.push('/chat'); await flushPromises()
+    expect(wrapper.find('.welcome-milo').exists()).toBe(true)
+    expect(wrapper.find('.assistant-avatar').exists()).toBe(false)
+    wrapper.unmount()
+  })
   it('sends materials selected through the picker and displays the accepted queued turn', async () => {
     const { wrapper } = await open()
     await wrapper.get('[aria-label="添加材料"]').trigger('click')
@@ -120,88 +191,51 @@ describe('chat workspace', () => {
     } finally { vi.useRealTimers() }
     wrapper.unmount()
   })
-  it('restores each conversation material selection when switching sessions', async () => {
-    sessionStorage.setItem('resumate:document-import:chat:session-1', 'import-1')
-    importSnapshot = { ...importSnapshot, status: 'waiting_input', actions: [{ actionId: 'type-1', kind: 'input', revision: 1,
-      payload: { reason: '请确认这份材料的类型', choices: [{ value: 'resume', label: '简历' }, { value: 'jd', label: '岗位' }] } }] }
-    detail = { ...session, turns: [{ ...activeTurn, status: 'succeeded', input: { resumeId: 3, jdId: 4 } }] }
-    const { wrapper, router } = await open('/chat/session-1')
-    expect(wrapper.get('.material-chip[title="我的简历.pdf"]').text()).toContain('我的简历.pdf')
-    expect(wrapper.get('.material-chip[title="产品经理.txt"]').text()).toContain('产品经理.txt')
-    expect(wrapper.text()).toContain('请确认这份材料的类型')
-    detail = { ...session, sessionId: 'session-2', turns: [] }
-    await router.push('/chat/session-2'); await flushPromises()
-    expect(wrapper.findAll('.material-chip')).toHaveLength(0)
-    expect(wrapper.text()).not.toContain('请确认这份材料的类型')
-    importSnapshot = { ...importSnapshot, status: 'succeeded', lastSeq: 4, actions: [], result: { documents: [{
-      id: 'resume:8', type: 'resume', filename: '新材料.txt', size: 10, raw_text: 'content', parsed_content: {},
-      vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-31',
-    }] } }
-    let finishHistory!: () => void
-    nextDetailResponse = new Promise(resolve => { finishHistory = () => resolve(Response.json({ ...session,
-      turns: [{ ...activeTurn, status: 'succeeded', input: { resumeId: 3, jdId: 4 } }] })) })
-    await router.push('/chat/session-1'); await flushPromises()
-    finishHistory(); await flushPromises()
-    expect(wrapper.get('.material-chip[title="新材料.txt"]').text()).toContain('新材料.txt')
-    expect(wrapper.get('.material-chip[title="产品经理.txt"]').text()).toContain('产品经理.txt')
-    wrapper.unmount()
-  })
-  it.each([
-    { type: 'resume', id: 'resume:8', context: { resumeId: 8 }, confirm: false },
-    { type: 'jd', id: 'jd:9', context: { jdId: 9 }, confirm: true },
-  ])('adopts an imported $type before sending its real ID as context', async ({ type, id, context, confirm }) => {
-    let acceptImport!: () => void
-    importResponse = new Promise(resolve => { acceptImport = () => resolve(Response.json({ runId: 'import-1', status: 'queued' })) })
-    const { wrapper, router } = await open()
+  it('stages a local file without uploading and sends it with the question', async () => {
+    const { wrapper } = await open()
     await wrapper.get('[aria-label="添加材料"]').trigger('click')
     const input = wrapper.get('input[type="file"]')
-    Object.defineProperty(input.element, 'files', { value: [new File(['content'], '新材料.txt')] })
+    const file = new File(['content'], '新材料.txt')
+    Object.defineProperty(input.element, 'files', { value: [file] })
     await input.trigger('change'); await flushPromises()
-    await wrapper.get('textarea').setValue('分析我刚上传的材料')
-    expect(wrapper.get('[aria-label="发送消息"]').attributes('disabled')).toBeDefined()
-    await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
-    expect(router.currentRoute.value.path).toBe('/chat')
+    expect(wrapper.get('.pending-attachment').text()).toContain('新材料.txt')
     expect(requests).toHaveLength(0)
-    acceptImport(); await flushPromises()
-    expect(wrapper.get('[aria-label="发送消息"]').attributes('disabled')).toBeDefined()
+    expect(streams).toHaveLength(0)
+    await wrapper.get('textarea').setValue('总结文件')
     await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
-    expect(requests).toHaveLength(0)
-    const stream = streams.find(item => item.runId === 'import-1')!
-    if (confirm) {
-      stream.onSnapshot?.({ ...importSnapshot, status: 'waiting_input', actions: [{ actionId: 'type-1', kind: 'input', revision: 1,
-        payload: { reason: '请确认这份材料的类型', choices: [{ value: 'resume', label: '简历' }, { value: 'jd', label: '岗位' }] } }] })
-      await flushPromises()
-      expect(wrapper.get('[aria-label="发送消息"]').attributes('disabled')).toBeDefined()
-      await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
-      expect(router.currentRoute.value.path).toBe('/chat')
-      expect(requests).toHaveLength(0)
-      expect(sessionStorage.getItem('resumate:document-import:chat:new')).toBe('import-1')
-      await wrapper.get('[data-document-type="jd"]').trigger('click'); await flushPromises()
-      expect(requests.find(item => item.url.endsWith('/actions/type-1'))!.body).toMatchObject({ answers: { documentType: 'jd' } })
-    }
-    stream.onSnapshot?.({ ...importSnapshot, status: 'succeeded', lastSeq: 4, result: { documents: [{
-      id, type, filename: '新材料.txt', size: 10, raw_text: 'content', parsed_content: { title: 'API 工程师' },
-      vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-31',
-    }] } })
-    await flushPromises()
-    expect(wrapper.get('.material-chip[title="新材料.txt"]').text()).toContain('新材料.txt')
-    expect(useDocumentStore().documents.find(item => item.id === id)).toMatchObject({ parseStatus: 'success', parsedContent: { title: 'API 工程师' } })
-    await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
-    expect(requests.find(item => item.url.endsWith('/messages'))!.body).toMatchObject(context)
+    const request = requests.find(item => item.url.endsWith('/messages/upload'))!
+    expect(request.body.message).toBe('总结文件')
+    expect(request.body.file).toBe(file)
+    expect(wrapper.find('.pending-attachment').exists()).toBe(false)
+    expect(wrapper.get('.user-message').text()).toContain('新材料.txt')
     wrapper.unmount()
   })
-  it('adopts a recovered import after the older document list has finished loading', async () => {
-    sessionStorage.setItem('resumate:document-import:chat:session-1', 'import-1')
-    importSnapshot = { ...importSnapshot, status: 'succeeded', lastSeq: 4, result: { documents: [{
-      id: 'resume:8', type: 'resume', filename: '新材料.txt', size: 10, raw_text: 'content', parsed_content: {},
-      vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-31',
-    }] } }
-    let finishList!: (documents: BackendDocumentParseResult[]) => void
-    documentResponse = new Promise(resolve => { finishList = resolve })
+  it('can remove a staged file and retains it after a rejected send', async () => {
+    const { wrapper } = await open()
+    const input = wrapper.get('input[type="file"]')
+    Object.defineProperty(input.element, 'files', { value: [new File(['notes'], 'notes.txt')] })
+    await input.trigger('change')
+    await wrapper.get('[aria-label="移除附件"]').trigger('click')
+    expect(wrapper.find('.pending-attachment').exists()).toBe(false)
+    await input.trigger('change')
+    await wrapper.get('textarea').setValue('总结')
+    failSend = true
+    await wrapper.get('form.chat-composer').trigger('submit'); await flushPromises()
+    expect(wrapper.get('.pending-attachment').text()).toContain('notes.txt')
+    expect((wrapper.get('textarea').element as HTMLTextAreaElement).value).toBe('总结')
+    wrapper.unmount()
+  })
+  it('refreshes library choices after an attachment reply completes', async () => {
+    detail = { ...session, turns: [{ ...activeTurn, input: { attachment: { filename: '新简历.txt' } } }] }
     const { wrapper } = await open('/chat/session-1')
-    finishList([]); await flushPromises()
-    expect(wrapper.get('.material-chip[title="新材料.txt"]').text()).toContain('新材料.txt')
-    expect(useDocumentStore().parsedResumes.map(doc => doc.id)).toEqual(['resume:8'])
+    documentResponse = Promise.resolve([{
+      id: 'resume:9', type: 'resume', filename: '新简历.txt', size: 12, raw_text: 'content',
+      parsed_content: {}, vectorized: false, local_stored: true, parse_status: 'success', created_at: '2026-10-31',
+    }])
+    detail = { ...session, turns: [{ ...activeTurn, status: 'succeeded', input: { attachment: { filename: '新简历.txt' } } }] }
+    streams.find(stream => stream.runId === 'run-1')!.onEvent({ runId: 'run-1', seq: 8, type: 'run.status', createdAt: '', payload: { status: 'succeeded' } })
+    await flushPromises()
+    expect(useDocumentStore().parsedResumes.map(doc => doc.id)).toContain('resume:9')
     wrapper.unmount()
   })
   it('resumes from the saved sequence and reloads canonical text after completion', async () => {
@@ -243,6 +277,13 @@ describe('chat workspace', () => {
     ] }] }
     const { wrapper } = await open('/chat/session-1')
     expect(wrapper.get('.chat-process').attributes('open')).toBeDefined()
+    expect(wrapper.find('.chat-tools .execution-spinner').exists()).toBe(true)
+    expect(wrapper.find('.assistant-label .execution-spinner').exists()).toBe(true)
+    detail = { ...session, turns: [{ ...activeTurn, status: 'failed', lastSeq: 8, errorCode: 'empty_response' }] }
+    streams[0]!.onEvent({ runId: 'run-1', seq: 8, type: 'run.status', createdAt: '', payload: { status: 'failed' } })
+    await flushPromises()
+    expect(wrapper.find('.execution-spinner').exists()).toBe(false)
+    expect(wrapper.get('.chat-failure').text()).toContain('模型未生成有效回复')
     wrapper.unmount()
   })
   it('renders assistant markdown as structured content', async () => {
@@ -253,9 +294,13 @@ describe('chat workspace', () => {
     expect(wrapper.get('.assistant-text h2').text()).toBe('岗位建议')
     expect(wrapper.findAll('.assistant-text li')).toHaveLength(2)
     expect(wrapper.get('.assistant-text strong').text()).toBe('优先')
+    expect(wrapper.find('[aria-label="复制米洛的回复"]').exists()).toBe(true)
+    await wrapper.get('.reply-suggestions button').trigger('click')
+    expect((wrapper.get('textarea').element as HTMLTextAreaElement).value).toBe('请根据刚才的建议，帮我改写这段经历')
+    expect(requests.filter(request => request.url.endsWith('/messages'))).toHaveLength(0)
     wrapper.unmount()
   })
-  it('reveals a streaming reply one character at a time', async () => {
+  it('smooths a small streamed chunk and highlights the newest visible character', async () => {
     detail = { ...session, activeRunId: 'run-1', turns: [{ ...activeTurn, text: '' }] }
     const { wrapper } = await open('/chat/session-1')
     const stream = streams.find(item => item.runId === 'run-1')!
@@ -264,10 +309,10 @@ describe('chat workspace', () => {
       stream.onEvent({ runId: 'run-1', seq: 8, type: 'assistant.delta', createdAt: '', payload: { text: '岗位' } })
       await flushPromises()
       expect(wrapper.get('.assistant-text').text()).toBe('')
-      await vi.advanceTimersByTimeAsync(24)
+      await vi.advanceTimersByTimeAsync(64)
       expect(wrapper.get('.assistant-text').text()).toBe('岗')
       expect(wrapper.get('.stream-char').text()).toBe('岗')
-      await vi.advanceTimersByTimeAsync(24)
+      await vi.advanceTimersByTimeAsync(64)
       expect(wrapper.get('.assistant-text').text()).toBe('岗位')
     } finally {
       vi.useRealTimers()
@@ -277,6 +322,28 @@ describe('chat workspace', () => {
   it('starts the message composer as a single-line control', async () => {
     const { wrapper } = await open('/chat/session-1')
     expect((wrapper.get('textarea').element as HTMLTextAreaElement).rows).toBe(1)
+    wrapper.unmount()
+  })
+  it.each([
+    { isComposing: true, keyCode: 13 },
+    { isComposing: false, keyCode: 229 },
+  ])('does not send the Enter used to commit IME text (%j)', async (imeEvent) => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })))
+    const { wrapper } = await open()
+    const field = wrapper.get('textarea')
+    await field.setValue('resumate')
+    const confirmation = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, ...imeEvent })
+    field.element.dispatchEvent(confirmation)
+    await flushPromises()
+    expect(confirmation.defaultPrevented).toBe(false)
+    expect(requests).toHaveLength(0)
+    expect((field.element as HTMLTextAreaElement).value).toBe('resumate')
+    await field.trigger('keydown', { key: 'Enter', shiftKey: true })
+    await flushPromises()
+    expect(requests).toHaveLength(0)
+    await field.trigger('keydown', { key: 'Enter', keyCode: 13, isComposing: false })
+    await flushPromises()
+    expect(requests.filter(request => request.url.endsWith('/messages'))).toHaveLength(1)
     wrapper.unmount()
   })
 })

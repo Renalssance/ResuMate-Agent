@@ -16,6 +16,7 @@ from backend.schemas import (
 
 # ---- 子路由模块 ----
 from backend.routes.chat import router as chat_router
+from backend.routes.chat_sessions import router as chat_sessions_router
 from backend.routes.runs import router as runs_router
 from backend.routes.documents import followup_router, router as documents_router
 from backend.routes.tasks import router as tasks_router
@@ -76,6 +77,7 @@ async def me(current_user: User = Depends(get_current_user)):
 # ==================== 注册子路由 ====================
 
 router.include_router(chat_router)
+router.include_router(chat_sessions_router)
 router.include_router(runs_router)
 router.include_router(documents_router)
 router.include_router(followup_router)
